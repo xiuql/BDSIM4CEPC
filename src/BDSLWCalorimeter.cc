@@ -90,21 +90,21 @@ void BDSLWCalorimeter::LWCalorimeterLogicalVolume()
       itsMarkerLogicalVolume=(*LogVol)[itsName];
     }
 }
+
 void BDSLWCalorimeter::BuildCal(G4double aLength)
 {
   // build the Calorimeter
+   
   itsLWCal=new G4Box(itsName+"_LWCal",
 		     BDSGlobals->GetLWCalWidth()/2,
 		     BDSGlobals->GetLWCalWidth()/2,
 		     aLength/2);
-
   itsLWCalLogicalVolume=new G4LogicalVolume(itsLWCal,
 					    theMaterials->LCLeadTungstate,
 					    itsName+"_cal_logical");
-
-   G4RotationMatrix* Rot=NULL;
+  G4RotationMatrix* Rot=NULL;
   if(itsAngle!=0)Rot=RotY90;
-
+ 
   G4VPhysicalVolume* PhysiLWCal = 
     new G4PVPlacement(
 		      Rot,			     // rotation
@@ -117,12 +117,12 @@ void BDSLWCalorimeter::BuildCal(G4double aLength)
 
   // Sensitive Detector:
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
+ 
   BDSLWCalorimeterSD* SensDet=new BDSLWCalorimeterSD(itsName);
   SDMan->AddNewDetector(SensDet);
   
-  //itsMarkerLogicalVolume->SetSensitiveDetector(SensDet);
-   itsLWCalLogicalVolume->SetSensitiveDetector(SensDet);
-		      
+  itsLWCalLogicalVolume->SetSensitiveDetector(SensDet);
+    
 }
 void BDSLWCalorimeter::BuildBeampipe(G4double aLength)
 {
@@ -210,9 +210,9 @@ G4VisAttributes* BDSLWCalorimeter::SetVisAttributes()
 
 BDSLWCalorimeter::~BDSLWCalorimeter()
 {
-  delete itsVisAttributes;
-  delete itsUserLimits;
-  delete itsBPTube;
-  delete itsLWCal;
-  delete itsBeampipeLogicalVolume;
+  if(itsVisAttributes) delete itsVisAttributes;
+  if(itsUserLimits) delete itsUserLimits;
+  if(itsBPTube) delete itsBPTube;
+  if(itsLWCal) delete itsLWCal;
+  if(itsBeampipeLogicalVolume) delete itsBeampipeLogicalVolume;
 }

@@ -20,6 +20,7 @@
 
 #include "G4Navigator.hh"
 #include "G4AffineTransform.hh"
+#include "BDSRootObjects.hh"
 
 #include "G4RunManager.hh"
 #include <vector.h>
@@ -48,10 +49,25 @@ void BDSLWCalorimeterSD::Initialize(G4HCofThisEvent*HCE)
 
 G4bool BDSLWCalorimeterSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 {
-  G4Track* theTrack=aStep->GetTrack();
-  itsCopyNumber=theTrack->GetVolume()->GetCopyNo()+1;
+  
+  // NOTE ON COPYNUMBER: It is not possible (?) to get the copy number of the
+  //                     calorimeter directly because the cal is built with 
+  //                     the exact same specifications each time and so the 
+  //                     last copynumber given is the copynumber for each.
+  //                     Solution for now is to take the copynumber of the
+  //                     mother volume (i.e. MarkerVolume). Drawback is that
+  //                     it is not possible to have more than one cal per
+  //                     marker volume.
+
+
+  G4int motherCopyNo = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume(1)->GetCopyNo();
+  itsCopyNumber = motherCopyNo+1;
   AddEnergy(aStep->GetTotalEnergyDeposit());
-  //G4cout<<"edep="<<aStep->GetTotalEnergyDeposit()/GeV<<"Total so far="<<itsTotalEnergy/GeV<<G4endl;
+  /*
+  G4cout << "Its Copy Number is: " << itsCopyNumber << G4endl; 
+  G4cout << "The Volumer here is: " << aStep->GetTrack()->GetVolume()->GetName() << G4endl;
+  G4cout<<"edep="<<aStep->GetTotalEnergyDeposit()/GeV<<"Total so far="<<itsTotalEnergy/GeV<< " for event: " << G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID() << G4endl;
+  */
   return true;
   
 }
@@ -60,16 +76,18 @@ void BDSLWCalorimeterSD::EndOfEvent(G4HCofThisEvent*HCE)
 {
   G4int nEvent= 
 	G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+  /*
+  G4cout << "ITS COPY NUMBER IS: " << itsCopyNumber << G4endl;
+  G4cout << "ITS TOTAL ENERGY IS: " << itsTotalEnergy << G4endl;
+  G4cout << "ITS EVENT NUMBER IS: " << nEvent << G4endl;
+  */
   if(itsCopyNumber > 0){
     BDSLWCalorimeterHit* smpHit=
       new BDSLWCalorimeterHit(itsCopyNumber,itsTotalEnergy,nEvent);
     
     LWCalorimeterCollection->insert(smpHit);
   }
-  //if(theTrack->GetVolume()!=theTrack->GetNextVolume())StoreHit=true;
-  //else StoreHit=false;
-  
-  
+    
   static G4int HCID = -1;
   if(HCID<0)
     { HCID = GetCollectionID(0); }
@@ -81,4 +99,3 @@ void BDSLWCalorimeterSD::clear(){}
 void BDSLWCalorimeterSD::DrawAll(){} 
 
 void BDSLWCalorimeterSD::PrintAll(){} 
-
