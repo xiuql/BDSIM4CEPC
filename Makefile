@@ -19,8 +19,8 @@ LDLIBS3 += $(ROOTLIBS)
 include $(G4INSTALL)/config/binmake.gmk
 
 # JCC removed to make look like GB's GNUmakefile
-CPPFLAGS += -Df2cFortran
-CPPFLAGS += -I$(CERN)/pro/include -g
+CPPFLAGS += -Df2cFortran -DG4VERSION_4_7
+CPPFLAGS += -I$(CERN)/pro/include -g 
 
 CPPFLAGS += -w 
 CPPFLAGS += $(ROOTINCS) -DG4VERSION_4_7
@@ -30,6 +30,6 @@ LDFLAGS += -L$(G4LIBDIR) -L$(CERN)/pro/lib
 # gab:Root include:
 INCFLAGS += -I$(ROOTSYS)/include
 
-test:
-	@echo LDLIBS3=$(LDLIBS3)
-	@echo CERN=$(CERN)
+distrib:
+	tar -czvf BDSIM.tar.gz .
+

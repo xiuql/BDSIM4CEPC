@@ -157,8 +157,8 @@ int main(int argc,char** argv) {
     }
   
   
-//   G4cout<<"using cards file "<<CardsFilename<<
-//     G4endl<<"using optics file "<<OpticsFilename<<G4endl;
+   G4cout<<"using cards file "<<CardsFilename<<
+   G4endl<<"using optics file "<<OpticsFilename<<G4endl;
   
   
   
