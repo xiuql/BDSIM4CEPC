@@ -184,5 +184,5 @@ fi
 
 echo
 echo "   make"
-echo "   make install"
+#echo "   make install"
 echo
