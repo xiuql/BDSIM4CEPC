@@ -3,7 +3,7 @@
 @setfilename bdsim.info
 @settitle BDSIM beta User's Manual
 @c This date is automagically updated when you save this file:
-@set lastupdate January 20, 2005
+@set lastupdate March 21, 2005
 @c %**end of header
 
 @setchapternewpage off
@@ -21,7 +21,7 @@ This code ia an intellectual property of the British Empire.
 
 @titlepage
 @title BDSIM User's Manual
-@author RHUL FLC
+@author Ilya Agapov
 @author last updated @value{lastupdate}
 @end titlepage
 @setcontentsaftertitlepage
@@ -53,66 +53,79 @@ last updated on @value{lastupdate}.
 @node Intro, Installation, Top, Top
 @chapter About BDSIM
 
-BDSIM is a particle tracking code designed for accurate simulation of particle
-transport in high energy accelerator beam lines. It combines fast tracking 
+BDSIM is a particle tracking code designed for simulation of particle
+transport in accelerator beam lines. It combines tracking 
 techniques in conventional electromagnetic fields with Monte-Carlo simulations of various 
-particle interactions. It is intended to use in such problems as collimation
+particle interactions. It is intended for use in such problems as collimation
 design, background studies, laser beam diagnostics etc. 
  
 
 @node Installation, Input,Intro, Top
 @chapter Obtaining, Installing and Running
 
-@code{% cvs loging @* % gmake}
 
+To run @code{BDSIM} you will need two files:one with accelerator geometry definition (optics) and the second with
+various run-time parameters (input cards).
 
+@code{BDSIM} is invoked by the command
+@code{bdsim} @option{options}
 
-@node Input,Physics,Installation,Top
-@chapter Input
+where the options are
 
-@menu
-* Cards::                        
-* Optics::
-@end menu
-
-@node Cards,,,
-@section Input Cards
-
-
-The execution of @code{BDSIM} is controlled by parameters specified in the
-input cards file. It has the following format
-
-
-@var{card-name} @var{card-value}
-
-Possible card names are 
-
-@table @samp
-
-@item ACCELERATOR
-
-Accelerator name
-
-@item BUNCH_TYPE
-
-@item USE_JOB
-
-@item TUNNEL_RADIUS
-
-@item BEAMPIPE_RADIUS
-
-@item TURN_ON_SYNCHROTRON
-
+@table @code
+@item --batch
+run in batch mode
+@item --verbose
+verbose
+@item --cards = <file>
+use <file> for input cards
+@item --optics=<file>
+use <file> for optics 
 @end table
 
+@code{BDSIM} can be also invoked by the @code{bdsimrun} shell script which handles 
+batch job support and opther features.
 
-@node Optics,,,
-@section Optics File
+@code{bdsimrun} @option{options}
 
-The accelerator components beamline is described in the optics file in the
-TFF format (used in MAD8).
+@table @code
+@item -b
+run in batch mode
+@item -v
+verbose
+@item -c file
+use <file> for input cards
+@item -o file
+use <file> for optics 
+@end table
 
-@section Output
+@node Input,Physics,Installation,Top
+@chapter Lattice description
+
+The beamline, beam properties and physics processes are specified in the input file written in the 
+GMAD language. This language is a variation of the MAD language and is described in this section.
+
+Program structure
+
+
+Physical elements
+
+@code{label} : @code{keyword}, @code{attributes}
+
+for example
+
+@c cmd{qd : quadrupole, l = 0.1, k1 = 0.01}
+
+
+units
+
+Run control and output
+
+
+Currently the 
+
+
+Note: In the next versions the input/output will be replaced by a more readable and flexible XML-type format.
 
 @node Physics,Tracking,Input,Top
 @chapter Physics Processes
@@ -150,7 +163,7 @@ Root User's Guide
 Geant4 User's Guide
 
 @item 
-MAD8 User's Guide
+MAD-X User's Guide
 
 @end enumerate
 
