@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSGammaConversion.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
+// $Id: BDSGammaConversion.cc,v 1.2 2005/01/27 11:35:32 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 //------------------ BDSGammaConversion physics process -------------------------
@@ -565,12 +565,13 @@ G4VParticleChange* BDSGammaConversion::PostStepDoIt(const G4Track& aTrack,
    //
    // Kill the incident photon 
    //
-   
-   fParticleChange.SetMomentumChange( 0., 0., 0. );
-   fParticleChange.SetEnergyChange( 0. ); 
-#if G4VERSION > 6
+#if G4VERSION > 6   
+   fParticleChange.ProposeMomentumChange( 0., 0., 0. );
+   fParticleChange.ProposeEnergyChange( 0. ); 
    fParticleChange.ProposeTrackStatus( fStopAndKill );
 #else
+   fParticleChange.SetMomentumChange( 0., 0., 0. );
+   fParticleChange.SetEnergyChange( 0. ); 
    fParticleChange.SetStatusChange( fStopAndKill );
 #endif
 

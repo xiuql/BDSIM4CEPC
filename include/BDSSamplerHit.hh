@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 5.11.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Changed Samplers to account for plane and cylinder types (GABs code)
 */
 
 #ifndef BDSSamplerHit_h
@@ -51,6 +54,7 @@ private:
   G4double itsWeight;
   G4int itsPDGtype;
   G4int itsEventNo;
+  G4String itsSampType;
   
 public:
   inline void SetInitMom(G4double mom)
@@ -103,12 +107,16 @@ public:
   
   inline void SetNumber(G4int nSampler)
     {itsNumber=nSampler;}
+  inline void SetType(G4String aSampType)
+    {itsSampType=aSampType;}
+  inline G4String GetType()
+    {return itsSampType;}
   inline G4int GetNumber() const
     {return itsNumber;}
   inline G4int GetPDGtype() const
     {return itsPDGtype;}
-  inline G4int SetEventNo(G4int nEvent)
-    {return itsEventNo=nEvent;}
+  inline void SetEventNo(G4int nEvent)
+    {itsEventNo=nEvent;}
   inline G4int GetEventNo() const
     {return itsEventNo;}
   

@@ -2,6 +2,10 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 25.12.2003
    Copyright (c) 2003 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added code for GABs BeamGasPlug
+   Changed Killer to kill just electrons/positrons if called KILLERE
 */
 
 // This code implementation is the intellectual property of
@@ -11,7 +15,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSSteppingAction.cc,v 1.1.1.1 2004/12/14 18:57:39 agapov Exp $
+// $Id: BDSSteppingAction.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -69,6 +73,8 @@ extern G4ThreeVector LastMom;
 extern G4int event_number;
 
 extern G4double initial_x,initial_xp,initial_y,initial_yp,initial_z,initial_E;
+
+extern G4int TempNProc;
 
 //static G4LogicalVolume* LastLogVol;
 //====================================================
@@ -136,14 +142,21 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
   if(ThisTrack->GetVolume()->GetName()=="KILLER_phys")
     ThisTrack->SetTrackStatus(fStopAndKill);
 
+  G4String pName1=ThisTrack->GetDefinition()->GetParticleName();
+  if(ThisTrack->GetVolume()->GetName()=="KILLERE_phys"&&pName1=="e+")
+    ThisTrack->SetTrackStatus(fStopAndKill);
+  if(ThisTrack->GetVolume()->GetName()=="KILLERE_phys"&&pName1=="e-")
+    ThisTrack->SetTrackStatus(fStopAndKill);
+
+
   // for electrons (and positrons) store the last point where they
   // were not in vacuum - ie, the last point of scatter
-  if((TrackID==1) &&
-     ThisTrack->GetMaterial()->GetName()!="LCVacuum")
+
+  G4String LocMatName=ThisTrack->GetMaterial()->GetName();
+  
+  if( (BDSGlobals->GetUseLastMaterialPoint()&& LocMatName!="LCVacuum")||
+      (LocMatName=="LCReset"))
     {
-      //	G4cout<<ThisTrack->GetVolume()->GetName()<<G4endl;
-      //G4String pName=ThisTrack->GetDefinition()->GetParticleName();
-      
       const G4RotationMatrix* Rot=
 	ThisTrack->GetVolume()->GetFrameRotation();
       const G4ThreeVector Trans=
@@ -159,14 +172,23 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 	LocalDirection=momDir; 
       
       initial_x =LocalPosition.x();
-      
       initial_xp=LocalDirection.x() ;
       initial_y =LocalPosition.y();
       initial_yp=LocalDirection.y();
       initial_z = ThisTrack->GetPosition().z();
       initial_E=ThisTrack->GetTotalEnergy() ;
     }
-
+  
+  
+  if((TrackID==1) && LocMatName=="LCBeamGasPlugMat")
+    {
+      G4VProcess* proc=ThisStep->GetPostStepPoint()->GetProcessDefinedStep();
+      if(proc)
+	{
+	  G4String procName=proc->GetProcessName();
+	  if(procName!="Transportation")TempNProc++;
+	}
+    }
 
   /*
   // tmp gab 25.04.04
@@ -363,7 +385,6 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 	  " Py="<<ThisTrack->GetMomentum()[1]/GeV<<
 	  " Pz="<<ThisTrack->GetMomentum()[2]/GeV<<" vol="<<
 	  ThisTrack->GetVolume()->GetName()<<G4endl;
-	G4cout<<" Parent ID="<<ThisTrack->GetParentID()<<"!"<<G4endl;
 	
 	G4cout<<" Global Position="<<ThisTrack->GetPosition()<<G4endl;
 	

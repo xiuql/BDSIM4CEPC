@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSTransportationProcess.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
+// $Id: BDSTransportationProcess.cc,v 1.2 2005/01/27 11:35:32 agapov Exp $
 // GEANT4 tag $Name:  $
 // 
 // ------------------------------------------------------------
@@ -535,11 +535,11 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
      deltaTime = fCandidateEndGlobalTime - startTime ;
   }
 
-  //#if G4VERSION > 6
-  //fParticleChange.ProposeProperTime( fCandidateEndGlobalTime ) ;
-  //#else
-  //fParticleChange.SetTimeChange( fCandidateEndGlobalTime ) ;
-  //#endif
+  #if G4VERSION > 6
+  fParticleChange.ProposeProperTime( fCandidateEndGlobalTime ) ;
+  #else
+  fParticleChange.SetTimeChange( fCandidateEndGlobalTime ) ;
+  #endif
 
   // Now Correct by Lorentz factor to get "proper" deltaTime
   

@@ -78,11 +78,11 @@ void BDSDrift::BuildMarkerFieldAndStepper()
 
 BDSDrift::~BDSDrift()
 {
-  delete itsVisAttributes;
-  delete itsMarkerLogicalVolume;
-  delete itsOuterLogicalVolume;
-  delete itsPhysiComp;
-  delete itsMagField;
-  delete itsEqRhs;
-  delete itsStepper;
+  if(itsVisAttributes) delete itsVisAttributes;
+  if(itsMarkerLogicalVolume) delete itsMarkerLogicalVolume;
+  if(itsOuterLogicalVolume) delete itsOuterLogicalVolume;
+  if(itsPhysiComp) delete itsPhysiComp;
+  if(itsMagField) delete itsMagField;
+  if(itsEqRhs) delete itsEqRhs;
+  if(itsStepper) delete itsStepper;
 }

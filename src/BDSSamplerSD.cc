@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Changed Samplers to account for plane and cylinder types (GABs code)
 */
 #include "BDSGlobalConstants.hh" // must be first in include list
 
@@ -24,16 +27,19 @@
 #include "G4RunManager.hh"
 #include <vector.h>
 
+#include "G4SDManager.hh"
+
 typedef std::vector<G4int> MuonTrackVector;
 extern MuonTrackVector* theMuonTrackVector;
 
 extern G4double initial_x,initial_xp,initial_y,initial_yp,initial_z,initial_E;
 
 
-BDSSamplerSD::BDSSamplerSD(G4String name)
-:G4VSensitiveDetector(name),StoreHit(true)
+BDSSamplerSD::BDSSamplerSD(G4String name, G4String type)
+  :G4VSensitiveDetector(name),StoreHit(true),itsType(type)
 {
-  collectionName.insert("SamplerCollection");
+  itsCollectionName="Sampler_"+type;
+  collectionName.insert(itsCollectionName);  
 }
 
 BDSSamplerSD::~BDSSamplerSD()
@@ -42,7 +48,7 @@ BDSSamplerSD::~BDSSamplerSD()
 void BDSSamplerSD::Initialize(G4HCofThisEvent*HCE)
 {
   SamplerCollection = 
-    new BDSSamplerHitsCollection(SensitiveDetectorName,collectionName[0]); 
+    new BDSSamplerHitsCollection(SensitiveDetectorName,itsCollectionName);
 }
 
 G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
@@ -140,6 +146,8 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 			 z,energy,x,xPrime,y,yPrime,weight,
 			 PDGtype,nEvent);
 
+      smpHit->SetType(itsType);
+
       SamplerCollection->insert(smpHit);
       if(theTrack->GetVolume()!=theTrack->GetNextVolume())StoreHit=true;
       else StoreHit=false;
@@ -157,9 +165,8 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 
 void BDSSamplerSD::EndOfEvent(G4HCofThisEvent*HCE)
 {
-  static G4int HCID = -1;
-  if(HCID<0)
-    { HCID = GetCollectionID(0); }
+  G4SDManager * SDman = G4SDManager::GetSDMpointer();
+  G4int HCID = SDman->GetCollectionID(itsCollectionName);
   HCE->AddHitsCollection( HCID, SamplerCollection );
 }
 

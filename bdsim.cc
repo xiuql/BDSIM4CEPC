@@ -212,10 +212,14 @@ int main(int argc,char** argv) {
   
   if(!isBatch)
     {
+#ifdef G4UI_USE_XM
+      session = new G4UIXm(argc,argv);
+#else
 #ifdef G4UI_USE_TCSH
       session = new G4UIterminal(new G4UItcsh);
 #else
       session = new G4UIterminal();
+#endif
 #endif    
       
     }  
@@ -343,7 +347,7 @@ int main(int argc,char** argv) {
       UI->ApplyCommand("/control/execute BDS_vis.mac");    
 #ifdef G4UI_USE_XM
       // Customize the G4UIXm menubar with a macro file :
-      UI->ApplyCommand("/control/execute gui.mac");
+      UI->ApplyCommand("/control/execute BDS_gui.mac");
 #endif
       session->SessionStart();
       delete session;
@@ -373,8 +377,5 @@ int main(int argc,char** argv) {
 
   delete runManager;
 
-  delete BDSRoot; 
-  delete BDSGlobals;
-     
   return 0;
 }

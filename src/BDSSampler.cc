@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Changed Samplers to account for plane and cylinder types (GABs code)
 */
 // gab:
 #include "BDSGlobalConstants.hh" // must be first in include list
@@ -111,7 +114,7 @@ void BDSSampler::SamplerLogicalVolume()
 
      // Sensitive Detector:
       G4SDManager* SDMan = G4SDManager::GetSDMpointer();
-      BDSSamplerSD* SensDet=new BDSSamplerSD(itsName);
+      BDSSamplerSD* SensDet=new BDSSamplerSD(itsName,"plane");
       SDMan->AddNewDetector(SensDet);
       itsMarkerLogicalVolume->SetSensitiveDetector(SensDet);
     }
@@ -130,6 +133,6 @@ G4VisAttributes* BDSSampler::SetVisAttributes()
 
 BDSSampler::~BDSSampler()
 {
-  delete itsVisAttributes;
-  delete itsUserLimits;
+  if(itsVisAttributes) delete itsVisAttributes;
+  if(itsUserLimits) delete itsUserLimits;
 }

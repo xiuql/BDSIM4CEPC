@@ -3,6 +3,21 @@
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
+
+/* Modifications to BDSSynchrotronRadiation physics process
+   Author of Mods: John Carter, Royal Holloway, Univ. of London
+   Date: 16.11.2004
+   Description: Modified to improve efficiency of process. It is now possible 
+		to use BDSInput.cards to create a given number of photons 
+		each time (rather than one) using SYNCH_PHOTON_MULTIPLICITY
+
+		Also modified to break up the meanfree path length into a given
+		number of smaller lengths. Use the following BDSInput.card
+		flag, SYNCH_MEANFREE_FACTOR
+*/
+
+
+
 #ifndef BDSSynchrotronRadiation_h
 #define BDSSynchrotronRadiation_h 1
 
@@ -57,7 +72,6 @@ public:
   G4double SynGenC(G4double xmin);
   G4double SynRadC(G4double x);
 
-
 protected:
 
 private:
@@ -68,7 +82,7 @@ private:
 
   G4double nExpConst;
   G4double CritEngFac;
-
+  G4int MeanFreePathCounter;
 
 private:
 };
@@ -94,8 +108,12 @@ BDSSynchrotronRadiation::GetMeanFreePath(const G4Track& track,
     track.GetVolume()->GetLogicalVolume()->GetFieldManager();
 
   if(track.GetTotalEnergy()<BDSGlobals->GetThresholdCutCharged())
-	return DBL_MAX;
-
+    return DBL_MAX;
+  /*
+  G4double SynchOnZPos = (7.184+4.0) * m;
+  if(track.GetPosition().z() + BDSGlobals->GetWorldSizeZ() < SynchOnZPos)
+    return DBL_MAX;
+  */
   if(TheFieldManager)
     {
       const G4Field* pField = TheFieldManager->GetDetectorField() ;
@@ -156,7 +174,12 @@ BDSSynchrotronRadiation::GetMeanFreePath(const G4Track& track,
 	  
 	  MeanFreePath=
 	    abs(Rlocal)/(track.GetTotalEnergy()*nExpConst);
-	  
+
+	  MeanFreePath /= BDSGlobals->GetSynchMeanFreeFactor();
+
+	  if(MeanFreePathCounter==BDSGlobals->GetSynchMeanFreeFactor())
+	    MeanFreePathCounter=0;
+
 	  //	  G4cout<<"Rlocal="<<Rlocal/m<<" BDSR="<<BDSLocalRadiusOfCurvature/m
 	  //<<G4endl;
 	   //       MeanFreePath=

@@ -2,6 +2,10 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 28.10.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Changed StringFromInt to be BDSGlobals Version
+   Modified Samplers to account for plane and cylinder types
 */
 
 #include "BDSGlobalConstants.hh"
@@ -27,7 +31,7 @@ BDSRootObjects::~BDSRootObjects()
   G4int i;
   for(i=0;i<nSamplers;i++)
     {
-      G4String name="samp"+StringFromInt(i+1);
+      G4String name="samp"+BDSGlobals->StringFromInt(i+1);
       TTree* sTree=(TTree*)gDirectory->Get(name);
       if(sTree)delete sTree;
     }
@@ -35,7 +39,7 @@ BDSRootObjects::~BDSRootObjects()
 
   for(i=0;i<nLWCalorimeters;i++)
     {
-      G4String name="lwcal"+StringFromInt(i+1);
+      G4String name="lwcal"+BDSGlobals->StringFromInt(i+1);
       TTree* sTree=(TTree*)gDirectory->Get(name);
       if(sTree)delete sTree;
     }
@@ -43,7 +47,7 @@ BDSRootObjects::~BDSRootObjects()
 
   for(i=0;i<nTrajectories;i++)
     {
-      G4String name="Trajectory"+StringFromInt(i+1);
+      G4String name="Trajectory"+BDSGlobals->StringFromInt(i+1);
       TTree* tTree=(TTree*)gDirectory->Get(name);
       if(tTree)delete tTree;
     }
@@ -64,7 +68,7 @@ void BDSRootObjects::BuildSamplerTrees()
 {
   for(G4int i=0;i<nSamplers;i++)
     {
-      G4String name="samp"+StringFromInt(i+1);
+      G4String name="samp"+BDSGlobals->StringFromInt(i+1);
       TTree* SamplerTree = new TTree(name, "Sampler output");
       
       SamplerTree->Branch("x0",&x0,"x0/F");
@@ -89,7 +93,7 @@ void BDSRootObjects::BuildLWCalorimeterTrees()
 {
   for(G4int i=0;i<nLWCalorimeters;i++)
     {
-      G4String name="lwcal"+StringFromInt(i+1);
+      G4String name="lwcal"+BDSGlobals->StringFromInt(i+1);
       TTree* LWCalorimeterTree = new TTree(name, "LWCalorimeter output");
       
       LWCalorimeterTree->Branch("E",&E,"E/F");
@@ -100,7 +104,7 @@ void BDSRootObjects::BuildLWCalorimeterTrees()
 void BDSRootObjects::BuildTrajectoryTree()
 {
   nTrajectories++;
-  G4String name="Trajectory"+StringFromInt(nTrajectories);  
+  G4String name="Trajectory"+BDSGlobals->StringFromInt(nTrajectories);  
   TrajTree = new TTree(name, "Track Trajectory");
   //  TrajTree->Branch("point", TrajPoint,"TrajPoint[3]/F");
   TrajTree->Branch("x",&Tx,"x/F");
@@ -118,8 +122,14 @@ void BDSRootObjects::LoadTrajectoryTree(G4ThreeVector* point)
 
 void BDSRootObjects::LoadSamplerTree(BDSSamplerHit* hit)
 {
+  G4String name;
+  if (hit->GetType()=="plane") 
+    name="samp";
+  else if (hit->GetType()=="cylinder")
+    name ="cyln";
+  
+  name+=BDSGlobals->StringFromInt(hit->GetNumber());
 
-  G4String name="samp"+StringFromInt(hit->GetNumber());
   TTree* sTree=(TTree*)gDirectory->Get(name);
 
   x0=hit->GetInitX()/m; 
@@ -143,9 +153,10 @@ void BDSRootObjects::LoadSamplerTree(BDSSamplerHit* hit)
 
 void BDSRootObjects::LoadLWCalorimeterTree(BDSLWCalorimeterHit* hit)
 {
-  G4String name="lwcal"+StringFromInt(hit->GetCopyNumber());
+  G4String name="lwcal"+BDSGlobals->StringFromInt(hit->GetCopyNumber());
   TTree* sTree=(TTree*)gDirectory->Get(name);
   E=hit->GetEnergy()/GeV;
+  //  G4cout << "Energy is: " << E << " For CopyNumber: " << hit->GetCopyNumber() << G4endl;
   nev=hit->GetEventNo(); 
   sTree->Fill();
 }
@@ -163,13 +174,4 @@ void BDSRootObjects::BuildEnergyLossHisto()
 
 }
 
-G4String BDSRootObjects::StringFromInt(G4int N)
-{
-  //JCC 020704
-  //char* CharN;
-  char CharN[50];
-  sprintf(CharN,"%d",N);
-  G4String Cnum(CharN);
-  return Cnum;
-}
 

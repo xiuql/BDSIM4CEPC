@@ -6,6 +6,18 @@
 //      ------------ BDSSynchrotronRadiation physics process --------
 //                     by Grahame Blair, 18 October 2001
 
+/* Modifications to BDSSynchrotronRadiation physics process
+   Author of Mods: John Carter, Royal Holloway, Univ. of London
+   Date: 16.11.2004
+   Description: Modified to improve efficiency of process. It is now possible 
+		to use BDSInput.cards to create a given number of photons 
+		each time (rather than one) using SYNCH_PHOTON_MULTIPLICITY
+
+		Also modified to break up the meanfree path length into a given
+		number of smaller lengths. Use the following BDSInput.card
+		flag, SYNCH_MEANFREE_FACTOR
+*/
+
 #include "BDSGlobalConstants.hh" // must be first in include list
 #include "BDSSynchrotronRadiation.hh"
 #include "G4ios.hh"
@@ -36,11 +48,6 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
 {
   aParticleChange.Initialize(trackData);
 
-  
-  // tmp
-  //    return G4VDiscreteProcess::PostStepDoIt(trackData,stepData);
-
-
   G4double eEnergy=trackData.GetTotalEnergy();
 
   G4double R=BDSLocalRadiusOfCurvature;
@@ -49,48 +56,37 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
  
   G4double GamEnergy=0;
 
+  aParticleChange.SetNumberOfSecondaries(BDSGlobals->GetSynchPhotonMultiplicity());
+  MeanFreePathCounter++;
+  
+  for (int i=0; i<BDSGlobals->GetSynchPhotonMultiplicity(); i++){
 
-  if(abs(R)>0)
-    GamEnergy=SynGenC(BDSGlobals->GetSynchLowX())*
-      CritEngFac*pow(eEnergy,3)/abs(R);
+    if(abs(R)>0)
+      GamEnergy=SynGenC(BDSGlobals->GetSynchLowX())*
+	CritEngFac*pow(eEnergy,3)/abs(R);
+    
+    if(GamEnergy>0)
+      {
+	if((BDSGlobals->GetSynchTrackPhotons())&&
+	   (GamEnergy>BDSGlobals->GetSynchLowGamE()) )
+	  {
+	    G4DynamicParticle* aGamma= 
+	      new G4DynamicParticle (G4Gamma::Gamma(), 
+				     trackData.GetMomentumDirection(),
+				     GamEnergy);
 
-  NewKinEnergy -= GamEnergy;
+	    aParticleChange.AddSecondary(aGamma); 
+	  }
 
-  if(GamEnergy>0)
-    {
-      if((BDSGlobals->GetSynchTrackPhotons())&&
-	 (GamEnergy>BDSGlobals->GetSynchLowGamE()) )
-	{
-	  G4DynamicParticle* aGamma= 
-	    new G4DynamicParticle (G4Gamma::Gamma(), 
-				   trackData.GetMomentumDirection(),
-				   GamEnergy);
-
-	  aParticleChange.SetNumberOfSecondaries(1);
-	  aParticleChange.AddSecondary(aGamma); 
-	}
-
-      /* remove logging for now:
       BDSBeamline::const_iterator iBeam;
       G4double zpos=trackData.GetPosition().z();
-
+      
       for(iBeam=theBeamline.begin();
 	  iBeam!=theBeamline.end() && zpos>=(*iBeam)->GetZUpper(); 
 	  iBeam++){}
 
-      if(*iBeam)(*iBeam)->AddSynchEnergyLoss(GamEnergy);
- 
-      */
-
-
-     /*
-      G4cout.precision(8);
-      G4cout<<" eGam="<<GamEnergy/GeV<<G4endl;
-      G4cout<<" trackdata:"<<trackData.GetVolume()->GetName()<<G4endl;
-      G4cout<<" beamline:"<<(*iBeam)->GetName()<<" z="<<zpos/m<<G4endl;
-      */
-
-
+      if(i==0 && MeanFreePathCounter==1) NewKinEnergy -= GamEnergy;
+	        
 #if G4VERSION > 6
       if (NewKinEnergy > 0.)
 	{
@@ -122,8 +118,8 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
 	  else       aParticleChange.SetStatusChange(fStopButAlive);
 	}
 #endif
-
-    }
+      }
+  }
   return G4VDiscreteProcess::PostStepDoIt(trackData,stepData);
 }
 

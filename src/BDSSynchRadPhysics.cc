@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 9.3.2003
    Copyright (c) 2003 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Removed code that meant that SR only turned on for Laserwire
 */
 #include "BDSGlobalConstants.hh"
 
@@ -39,14 +42,7 @@ ConstructParticle()
 }
 
 void BDSSynchRadPhysics::ConstructProcess()
-{
-
-
-  if(BDSGlobals->GetLaserwireWavelength())
-    {
-      theBDSSynchRadBuilder.Build();
-    }
-}
+{theBDSSynchRadBuilder.Build();}
 
 
 

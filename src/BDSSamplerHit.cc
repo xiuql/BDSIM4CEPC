@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Changed Samplers to account for plane and cylinder types (GABs code)
 */
 
 #include "BDSSamplerHit.hh"
@@ -34,7 +37,7 @@ G4int PDGtype,G4int nEvent)
 BDSSamplerHit::~BDSSamplerHit()
 {;}
 
-BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right) : G4VHit()
+BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right)
 {
   itsNumber=right.itsNumber;
 
@@ -55,6 +58,9 @@ BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right) : G4VHit()
 
   itsPDGtype=right.itsPDGtype;
   itsEventNo=right.itsEventNo;
+
+  itsSampType=right.itsSampType;
+
 }
 
 const BDSSamplerHit& BDSSamplerHit::operator=(const BDSSamplerHit &right)
@@ -78,6 +84,9 @@ const BDSSamplerHit& BDSSamplerHit::operator=(const BDSSamplerHit &right)
 
   itsPDGtype=right.itsPDGtype;
   itsEventNo=right.itsEventNo;
+
+  itsSampType=right.itsSampType;
+
   return *this;
 }
 

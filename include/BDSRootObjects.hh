@@ -2,6 +2,10 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 28.10.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Changed StringFromInt to be BDSGlobals Version
+   Modified Samplers to account for plane and cylinder types
 */
 
 #ifndef BDSRootObjects_h
@@ -39,13 +43,15 @@ class BDSRootObjects
 
   void SetEnergyLossZMax(G4double zMax);
   void SetSamplerNumber(G4int n);
+  void SetSampCylinderNumber(G4int n);
+
   void SetLWCalorimeterNumber(G4int n);
   G4int GetLWCalorimeterNumber(){return nLWCalorimeters;}
   G4int GetSamplerNumber(){return nSamplers;}
+  G4int GetSampCylinderNumber(){return nSampCylinders;}
 
   void LoadSamplerTree(BDSSamplerHit* hit);
   void LoadLWCalorimeterTree(BDSLWCalorimeterHit* hit);
-  G4String StringFromInt(G4int N);
 
   void BuildTrajectoryTree();
   void LoadTrajectoryTree(G4ThreeVector* point);
@@ -56,6 +62,7 @@ private:
   // Data Members for Class Attributes
   G4double EnergyLossZMax;
   G4int nSamplers;
+  G4int nSampCylinders;
   G4int nLWCalorimeters;
   G4int nTrajectories;
 
@@ -74,6 +81,10 @@ inline void BDSRootObjects::SetSamplerNumber(G4int n)
 
 inline void BDSRootObjects::SetLWCalorimeterNumber(G4int n)
 {nLWCalorimeters=n;}
+
+
+inline void BDSRootObjects::SetSampCylinderNumber(G4int n)
+{nSampCylinders=n;}
 
 extern BDSRootObjects* BDSRoot;
 #endif
