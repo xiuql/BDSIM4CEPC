@@ -1,6 +1,6 @@
 /* BDSIM code.    Version 1.0
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.7.2002
+   Last modified 15.12.2004 by Ilya Agapov, agapov@pp.rhul.ac.uk
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
 
@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSPrimaryGeneratorAction.cc,v 1.1.1.1 2004/11/18 17:42:36 ilia Exp $
+// $Id: BDSPrimaryGeneratorAction.cc,v 1.1.1.1 2004/12/14 18:57:39 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -63,11 +63,16 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
 
   particleGun->SetParticleEnergy(TheAccelerator->GetBeamKineticEnergy());
 
-  GaussGen=new RandGauss(HepRandom::getTheEngine());
-  FlatGen=new RandFlat(HepRandom::getTheEngine());
+
+  // IA: the engine should be passed by reference, not by pointer,
+  // otherwise two subsequent destructor calls will crash
+
+  GaussGen=new RandGauss( *HepRandom::getTheEngine() );
+  FlatGen=new RandFlat( *HepRandom::getTheEngine() );
 
   if (BDSGlobals->GetReadBunchFile() && BDSGlobals->GetExtractBunchFile())
     G4Exception(" Both the Extract Bunch and the Read Bunch flags are set!");
+  
   if(BDSGlobals->GetReadBunchFile())InputBunchFile.open("BDSBunch.input");
   else if (BDSGlobals->GetExtractBunchFile())
     { 
@@ -104,11 +109,11 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
 
 BDSPrimaryGeneratorAction::~BDSPrimaryGeneratorAction()
 {
-  delete particleGun;
+  delete particleGun; 
   delete gunMessenger;
-  delete GaussGen;
-  delete FlatGen;
-  if(itsBDSExtract)delete itsBDSExtract;
+  delete GaussGen;  
+  delete FlatGen;   
+  if(itsBDSExtract) delete itsBDSExtract;
 }
 //===================================================
 
