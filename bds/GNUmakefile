@@ -23,6 +23,7 @@ CPPFLAGS += -Df2cFortran
 CPPFLAGS += -I$(CERN)/pro/include -g
 
 CPPFLAGS += -w 
+CPPFLAGS += $(ROOTINCS) -DG4VERSION_4_7
 LDFLAGS += -L$(G4LIBDIR) -L$(CERN)/pro/lib 
 
 
