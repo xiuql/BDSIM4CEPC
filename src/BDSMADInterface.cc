@@ -2,6 +2,13 @@
  *   @Author: Grahame A. Blair, Royal Holloway, Univ. of London.
  *  Last modified 24.7.2002
  *  @Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added BDSInteractionPointLeft and Right Components
+   Added BDSBlock Component
+   Added BDSWedge Component
+   Added BDSResetter Component
+   Added BDSComponentOffset Component
 */
 
 // This code was modifed by G.Blair from an original Merlin
@@ -49,6 +56,13 @@
 #include "BDSLaserWire.hh"
 #include "BDSLWCalorimeter.hh"
 #include "BDSMuSpoiler.hh"
+#include "BDSInteractionPointLeft.hh"
+#include "BDSInteractionPointRight.hh"
+#include "BDSBlock.hh"
+#include "BDSWedge.hh"
+#include "BDSResetter.hh"
+#include "BDSSamplerCylinder.hh"
+#include "BDSComponentOffset.hh"
 
 
 #include "BDSMaterials.hh"
@@ -124,13 +138,9 @@ BDSMADInterface::BDSMADInterface (const G4String& madFileName,G4double P0)
 
   assert(ifs);
 
-  //  if(BDSGlobals->GetSynchRadOn())
-  //{
-  //      synch_file.open("synch_factors.dat");
-  //}
+  //  if(BDSGlobals->GetSynchRadOn()) synch_file.open("synch_factors.dat");}
   synch_factor=1.;
   E_Synch=BDSGlobals->GetAcceleratorType()->GetBeamTotalEnergy();
-
 
   G4cout<<"MAD Optics Filename="<<madFileName<<G4endl;
 }
@@ -141,6 +151,8 @@ BDSBeamline BDSMADInterface::ConstructModel ()
   
   ctor = new BDSBeamline;
   G4double z=0.0;
+  BDSGlobals->SetVerticalComponentOffset(0.00);
+  BDSGlobals->SetHorizontalComponentOffset(0.00);
 
   // reset the stream pointer
   ifs.seekg(0);
@@ -178,8 +190,6 @@ G4double BDSMADInterface::ReadComponent ()
   _READ(tilt);
   _READ(aptype);
 
-  if(len<0)G4Exception("BDSMADInterface: Negative length component!");
-
   //  G4cout<<name<<" "<<type<<" "<<s<<" "<<len<<" "<<angle<<" "<<k1<<" "<<
   //   k2<<" "<<k3<<" "<<k4<<" "<<tilt<<" "<<aptype<<G4endl;
 	
@@ -196,6 +206,18 @@ G4double BDSMADInterface::ReadComponent ()
   angle*=radian;
   s*=m;
   len*=m;
+
+  // only accounts for wedge if not a sampler. If there is a 
+  // sampler or offset then it will carry over to the next component
+   if(BDSGlobals->GetPreviousWasWedge()&&type!="SAMPLER"&&type!="CMPOFFSET")
+    {
+      len -= BDSGlobals->GetWedgeDisplacement();
+      BDSGlobals->SetPreviousWasWedge(false);
+    }
+
+  if(len<0.)G4Exception("BDSMADInterface: Negative length component!");
+
+  if(type=="SOLENOID") type="DRIFT";
 
   // needed for ATF deck:
   if(type=="SBEND"&&(angle==0))type="DRIFT";
@@ -242,6 +264,7 @@ G4double BDSMADInterface::ReadComponent ()
   G4double xAper=0,yAper=0, bpRad=BDSGlobals->GetBeampipeRadius();
   G4double LCBeampipeThickness=BDSGlobals->GetBeampipeThickness();
 
+  G4double xOffset=0.,yOffset=0.;
 
   // Inner radius of outer iron structure:
   G4double FeRad=bpRad;
@@ -262,7 +285,13 @@ G4double BDSMADInterface::ReadComponent ()
 	    +BDSGlobals->GetBeampipeThickness();
 	  //if(FeRad<bpRad)bpRad=FeRad+BDSGlobals->GetBeampipeThickness();
 	  bpRad=FeRad;
-	}   
+	}
+      else if(type=="CMPOFFSET") // CMPOFFSET uses aperture from optics file
+	{                        // to set X and Y offsets
+	  int oY=aptype.find("Y");
+	  xOffset=atof(aptype.substr(1,oY-1).c_str()) * mm;
+	  yOffset=atof(aptype.substr(oY+1,aptype.length()-1).c_str()) * mm;
+	}
       else
 	{
 	  int iY=aptype.find("Y");
@@ -343,7 +372,9 @@ G4double BDSMADInterface::ReadComponent ()
 
   //G4cout<<"type="<<type<<G4endl;
 
-
+  // read the radius as the angle input for the SamplerCylnder;
+  G4double radius;
+  if (type=="SAMPCYLNDR")radius=angle*m/radian;
   
   if(type=="MUSPOILER")
     {
@@ -351,12 +382,10 @@ G4double BDSMADInterface::ReadComponent ()
       MuBfield=k1*tesla;
     }
   
-
-  if(type=="DRIFT"){
-    //G4cout<<"adding drift "<<name<<" len="<<len<<" bpRad="<<bpRad<<endl;
+  if (type=="CMPOFFSET")
+    ctor->push_back(new BDSComponentOffset(name,xOffset,yOffset));
+  if(type=="DRIFT")
     ctor->push_back(new BDSDrift(name,len,bpRad));
-  }
-
   else if(type=="QUADRUPOLE")
     ctor->push_back(new BDSQuadrupole(name,len,bpRad,FeRad,bPrime));
   //  else if(type=="SKEWQUAD") 
@@ -374,27 +403,14 @@ G4double BDSMADInterface::ReadComponent ()
   else if(type=="DECAPOLE") 
     ctor->push_back(new BDSDecapole(name,len,bpRad,FeRad,bQuadPrime));
   else if(type=="SAMPLER")
-    {
-      ctor->push_back(new BDSSampler(name,len));
-      G4cout<<"adding sampler "<<name<<" len="<<len<<endl;
-    }
+    ctor->push_back(new BDSSampler(name,len));
   else if(type=="KILLER")
     ctor->push_back(new BDSKiller(name,len));
-  
   else if(type=="SPOILER")
-    {
-      G4cout<<"adding spoiler "<<name<<" len="<<len<<" bpRad="<<bpRad<<
-	"  xAper="<<xAper<<"  yAper="<<yAper<<endl;
-      ctor->push_back(new BDSSpoiler(name,len,bpRad,xAper,yAper,
-				     SpoilerMaterial));
-    }
+    ctor->push_back(new BDSSpoiler(name,len,bpRad,xAper,yAper,SpoilerMaterial));
   else if(type=="ABSORBER")
-    {
-      G4cout<<"Absorber : name="<<name<<" len="<<len<<" "<<xAper<<" "<<yAper<<G4endl;
-
     ctor->push_back(new BDSAbsorber(name,len,bpRad,xAper,yAper,
 				    theMaterials->LCCopper));
-    }
   else if(type=="LASERWIRE")
     {
       BDSLaserWire* TheBDSLaserWire=
@@ -403,9 +419,24 @@ G4double BDSMADInterface::ReadComponent ()
       ctor->push_back(TheBDSLaserWire);
     }
   else if(type=="LWCAL")
+    ctor->push_back(new BDSLWCalorimeter(name,len,bpRad));
+  else if(type=="IPLEFT")
+    ctor->push_back(new BDSInteractionPointLeft(name,len,bpRad));
+  else if(type=="IPRIGHT")
+    ctor->push_back(new BDSInteractionPointRight(name,len,bpRad));
+  else if(type=="BLOCK")
+    ctor->push_back(new BDSBlock(name,len));
+  else if(type=="RESETTER") 
+    ctor->push_back(new BDSResetter(name,len));
+  else if(type=="SAMPCYLNDR")
+    ctor->push_back(new BDSSamplerCylinder(name,len,radius));
+  else if(type=="WEDGE")
     {
-      ctor->push_back(new BDSLWCalorimeter(name,len,bpRad));
+      BDSGlobals->SetPreviousWasWedge(true);
+      BDSGlobals->SetWedgeDisplacement(len);
+      ctor->push_back(new BDSWedge(name,len,bpRad,angle));
     }
+
   else if(len!=0)
     {
       G4cout<<" WARNING :  Component: "<<name<< " of unknown type "<<type<<G4endl;;
