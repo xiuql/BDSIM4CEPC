@@ -1,0 +1,34 @@
+// myOctupole
+#include "myOctupole.hh"
+#include "BDSGlobalConstants.hh"
+
+// Class myOctupole 
+myOctupole::myOctupole( G4String& aName, G4double aLength, G4double bpRad,
+			G4double BTrpPrime):
+  BDSMultipole(
+	       aName,
+	       aLength,bpRad,
+	       SetVisAttributes())
+{
+  itsStepper=new myOctStepper(itsEqRhs);
+  itsStepper->SetBTrpPrime(BTrpPrime);
+  itsChordFinder= new G4ChordFinder(itsMagField, 
+				    BDSGlobals->GetDeltaChord(),
+				    itsStepper);
+  itsBeampipeLogicalVolume->GetFieldManager()->SetChordFinder(itsChordFinder);
+
+}
+
+
+G4VisAttributes* myOctupole::SetVisAttributes()
+{
+  itsVisAttributes=new G4VisAttributes(G4Colour(0.5,0.8,0.1));
+  return itsVisAttributes;
+}
+
+myOctupole::~myOctupole()
+{
+  delete itsChordFinder;
+  delete itsStepper;
+}
+

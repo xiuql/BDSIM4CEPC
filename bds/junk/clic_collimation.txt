@@ -1,0 +1,31 @@
+Hi Frank,
+
+I looked at the short optics file, including an alpha term
+in the initial distribution and reducing the vertical emittance
+to 10 nm.  I show the results below;  there is still an
+"oscillation" of spot sizes... maybe I still have something
+wrong?
+
+Cheers,
+Grahame.
+
+-----------------------------------------------------------
+Short BDS (clic_short.optics)
+
+F denotes Flat distribution, otherwise Gaussian
+
+                      Total width (+-)
+ name      s-position   Aperture(mm)   rms_x      rms_y    nSig_x    nSig_y
+                         x     y
+"ENGYSP"    566.502      8    20     0.782mm F   0.0138mm    5  
+"YSP1"      1490.28     20   0.208    6.12 um    0.982 um              106
+"XSP1"      1506.10     0.19   20     8.70 um    0.471 um    11
+"YSP2"      1603.12     20   0.208   10.11 um     1.24 um              84
+"XSP2"      1618.94    0.19   20     15.78 um    0.556 um    6
+"YSP3"      1715.96     20   0.208    5.99 um     1.01 um              103
+"XSP3"      1731.78     0.19   20    8.58 um    0.484  um    11
+"YSP4"      1828.80      20   0.208  10.06       1.246 um              83
+"XSP4"      1844.63     0.19   20     15.71 um    0.545 um   6
+
+
+

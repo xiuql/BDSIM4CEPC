@@ -1,0 +1,17 @@
+* NAME               KEYWORD            S              L              K0L            K1L            K2L            K3L            TILT           TYPE              
+$ %16s               %16s               %e             %e             %e             %e             %e             %e             %e             %16s              
+@ XIY              %e    20.1318    
+@ XIX              %e   -13.6107    
+@ QY               %e    6.89831    
+@ QX               %e    4.19906    
+@ CIRCUM           %le     2556.78356518    
+@ DELTA            %e   0.000000E+00
+@ TYPE             %08s "OPTICS"
+@ COMMENT          %36s "L*= 4.3 m, Bx*= 0.8 cm, By*= 0.15 mm"
+@ ORIGIN           %16s "MAD 8.51/13 Unix"
+@ DATE             %08s "23/04/02"
+@ TIME             %08s "01.40.53"
+  "ENGYSP"           "RCOLLIMATOR"         566.502      0.188510E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00 "X1.e-8Y1.e-8"      
+  "SAMP1"          "SAMPLER"             0.        1.e-11       0.00000        0.00000        0.00000        0.00000        0.00000     "~"   
+  "ENGYAB"           "RCOLLIMATOR"         731.502       0.350000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00 "X1.e-8Y1.e-8"    
+  "SAMP1"          "SAMPLER"             0.        1.e-11       0.00000        0.00000        0.00000        0.00000        0.00000     "~"   

@@ -1,0 +1,120 @@
+// BDSExtractBunch.hh
+// Bunch format interfacing to PLACET output fileTA
+// G.A.Blair (RHUL) 10.12.01
+// adapted from code supplied by D.Schulte (CERN)
+
+#ifndef BDSExtractBunch_h
+#define BDSExtractBunch_h 1
+
+#include "globals.hh"
+#include "G4ParticleTable.hh"
+#include "G4ParticleDefinition.hh"
+#include "BDSParticle.hh"
+#include "BDSRmatrix.hh"
+
+#include<vector>
+
+
+typedef struct{
+  double energy,wgt,y,yp;
+  double x,xp;
+} PARTICLEB;
+
+typedef struct{
+  double r11,r12,r21,r22;
+} R_MATRIXB;
+
+
+typedef
+struct{double x,y,y2;}
+spline_tab_entryB;
+
+typedef struct{int n,xscal,yscal;spline_tab_entryB *tab;} SPLINEB;
+typedef struct{int n,xscal,yscal,nval;double *x,*y,*y2;} MSPLINEB;
+
+
+class BEAMB {
+ public:
+  int slices_per_bunch,macroparticles,bunches;
+  int slices,n_field,which_field;
+  double factor,transv_factor;
+  PARTICLEB *particle;
+  R_MATRIXB *sigma,*sigma_xx,*sigma_xy;
+  double *z_position;
+};
+
+class BDSExtractBunchO
+{
+
+public:
+
+  BDSExtractBunchO (char* ExtractBunchInputFilename);
+  
+  ~BDSExtractBunchO();
+
+  void bunch_make(int n_bunch,int n_slice,int n_macro,int n_field);
+  
+  void read_beam_file(char *name,int ibunch0);
+
+protected:
+  //  void BuildSectorBendMaterial();
+
+  /*
+
+public:
+  int GetNumSlices();
+  int GetNumBunches();
+  int GetNumSlicesPerBunch();
+  int GetNumMacroparticles();
+  double* GetZPos();
+
+  
+  PARTICLEB* GetParticle();
+  R_MATRIXB* GetSigma();
+  R_MATRIXB* GetSigmaXX();
+  R_MATRIXB* GetSigmaXY();
+  
+private:
+
+  int slices_per_bunch,macroparticles,bunches;
+  int slices,n_field,which_field;
+  double factor,transv_factor;
+   PARTICLEB *particle;
+  R_MATRIXB *sigma,*sigma_xx,*sigma_xy;
+  double *z_position;
+
+  */
+};
+
+/*
+inline int BDSExtractBunchO::GetNumSlices()
+{return slices;};
+
+inline  int BDSExtractBunchO::GetNumBunches()
+{return bunches;};
+
+inline  int BDSExtractBunchO::GetNumSlicesPerBunch()
+{return slices_per_bunch;};
+
+inline  int BDSExtractBunchO::GetNumMacroparticles()
+{return macroparticles;};
+
+inline  double* BDSExtractBunchO::GetZPos()
+{return z_position;};
+
+
+inline  PARTICLEB* BDSExtractBunchO::GetParticle()
+{return particle;};
+
+inline  R_MATRIXB* BDSExtractBunchO::GetSigma()
+{return sigma;};
+
+inline R_MATRIXB* BDSExtractBunchO::GetSigmaXX()
+{return sigma_xx;};
+
+inline  R_MATRIXB* BDSExtractBunchO::GetSigmaXY()
+{return sigma_xy;};
+
+*/
+
+#endif

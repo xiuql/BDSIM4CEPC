@@ -1,0 +1,96 @@
+Hi Frank,
+
+I have looked at the files and include some numbers below for the short
+and long optics files (that I also attach to this mail).
+In summary, the long BDS is collimating in 9  sigma_x and 80 sigma_y
+              whereas the short system has 9  sigma_x and 49 sigma_y
+
+Maybe this explains the discrepancy we saw in the plots?
+
+If you have any suggestions, or modified optics files, do
+let me know.
+
+Best wishes,
+
+Grahame.
+
+==================================================
+Input halo distribution = 1.25 * collimation depth (in x,x',y and y')
+
+
+   itsBetaX  = 65.0*m ;
+   itsBetaY  = 18.0*m ;
+   itsSigmaZ = 30.e-6*m ;
+
+   itsNormalisedXEmittance = 0.68e-06*m  ;
+   itsNormalisedYEmittance = 0.02e-06*m  ;
+ 
+    // Halo variables:
+   itsXCollimationDepthInSigma      = 10.;
+   itsXPrimeCollimationDepthInSigma = 10.;
+   itsYCollimationDepthInSigma      = 70.;
+   itsYPrimeCollimationDepthInSigma = 70.;
+
+   itsHaloLowerRelativeEnergySpread = 0.98;
+   itsHaloUpperRelativeEnergySpread = 1.02;
+=> energy spread of +- 2% flat distribution
+
+-----------------------------------------------------------
+Long BDS (clic_bds_graphite_spoilers.optics)
+
+F denotes Flat distribution, otherwise Gaussian
+
+                      Total width (+-)
+ name      s-position   Aperture(mm)   rms_x  rms_y           nSig_x   nSig_y
+                         x     y
+"ENGYSP"    866.108     7.8    20     0.760mm F   0.0277mm     5.13
+"ENGYSP"    3695.71     7.8    20     0.760mm F   0.0277mm     5.13
+"YSP"       5119.46     20   0.288    5.56 um     1.80 um               80
+"XSP"       5135.29     0.16   20     8.50 um     0.842 um     9.4
+"YSP2"      5232.31     20   0.288    5.66 um     1.92 um               83
+"XSP2"      5248.13     0.16   20     8.73 um     0.883 um     9.2
+"YSP3"      5345.15      20   0.288   5.64 um     1.85 um               78
+"XSP3"      5360.97     0.16   20     8.61 um     0.864 um     9.3
+"YSP4"      5457.99      20   0.288   5.58 um     1.87 um               77
+"XSP4"      5473.81     0.16   20     8.62 um     0.860 um     9.3
+
+
+-----------------------------------------------------------
+Short BDS (clic_short.optics)  OLD VALUES
+
+F denotes Flat distribution, otherwise Gaussian
+
+                      Total width (+-)
+ name      s-position   Aperture(mm)   rms_x      rms_y       nSig_x  nSig_y
+                         x     y
+"ENGYSP"    566.502      8    20     0.782mm F   0.0273mm    5.1  
+"YSP1"      1490.28     20   0.208    7.84 um     2.00 um              52
+"XSP1"      1506.10     0.19   20     11.0 um    0.960 um    8.6
+"YSP2"      1603.12     20   0.208   10.89 um     2.24 um              46
+"XSP2"      1618.94    0.19   20     17.32 um     1.00 um    11
+"YSP3"      1715.96     20   0.208    7.71 um     2.05 um              51
+"XSP3"      1731.78     0.19   20    10.84 um    0.988 um    8.8
+"YSP4"      1828.80      20   0.208  10.78 um     2.16 um              48
+"XSP4"      1844.63     0.19   20     16.9 um    0.895 um    5.6
+
+
+-----------------------------------------------------------
+Short BDS (clic_short.optics)
+
+F denotes Flat distribution, otherwise Gaussian
+
+                      Total width (+-)
+ name      s-position   Aperture(mm)   rms_x      rms_y    nSig_x    nSig_y
+                         x     y
+"ENGYSP"    566.502      8    20     0.782mm F   0.0138mm    5  
+"YSP1"      1490.28     20   0.208    6.12 um    0.982 um              106
+"XSP1"      1506.10     0.19   20     8.70 um    0.471 um    11
+"YSP2"      1603.12     20   0.208   10.11 um     1.24 um              84
+"XSP2"      1618.94    0.19   20     15.78 um    0.556 um    6
+"YSP3"      1715.96     20   0.208    5.99 um     1.01 um              103
+"XSP3"      1731.78     0.19   20    8.58 um    0.484  um    11
+"YSP4"      1828.80      20   0.208  10.06       1.246 um              83
+"XSP4"      1844.63     0.19   20     15.71 um    0.545 um   6
+
+
+

@@ -1,0 +1,92 @@
+From johna@hep.man.ac.uk Fri Mar  1 11:39:53 2002
+Date: Wed, 27 Feb 2002 22:00:33 +0000 (GMT)
+From: John Allison <johna@hep.man.ac.uk>
+Reply-To: John Allison <John.Allison@man.ac.uk>
+To: Grahame Blair <blair@server2.pp.rhul.ac.uk>
+Subject: Re: quick question
+
+On Wed, 27 Feb 2002, Grahame Blair wrote:
+
+> Hi John,
+> Thanks for the reply.
+> I am currently using OpenGLStoreX (at least, that is what
+> appears at the top of my visualisation window).  I think I changed
+> this recently because I was trying to find a visualisation that
+> would allow me to vary the vertical/horizontal aspect ratio
+> (LC accelerators are long and thin...). - maybe you know a way
+> of doing this?
+
+The WIRED viewer can do this.  Create a HepRepFile for it (you should
+be able to say "/vis/open HepRepFile" - "help /vis/open" to see what's
+built).  How to use is in the Release Notes (I think), but maybe
+better follow the links in Geant4 News to the SLAC Workshop and find
+Visualization/GUI/Analysis (Part II) under Tutorials (it's
+http://www.slac.stanford.edu/BFROOT/www/Computing/Graphics/Wired/G4Tutorial.html).
+
+> (or also to find a way to reproduce previous
+> entries in a session using an up arrow etc.?).
+
+On Unix you can do it.  Look in
+geant4/examples/novice/N02/exampleN02.cc:
+
+    ...
+    // G4UIterminal is a (dumb) terminal.
+    G4UIsession * session = 0;
+#ifdef G4UI_USE_TCSH
+      session = new G4UIterminal(new G4UItcsh);      
+#else
+      session = new G4UIterminal();
+#endif    
+    ...
+
+To set the C-pre-processor macro G4UI_USE_TCSH, set environment
+variable G4UI_USE_TCSH.  Or just hack your code to make "session = new
+G4UIterminal(new G4UItcsh);" always included.
+
+> I hope all went well at SLAC,
+
+Yes, fun and hard work.
+
+Cheers, John.
+
+> Best wishes,
+> Grahame.
+> 
+> On Thu, 21 Feb 2002, John Allison wrote:
+> 
+> > Hi, Grahame,
+> >
+> > There's a command /vis/scene/add/trajectories which causes the vis
+> > manager to draw stored trajectories.  So you wouldn't need any own
+> > drawing code, but what you did is OK as an alternative way of doing
+> > it.
+> >
+> > The above command has been available for some time.  The only thing
+> > that's changed is that events are refreshed (by default - use
+> > /vis/scene/endOfEventAction to change, and see
+> > geant4/source/visualization/README.built_in_commands for a summary or
+> > use help to see all available).
+> >
+> > So I cannot explain why your trajectories disappeared.  Which graphics
+> > driver were you using?  If OGLSX (OpenGL in stored mode), which
+> > version of OpenGL?  Mesa?
+> >
+> > Cheers, John.
+> >
+> > P.S. I'm at a Geant4 Workshop in SLAC.  Your name has just been
+> > mentioned by Norman Graf in a talk on NLC.
+> >
+> > On Thu, 21 Feb 2002, Grahame Blair wrote:
+> >
+> kk
+> 
+
+-- 
+John Allison                          Tel: +44-161-275 4179
+Department of Physics and Astronomy   Fax: +44-161-273 5867
+The University of Manchester          e-mail: John.Allison@man.ac.uk
+MANCHESTER M13 9PL  England           WWW: http://www.hep.man.ac.uk/~johna
+--------------------------------------------------------------------------
+While at SLAC: Building 280, Room 233, tel. 3054 (+1-650-926-3054)
+            or Building 280, Room 241, tel. 8559 (+1-650-926-8559)
+

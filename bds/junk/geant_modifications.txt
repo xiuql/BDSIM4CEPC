@@ -1,0 +1,225 @@
+---------------------------------
+14.4.01
+To get version 4.3.1 of geant4 running with my BDS code I needed
+to modify the following objects:
+
+starting from the path:
+/lhcxx/Geant4/geant4.3.1/source
+
+--------------------------------------------------------------------------
+******* geometry/management/src/G4LogicalVolume.cc
+    // gab bug fix?
+    //    if(forceAllDaughters || (DaughterLogVol->GetFieldManager() != 0)) {
+    if(forceAllDaughters && (DaughterLogVol->GetFieldManager()== 0)) {
+      DaughterLogVol->SetFieldManager(pNewFieldMgr, forceAllDaughters);
+    }
+--------------------------------------------------------------------------
+
+
+
+<<<<<<<<<<<<<<<<<<< after 30.9.02
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------
+==== not needed any more  gab 23.1.02
+******  tracking/src/G4SteppingManager.cc
+
+   //gab >>>
+   G4TransportationManager::GetTransportationManager()->
+     SetFieldManager(fCurrentVolume->GetLogicalVolume()->GetFieldManager());
+  //<<< gab
+
+
+--------------------------------------------------------------------------
+==== needed because the momentum etc. is later transferred to the
+chord finder - which in turn is specified by the fieldmanager.
+The default field manager is the global one ... so the momentum info
+is effectively lost.
+******* processes/trprocesses/transportation/src/G4Transportation.cc
+
+  else
+  {
+     // gab:>>>>>>>
+     G4FieldManager* itsFieldMgr=
+      track.GetTouchable()->GetVolume()->GetLogicalVolume()->GetFieldManager();
+      fFieldPropagator->SetLocalFieldMgr(itsFieldMgr);
+      //<<<<<< gab
+
+     G4double       momentumMagnitude = pParticle->GetTotalMomentum() ;
+     G4ThreeVector  EndUnitMomentum ;
+     G4double       lengthAlongCurve ;
+     G4double       restMass = pParticleDef->GetPDGMass() ;
+
+--------------------------------------------------------------------------
+******* geometry/magneticfield/src/G4Mag_EqRhs.cc
+
+  // gab revert to original definition:
+  //  fCof_val = particleCharge*eplus*c_light ; //  B must be in Tesla
+   fCof_val = fUnitConstant*particleCharge/MomentumXc; //  B must be in Tesla
+   // fMass = particleMass;
+
+--------------------------------------------------------------------------
+******* global/HEPNumerics/include/G4PolynomialSolver.icc
+    // gab: avoid possibility of infinite loop>>>
+//    while ((NewtonIsSafe = BezierClipping(&IntervalMin,&IntervalMax)) == 0) ;
+    G4int itry;
+   for(itry=0;
+    itry<20&&((NewtonIsSafe = BezierClipping(&IntervalMin,&IntervalMax)) == 0);
+     itry++);
+    if(itry==20)NewtonIsSafe=-1;
+   // <<< gab:
+
+
+--------------------------------------------------------------------------
+*******geometry/volumes/include/G4PropagatorInField.hh 
+ public:  // without description
+
+   // void  SetGlobalFieldMgr( G4FieldManager *currentFieldMgr );
+        // The Field Manager of the Current.
+  // gab:
+  inline void  SetLocalFieldMgr( G4FieldManager *currentFieldMgr );
+
+ private:
+
+          later>>>>
+// gab:
+inline void  G4PropagatorInField::SetLocalFieldMgr( G4FieldManager *currentFieldMgr )
+{fCurrentFieldMgr=currentFieldMgr;}
+
+//  Defines the constructor.
+//
+
+--------------------------------------------------------------------------
+*******geometry/volumes/src/G4PropagatorInField.cc 
+        // Create the "point" return value
+	// IntersectPointVelocity.SetCurvePnt( 
+	//		  CurrentE_Point, 
+	//		  ApproxIntersecPointV.GetVelocity(), 
+	//		  ApproxIntersecPointV.GetCurveLength() );
+	IntersectPointVelocity = ApproxIntersecPointV;
+
+	// gab remove this "cheat"
+	//        IntersectPointVelocity.SetPosition( CurrentE_Point );
+
+        // Note: in order to return a point on the boundary, 
+	//    we must return E. But it is F on the curve.
+	// So we must "cheat": we are using the position at point E and
+	//				    the velocity at point F !!!
+	//
+        // This must limit the length we can allow for displacement!
+
+
+
+--------------------------------------------------------------------------
+*******geometry/volumes/src/G4NormalNavigation.cc
+// gab: remove minimum cosine - some particles are at glancing angles.
+//		if (localDirection.dot(exitNormal)>=kMinExitingNormalCosine)
+		if (localDirection.dot(exitNormal)>=0.)
+
+--------------------------------------------------------------------------
+******* geometry/solids/boolean/G4IntersectionSolid.cc
+
+G4double 
+G4IntersectionSolid::DistanceToIn( const G4ThreeVector& p,
+                                   const G4ThreeVector& v  ) const 
+{
+  G4double dist = 0.0, disTmp = 0.0 ;
+  if( Inside(p) == kInside )
+  {
+    // gab:  rather than crash, try to recover...
+    //    G4Exception("Invalid call in G4IntersectionSolid::DistanceToIn(p,v),  point p is inside") ;
+   return kCarTolerance;
+  }
+
+**** and later in
+
+G4double 
+G4IntersectionSolid::DistanceToIn( const G4ThreeVector& p) const 
+{
+  if( Inside(p) == kInside )
+  {
+    // gab:  rather than crash, try to recover...
+   //    G4Exception("Invalid call in G4IntersectionSolid::DistanceToIn(p),  point p is inside") ;
+   return kCarTolerance;
+  }
+
+
+--------------------------------------------------------------------------
+******* processes/transportation/src/G4Transportation.cc 
+G4double G4Transportation::
+AlongStepGetPhysicalInteractionLength(  const G4Track&  track,
+		                              G4double  previousStepSize,
+		                              G4double  currentMinimumStep,
+		                              G4double& currentSafety,
+		                              G4GPILSelection* selection  )
+{
+  G4double geometryStepLength, newSafety ; 
+  fParticleIsLooping = false ;
+
+  // >>> gab:
+  // save orignial navigator
+   G4Navigator saveNav= *fLinearNavigator;
+
+    G4VPhysicalVolume* LocalPhysVol=  fLinearNavigator-> 
+     LocateGlobalPointAndSetup( track.GetPosition(),
+				 &track.GetMomentumDirection(),
+ 			         true                     ) ;
+  *fLinearNavigator =saveNav;
+  //<<< gab
+
+
+
+***** and later :
+
+  if( (particleCharge != 0.0) )
+  {     
+  // gab:
+  //     fieldExertsForce= this->DoesGlobalFieldExist() ;
+       // gab:>>>>>>>
+     G4FieldManager* itsFieldMgr=
+      LocalPhysVol->GetLogicalVolume()->GetFieldManager();
+      if(itsFieldMgr)
+       {fieldExertsForce= true; 
+        fFieldPropagator->SetLocalFieldMgr(itsFieldMgr);
+       }
+      //<<<<<< gab
+
+***** and later:
+
+     if( currentMinimumStep > 0 ) 
+     {
+        //  Do the Transport in the field (non recti-linear)
+
+        lengthAlongCurve = fFieldPropagator->ComputeStep( aFieldTrack,
+							  currentMinimumStep, 
+							  currentSafety,
+							// gab:
+						       //track.GetVolume() ) ;
+							  LocalPhysVol ) ;
+
+
+--------------------------------------------------------------------------
+******* /geometry/solids/CSG/src/G4Trd.cc
+		default:
+		  // gab:
+		  // G4Exception("Invalid enum in G4Trd::DistanceToOut");
+		  //break;
+		  // gab: rather than crash, return something small!
+                  return kCarTolerance;
+-------------------------------------------------
+G4RunManager.cc
+ I found that the line  stateManager->SetNewState(GeomClosed);
+
+takes a lot of time at each event, so I comment it out for now
+without any obvious side-effects.
+-------------------------------------------------

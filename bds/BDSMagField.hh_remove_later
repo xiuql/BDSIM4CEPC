@@ -1,0 +1,55 @@
+// This code implementation is the intellectual property of
+// the GEANT4 collaboration.
+//
+// By copying, distributing or modifying the Program (or any work
+// based on the Program) you indicate your acceptance of this statement,
+// and all its terms.
+//
+// $Id: BDSMagField.hh_remove_later,v 1.1.1.1 2004/11/18 17:42:33 ilia Exp $
+// GEANT4 tag $Name:  $
+//
+// 
+// class BDSMagField
+//
+// Class description:
+//
+// Class for creation of Uniform Magnetic Field.
+
+// History:
+// - 30.01.97 V.Grichine, Created.
+// - 01.08.97 J.Apostolakis, cleanup, new 3-vector constructor, 
+//            and removal of helix-stepper (to separate file).
+// - 05.11.97 G.Cosmo, added copy constructor and assignment operator.
+
+#ifndef BDSMAGFIELD_HH
+#define BDSMAGFIELD_HH
+
+#include "globals.hh"
+#include "G4ThreeVector.hh"
+#include "G4MagneticField.hh"
+#include "G4Mag_EqRhs.hh"
+#include "G4TransportationManager.hh"
+#include "G4VPhysicalVolume.hh"
+
+
+class BDSMagField : public G4MagneticField
+{
+  public:  // with description
+  
+    BDSMagField();
+		       
+    ~BDSMagField() ;
+
+
+
+
+void BDSMagField::GetFieldValue (const G4double pos[3],
+                                             G4double *B  )const;
+protected:
+
+  private:
+
+};
+
+
+#endif

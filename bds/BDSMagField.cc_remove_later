@@ -1,0 +1,150 @@
+// This code implementation is the intellectual property of
+// the GEANT4 collaboration.
+//
+// By copying, distributing or modifying the Program (or any work
+// based on the Program) you indicate your acceptance of this statement,
+// and all its terms.
+//
+// $Id: BDSMagField.cc_remove_later,v 1.1.1.1 2004/11/18 17:42:33 ilia Exp $
+// GEANT4 tag $Name:  $
+//
+// 
+//
+// Class for creation of quadrupole Magnetic Field
+//
+// 30.1.97 V.Grichine
+//
+#include "BDSMagField.hh"
+#include "globals.hh"
+#include "geomdefs.hh"
+
+#include"MagFieldFunction.hh"
+#include <map>
+
+#include <iostream>
+
+static int ntry=0;
+
+static G4VPhysicalVolume* MagFieldWorld;
+extern G4Navigator* MagFieldNavigator;
+
+static MagFieldFunction* LocalFunctionObject;
+
+//============================================================
+typedef std::map<G4String,MagFieldFunction*> PhysFieldMap;
+extern PhysFieldMap* MagFieldMap;
+
+typedef std::map<G4String,G4double> CompLengthsMap;
+extern CompLengthsMap* CompLengths;
+
+//============================================================
+
+BDSMagField::BDSMagField()
+{
+  // MagFieldWorld=aWorld;
+  // MagFieldNavigator=new G4Navigator();
+  // MagFieldNavigator->SetWorldVolume(MagFieldWorld);
+}
+
+BDSMagField::~BDSMagField()
+{
+ delete MagFieldNavigator;
+}
+// ------------------------------------------------------------------------
+
+
+void BDSMagField::GetFieldValue (const G4double pos[3],
+                                             G4double *B  )const
+{
+static G4String lastName;
+
+   B[0]= 0.;
+   B[1]= 0. ;
+   B[2]= 0. ;
+
+
+   G4bool print=false;
+   if(ntry++%100==1)print=true;
+
+  extern G4double WorldSizeX,WorldSizeY,WorldSizeZ;
+  if(abs(pos[2])>=WorldSizeZ)return;
+  if(abs(pos[1])>=WorldSizeY)return;
+  if(abs(pos[0])>=WorldSizeX)return;
+
+  //if(print)
+  //    G4cout<<G4endl<< "pos="<< pos[0]/m<< " "<<pos[1]/m<< " "<<
+  //  pos[2]/m<<G4endl;
+
+   G4ThreeVector Position;
+   Position.setX(pos[0]);
+   Position.setY(pos[1]);
+   Position.setZ(pos[2]);
+
+   G4String LocalName= MagFieldNavigator->
+                               LocateGlobalPointAndSetup(Position)->
+                               GetName();
+
+ if( !(*MagFieldMap)[LocalName])return;
+
+   //if(print)
+   //  {      G4cout<<LocalName<<G4endl;}
+
+   G4ThreeVector LocalPosVec = MagFieldNavigator->GetCurrentLocalCoordinate();
+
+
+   G4double LocalPos[3];
+   LocalPos[0]=LocalPosVec.x();
+   LocalPos[1]=LocalPosVec.y();
+   LocalPos[2]=LocalPosVec.z();
+
+       if(LocalName!=lastName)
+        {lastName=LocalName;
+         LocalFunctionObject=(*MagFieldMap)[LocalName];
+        }
+
+    G4double* Btmp =LocalFunctionObject->operator()(LocalPos);
+
+    G4double Blocal[3];
+      Blocal[0]=Btmp[0];
+      Blocal[1]=Btmp[1];
+      Blocal[2]=Btmp[2];
+
+
+      /*
+ G4double HalfLen=(*CompLengths)[LocalName]/2;
+
+    // smooth out fields near boundaries:
+ //    G4double safety=MagFieldNavigator->ComputeSafety(Position);
+    G4double dist= HalfLen-abs(LocalPos[2]);
+    G4double delta=1.e-3*m;
+    //    if(print)G4cout<<" before anything Btmp="<<Blocal[0]/tesla<<" "
+    //		   <<Blocal[1]/tesla<< " "<<Blocal[2]/tesla<<G4endl;
+    if(abs(dist)<=delta)
+      {
+       G4double factor=(delta-abs(dist))/delta;
+	if (print)G4cout<<"factor="<<factor;
+       for (int i =0;i<3;i++) Blocal[i]*=factor;
+      }
+
+
+      B[0]=Blocal[0];
+      B[1]=Blocal[1];
+      B[2]=Blocal[2];
+
+
+      //		if(print){
+   G4cout<< " LocalPos="<< LocalPos[0]/m<< " "<<LocalPos[1]/m<< " "<<
+      		  LocalPos[2]/m<<G4endl;
+      // G4cout<< "B="<<B[0]/tesla<< " "<< B[1]/tesla<< " " <<B[2]/tesla
+      //	      <<" z="<<pos[3]	<< "  "<<LocalName<<G4endl;
+      //		}
+
+       */
+
+      B[0]=Btmp[0];
+      B[1]=Btmp[1];
+      B[2]=Btmp[2];
+
+   return ;
+}
+

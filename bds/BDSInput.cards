@@ -1,0 +1,241 @@
+			* Input cards for Beam Delivery System Simulation
+* 
+* ==================================================
+*             >>> Accelerator <<<
+* ACCELERATOR clic500
+* ACCELERATOR clic
+* ACCELERATOR tesla
+* ACCELERATOR PETRA
+ ACCELERATOR nlc
+* ACCELERATOR atf
+*
+ BUNCH_TYPE normal
+* BUNCH_TYPE   halo_flat
+* BUNCH_TYPE   halo_one_over_r
+*
+* Inner radius of halo distribution in number of sigmas:
+INNER_HALO_X
+10.0
+* 10 for nlc, 7 for tesla, 5.7 for CLIC
+OUTER_HALO_X
+200.
+* 200 for nlc, 18 for tesla, 14.2 for CLIC
+*
+INNER_HALO_Y
+50.
+* 50 for nlc, 40 for tesla, 38 for CLIC
+OUTER_HALO_Y
+300.
+* 300 for nlc, 120 for tesla, 115 for CLIC
+*
+*
+* Whether to use Halo radius in terms of collimation depth
+USE_HALO_RADIUS 0
+HALO_INNER_RADIUS 0.
+HALO_OUTER_RADIUS 0.5
+*
+* Whether to use an input file (from Placete format)
+READ_BUNCH_FILE 0
+EXTRACT_BUNCH_FILE 0
+WRITE_BUNCH_FILE 0
+*
+* Generic Output Ntuple File Name (will have _N.rz appended for integer N) :
+* (Default is sampler_output.rz)
+OUTPUT_NTUPLE_FILE_NAME
+PETRA_laserwire_FULLBP
+* Number of events to include per file; insurance against crashes during batch.
+* a new file is created _(N+1).rz after this number of events
+NUMBER_OF_EVENTS_PER_NTUPLE
+100000
+
+
+* =====================================================
+* Batch Conditions
+* Set to true if you want to run in batch mode (no visualisation)
+USE_BATCH 0
+* Number of events to generate in the run:
+NUMBER_TO_GENERATE 10
+* Random Number Seed 
+RANDOM_SEED
+100000
+* Choose to use Grid Farm multiple job submission. Setting to true places the
+* handling of OUTPUT_NTUPLE_FILE_NAME and RANDOM_SEED over to the job script.
+* The values entered above will NOT be used if this is set to true.
+GRID_FARM_JOB_USE 0
+* =====================================================
+*
+* Energy offset of bunch (GeV) - for collimation studies
+ENERGY_OFFSET 0
+* ==================================================
+*            >>> Tracking Parameters <<<
+* Energy below which charged particles are stopped: (in GeV)
+THRESHOLD_CUT_CHARGED .01
+* THRESHOLD_CUT_CHARGED 10
+*
+* Energy below which photons are stopped: (in GeV)
+THRESHOLD_CUT_PHOTONS 0.00
+*
+* Weighting factor for tracks crossing weighting planes
+TRACK_WEIGHT_FACTOR 1.
+*
+* Turn on interactions; 0 leaves only transportation 
+* (or planck or synchrotron radiation or laserwire, if set)
+TURN_ON_INTERACTIONS 1
+* ==================================================
+*             >>> Basic Dimensions <<<
+* Default values
+* size of typical box dimensions transverse to the beamline axis (in cm):
+* atf:
+* ACCELERATOR_COMPONENT_BOX_SIZE 25.0
+* tesla/nlc:
+ACCELERATOR_COMPONENT_BOX_SIZE 21.0
+* size of magnet poles (in cm):
+MAGNET_POLE_SIZE 1.0
+* radial position of magnet poles (in cm):
+MAGNET_POLE_RADIUS 2.0
+*
+* Radius of tunnel (in m):
+TUNNEL_RADIUS 2.0
+* Horizontal Offset of beamline with respect to  centre of tunnel (m)
+HORIZONTAL_BEAMLINE_OFFSET 0.0
+* Vertical Offset of beamline with respect to centre of tunnel (m)
+VERTICAL_BEAMLINE_OFFSET 0.0
+*
+* Beampipe radius (in cm:)
+* (Note some beamipipe radii are taken instead from the optics file,
+*  only those with aperture "~" in the optics file take the default dimensions)
+* atf:
+* BEAMPIPE_RADIUS 4.0
+* Petra:
+* BEAMPIPE_RADIUS 9.6
+* nlc/tesla:
+BEAMPIPE_RADIUS 1.2
+*
+* Thickness of beampipe material (in mm)
+ BEAMPIPE_THICKNESS 2.0 
+* Petra (includes edge flange):
+* BEAMPIPE_THICKNESS 39.0
+
+* ==================================================
+*                  >>> Processes<<<
+* -----------     Synchrotron Radiation     -----------
+* Flag is true to turn ON Synchrotron radiation:
+TURN_ON_SYNCHROTRON 0
+* 
+* Rescale strength of elements due to upstream synchrotron radiation?
+RESCALE_DUE_TO_SYNCHROTRON 0
+*
+* Flag is true to also track the Synchrotron photons
+TRACK_SYNCHROTRON_PHOTONS 1
+*
+* X for Synchrotron radiation lowest energy is X*E_critical
+SYNCHROTRON_LOWEST_X 0.
+*
+* Absolute lowest energy (in MeV) of PROPAGATING synchrotron photons:
+SYNCHROTRON_LOWEST_GAMMA_ENERGY 100.0
+*
+* -----------     Thermal Photons Scattering    -----------
+* Flag is true to turn ON scattering of Thermal Planck Radiation 
+TURN_ON_PLANCK 0
+*
+* Flag is true to also track the Synchrotron photons
+TRACK_SYNCHROTRON_PHOTONS 0
+*
+* X for Synchrotron radiation lowest energy is X*E_critical
+SYNCHROTRON_LOWEST_X 0.
+*
+* Absolute lowest energy (in MeV) of PROPAGATING synchrotron photons:
+SYNCHROTRON_LOWEST_GAMMA_ENERGY 10.0
+*
+* -----------     Thermal Photons Scattering    -----------
+* Flag is true to turn ON scattering of Thermal Planck Radiation 
+TURN_ON_PLANCK 0
+*
+* Flag is true to turn ON uniform (with length) Bremsstrahlung from beamgas 
+TURN_ON_BDSeBREM 0
+*
+* EM Hadronic processes (neutron production):
+USE_EM_HADRONIC 0
+*
+* -----------     Laserwire Parameters   -----------
+* laser wavelength (in m): (zero turns off this process)
+LASERWIRE_WAVELENGTH 532.0e-9
+* LASERWIRE_WAVELENGTH 0
+*
+* Laser pointing direction
+LASERWIRE_DIR_X 1.0
+LASERWIRE_DIR_Y 0.0
+LASERWIRE_DIR_Z 0.0
+*
+* Flag is 1 to track also the scattered photons. If set to 0 then the
+* electrons are tracked regardless of the LASERWIRE_TRACK_ELECTRONS flag.
+LASERWIRE_TRACK_PHOTONS 1
+* Flag is 0 if electron tracking is NOT required when photon tracking IS:
+* so this must be 0 and the previous flag 1 in order to track photons ONLY.
+LASERWIRE_TRACK_ELECTRONS 0
+*
+* ==================================================
+*                  >>> Backgrounds <<<
+* Include scaling so that statistics are more reasonable:
+* (one bunch contains ~10^10 particles, so 1000 events (or whatever)
+*  should represent this number of particles - hence 10^7:
+BACKGROUND_SCALE_FACTOR 1.0
+* ==================================================
+* Muon pair production process
+USE_MUON_PAIR_PRODUCTION 0
+* 
+* Scale factor to increase muon production rate (1 => no scaling)
+MUON_PRODUCTION_SCALE_FACTOR 1.
+*
+* Scale factor to increase inelastic hadron (neutrons) (1 => no scaling)
+* NOTE: the daughter tracks are NOT re-weighted; so final distributions
+* must be divided by the scale factor by hand.
+HADRON_INELASTIC_SCALE_FACTOR 100.
+* 
+* Flag to store interesting muon trajectories
+STORE_MUON_TRAJECTORIES 0
+*
+* Flag to determine whether to generate special muon showers:
+USE_MUON_SHOWERS 0
+* ==================================================
+* Use a timer to optimise running?
+USE_TIMER 1
+*
+* ==================================================
+* Include fields within the iron of elements (for muon scattering etc.)
+INCLUDE_IRON_MAG_FIELDS 0
+* ==================================================
+*            Accuracy variables:
+* Allowed curvature distance in the chord: (in m)
+* for accurate synchrotron tracking:
+DELTA_CHORD 1.e-3
+*
+* Minimum step for chord finder (in m)
+CHORD_STEP_MINIMUM 5.e-10
+*
+* Accuracy of volume intersection (m)
+* for accurate tracking:
+* DELTA_INTERSECTION 1.e-6
+DELTA_INTERSECTION 1.e-9
+* ==================================================
+* print out detailed step information
+VERBOSE_STEP 0
+* Number of event to print extra info - if zero, then all events printed
+VERBOSE_EVENT_NUMBER 0
+*
+* ==================================================
+* Geometrical Fudge factor that seems to be necessary to ensure all
+* volumes meet without gaps (mm)
+* LENGTH_SAFETY 1.e-9
+LENGTH_SAFETY 0.
+* =====================================================
+* 
+* Laser-wire Calorimeter parameters
+* Length is given in the optics file as usual.
+* total width of calorimeter in cm:
+LW_CAL_WIDTH 5.4
+* horizontal offset: centre of crystal matrix from the beampipe centre in cm
+LW_CAL_OFFSET 29.0
+* Laserwire calorimeter material
+LW_CAL_MATERIAL LeadTungstate
+

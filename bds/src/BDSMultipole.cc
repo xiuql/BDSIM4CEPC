@@ -1,0 +1,445 @@
+/* BDSIM code.    Version 1.0
+   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
+   Last modified 24.7.2002
+   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+*/
+#include "BDSGlobalConstants.hh" // must be first in include list
+
+#include <cstdlib>
+
+#include "BDSMultipole.hh"
+#include "G4Box.hh"
+#include "G4Tubs.hh"
+#include "G4VisAttributes.hh"
+#include "G4LogicalVolume.hh"
+#include "G4VPhysicalVolume.hh"
+#include "G4UserLimits.hh"
+#include "G4TransportationManager.hh"
+
+#include "G4MagIntegratorStepper.hh"
+
+#include "BDSMultipoleOuterMagField.hh"
+#include "G4MagneticField.hh"
+#include "BDSAcceleratorType.hh"
+
+#include <map>
+#include<string>
+
+G4LogicalVolume* TempLogVol;
+
+//============================================================
+
+typedef std::map<G4String,int> LogVolCountMap;
+extern LogVolCountMap* LogVolCount;
+
+typedef std::map<G4String,G4LogicalVolume*> LogVolMap;
+extern LogVolMap* LogVol;
+
+extern BDSMaterials* theMaterials;
+extern G4RotationMatrix* RotY90;
+
+//extern G4FieldManager* theOuterFieldManager;
+
+//typedef std::map<G4String,G4MagneticField*> OuterFieldMap;
+//extern OuterFieldMap* theOuterFieldMap;
+
+//============================================================
+
+BDSMultipole::BDSMultipole( G4String& aName, 
+			    G4double aLength,
+			    G4double aBpRadius,
+			    G4double aInnerIronRadius,
+			    G4VisAttributes* aVisAtt,
+			    G4double aXAper,
+			    G4double aYAper,
+			    G4double angle):
+  BDSAcceleratorComponent(
+			 aName, 
+			 aLength,
+			 aBpRadius,
+			 aXAper,
+			 aYAper,
+			 aVisAtt,
+			 angle),
+  itsInnerIronRadius(aInnerIronRadius)
+{}
+
+
+void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
+{
+
+  itsNSegments=nSegments;
+  G4double dSegments=double(nSegments);
+
+  // build beampipe
+  itsBPTube=new G4Tubs(itsName+"_tube",
+		       0.,
+		       itsBpRadius,
+		       aLength/(2.*dSegments),
+		       0,twopi*radian);
+
+  if(nSegments==1)
+    {
+      itsInnerBPTube=new G4Tubs(itsName+"_InnerTube",
+				0.,
+				itsBpRadius-BDSGlobals->GetBeampipeThickness(),
+				aLength/2,
+				0,twopi*radian);
+    }
+  else
+    {
+      itsInnerBPTube=new G4Tubs(itsName+"_InnerTube",
+				0.,
+				itsBpRadius-BDSGlobals->GetBeampipeThickness(),
+				aLength/(2.*dSegments)-
+				  itsBpRadius*tan(itsAngle/(2.*dSegments)),
+				0,twopi*radian); 
+    }
+
+  itsBeampipeLogicalVolume=	
+    new G4LogicalVolume(itsBPTube,
+			//			theMaterials->LCIron,
+			theMaterials->LCAluminium,
+			itsName+"_bmp_logical");
+
+  itsInnerBPLogicalVolume=	
+    new G4LogicalVolume(itsInnerBPTube,
+			theMaterials->LCVacuum,
+			itsName+"_bmp_Inner_log");
+  
+  G4VPhysicalVolume* PhysiInner = 
+    new G4PVPlacement(
+		      0,		       // rotation
+		      0,	               // at (0,0,0)
+		      itsInnerBPLogicalVolume, // its logical volume
+		      itsName+"_InnerBmp",     // its name
+		      itsBeampipeLogicalVolume, // its mother  volume
+		      false,		       // no boolean operation
+		      0);		       // copy number
+    
+  // increase structure for PETRA beampipe:
+  BDSAcceleratorType* TheAccelerator=BDSGlobals->GetAcceleratorType();
+  if(TheAccelerator->GetType()=="PETRA")
+    {
+      G4double sign=1.;
+      if(GetAngle()!=0)sign=-1.;
+      // build water cavity
+      G4LogicalVolume* WaterLogicalVolume=	
+	new G4LogicalVolume
+	(new G4Box( itsName+"_waterLog",             
+		    0.5*cm,//x half length
+		    1*cm, // y half length
+		    (itsLength+BDSGlobals->GetLengthSafety())/2), //z 
+	 theMaterials->LCWater,
+	 itsName+"_Water");
+
+      G4ThreeVector TargetPos;
+
+      // sign factor is to compensate for different orientation of sector bend
+      // beampipe
+      TargetPos.setX(sign*(itsBpRadius-BDSGlobals->GetBeampipeThickness()
+		     +1.5*cm));
+      
+      G4VPhysicalVolume* WaterCavity = 
+	new G4PVPlacement(
+			  0,		       // rotation
+			  TargetPos,	               // at TargetPos
+			  WaterLogicalVolume, // its logical volume
+			  itsName+"_Water",     // its name
+			  itsBeampipeLogicalVolume, // its mother  volume
+			  false,		       // no boolean operation
+			  0);		       // copy number
+
+
+      // build end volume for outer pipe (that doesn't exist in our region)
+      G4LogicalVolume* PipeGroove=	
+	new G4LogicalVolume
+	(new G4Box( itsName+"_PipeGroove",             
+		    0.5*cm,//x half length
+		    0.5*cm, // y half length
+		    (itsLength+BDSGlobals->GetLengthSafety())/2), //z 
+	 theMaterials->LCAir,
+	 itsName+"_PipeGroove");
+
+      TargetPos.setX(sign*(itsBpRadius-BDSGlobals->GetBeampipeThickness()
+		     +3.4*cm));
+      
+      G4VPhysicalVolume* Groove = 
+	new G4PVPlacement(
+			  0,		       // rotation
+			  TargetPos,	               // at TargetPos
+			  PipeGroove, // its logical volume
+			  itsName+"_Groove",     // its name
+			  itsBeampipeLogicalVolume, // its mother  volume
+			  false,		       // no boolean operation
+			  0);		       // copy number
+      
+    }
+
+  if(nSegments==1)
+    {
+      G4RotationMatrix* Rot=NULL;
+      if(itsAngle!=0)Rot=RotY90;
+      
+      G4VPhysicalVolume* PhysiComp = 
+	new G4PVPlacement(
+			  Rot,			     // rotation
+			  0,	                     // at (0,0,0)
+			  itsBeampipeLogicalVolume,  // its logical volume
+			  itsName+"_bmp",	     // its name
+			  itsMarkerLogicalVolume,     // its mother  volume
+			  false,		     // no boolean operation
+			  0);		             // copy number
+    }
+  else
+    {
+      itsSegRot=new G4RotationMatrix();
+      G4double DeltaRot=abs(itsAngle)/(double(nSegments));
+      
+      G4double angle=- abs(itsAngle/2)-DeltaRot/2.;
+      itsSegRot->rotateY(acos(0.) + angle );
+      
+      G4double X,Y,Z,R,Z0;
+      
+      R=itsLength/abs(itsAngle);
+      Z0=R*(1.-cos(abs(itsAngle/2)-DeltaRot/2.));
+      
+      // loop:
+      for(G4int iSeg=0;iSeg<nSegments;iSeg++)
+	{
+	  itsSegRot->rotateY(DeltaRot);
+	  angle+=DeltaRot;
+
+
+      	  X=R*sin(angle);
+	  Y=0.;
+	  Z=R*(1.-cos(angle))-Z0;
+	  
+
+
+	  itsSegPos.setX(X);
+	  itsSegPos.setY(Y);
+	  itsSegPos.setZ(Z);
+
+	  G4VPhysicalVolume* PhysiComp = 
+	    new G4PVPlacement(
+			      itsSegRot,		     // rotation
+			      itsSegPos,	             // at (0,0,0)
+			      itsBeampipeLogicalVolume,  // its logical volume
+			      itsName+"_bmp",	     // its name
+			      itsMarkerLogicalVolume,    // its mother  volume
+			      false,		     // no boolean operation
+			      0);		             // copy number
+	}
+    }
+
+
+
+  itsBeampipeUserLimits =
+     new G4UserLimits("beampipe cuts",DBL_MAX,DBL_MAX,DBL_MAX,
+  		     BDSGlobals->GetThresholdCutCharged());
+
+  itsInnerBeampipeUserLimits =
+    new G4UserLimits("inner beamipe cuts",DBL_MAX,DBL_MAX,DBL_MAX,
+  		     BDSGlobals->GetThresholdCutCharged());
+
+  itsBeampipeUserLimits->SetMaxAllowedStep(itsLength);
+
+  itsBeampipeLogicalVolume->SetUserLimits(itsBeampipeUserLimits);
+
+  itsInnerBeampipeUserLimits->SetMaxAllowedStep(itsLength);
+
+  itsInnerBPLogicalVolume->SetUserLimits(itsInnerBeampipeUserLimits);
+
+  itsInnerBPLogicalVolume->SetFieldManager(itsBPFieldMgr,false) ;
+
+  TempLogVol=itsInnerBPLogicalVolume;
+
+  // now protect the fields inside the marker volume by giving the
+  // marker a null magnetic field (otherwise G4VPlacement can
+  // over-ride the already-created fields, by calling 
+  // G4LogicalVolume::AddDaughter, which calls 
+  // pDaughterLogical->SetFieldManager(fFieldManager, true) - the
+  // latter 'true' over-writes all the other fields
+
+  itsMarkerLogicalVolume->
+    SetFieldManager(BDSGlobals->GetZeroFieldManager(),false);
+
+}
+
+
+void BDSMultipole::BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
+				       G4MagneticField* aField)
+{
+  itsChordFinder= 
+    new G4ChordFinder(aField,
+		      BDSGlobals->GetChordStepMinimum(),
+		      aStepper);
+
+  itsChordFinder->SetDeltaChord(BDSGlobals->GetDeltaChord());
+  
+  itsBPFieldMgr= new G4FieldManager();
+  itsBPFieldMgr->SetDetectorField(aField);
+  itsBPFieldMgr->SetChordFinder(itsChordFinder);
+  itsBPFieldMgr->SetDeltaIntersection(BDSGlobals->GetDeltaIntersection());
+
+}
+
+
+void BDSMultipole::BuildDefaultMarkerLogicalVolume()
+{
+
+  itsMarkerLogicalVolume=new G4LogicalVolume
+    (new G4Box( itsName+"_marker",             
+		BDSGlobals->GetComponentBoxSize()/2,//x length
+		BDSGlobals->GetComponentBoxSize()/2, // y half length
+		(itsLength+BDSGlobals->GetLengthSafety())/2), //z hlf ln 
+     theMaterials->LCVacuum,
+     itsName+"_marker");
+
+  //itsMarkerUserLimits =
+  //   new G4UserLimits(DBL_MAX,DBL_MAX,DBL_MAX,
+  //		     BDSGlobals->GetThresholdCutCharged());     
+  // itsMarkerUserLimits->SetMaxAllowedStep(itsLength);
+  //  itsMarkerLogicalVolume->SetUserLimits(itsMarkerUserLimits);
+
+}
+
+
+void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength)
+{
+  // compute saggita:
+  G4double sagitta=0.;
+  if(itsNSegments>1)
+    {
+      sagitta=itsLength/itsAngle*(1.-cos(itsAngle/2.));
+    }
+
+  itsOuterLogicalVolume=
+    new G4LogicalVolume(new G4Tubs(itsName+"_solid",
+				   itsInnerIronRadius+sagitta,
+				   BDSGlobals->GetComponentBoxSize()/2,
+				   aLength/2,
+				   0,twopi*radian),
+			//theMaterials->LCIron, removed JCC 17-08-04
+		        theMaterials->LCVacuum,
+			itsName+"_outer");
+  
+      /*
+      // weighting volume--------------------------------------------
+      G4double WeightThick=1.e-3*mm;
+
+      G4double WeightRad=itsBpRadius+0.5*BDSMaterials->LCIron->GetRadlen();
+      G4LogicalVolume* itsWeightVol_1=
+	new G4LogicalVolume(new G4Tubs(itsName+"_weight_1",
+				       WeightRad,
+				       WeightRad+WeightThick,
+				       aLength/2,
+				       0,twopi*radian),
+			    BDSMaterials->LCWeightIron,
+			    itsName+"_Weight_1");
+
+      G4VPhysicalVolume* PhysiWeight_1 = 
+	new G4PVPlacement(
+			  0,		      // rotation
+			  0,	                     // at (0,0,0)
+			  itsWeightVol_1,  // its logical volume
+			  itsName+"_Wgt_1",	     // its name
+			  itsOuterLogicalVolume,     // its mother  volume
+			  false,		     // no boolean operation
+			  0);		             // copy number
+
+      WeightRad=itsBpRadius+2*BDSMaterials->LCIron->GetRadlen();
+      G4LogicalVolume* itsWeightVol_2=
+	new G4LogicalVolume(new G4Tubs(itsName+"_weight_1",
+				       WeightRad,
+				       WeightRad+WeightThick,
+				       aLength/2,
+				       0,twopi*radian),
+			    BDSMaterials->LCWeightIron,
+			    itsName+"_Weight_1");
+
+      G4VPhysicalVolume* PhysiWeight_2 = 
+	new G4PVPlacement(
+			  0,		      // rotation
+			  0,	                     // at (0,0,0)
+			  itsWeightVol_2,  // its logical volume
+			  itsName+"_Wgt_2",	     // its name
+			  itsOuterLogicalVolume,     // its mother  volume
+			  false,		     // no boolean operation
+			  0);		             // copy number
+
+
+      //end of weighting volume-----------------------------
+
+      */
+
+
+  
+  G4RotationMatrix* Rot=NULL;
+  if(itsAngle!=0)Rot=RotY90;
+  
+  G4VPhysicalVolume* itsPhysiComp = 
+    new G4PVPlacement(
+		      Rot,			  // no rotation
+		      0,                      // its position
+		      itsOuterLogicalVolume,   // its logical volume
+		      itsName+"_solid",	  // its name
+		      itsMarkerLogicalVolume,  // its mother  volume
+		      false,		  // no boolean operation
+		      0);		          // copy number
+
+  itsOuterUserLimits =
+    new G4UserLimits("multipole cut",aLength,DBL_MAX,DBL_MAX,
+		     BDSGlobals->GetThresholdCutCharged());
+  //  itsOuterUserLimits->SetMaxAllowedStep(aLength);
+  itsOuterLogicalVolume->SetUserLimits(itsOuterUserLimits);
+
+
+}
+
+G4String BDSMultipole::StringFromInt(G4int N)
+{
+  //JCC 02/07/04
+  //char* CharN;
+  char CharN[50];
+  sprintf(CharN,"%d",N);
+  G4String Cnum(CharN);
+  return Cnum;
+}
+
+void BDSMultipole::BuildOuterFieldManager(G4int nPoles, G4double poleField,
+					  G4double phiOffset)
+{
+  if(nPoles<=0 || nPoles>10 || nPoles%2 !=0)
+    G4Exception("BDSMultipole: Invalid number of poles");
+  itsNPoles=nPoles;
+  itsOuterFieldMgr=NULL;
+  if (poleField==0) return;
+
+  itsOuterMagField=new BDSMultipoleOuterMagField(nPoles,poleField,phiOffset);
+
+  itsOuterFieldMgr=new G4FieldManager(itsOuterMagField);
+
+  //  (*theOuterFieldMap)[itsOuterLogicalVolume->GetName()]=itsOuterMagField;
+
+  itsOuterLogicalVolume->SetFieldManager(itsOuterFieldMgr,false);
+
+
+}
+
+
+BDSMultipole::~BDSMultipole()
+{
+  delete itsPhysiComp;
+  delete itsBPFieldMgr;
+  delete itsBeampipeLogicalVolume;
+  delete itsBPTube;
+  delete itsChordFinder;
+  delete itsOuterUserLimits;
+  delete itsBeampipeUserLimits;
+  delete itsOuterFieldMgr;
+  delete itsOuterMagField;
+
+  if(itsSegRot)delete itsSegRot;
+}

@@ -1,0 +1,72 @@
+Hi John,
+
+Here are some things that I have found that I need to do
+to get Geant4 running with my accelerator code.
+
+------------------------------------------------------------
+Further to your recent email, I tried again (unsuccessfully!)
+to get the FieldManager to be recognised directly from the logical volume.
+I find that I need to be able to force the field manager change
+within the Transportation process, so that
+
+  if( (particleCharge != 0.0) )
+    {
+      
+  // gab:
+      //     fieldExertsForce= this->DoesGlobalFieldExist() ;
+       // gab:>>>>>>>
+      G4FieldManager* itsFieldMgr=
+	track.GetVolume()->GetLogicalVolume()->GetFieldManager();
+      if(itsFieldMgr)
+	{fieldExertsForce= true; 
+	fFieldPropagator->SetLocalFieldMgr(itsFieldMgr);
+	}
+      //<<<<<< gab
+----
+Which also requires a new method for the G4PropagatorInField.hh:
+  // gab:
+  inline void  SetLocalFieldMgr( G4FieldManager *currentFieldMgr );
+
+// gab:
+inline void  G4PropagatorInField::SetLocalFieldMgr( G4FieldManager *currentFieldMgr )
+{fCurrentFieldMgr=currentFieldMgr;}
+---
+
+It could be that there's a better way - but I am trying to
+avoid using "fields" because my steppers don't need to solve
+explicitly for the field values.
+
+
+A couple of other things I have found:
+-------------------------------------------------
+G4RunManager.cc
+ I found that the line  stateManager->SetNewState(GeomClosed);
+
+takes a lot of time at each event, so I comment it out for now
+without any obvious side-effects.
+-------------------------------------------------
+G4PropagatorInField.cc
+
+I found it necessary to reset to zero
+ fNoZeroStep=0;
+otherwise its value can propagate between events.
+-------------------------------------------------
+G4IntersectionSolid.cc
+I get very many warnings along the lines of
+ G4cerr << "WARNING - Invalid call in G4IntersectionSolid::DistanceToIn(p),"
+           << " point p is inside" << G4endl;
+
+so I have commented these out - with no obvious bad effects.  
+I note that such warnings only exist for intersection solids, although 
+the actual case occurs in the solids that make up the intersection.
+My intersection solids are exclusively the intersection between
+a cylindrical tube and a trapezoid - so that a tube can be made
+to join other exact cylinders that are at angles to each other.
+Maybe I need to test this geometry further?
+
+---------------------------------
+Otherwise, things are progressing gradually!  I hope to present
+some results/progress report at the LC02 conference at SLAC in February.
+
+Best wishes,
+Grahame.

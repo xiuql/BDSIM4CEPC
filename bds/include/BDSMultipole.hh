@@ -1,0 +1,84 @@
+/* BDSIM code.    Version 1.0
+   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
+   Last modified 24.7.2002
+   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+*/
+
+#ifndef BDSMultipole_h
+#define BDSMultipole_h 1
+
+#include "globals.hh"
+#include "BDSAcceleratorComponent.hh"
+#include "BDSMaterials.hh"
+#include "G4LogicalVolume.hh"
+
+#include "G4FieldManager.hh"
+#include "G4ChordFinder.hh"
+#include "G4Mag_EqRhs.hh"
+#include "G4UserLimits.hh"
+#include "G4VisAttributes.hh"
+#include "G4MagneticField.hh"
+#include "G4PVPlacement.hh"               
+
+
+class BDSMultipole :public BDSAcceleratorComponent
+{
+public:
+  
+  BDSMultipole( G4String& aName, 
+		G4double aLength,
+		G4double aBpRadius,
+		G4double aInnerIronRadius,
+		G4VisAttributes* aVisAtt,
+		G4double aXAper=0.,
+		G4double aYAper=0.,
+		G4double angle=0.);
+
+  virtual ~BDSMultipole();
+
+  void BuildBeampipe(G4double aLength,G4int nSegments=1);
+
+  void BuildDefaultMarkerLogicalVolume();
+
+  void BuildDefaultOuterLogicalVolume();
+  void BuildDefaultOuterLogicalVolume(G4double aLength);
+
+  void BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
+		       G4MagneticField* aField);
+
+  G4FieldManager* GetBPFieldMgr();
+
+  G4String StringFromInt(G4int N);
+
+  void BuildOuterFieldManager(G4int nPoles, G4double poleField, 
+			      G4double phiOffset);
+
+protected:
+  G4LogicalVolume* itsBeampipeLogicalVolume;
+  G4LogicalVolume* itsInnerBPLogicalVolume;
+  G4VisAttributes* itsVisAttributes;
+  G4UserLimits* itsUserLimits;
+  G4UserLimits* itsBeampipeUserLimits;
+  G4PVPlacement* itsPhysiComp;
+  G4FieldManager* itsBPFieldMgr;
+  G4FieldManager* itsOuterFieldMgr;
+
+private:
+  G4double itsInnerIronRadius;
+  G4Tubs* itsBPTube;
+  G4Tubs* itsInnerBPTube;
+  G4ChordFinder* itsChordFinder;
+  G4int itsNPoles;
+  G4MagneticField* itsOuterMagField;
+
+  G4RotationMatrix* itsSegRot;
+  G4ThreeVector itsSegPos;
+  G4int itsNSegments;
+
+};
+
+inline G4FieldManager* BDSMultipole::GetBPFieldMgr()
+{return itsBPFieldMgr;}
+
+
+#endif

@@ -1,0 +1,84 @@
+# $Id: GNUmakefile.GB,v 1.1.1.1 2004/11/18 17:42:33 ilia Exp $
+# --------------------------------------------------------------
+# GNUmakefile for examples module.  Gabriele Cosmo, 06/04/98.
+# --------------------------------------------------------------
+
+name := bds_run
+G4TARGET := $(name)
+G4EXLIB := true
+
+ifndef G4INSTALL
+  G4INSTALL = ../../..
+endif
+
+.PHONY: all
+all: lib bin
+
+#CXXFLAGS      += -O -w -fPIC
+CPPFLAGS      += -w 
+#LD            = g++
+#LDFLAGS+=       = -O -shared
+
+LDLIBS3+=-L/cern/pro/lib -lpacklib -lkernlib -lmathlib -lg2c -lnsl -lpawlib
+
+#LDLIBS3+=\
+#/shared/geant4/tmp/Linux-g++/CompositeCalorimeter/G4StoppingHadronBuilder.o
+
+# ROOT libraries:
+
+LDLIBS3+= -rdynamic \
+	/usr/local/root/lib/libCore.so \
+	/usr/local/root/lib/libHist.so \
+	/usr/local/root/lib/libTree.so \
+	/usr/local/root/lib/libCint.so \
+	/usr/local/root/lib/libMatrix.so \
+	-L/usr/lib -lm -ldl 
+
+#	-lm -ldl -rdynamic \
+
+
+
+#	/usr/local/root/lib/libASImage.so \
+#	/usr/local/root/lib/libGeomPainter.so \
+#	/usr/local/root/lib/libMC.so \
+#	/usr/local/root/lib/libRGL.so \
+#	/usr/local/root/lib/libCint.so \
+#	/usr/local/root/lib/libGpad.so \
+#	/usr/local/root/lib/libRint.so \
+#	/usr/local/root/lib/libGraf.so \
+#	/usr/local/root/lib/libMinuit.so \
+#	/usr/local/root/lib/libTable.so \
+#	/usr/local/root/lib/libEG.so \
+#	/usr/local/root/lib/libGraf3d.so \
+#	/usr/local/root/lib/libMySQL.so \
+#	/usr/local/root/lib/libThread.so \
+#	/usr/local/root/lib/libEGPythia.so \
+#	/usr/local/root/lib/libGui.so \
+#	/usr/local/root/lib/libNew.so \
+#	/usr/local/root/lib/libEGPythia6.so \
+#	/usr/local/root/lib/libHbook.so \
+#	/usr/local/root/lib/libPhysics.so \
+#	/usr/local/root/lib/libTreePlayer.so \
+#	/usr/local/root/lib/libGX11.so \
+#	/usr/local/root/lib/libPostscript.so \
+#	/usr/local/root/lib/libTreeViewer.so \
+#	/usr/local/root/lib/libGX11TTF.so \
+#	/usr/local/root/lib/libHistPainter.so \
+#	/usr/local/root/lib/libProof.so \
+#	/usr/local/root/lib/libX3d.so \
+#	/usr/local/root/lib/libGeom.so \
+#	/usr/local/root/lib/libHtml.so \
+#	/usr/local/root/lib/libRFIO.so 
+
+
+
+include $(G4INSTALL)/config/binmake.gmk
+
+# gab:Root include:
+INCFLAGS += -I$(ROOTSYS)/include
+INCFLAGS += -I/home/blair/geant4/examples/advanced/composite_calorimeter/include
+
+visclean:
+	rm -f g4*.prim g4*.eps g4*.wrl
+	rm -f .DAWN_*
+

@@ -1,0 +1,8 @@
+/run/verbose 2
+/vis/scene/create
+/vis/scene/add/volume
+/vis/sceneHandler/create OGLIX
+/vis/sceneHandler/attach
+/vis/viewer/create
+/vis/viewer/viewpointThetaPhi 90 89.99
+/vis/viewer/refresh
