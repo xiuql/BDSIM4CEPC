@@ -40,6 +40,7 @@ class BDSRootObjects
   void SetEnergyLossZMax(G4double zMax);
   void SetSamplerNumber(G4int n);
   void SetLWCalorimeterNumber(G4int n);
+  G4int GetLWCalorimeterNumber(){return nLWCalorimeters;}
 
   void LoadSamplerTree(BDSSamplerHit* hit);
   void LoadLWCalorimeterTree(BDSLWCalorimeterHit* hit);
