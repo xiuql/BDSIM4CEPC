@@ -319,8 +319,7 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength)
 				   BDSGlobals->GetComponentBoxSize()/2,
 				   aLength/2,
 				   0,twopi*radian),
-			//theMaterials->LCIron, removed JCC 17-08-04
-		        theMaterials->LCVacuum,
+			theMaterials->LCIron,
 			itsName+"_outer");
   
       /*
