@@ -2,6 +2,11 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added extra parameter to BuildDefaultOuterLogicalVolume so that it is 
+     possible to set the material as either Iron or Vacuum
+   Removed StringFromInt function
 */
 
 #ifndef BDSMultipole_h
@@ -41,14 +46,12 @@ public:
   void BuildDefaultMarkerLogicalVolume();
 
   void BuildDefaultOuterLogicalVolume();
-  void BuildDefaultOuterLogicalVolume(G4double aLength);
+  void BuildDefaultOuterLogicalVolume(G4double aLength,G4bool OuterMaterialIsVacuum=false);
 
   void BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
 		       G4MagneticField* aField);
 
   G4FieldManager* GetBPFieldMgr();
-
-  G4String StringFromInt(G4int N);
 
   void BuildOuterFieldManager(G4int nPoles, G4double poleField, 
 			      G4double phiOffset);

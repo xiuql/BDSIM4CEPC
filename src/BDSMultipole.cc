@@ -2,6 +2,11 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added extra parameter to BuildDefaultOuterLogicalVolume so that it is 
+     possible to set the material as either Iron or Vacuum
+   Removed StringFromInt function
 */
 #include "BDSGlobalConstants.hh" // must be first in include list
 
@@ -304,7 +309,8 @@ void BDSMultipole::BuildDefaultMarkerLogicalVolume()
 }
 
 
-void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength)
+void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
+						  G4bool OuterMaterialIsVacuum)
 {
   // compute saggita:
   G4double sagitta=0.;
@@ -312,15 +318,30 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength)
     {
       sagitta=itsLength/itsAngle*(1.-cos(itsAngle/2.));
     }
+  if(OuterMaterialIsVacuum)
+    {
+    itsOuterLogicalVolume=
+      new G4LogicalVolume(new G4Tubs(itsName+"_solid",
+				     itsInnerIronRadius+sagitta,
+				     BDSGlobals->GetComponentBoxSize()/2,
+				     aLength/2,
+				     0,twopi*radian),
+			  theMaterials->LCVacuum,
+			  itsName+"_outer");
+    }
 
-  itsOuterLogicalVolume=
-    new G4LogicalVolume(new G4Tubs(itsName+"_solid",
-				   itsInnerIronRadius+sagitta,
-				   BDSGlobals->GetComponentBoxSize()/2,
-				   aLength/2,
-				   0,twopi*radian),
-			theMaterials->LCIron,
-			itsName+"_outer");
+  if(!OuterMaterialIsVacuum)
+    {
+    itsOuterLogicalVolume=
+      new G4LogicalVolume(new G4Tubs(itsName+"_solid",
+				     itsInnerIronRadius+sagitta,
+				     BDSGlobals->GetComponentBoxSize()/2,
+				     aLength/2,
+				     0,twopi*radian),
+			  theMaterials->LCIron,
+			  itsName+"_outer");
+    }
+
   
       /*
       // weighting volume--------------------------------------------
@@ -395,16 +416,6 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength)
 
 }
 
-G4String BDSMultipole::StringFromInt(G4int N)
-{
-  //JCC 02/07/04
-  //char* CharN;
-  char CharN[50];
-  sprintf(CharN,"%d",N);
-  G4String Cnum(CharN);
-  return Cnum;
-}
-
 void BDSMultipole::BuildOuterFieldManager(G4int nPoles, G4double poleField,
 					  G4double phiOffset)
 {
@@ -428,15 +439,15 @@ void BDSMultipole::BuildOuterFieldManager(G4int nPoles, G4double poleField,
 
 BDSMultipole::~BDSMultipole()
 {
-  delete itsPhysiComp;
-  delete itsBPFieldMgr;
-  delete itsBeampipeLogicalVolume;
-  delete itsBPTube;
-  delete itsChordFinder;
-  delete itsOuterUserLimits;
-  delete itsBeampipeUserLimits;
-  delete itsOuterFieldMgr;
-  delete itsOuterMagField;
+  if(itsPhysiComp) delete itsPhysiComp;
+  if(itsBPFieldMgr) delete itsBPFieldMgr;
+  if(itsBeampipeLogicalVolume) delete itsBeampipeLogicalVolume;
+  if(itsBPTube) delete itsBPTube;
+  if(itsChordFinder) delete itsChordFinder;
+  if(itsOuterUserLimits) delete itsOuterUserLimits;
+  if(itsBeampipeUserLimits) delete itsBeampipeUserLimits;
+  if(itsOuterFieldMgr) delete itsOuterFieldMgr;
+  if(itsOuterMagField) delete itsOuterMagField;
 
   if(itsSegRot)delete itsSegRot;
 }
