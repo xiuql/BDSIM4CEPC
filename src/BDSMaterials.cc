@@ -2,6 +2,11 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added GABs Resetter Material
+   Added GABs LCBeamGasPlugMat Material
+   Added LCLead
 */
 #include "BDSGlobalConstants.hh" // must be first in include list
 
@@ -54,6 +59,9 @@ BDSMaterials::BDSMaterials()
   a = 12.011*g/mole;
   LCGraphite=new G4Material(name="LCGraphite", z=6., a, density);
 
+  density = 11.35*g/cm3;
+  a = 207.2*g/mole;
+  LCLead=new G4Material(name="LCLead",z=82., a, density);
 
   a = 14.01*g/mole;
   G4Element* N  = new G4Element(name="Nitrogen",symbol="N" , z= 7., a);
@@ -125,7 +133,9 @@ BDSMaterials::BDSMaterials()
 			    kStateGas,temperature,pressure);
   LaserVac->AddMaterial(LCAir, fractionmass=1.);
 
-
+  LCResetter = new G4Material(name="LCReset", density, ncomponents=1,
+			      kStateGas,temperature,pressure);
+  LCResetter->AddMaterial(LCAir, fractionmass=1.);
 
   //concrete
   G4Element* Ca = new G4Element
@@ -166,6 +176,12 @@ BDSMaterials::BDSMaterials()
   LCLeadTungstate->AddElement(W,  natoms=1);
   LCLeadTungstate->AddElement(O,  natoms=4);
 
+  density=37.403/10.*g/cm3;  //Choose such that 1mm length gives ~ one interaction
+  //  density=1*g/cm3;  
+  LCBeamGasPlugMat=new G4Material("LCBeamGasPlugMat",density,ncomponents=2);
+  nAtoms=1;
+  LCBeamGasPlugMat->AddElement(C, nAtoms);
+  LCBeamGasPlugMat->AddElement(O, nAtoms);  
 
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 

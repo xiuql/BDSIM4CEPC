@@ -2,6 +2,11 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added GABs Resetter Material
+   Added GABs LCBeamGasPlugMat Material
+   Added LCLead
 */
 #ifndef BDSMaterials_h
 #define BDSMaterials_h 1
@@ -31,6 +36,9 @@ public:
   G4Material*  LCConcrete;
   G4Material*  LCWater;
   G4Material*  LCLeadTungstate;
+  G4Material*  LCLead;
+  G4Material*  LCBeamGasPlugMat;
+  G4Material*  LCResetter;
 
 private:
 
