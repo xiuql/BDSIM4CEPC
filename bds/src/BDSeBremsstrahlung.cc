@@ -786,11 +786,20 @@ G4VParticleChange* BDSeBremsstrahlung::PostStepDoIt(const G4Track& trackData,
    // check against insufficient energy
     if (KineticEnergy < GammaEnergyCut)
        {
-         aParticleChange.SetMomentumChange( ParticleDirection );
+         
+#ifdef G4VERSION_4_7
+	 aParticleChange.ProposeMomentumDirection( ParticleDirection );
+         aParticleChange.ProposeEnergy( KineticEnergy );
+         aParticleChange.ProposeLocalEnergyDeposit (0.);
+         aParticleChange.SetNumberOfSecondaries(0);
+#else
+	 aParticleChange.SetMomentumChange( ParticleDirection );
          aParticleChange.SetEnergyChange( KineticEnergy );
          aParticleChange.SetLocalEnergyDeposit (0.);
          aParticleChange.SetNumberOfSecondaries(0);
-         return G4VContinuousDiscreteProcess::PostStepDoIt(trackData,stepData);
+#endif 
+
+	 return G4VContinuousDiscreteProcess::PostStepDoIt(trackData,stepData);
        }
 
    // select randomly one element constituing the material
@@ -940,19 +949,37 @@ G4VParticleChange* BDSeBremsstrahlung::PostStepDoIt(const G4Track& trackData,
    //
 
    G4double NewKinEnergy = KineticEnergy - GammaEnergy;
+  
+#ifdef G4VERSION_4_7
    if (NewKinEnergy > 0.)
      {
-      aParticleChange.SetMomentumChange( ParticleDirection );
-      aParticleChange.SetEnergyChange( NewKinEnergy );
-      aParticleChange.SetLocalEnergyDeposit (0.);
+      aParticleChange.ProposeMomentumDirection( ParticleDirection );
+      aParticleChange.ProposeEnergy( NewKinEnergy );
+      aParticleChange.ProposeLocalEnergyDeposit (0.);
      }
    else
      {
-      aParticleChange.SetEnergyChange( 0. );
-      aParticleChange.SetLocalEnergyDeposit (0.);
-      if (charge<0.) aParticleChange.SetStatusChange(fStopAndKill);
-          else       aParticleChange.SetStatusChange(fStopButAlive);
+      aParticleChange.ProposeEnergy( 0. );
+      aParticleChange.ProposeLocalEnergyDeposit (0.);
+      if (charge<0.) aParticleChange.ProposeTrackStatus(fStopAndKill);
+          else       aParticleChange.ProposeTrackStatus(fStopButAlive);
      }
+#else
+   if (NewKinEnergy > 0.)
+     {
+       aParticleChange.SetMomentumChange( ParticleDirection );
+       aParticleChange.SetEnergyChange( NewKinEnergy );
+       aParticleChange.SetLocalEnergyDeposit (0.);
+     }
+   else
+     {
+       aParticleChange.SetEnergyChange( 0. );
+       aParticleChange.SetLocalEnergyDeposit (0.);
+       if (charge<0.) aParticleChange.SetStatusChange(fStopAndKill);
+       else       aParticleChange.SetStatusChange(fStopButAlive);
+     }
+#endif
+
 
    return G4VContinuousDiscreteProcess::PostStepDoIt(trackData,stepData);
 }
