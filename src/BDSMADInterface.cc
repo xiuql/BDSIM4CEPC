@@ -114,6 +114,14 @@ BDSMADInterface::BDSMADInterface (const G4String& madFileName,G4double P0)
 {
   brho=
     sqrt(pow(P0,2)- pow(electron_mass_c2,2))/(0.299792458 * (GeV/(tesla*m)));
+
+  //if(!ifs)
+  //  {
+  //    G4cerr<<"Error : "<<__FILE__ <<__LINE__<<" :  unable to open optics file "
+  //	    <<madFileName<<" quitting "<<G4endl;
+  //    exit(1);
+  //  }
+
   assert(ifs);
 
   //  if(BDSGlobals->GetSynchRadOn())
@@ -321,8 +329,14 @@ G4double BDSMADInterface::ReadComponent ()
       type="ABSORBER";
 
 
-  if( (type=="DRIFT")&&( (xAper!=0)||(yAper!=0)) ) {type="ABSORBER";}
-  if( (type=="ABSORBER")&&( (xAper==0)&&(yAper==0)) ) {type="DRIFT";}
+
+ // gab Dec04
+  if( (type=="RCOLLIMATOR")&&(len<0.1))type="SPOILER";
+  if( (type=="RCOLLIMATOR"||type=="ECOLLIMATOR")&&(len>0.1))type="ABSORBER";
+                                                                                
+
+  if( (type=="DRIFT")&&( (xAper!=0)&&(yAper!=0)) ) {type="ABSORBER";}
+  if( (type=="ABSORBER")&&( (xAper==0)||(yAper==0)) ) {type="DRIFT";}
 
   // tmp:
   //if((type=="ABSORBER")||(type=="SPOILER"))type="DRIFT";
@@ -330,11 +344,7 @@ G4double BDSMADInterface::ReadComponent ()
   //G4cout<<"type="<<type<<G4endl;
 
 
-  //gab dec 04
   
-  if( (type=="RCOLLIMATOR")&&(len<0.1))type="SPOILER";
-  if( (type=="RCOLLIMATOR"||type=="ECOLLIMATOR")&&(len>0.1))type="ABSORBER";
-
   if(type=="MUSPOILER")
     {
       rOuter=angle*m;
@@ -379,8 +389,12 @@ G4double BDSMADInterface::ReadComponent ()
 				     SpoilerMaterial));
     }
   else if(type=="ABSORBER")
+    {
+      G4cout<<"Absorber : name="<<name<<" len="<<len<<" "<<xAper<<" "<<yAper<<G4endl;
+
     ctor->push_back(new BDSAbsorber(name,len,bpRad,xAper,yAper,
 				    theMaterials->LCCopper));
+    }
   else if(type=="LASERWIRE")
     {
       BDSLaserWire* TheBDSLaserWire=
