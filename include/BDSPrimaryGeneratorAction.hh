@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added GABs SynchGen code
 */
 
 // This code implementation is the intellectual property of
@@ -11,7 +14,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSPrimaryGeneratorAction.hh,v 1.1.1.1 2004/12/14 18:57:41 agapov Exp $
+// $Id: BDSPrimaryGeneratorAction.hh,v 1.1 2005/01/22 17:05:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -26,6 +29,7 @@
 #include "globals.hh"
 #include <fstream>
 #include "BDSExtract.hh"
+#include "BDSSynchrotronRadiation.hh"
 
 #include "BDSGen5Shell.hh"
 
@@ -77,6 +81,10 @@ private:
 
   G4double logXfactor;
   G4double logYfactor;
+
+  G4double itsSynchCritEng;
+  BDSSynchrotronRadiation* itsBDSSynchrotronRadiation;
+
   // tmp
   //  BDSExtractO* itsBDSExtractO;
 

@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 28.12.2004
    Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added GABs SynchGen code
 */
 
 // This code implementation is the intellectual property of
@@ -11,7 +14,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSPrimaryGeneratorAction.cc,v 1.2.2.1 2005/01/27 12:16:35 agapov Exp $
+// $Id: BDSPrimaryGeneratorAction.cc,v 1.3 2005/01/27 14:47:09 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -55,6 +58,18 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
   particleGun  = new G4ParticleGun(n_particle);
   particleGun->SetParticleDefinition(TheAccelerator->
                                       GetBeamParticleDefinition());
+  if(BDSGlobals->GetUseSynchPrimaryGen())
+    {
+      itsBDSSynchrotronRadiation=new BDSSynchrotronRadiation("tmpSynRad");
+      G4double R=BDSGlobals->GetSynchPrimaryLength()/
+	BDSGlobals->GetSynchPrimaryAngle();   
+      itsSynchCritEng=3./2.*hbarc/pow(electron_mass_c2,3)*
+	pow(TheAccelerator->GetBeamKineticEnergy(),3)/R;
+      G4cout<<" BDSPrimaryGeneratorAction:  Critical Energy="<<
+	itsSynchCritEng/keV<<" keV"<<G4endl;
+      particleGun->SetParticleDefinition(G4ParticleTable::GetParticleTable()->
+		     FindParticle("gamma"));
+    }
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
   particleGun->
     SetParticlePosition(G4ThreeVector(0.*cm,0.*cm,
@@ -547,6 +562,18 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   
   if(TheAccelerator->GetType()!="atf")
     PartMomDir.rotateY(BDSGlobals->GetGlobalBeamlineRotationY());
+
+  if(BDSGlobals->GetUseSynchPrimaryGen())
+    {
+      E = itsSynchCritEng*itsBDSSynchrotronRadiation->
+	SynGenC(BDSGlobals->GetSynchLowX());
+      x0=0.1*mm;
+      y0=0.;
+      z0 = -BDSGlobals->GetWorldSizeZ();
+      xp=0;
+      yp=0;
+      zp=1.;
+    }
 
   particleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
   particleGun->SetParticleEnergy(E);
