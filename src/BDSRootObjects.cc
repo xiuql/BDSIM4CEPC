@@ -74,7 +74,7 @@ void BDSRootObjects::BuildSamplerTrees()
       SamplerTree->Branch("E0",&E0,"E0/F");
       SamplerTree->Branch("z0",&z0,"z0/F");
       SamplerTree->Branch("x",&x,"x/F");
-      SamplerTree->Branch("zp",&xp,"xp/F");
+      SamplerTree->Branch("xp",&xp,"xp/F");
       SamplerTree->Branch("y",&y,"y/F");
       SamplerTree->Branch("yp",&yp,"yp/F");
       SamplerTree->Branch("E",&E,"E/F");
