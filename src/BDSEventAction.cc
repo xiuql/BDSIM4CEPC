@@ -196,10 +196,10 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
  
  G4SDManager * SDman = G4SDManager::GetSDMpointer();
 
-    
- if (SamplerCollID==-1) 
-   SamplerCollID = SDman->GetCollectionID("SamplerCollection");
-
+ if(BDSRoot->GetSamplerNumber()>0){   
+   if (SamplerCollID==-1) 
+     SamplerCollID = SDman->GetCollectionID("SamplerCollection");
+ }
  if(BDSRoot->GetLWCalorimeterNumber()>0){
    if (LWCalorimeterCollID==-1) 
      LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
