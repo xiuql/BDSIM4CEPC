@@ -1,31 +1,32 @@
-			* Input cards for Beam Delivery System Simulation
+* Input cards for Beam Delivery System Simulation
 * 
 * ==================================================
 *             >>> Accelerator <<<
 * ACCELERATOR clic500
 * ACCELERATOR clic
 * ACCELERATOR tesla
+ACCELERATOR ilc
 * ACCELERATOR PETRA
- ACCELERATOR nlc
+* ACCELERATOR nlc
 * ACCELERATOR atf
 *
- BUNCH_TYPE normal
+BUNCH_TYPE normal
 * BUNCH_TYPE   halo_flat
 * BUNCH_TYPE   halo_one_over_r
 *
 * Inner radius of halo distribution in number of sigmas:
 INNER_HALO_X
-10.0
+7.0
 * 10 for nlc, 7 for tesla, 5.7 for CLIC
 OUTER_HALO_X
-200.
+18.
 * 200 for nlc, 18 for tesla, 14.2 for CLIC
 *
 INNER_HALO_Y
-50.
+40.
 * 50 for nlc, 40 for tesla, 38 for CLIC
 OUTER_HALO_Y
-300.
+120.
 * 300 for nlc, 120 for tesla, 115 for CLIC
 *
 *
@@ -42,19 +43,17 @@ WRITE_BUNCH_FILE 0
 * Generic Output Ntuple File Name (will have _N.rz appended for integer N) :
 * (Default is sampler_output.rz)
 OUTPUT_NTUPLE_FILE_NAME
-OUTPUT
+laserwire_1k_photons_pos4
 * Number of events to include per file; insurance against crashes during batch.
 * a new file is created _(N+1).rz after this number of events
 NUMBER_OF_EVENTS_PER_NTUPLE
-100000
-
-
+10000
 * =====================================================
 * Batch Conditions
 * Set to true if you want to run in batch mode (no visualisation)
-USE_BATCH 0
+USE_BATCH 1
 * Number of events to generate in the run:
-NUMBER_TO_GENERATE 10
+NUMBER_TO_GENERATE 1000
 * Random Number Seed 
 RANDOM_SEED
 100000
@@ -65,11 +64,10 @@ ENERGY_OFFSET 0
 * ==================================================
 *            >>> Tracking Parameters <<<
 * Energy below which charged particles are stopped: (in GeV)
-THRESHOLD_CUT_CHARGED .01
-* THRESHOLD_CUT_CHARGED 10
+THRESHOLD_CUT_CHARGED 10.
 *
 * Energy below which photons are stopped: (in GeV)
-THRESHOLD_CUT_PHOTONS 0.00
+THRESHOLD_CUT_PHOTONS 0.
 *
 * Weighting factor for tracks crossing weighting planes
 TRACK_WEIGHT_FACTOR 1.
@@ -82,9 +80,9 @@ TURN_ON_INTERACTIONS 1
 * Default values
 * size of typical box dimensions transverse to the beamline axis (in cm):
 * atf:
-* ACCELERATOR_COMPONENT_BOX_SIZE 25.0
+ACCELERATOR_COMPONENT_BOX_SIZE 25.0
 * tesla/nlc:
-ACCELERATOR_COMPONENT_BOX_SIZE 21.0
+* ACCELERATOR_COMPONENT_BOX_SIZE 21.0
 * size of magnet poles (in cm):
 MAGNET_POLE_SIZE 1.0
 * radial position of magnet poles (in cm):
@@ -108,7 +106,7 @@ VERTICAL_BEAMLINE_OFFSET 0.0
 BEAMPIPE_RADIUS 1.2
 *
 * Thickness of beampipe material (in mm)
- BEAMPIPE_THICKNESS 2.0 
+BEAMPIPE_THICKNESS 2.0 
 * Petra (includes edge flange):
 * BEAMPIPE_THICKNESS 39.0
 
@@ -121,6 +119,11 @@ TURN_ON_SYNCHROTRON 0
 * Rescale strength of elements due to upstream synchrotron radiation?
 RESCALE_DUE_TO_SYNCHROTRON 0
 *
+*
+* -----------     Thermal Photons Scattering    -----------
+* Flag is true to turn ON scattering of Thermal Planck Radiation 
+TURN_ON_PLANCK 0
+*
 * Flag is true to also track the Synchrotron photons
 TRACK_SYNCHROTRON_PHOTONS 1
 *
@@ -128,20 +131,8 @@ TRACK_SYNCHROTRON_PHOTONS 1
 SYNCHROTRON_LOWEST_X 0.
 *
 * Absolute lowest energy (in MeV) of PROPAGATING synchrotron photons:
-SYNCHROTRON_LOWEST_GAMMA_ENERGY 100.0
-*
-* -----------     Thermal Photons Scattering    -----------
-* Flag is true to turn ON scattering of Thermal Planck Radiation 
-TURN_ON_PLANCK 0
-*
-* Flag is true to also track the Synchrotron photons
-TRACK_SYNCHROTRON_PHOTONS 0
-*
-* X for Synchrotron radiation lowest energy is X*E_critical
-SYNCHROTRON_LOWEST_X 0.
-*
-* Absolute lowest energy (in MeV) of PROPAGATING synchrotron photons:
-SYNCHROTRON_LOWEST_GAMMA_ENERGY 10.0
+SYNCHROTRON_LOWEST_GAMMA_ENERGY 0.0
+* SYNCHROTRON_LOWEST_GAMMA_ENERGY 10.0
 *
 * -----------     Thermal Photons Scattering    -----------
 * Flag is true to turn ON scattering of Thermal Planck Radiation 
@@ -178,7 +169,7 @@ LASERWIRE_TRACK_ELECTRONS 0
 BACKGROUND_SCALE_FACTOR 1.0
 * ==================================================
 * Muon pair production process
-USE_MUON_PAIR_PRODUCTION 0
+USE_MUON_PAIR_PRODUCTION 1
 * 
 * Scale factor to increase muon production rate (1 => no scaling)
 MUON_PRODUCTION_SCALE_FACTOR 1.
@@ -186,13 +177,17 @@ MUON_PRODUCTION_SCALE_FACTOR 1.
 * Scale factor to increase inelastic hadron (neutrons) (1 => no scaling)
 * NOTE: the daughter tracks are NOT re-weighted; so final distributions
 * must be divided by the scale factor by hand.
-HADRON_INELASTIC_SCALE_FACTOR 100.
+HADRON_INELASTIC_SCALE_FACTOR 1.
 * 
 * Flag to store interesting muon trajectories
 STORE_MUON_TRAJECTORIES 0
 *
 * Flag to determine whether to generate special muon showers:
 USE_MUON_SHOWERS 0
+*
+* Lowest muon energy (generated in abasorbers etc.) in GeV
+* The related scale factor is printed out in log file.
+MUON_LOWEST_GENRATED_ENERGY 100.0
 * ==================================================
 * Use a timer to optimise running?
 USE_TIMER 1
@@ -224,16 +219,7 @@ VERBOSE_EVENT_NUMBER 0
 * volumes meet without gaps (mm)
 * LENGTH_SAFETY 1.e-9
 LENGTH_SAFETY 0.
-
-
 * =====================================================
-* 
-* Laser-wire Calorimeter parameters
-* Length is given in the optics file as usual.
-* total width of calorimeter in cm:
-* LW_CAL_WIDTH 5.4
-* horizontal offset: centre of crystal matrix from the beampipe centre in cm
-* LW_CAL_OFFSET 29.0
-* Laserwire calorimeter material
-* LW_CAL_MATERIAL LeadTungstate
+
+
 
