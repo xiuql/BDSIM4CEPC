@@ -2,6 +2,16 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added GABs StringFromInt function
+   Added GABs StringFromDigit function
+   Added GABs SynchPrimary code
+   Added GABs BeamGasPlug code
+   Added GABs GetUseLastMaterialPoint method
+   Added LWCal Get methods
+   Added Component Offset Set, Add, and Get methods
+   Added Wedge Set, Get methods
 */
 
 #ifndef BDSGlobalConstants_h
@@ -34,6 +44,9 @@ class BDSGlobalConstants
   void SetLogFile(ofstream & os);
   void StripHeader(istream& is);
   
+  G4String StringFromInt(G4int anInt);
+  G4String StringFromDigit(G4int anInt);
+
   BDSAcceleratorType* GetAcceleratorType();
   G4double GetBackgroundScaleFactor();
 
@@ -44,6 +57,13 @@ class BDSGlobalConstants
 
   void SetTotalS(G4double TotalS);
   G4double GetTotalS();  
+
+  void SetVerticalComponentOffset(G4double VerticalComponentOffset);
+  void SetHorizontalComponentOffset(G4double HorizontalComponentOffset);
+  void AddVerticalComponentOffset(G4double VerticalComponentOffset);
+  void AddHorizontalComponentOffset(G4double HorizontalComponentOffset);
+  G4double GetVerticalComponentOffset(); 
+  G4double GetHorizontalComponentOffset(); 
 
   G4double GetComponentBoxSize();
   G4double GetMagnetPoleSize();
@@ -136,8 +156,21 @@ class BDSGlobalConstants
   void SetGlobalBeamlineRotationY(G4double aYRotation);
   G4double GetGlobalBeamlineRotationY();
 
-
   G4FieldManager* GetZeroFieldManager();
+
+  G4bool GetUseBeamGasPlug();
+  G4double GetBeamGasPlugZ();
+
+  G4bool GetUseSynchPrimaryGen();
+  G4double GetSynchPrimaryAngle();
+  G4double GetSynchPrimaryLength();
+
+  G4bool GetUseLastMaterialPoint();
+
+  G4double GetWedgeDisplacement();
+  void SetWedgeDisplacement(G4double WedgeDisplacemnt);
+  G4bool GetPreviousWasWedge();
+  void SetPreviousWasWedge(G4bool PreviousWasWedge);
 
 protected:
 private:
@@ -156,6 +189,9 @@ private:
   G4double itsHorizontalBeamlineOffset;
   G4double itsVerticalBeamlineOffset;
  
+  G4double itsVerticalComponentOffset;
+  G4double itsHorizontalComponentOffset;
+
   G4double itsBeampipeRadius; 
   G4double itsBeampipeThickness; 
   G4double itsWorldSizeZ; 
@@ -243,8 +279,17 @@ private:
   G4double itsLWCalOffset;
   G4String itsLWCalMaterial;
 
+  G4bool itsUseBeamGasPlug;
+  G4double itsBeamGasPlugZ;
 
+  G4bool itsSynchPrimaryGen;
+  G4double itsSynchPrimaryAngle;
+  G4double itsSynchPrimaryLength;
 
+  G4bool itsUseLastMaterialPoint;
+
+  G4double itsWedgeDisplacement;
+  G4bool itsPreviousWasWedge;
 };
 
 inline void BDSGlobalConstants::SetLogFile(ofstream & os)
@@ -306,6 +351,21 @@ inline G4double BDSGlobalConstants::GetTotalS()
 {return itsTotalS;}
 inline void BDSGlobalConstants::SetTotalS(G4double TotalS) 
 {itsTotalS=TotalS;}
+
+inline void BDSGlobalConstants::SetVerticalComponentOffset(G4double VerticalComponentOffset)
+{itsVerticalComponentOffset=VerticalComponentOffset;}
+inline void BDSGlobalConstants::SetHorizontalComponentOffset(G4double HorizontalComponentOffset)
+{itsHorizontalComponentOffset=HorizontalComponentOffset;}
+
+inline void BDSGlobalConstants::AddVerticalComponentOffset(G4double VerticalComponentOffset)
+{itsVerticalComponentOffset+=VerticalComponentOffset;}
+inline void BDSGlobalConstants::AddHorizontalComponentOffset(G4double HorizontalComponentOffset)
+{itsHorizontalComponentOffset+=HorizontalComponentOffset;}
+
+inline G4double BDSGlobalConstants::GetVerticalComponentOffset()
+{return itsVerticalComponentOffset;}
+inline G4double BDSGlobalConstants::GetHorizontalComponentOffset()
+{return itsHorizontalComponentOffset;}
 
 inline G4bool BDSGlobalConstants::GetUseLowEMPhysics()
 {return itsUseLowEMPhysics;}
@@ -460,6 +520,30 @@ inline  G4double BDSGlobalConstants::GetLWCalOffset()
 
 inline  G4String BDSGlobalConstants::GetLWCalMaterial()
 {return itsLWCalMaterial;}
+
+inline G4bool BDSGlobalConstants::GetUseBeamGasPlug()
+{return itsUseBeamGasPlug;}
+inline G4double BDSGlobalConstants::GetBeamGasPlugZ()
+{return itsBeamGasPlugZ;}
+
+inline G4bool BDSGlobalConstants::GetUseSynchPrimaryGen()
+{return itsSynchPrimaryGen;}
+inline G4double BDSGlobalConstants::GetSynchPrimaryAngle()
+{return itsSynchPrimaryAngle;}
+inline G4double BDSGlobalConstants::GetSynchPrimaryLength()
+{return itsSynchPrimaryLength;}
+
+inline G4bool BDSGlobalConstants::GetUseLastMaterialPoint()
+{return itsUseLastMaterialPoint;}
+
+inline G4double BDSGlobalConstants::GetWedgeDisplacement()
+{return itsWedgeDisplacement;}
+inline void BDSGlobalConstants::SetWedgeDisplacement(G4double WedgeDisplacement)
+{itsWedgeDisplacement=WedgeDisplacement;}
+inline G4bool BDSGlobalConstants::GetPreviousWasWedge()
+{return itsPreviousWasWedge;}
+inline void BDSGlobalConstants::SetPreviousWasWedge(G4bool PreviousWasWedge)
+{itsPreviousWasWedge=PreviousWasWedge;}
 
 
 extern BDSGlobalConstants* BDSGlobals;

@@ -2,6 +2,14 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.12.2004
    Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added GABs StringFromInt function
+   Added GABs StringFromDigit function
+   Added GABs SynchPrimary code
+   Added GABs BeamGasPlug code
+   Added GABs GetUseLastMaterialPoint method
+   Added LWCal Code
 */
 
 #include "BDSGlobalConstants.hh"
@@ -289,7 +297,16 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
     {_READ(itsOutputNtupleFileName);}
   else if(name=="NUMBER_OF_EVENTS_PER_NTUPLE")
     {_READ(itsNumberOfEventsPerNtuple);}
-
+  else if(name=="LW_CAL_WIDTH")
+    {_READ(itsLWCalWidth);
+      itsLWCalWidth*=cm;
+    }
+  else if(name=="LW_CAL_OFFSET")
+    {_READ(itsLWCalOffset);
+      itsLWCalOffset*=cm;
+    }
+  else if(name=="LW_CAL_MATERIAL")
+    {_READ(itsLWCalMaterial);}
 
   // JCC Addded for Grid Farm multiple job runs 06/07/04
   // ===========================================================
@@ -308,7 +325,33 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
     }
   // ===========================================================
 
+  else if(name=="USE_BEAM_GAS_PLUG")
+    {_READ(itsUseBeamGasPlug);}
+  else if(name=="BEAM_GAS_PLUG_Z")
+    {
+      _READ(itsBeamGasPlugZ);
+      itsBeamGasPlugZ*=m;
+    }
 
+  else if(name=="USE_SYNCH_PRIMARY_GEN")
+    {
+      _READ(itsSynchPrimaryGen);
+    }
+  else if(name=="SYNCH_PRIMARY_GEN_ANGLE")
+    {
+      _READ(itsSynchPrimaryAngle);
+      itsSynchPrimaryAngle*=radian;
+    }
+  else if(name=="SYNCH_PRIMARY_GEN_LENGTH")
+    {
+      _READ(itsSynchPrimaryLength);
+      itsSynchPrimaryLength*=m;
+    }
+
+  else if(name=="USE_LAST_MATERIAL_POINT")
+    {
+      _READ(itsUseLastMaterialPoint);
+    }
 
   else
     {
@@ -317,6 +360,48 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
     } 
  
   return 0;
+}
+
+// a robust compiler-invariant method to convert from integer to G4String
+G4String BDSGlobalConstants::StringFromInt(G4int N) 
+{
+  if (N==0) return "0";
+ 
+  G4int nLocal=N, nDigit=0, nMax=1;
+
+  do { nDigit++;
+      nMax*=10;} while(N > nMax-1);
+  
+  nMax/=10;
+  G4String Cnum;
+  do {Cnum+=StringFromDigit(nLocal/nMax);
+      nLocal-= nLocal/nMax * nMax;
+      nMax/=10;}   while(nMax>1);
+  if(nMax!=0)Cnum+=StringFromDigit(nLocal/nMax);
+
+  return Cnum;
+}
+
+// a robust compiler-invariant method to convert from digit to G4String
+G4String BDSGlobalConstants::StringFromDigit(G4int N) 
+{
+  if(N<0 || N>9)
+    G4Exception("Invalid Digit in BDSGlobalConstants::StringFromDigit");
+
+  G4String Cnum;
+
+  if(N==0)Cnum="0";
+  else if(N==1)Cnum="1";
+  else if(N==2)Cnum="2";
+  else if(N==3)Cnum="3";
+  else if(N==4)Cnum="4";
+  else if(N==5)Cnum="5";
+  else if(N==6)Cnum="6";
+  else if(N==7)Cnum="7";
+  else if(N==8)Cnum="8";
+  else if(N==9)Cnum="9"; 
+
+  return Cnum;
 }
 
 BDSGlobalConstants::~BDSGlobalConstants()
