@@ -1,6 +1,7 @@
 /* BDSIM code.    Version 1.0
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+   Last modified 28.12.2004
+   Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
 
 // This code implementation is the intellectual property of
@@ -10,8 +11,8 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSPrimaryGeneratorAction.cc,v 1.3 2004/12/16 22:11:50 agapov Exp $
-// GEANT4 tag $Name:  $
+// $Id: BDSPrimaryGeneratorAction.cc,v 1.2 1999/12/15 14:49:25 gunter Exp $
+// GEANT4 tag $Name: geant4-02-00 $
 //
 // 
 
@@ -55,23 +56,16 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
   particleGun->SetParticleDefinition(TheAccelerator->
                                       GetBeamParticleDefinition());
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-
   particleGun->
     SetParticlePosition(G4ThreeVector(0.*cm,0.*cm,
 				      -BDSGlobals->GetWorldSizeZ()));
-
   particleGun->SetParticleEnergy(TheAccelerator->GetBeamKineticEnergy());
 
-
-  // IA: the engine should be passed by reference, not by pointer,
-  // otherwise two subsequent destructor calls will crash
-
-  GaussGen=new RandGauss( *HepRandom::getTheEngine() );
-  FlatGen=new RandFlat( *HepRandom::getTheEngine() );
+  GaussGen=new RandGauss(HepRandom::getTheEngine());
+  FlatGen=new RandFlat(HepRandom::getTheEngine());
 
   if (BDSGlobals->GetReadBunchFile() && BDSGlobals->GetExtractBunchFile())
     G4Exception(" Both the Extract Bunch and the Read Bunch flags are set!");
-  
   if(BDSGlobals->GetReadBunchFile())InputBunchFile.open("BDSBunch.input");
   else if (BDSGlobals->GetExtractBunchFile())
     { 
@@ -80,6 +74,8 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
       itsBDSExtract->rndmst5(12,34,56,78);
       // tmp
       //      itsBDSExtractO=new BDSExtractO(filename);
+
+
     }
 
 
@@ -102,17 +98,38 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
 
     }
 
+  // gab Dec04 Muon Scale Factor
+  /*
+  G4cout<<"Accelerator Type="<<BDSGlobals->GetAcceleratorType()->GetType()<<G4endl;
+  if(BDSGlobals->GetAcceleratorType()->GetType()=="ilc")
+    { 
+      G4int iPass=0;
+      G4double E;
+      for (int iCount=0; iCount<1000000;iCount++)
+	{
+	  E=-1;
+	  do{E=4.5160 + 1.5354 *GaussGen->shoot();} while(E<0.);
+	  E=(500./exp(E));
+	  if(E*GeV>BDSGlobals->GetMuonLowestGeneratedEnergy())iPass++;
+	}
+      BDSGlobals->
+	SetMuonEnergyCutScaleFactor(G4double(iCount)/G4double(iPass));
+      G4cout<<" MuonScaleFactor="<<
+	BDSGlobals->GetMuonEnergyCutScaleFactor()<<G4endl;
+    }
+
+  */
 }
 
 //===================================================
 
 BDSPrimaryGeneratorAction::~BDSPrimaryGeneratorAction()
 {
-  delete particleGun; 
+  delete particleGun;
   delete gunMessenger;
-  delete GaussGen;  
-  delete FlatGen;   
-  if(itsBDSExtract) delete itsBDSExtract;
+  delete GaussGen;
+  delete FlatGen;
+  if(itsBDSExtract)delete itsBDSExtract;
 }
 //===================================================
 
@@ -131,13 +148,13 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double y0 = 0.;
   G4double z0 = 0.;
 
-  // IA: added GetType()
-  if(BDSGlobals->GetAcceleratorType()->GetType()!="atf")
+  if(BDSGlobals->GetAcceleratorType()!="atf")
     z0 = -BDSGlobals->GetWorldSizeZ();
   
   G4double t,dx,xp,dy,yp,zp,E,dz;
   
   BDSAcceleratorType* TheAccelerator=BDSGlobals->GetAcceleratorType();
+
   
   if (rndmFlag == "on")
     {
@@ -217,63 +234,107 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	// minus sign because things are defined at a single starting z value.
 	if(TheAccelerator->GetPhaseSpaceType()=="normal")
 	  {
-	    if(TheAccelerator->GetAlphaX())
+	    G4bool FireMuonsOnly=false;
+
+	    // gab Dec04 Just shoot muons:
+	    if(BDSGlobals->GetAcceleratorType()->GetType()=="ilc"
+	       &&FireMuonsOnly)
 	      {
-		dx=TheAccelerator->GetSigmaX()*GaussGen->shoot();
-		G4double t=TheAccelerator->GetSigmaX()*GaussGen->shoot();
-		xp = (t-TheAccelerator->GetAlphaX()*dx)/
-		  TheAccelerator->GetBetaX();
-		  //dx=TheAccelerator->GetSigmaX()*GaussGen->shoot()*
-		  //sin(phix);
-		  //xp=TheAccelerator->GetSigmaXprime()*GaussGen->shoot()*
-		  //(cos(phix)-TheAccelerator->GetAlphaX()*sin(phix));
+		// gab Dec04 temp for Muons generator post-absorber:
+		
+		E=-1;
+		do
+		  { 
+		    E=-1;
+		    do{E=4.5160 + 1.5354 *GaussGen->shoot();} while(E<0.);
+		    E=(500./exp(E));
+		  }
+		while(E*GeV<BDSGlobals->GetMuonLowestGeneratedEnergy());
+		
+		G4double theta=abs(GaussGen->shoot())*0.1566/E;
+		E*=GeV;
+		G4double phi=twopi*FlatGen->shoot();
+		dx=0.;
+		dy=0.;
+		dz=0.;
+		
+		G4double sth=sin(theta);
+		xp=sth*cos(phi);
+		yp=sth*sin(phi);		  
+		
+		
+		if(FlatGen->shoot()>0.5)
+		  particleGun->
+		    SetParticleDefinition
+		    ( 
+		     G4ParticleTable::GetParticleTable()->
+		     FindParticle("mu-"));
+		else
+		  particleGun->
+		    SetParticleDefinition
+		    ( 
+		     G4ParticleTable::GetParticleTable()->
+		     FindParticle("mu+"));
 	      }
 	    else
 	      {
-		dx=TheAccelerator->GetSigmaX()*GaussGen->shoot();
-		xp= TheAccelerator->GetSigmaXprime() * GaussGen->shoot();
-	      }
-	    
-	    if(TheAccelerator->GetAlphaY())
-	      {
-		dy=TheAccelerator->GetSigmaY()*GaussGen->shoot();
-		G4double t=TheAccelerator->GetSigmaY()*GaussGen->shoot();
-		yp = (t-TheAccelerator->GetAlphaY()*dy)/
-		  TheAccelerator->GetBetaY();
-		//dy=TheAccelerator->GetSigmaY()*GaussGen->shoot()*
-		// sin(phiy);
-		//yp=TheAccelerator->GetSigmaYprime()*GaussGen->shoot()*
-		//  (cos(phiy)-TheAccelerator->GetAlphaY()*sin(phiy));
-	      }
-	    else
-	      {
-		dy= TheAccelerator->GetSigmaY()      * GaussGen->shoot();
-		yp= TheAccelerator->GetSigmaYprime() * GaussGen->shoot();
-	      }
-    
-	    if(TheAccelerator->GetEDisType()=="gaussian")
-	      {
-		E = TheAccelerator->GetBeamKineticEnergy()
-		  + TheAccelerator->GetSigmaE() *GaussGen->shoot();}
-	    else
-	      {
-		E = TheAccelerator->GetBeamKineticEnergy()*
-		  (1+TheAccelerator->GetFlatRelativeEnergySpread()/2.
-		   *(1.-2.*FlatGen->shoot()));
+		if(TheAccelerator->GetAlphaX())
+		  {
+		    dx=TheAccelerator->GetSigmaX()*GaussGen->shoot();
+		    G4double t=TheAccelerator->GetSigmaX()*GaussGen->shoot();
+		    xp = (t-TheAccelerator->GetAlphaX()*dx)/
+		      TheAccelerator->GetBetaX();
+		    //dx=TheAccelerator->GetSigmaX()*GaussGen->shoot()*
+		    //sin(phix);
+		    //xp=TheAccelerator->GetSigmaXprime()*GaussGen->shoot()*
+		    //(cos(phix)-TheAccelerator->GetAlphaX()*sin(phix));
+		  }
+		else
+		  {
+		    dx=TheAccelerator->GetSigmaX()*GaussGen->shoot();
+		    xp= TheAccelerator->GetSigmaXprime() * GaussGen->shoot();
+		  }
+		
+		if(TheAccelerator->GetAlphaY())
+		  {
+		    dy=TheAccelerator->GetSigmaY()*GaussGen->shoot();
+		    G4double t=TheAccelerator->GetSigmaY()*GaussGen->shoot();
+		    yp = (t-TheAccelerator->GetAlphaY()*dy)/
+		      TheAccelerator->GetBetaY();
+		    //dy=TheAccelerator->GetSigmaY()*GaussGen->shoot()*
+		    // sin(phiy);
+		    //yp=TheAccelerator->GetSigmaYprime()*GaussGen->shoot()*
+		    //  (cos(phiy)-TheAccelerator->GetAlphaY()*sin(phiy));
+		  }
+		else
+		  {
+		    dy= TheAccelerator->GetSigmaY()      * GaussGen->shoot();
+		    yp= TheAccelerator->GetSigmaYprime() * GaussGen->shoot();
+		  }
+		
+		if(TheAccelerator->GetEDisType()=="gaussian")
+		  {
+		    E = TheAccelerator->GetBeamKineticEnergy()
+		      + TheAccelerator->GetSigmaE() *GaussGen->shoot();}
+		else
+		  {
+		    E = TheAccelerator->GetBeamKineticEnergy()*
+		      (1+TheAccelerator->GetFlatRelativeEnergySpread()/2.
+		       *(1.-2.*FlatGen->shoot()));
+		  }
 	      }
 	  }
 	else if(TheAccelerator->GetPhaseSpaceType()=="halo_flat")
 	  {
-
+	    
 	    if(BDSGlobals->GetUseHaloRadius())
 	      {
 		// generate a point in a five dimensional shell
 		// determined by variables HaloInnerRadius and HaloOuterRadius
-
+		
 		G4bool lEok=false;
 		G4double dElo,dEhi;
-
-
+		
 		dElo=1.-TheAccelerator->GetHaloLowerRelativeEnergySpread();
 		dEhi=TheAccelerator->GetHaloUpperRelativeEnergySpread()-1.;
 
@@ -467,7 +528,6 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       E=TheAccelerator->GetBeamKineticEnergy();
     }
 
-
   /*
   // temp
 //  x0=0.5*cm;
@@ -479,6 +539,8 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   E=TheAccelerator->GetBeamKineticEnergy();
   // end of temp
   */
+  
+
 
   G4ThreeVector PartMomDir=G4ThreeVector(xp,yp,zp);
 
@@ -493,9 +555,13 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   particleGun->GeneratePrimaryVertex(anEvent);
 
-  //  G4cout<<" BDSPrimaryGeneratorAction: mom="<<PartMomDir<<" Energy="<<E<<G4endl;
-
-  // G4cout<<" BDSPrimaryGeneratorAction: z0="<<z0/m<<" m"<<G4endl;
+  if(BDSGlobals->GetVerboseStep())
+    {
+      G4cout<<" BDSPrimaryGeneratorAction: mom="<<PartMomDir
+	    <<" Energy="<<E<<G4endl;
+      G4cout<<" BDSPrimaryGeneratorAction: Pos="<<
+	particleGun->GetParticlePosition()<<G4endl;
+    }
 
   // save initial values outside scope for entry into the samplers:
   initial_x=x0;

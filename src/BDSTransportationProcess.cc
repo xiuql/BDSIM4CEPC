@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSTransportationProcess.cc,v 1.2 2005/01/19 18:10:44 agapov Exp $
+// $Id: BDSTransportationProcess.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 // 
 // ------------------------------------------------------------
@@ -452,7 +452,7 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
 #endif
   }    
         
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
   fParticleChange.ProposeTrueStepLength(geometryStepLength) ;
 #else
   fParticleChange.SetTrueStepLength(geometryStepLength) ;
@@ -473,7 +473,7 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
   //  Code for specific process 
   //
 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
   fParticleChange.ProposePosition(fTransportEndPosition) ;
   fParticleChange.ProposeMomentumDirection(fTransportEndMomentumDir) ;
   fParticleChange.ProposeEnergy(fTransportEndKineticEnergy) ;
@@ -535,7 +535,7 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
      deltaTime = fCandidateEndGlobalTime - startTime ;
   }
 
-  //#ifdef G4VERSION_4_7
+  //#if G4VERSION > 6
   //fParticleChange.ProposeProperTime( fCandidateEndGlobalTime ) ;
   //#else
   //fParticleChange.SetTimeChange( fCandidateEndGlobalTime ) ;
@@ -546,7 +546,7 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
   G4double  restMass       = track.GetDynamicParticle()->GetMass() ;
   G4double deltaProperTime = deltaTime*( restMass/track.GetTotalEnergy() ) ;
 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
   fParticleChange.ProposeProperTime(track.GetProperTime() + deltaProperTime) ;
 #else
   fParticleChange.SetProperTimeChange(track.GetProperTime() + deltaProperTime) ;
@@ -562,7 +562,7 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
   {
       // Kill the looping particle 
       //
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
       fParticleChange.ProposeTrackStatus( fStopAndKill )  ;
 #else
       fParticleChange.SetStatusChange( fStopAndKill )  ;
@@ -617,7 +617,7 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
   //                             to corresponding members in G4Track)
   // fParticleChange.Initialize(track) ;  // To initialise TouchableChange
 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
   fParticleChange.ProposeTrackStatus(track.GetTrackStatus()) ;
 #else
   fParticleChange.SetStatusChange(track.GetTrackStatus()) ;
@@ -642,7 +642,7 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
     //
     if( fCurrentTouchableHandle->GetVolume() == 0 )
     {
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
        fParticleChange.ProposeTrackStatus( fStopAndKill ) ;
 #else
        fParticleChange.SetStatusChange( fStopAndKill ) ;
@@ -759,7 +759,7 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
 
   // ( <const_cast> pNewMaterial ) ;
 
-#ifndef G4VERSION_4_7
+#if G4VERSION < 7
   fParticleChange.SetMaterialChange( (G4Material *) pNewMaterial ) ;
 #endif
 
@@ -779,7 +779,7 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
                                pNewMaterialCutsCouple->GetProductionCuts());
   }
 
-#ifndef G4VERSION_4_7
+#if G4VERSION < 7
   fParticleChange.SetMaterialCutsCoupleChange( pNewMaterialCutsCouple );
 #endif 
 

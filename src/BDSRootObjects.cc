@@ -14,7 +14,7 @@ BDSRootObjects::BDSRootObjects ()
 BDSRootObjects::~BDSRootObjects()
 {  
 
-  if(theRootOutputFile)
+  if(theRootOutputFile->IsOpen())
     {
       theRootOutputFile->Write();
       theRootOutputFile->Close();

@@ -21,7 +21,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSeBremsstrahlung.cc,v 1.2 2005/01/19 18:09:39 agapov Exp $
+// $Id: BDSeBremsstrahlung.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -787,7 +787,7 @@ G4VParticleChange* BDSeBremsstrahlung::PostStepDoIt(const G4Track& trackData,
     if (KineticEnergy < GammaEnergyCut)
        {
          
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
 	 aParticleChange.ProposeMomentumDirection( ParticleDirection );
          aParticleChange.ProposeEnergy( KineticEnergy );
          aParticleChange.ProposeLocalEnergyDeposit (0.);
@@ -950,7 +950,7 @@ G4VParticleChange* BDSeBremsstrahlung::PostStepDoIt(const G4Track& trackData,
 
    G4double NewKinEnergy = KineticEnergy - GammaEnergy;
   
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
    if (NewKinEnergy > 0.)
      {
       aParticleChange.ProposeMomentumDirection( ParticleDirection );

@@ -34,7 +34,7 @@ G4int PDGtype,G4int nEvent)
 BDSSamplerHit::~BDSSamplerHit()
 {;}
 
-BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right)
+BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right) : G4VHit()
 {
   itsNumber=right.itsNumber;
 

@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSGammaConversion.cc,v 1.2 2005/01/19 18:10:44 agapov Exp $
+// $Id: BDSGammaConversion.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 //------------------ BDSGammaConversion physics process -------------------------
@@ -401,7 +401,7 @@ G4VParticleChange* BDSGammaConversion::PostStepDoIt(const G4Track& aTrack,
                       G4Positron::Positron(),PositDirection,PositKineEnergy);
    fParticleChange.AddSecondary(aParticle2); 
 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
    fParticleChange.ProposeLocalEnergyDeposit(localEnergyDeposit);
 #else
    fParticleChange.SetLocalEnergyDeposit(localEnergyDeposit);
@@ -568,7 +568,7 @@ G4VParticleChange* BDSGammaConversion::PostStepDoIt(const G4Track& aTrack,
    
    fParticleChange.SetMomentumChange( 0., 0., 0. );
    fParticleChange.SetEnergyChange( 0. ); 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
    fParticleChange.ProposeTrackStatus( fStopAndKill );
 #else
    fParticleChange.SetStatusChange( fStopAndKill );

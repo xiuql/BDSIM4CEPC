@@ -33,7 +33,7 @@ G4double NewKinEnergy;
   // Update the incident particle 
   //
 
-#ifdef G4VERSION_4_7 
+#if G4VERSION > 6 
 {
     aParticleChange.ProposeMomentumDirection(trackData.GetMomentumDirection());
     aParticleChange.ProposeEnergy(NewKinEnergy);

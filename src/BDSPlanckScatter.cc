@@ -82,7 +82,7 @@ G4VParticleChange* BDSPlanckScatter::PostStepDoIt(const G4Track& trackData,
   
   G4LorentzVector ScatEl=itsComptonEngine->GetScatteredElectron();
 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
   if (NewKinEnergy > 0.)
     {
       aParticleChange.ProposeMomentumDirection(ScatEl.vect().unit());

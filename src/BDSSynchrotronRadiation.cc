@@ -91,7 +91,7 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
       */
 
 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
       if (NewKinEnergy > 0.)
 	{
 	  //

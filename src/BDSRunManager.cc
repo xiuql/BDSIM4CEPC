@@ -52,6 +52,8 @@ void BDSRunManager::DoEventLoop(G4int n_event,const char* macroFile,G4int n_sele
 
     currentEvent = GenerateEvent(i_event);
 
+    if(currentEvent == NULL) G4cerr<<__FILE__<<" : "<<__LINE__<<"Event generation failed "<<G4endl;
+
     eventManager->ProcessOneEvent(currentEvent);
 
     AnalyzeEvent(currentEvent);

@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSUserSpecialCuts.cc,v 1.2 2005/01/19 18:10:44 agapov Exp $
+// $Id: BDSUserSpecialCuts.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 // 
 // --------------------------------------------------------------
@@ -109,7 +109,7 @@ G4VParticleChange* BDSUserSpecialCuts::PostStepDoIt(
 {
    aParticleChange.Initialize(aTrack);
 
-#ifdef G4VERSION_4_7
+#if G4VERSION > 6
    aParticleChange.ProposeEnergy(0.) ;
    aParticleChange.ProposeLocalEnergyDeposit (aTrack.GetKineticEnergy()) ;
 #else
