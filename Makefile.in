@@ -27,7 +27,7 @@ LDFLAGS += -L$(G4LIBDIR)
 install:
 
 distrib:
-	tar -C .. -czvf BDSIM.tar.gz BDSIM/src BDSIM/include \
+	tar --ignore-failed-read -C .. -czvf BDSIM.tar.gz BDSIM/src BDSIM/include \
 	BDSIM/bdsim.cc BDSIM/bdsimrun BDSIM/Makefile.in \
 	BDSIM/configure BDSIM/README BDSIM/optics BDSIM/BDSInput.cards \
 	BDSIM/BDS_vis.mac
