@@ -1,0 +1,71 @@
+/* BDSIM code.    Version 1.1
+   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
+   Last modified 4.1.2004
+   Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
+*/
+//
+// ********************************************************************
+// * DISCLAIMER                                                       *
+// *                                                                  *
+// * The following disclaimer summarizes all the specific disclaimers *
+// * of contributors to this software. The specific disclaimers,which *
+// * govern, are listed with their locations in:                      *
+// *   http://cern.ch/geant4/license                                  *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.                                                             *
+// *                                                                  *
+// * This  code  implementation is the  intellectual property  of the *
+// * GEANT4 collaboration.                                            *
+// * By copying,  distributing  or modifying the Program (or any work *
+// * based  on  the Program)  you indicate  your  acceptance of  this *
+// * statement, and all its terms.                                    *
+// ********************************************************************
+//
+//
+// $Id: BDSTransportationProcess.icc,v 1.1.1.1 2004/12/14 18:57:41 agapov Exp $
+// GEANT4 tag $Name:  $
+//
+
+// 
+//
+//        Inline function implementation.
+//
+// =======================================================================
+// Created:  9 June 1998, J. Apostolakis
+// =======================================================================
+//
+
+inline void
+BDSTransportationProcess::SetPropagatorInField( G4PropagatorInField* pFieldPropagator)
+{
+   fFieldPropagator= pFieldPropagator;
+}
+
+inline G4PropagatorInField* BDSTransportationProcess::GetPropagatorInField()
+{
+   return fFieldPropagator;
+}
+
+inline G4bool BDSTransportationProcess::DoesGlobalFieldExist()
+{
+  G4TransportationManager* transportMgr;
+  transportMgr= G4TransportationManager::GetTransportationManager();
+
+  // fFieldExists= transportMgr->GetFieldManager()->DoesFieldExist();
+  // return fFieldExists;
+  return transportMgr->GetFieldManager()->DoesFieldExist();
+}
+
+inline void BDSTransportationProcess::SetVerboseLevel( G4int verboseLev )
+{
+  fVerboseLevel= verboseLev;
+}
+
+inline G4int BDSTransportationProcess::GetVerboseLevel( ) const
+{
+  return fVerboseLevel;
+}

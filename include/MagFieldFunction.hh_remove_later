@@ -1,0 +1,43 @@
+#ifndef MAGFIELDFN_HH
+#define MAGFIELDFN_HH
+
+#include "globals.hh"
+
+class MagFieldFunction
+{
+  public:  // with description
+  
+MagFieldFunction();
+  //MagFieldFunction(G4double Bin[3]);		       
+  //MagFieldFunction(G4double bGrad);		       
+
+
+MagFieldFunction(G4double Bin[3],
+		 G4double bGrad1=0.,
+		 G4double bGrad2=0.,
+		 G4double bGrad3=0.,
+		 G4bool skewtype=false);
+
+G4double* MagFieldFunction::operator() (const G4double pos[3])const;
+
+~MagFieldFunction() ;
+
+G4double* GetB();
+
+protected:
+
+  private:
+G4double B[3] ;
+G4double k1,k2,k3;
+G4bool skew;
+
+};
+
+inline G4double* MagFieldFunction::GetB()
+{
+  G4cout<< "in magfield GETB: B="<<B<< "Vals are"<<B[0]<<B[1]<<B[2]
+	<<G4endl;
+  return B;
+}
+
+#endif
