@@ -11,10 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSEventAction.cc,v 1.1.1.1 2004/11/18 17:42:36 ilia Exp $
-// GEANT4 tag $Name:  $
-//
-// 
+
 
 //======================================================
 //======================================================
@@ -51,6 +48,8 @@ extern G4double BDSeBremFireDist;
 
 #include "BDSLWCalorimeter.hh"
 #include "BDSLWCalorimeterHit.hh"
+#include "BDSRootObjects.hh"
+#include "BDSSynchrotronRadiation.hh"
 
 #include "BDSAcceleratorComponent.hh"
 typedef list<BDSAcceleratorComponent*>  BDSBeamline;
@@ -201,9 +200,10 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
  if (SamplerCollID==-1) 
    SamplerCollID = SDman->GetCollectionID("SamplerCollection");
 
- if (LWCalorimeterCollID==-1) 
-   LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
-
+ if(BDSRoot->GetLWCalorimeterNumber()>0){
+   if (LWCalorimeterCollID==-1) 
+     LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
+ }
  FireLaserCompton=true;
 }
 
