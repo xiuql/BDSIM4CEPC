@@ -2,6 +2,10 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added X and Y Offset methods.
+   Added GAB innermostvolume methods
 */
 
 #ifndef BDSAcceleratorComponent_h
@@ -44,6 +48,12 @@ public:
   void SetSensitiveVolume(G4LogicalVolume* aLogVol);
   G4LogicalVolume* GetSensitiveVolume();
 
+  void SetInnerMostLogicalVolume(G4LogicalVolume* aLogVol);
+  G4LogicalVolume* GetInnerMostLogicalVolume() const;
+
+  G4double GetXOffset();
+  G4double GetYOffset();
+  
   G4UserLimits* GetInnerBPUserLimits();
 
   G4double GetZLower();
@@ -63,7 +73,9 @@ public:
 			  G4double aXAper,
 			  G4double aYAper,
 			  G4VisAttributes* aVisAtt,
-			  G4double angle=0.);
+			  G4double angle=0.,
+			  G4double XOffset=0.,
+			  G4double YOffset=0.);
 
 
   G4VisAttributes* GetVisAttributes()const;
@@ -87,7 +99,12 @@ protected:
   G4UserLimits* itsOuterUserLimits;
   G4UserLimits* itsMarkerUserLimits;
   G4UserLimits* itsInnerBeampipeUserLimits;
+  G4LogicalVolume* itsInnerMostLogicalVolume;
 
+  // JCC Mar05 >>
+  G4double itsXOffset;
+  G4double itsYOffset;
+  // << JCC Mar05
 
 private:
   G4double itsSPos;
@@ -107,10 +124,12 @@ inline BDSAcceleratorComponent::
 BDSAcceleratorComponent (
 			G4String& aName,G4double aLength, 
 			G4double aBpRadius,G4double aXAper,G4double aYAper, 
-			G4VisAttributes* aVisAtt,G4double angle  ): 
+			G4VisAttributes* aVisAtt,G4double angle,
+			G4double XOffset, G4double YOffset): 
   itsName(aName),itsLength(aLength),itsBpRadius(aBpRadius),
   itsXAper(aXAper),itsYAper(aYAper),
-  itsAngle(angle), itsVisAttributes(aVisAtt)
+  itsVisAttributes(aVisAtt),itsAngle(angle),
+  itsXOffset(XOffset),itsYOffset(YOffset)
 {itsSensitiveVolume=NULL;
  itsInnerBeampipeUserLimits =new G4UserLimits();
 };
@@ -130,6 +149,13 @@ inline void BDSAcceleratorComponent::SetName (G4String aName)
 
 inline G4LogicalVolume* BDSAcceleratorComponent::GetMarkerLogicalVolume() const
 {return itsMarkerLogicalVolume;}
+
+inline G4LogicalVolume* BDSAcceleratorComponent::GetInnerMostLogicalVolume() const
+{return itsInnerMostLogicalVolume;}
+
+inline void BDSAcceleratorComponent::
+SetInnerMostLogicalVolume(G4LogicalVolume* aLogVol)
+{itsInnerMostLogicalVolume = aLogVol;}
 
 inline G4VisAttributes* BDSAcceleratorComponent::GetVisAttributes() const
 {return itsVisAttributes;}
@@ -187,6 +213,13 @@ inline  G4double BDSAcceleratorComponent::GetSynchEnergyLoss()
 
 inline  G4UserLimits* BDSAcceleratorComponent::GetInnerBPUserLimits()
   {return itsInnerBeampipeUserLimits;}
+
+inline  G4double BDSAcceleratorComponent::GetXOffset()
+{return itsXOffset;}
+
+inline  G4double BDSAcceleratorComponent::GetYOffset()
+{return itsYOffset;}
+
 #endif
 
 
