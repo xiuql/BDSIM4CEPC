@@ -3,7 +3,7 @@
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
-
+ 
 /* Modifications to BDSSynchrotronRadiation physics process
    Author of Mods: John Carter, Royal Holloway, Univ. of London
    Date: 16.11.2004
