@@ -2,6 +2,10 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Removed StringFromInt function - using BDSGlobals version
+   Added/Changed Sampler code for Plane Sampler or Cylinder Sampler (GABs Code)
 */
 
 // This code implementation is the intellectual property of
@@ -69,13 +73,8 @@ extern ECList* theECList;
 extern G4double BDSeBremFireDist;
 extern G4double BDSeBremZMin,BDSeBremZMax;
 
+G4int TempNProc;
 
-// gab tmp:
-//extern G4String LastVolName;
-//extern G4ThreeVector LastPos;
-//extern G4ThreeVector LastMom;
-
-// gab tmp
 G4double htot;
 
 G4int event_number;
@@ -86,7 +85,7 @@ G4bool FireLaserCompton;
 //======================================================
 
 BDSEventAction::BDSEventAction()
-:SamplerCollID(-1),drawFlag("all"),
+:SamplerCollID_plane(-1),SamplerCollID_cylin(-1),drawFlag("all"),
  eventMessenger(NULL),LWCalorimeterCollID(-1)
 {  eventMessenger = new BDSEventActionMessenger(this);
  if(BDSGlobals->GetWriteBunchFile())
@@ -115,96 +114,103 @@ BDSEventAction::~BDSEventAction()
 
 void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 {
+  TempNProc=0; 
   
- event_number = evt->GetEventID();
- htot=0.;
-
- if(BDSGlobals->GetStoreMuonTrajectories())
-   theMuonTrackVector=new MuonTrackVector();
-
-
- if(BDSGlobals->GetBDSeBremOn())
-   {
-     // first reset all the step lengths
-     for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
-       (*iBeam)->GetInnerBPUserLimits()->
-	 SetMaxAllowedStep((*iBeam)->GetLength());
-
-     //   if(LastComp)
-     //     {
-     //     if(LastComp->GetInnerBPUserLimits())
-     //       {
-     // LastComp->GetInnerBPUserLimits()->
-     //   SetMaxAllowedStep(LastComp->GetLength());
-     
-
-     
-     BDSeBremFireDist=BDSGlobals->GetTotalS()*(0.5-G4UniformRand());
-     BDSeBremsFiredThisEvent=false;
-     
-     // determine which Log volume the event occurs
-     
-     for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
-       {
-	 if( ((*iBeam)->GetZLower()<BDSeBremFireDist)&&
-	     ((*iBeam)->GetZUpper()>BDSeBremFireDist)  )
-	   {
-	     BDSeBremZMin=(*iBeam)->GetZLower();
-	     BDSeBremZMax=(*iBeam)->GetZUpper();	 
-
-	     G4double MaxStep=BDSeBremFireDist-(*iBeam)->GetZLower()-1*cm;
-	     if(MaxStep<1*mm)MaxStep=1*mm;
-	     (*iBeam)->GetInnerBPUserLimits()->
-	       SetMaxAllowedStep(MaxStep);
-	   }
-       }
-   }
-
- if (event_number == 0)
-   {
-
-     G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
-       StringFromInt(itsOutputFileNumber++)+".root";
-     BDSRoot->SetupNewFile(filename);
-
-     // old paw stuff
-     //G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
-     //  StringFromInt(itsOutputFileNumber++)+".rz";
-     //BDSPaw->SetupNewFile(filename);
-     // old paw stuff
-     //  G4int istat;
-     //  StringFromInt(itsOutputFileNumber++)+".rz";
-     //  char* cfile=filename.data();
-     //  G4String pawD="sampler"+StringFromInt(itsOutputFileNumber);
-     //  char* pawDir=pawD.data();
-     //  char* pawDir="sampler";
-     //  HROPEN(itsOutputFileNumber,pawDir,cfile,"N",itsRecordSize,istat);
-
-   }
-
- if ((event_number+1)%printModulo == 0)
-   { 
-         G4cout << "\n---> Begin of event: " << event_number ;
-	 if(BDSGlobals->GetUseTimer())
-	   { 
-	     BDSGlobals->GetTimer()->Stop();
-	     G4cout<<" Time: "<<*BDSGlobals->GetTimer();
-	     BDSGlobals->GetTimer()->Start();
-	   }
-	 G4cout<<G4endl;
-   }
- 
- G4SDManager * SDman = G4SDManager::GetSDMpointer();
-
- if(BDSRoot->GetSamplerNumber()>0){   
-   if (SamplerCollID==-1) 
-     SamplerCollID = SDman->GetCollectionID("SamplerCollection");
- }
- if(BDSRoot->GetLWCalorimeterNumber()>0){
-   if (LWCalorimeterCollID==-1) 
-     LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
- }
- FireLaserCompton=true;
+  event_number = evt->GetEventID();
+  htot=0.;
+  
+  if(BDSGlobals->GetStoreMuonTrajectories())
+    theMuonTrackVector=new MuonTrackVector();
+  
+  
+  if(BDSGlobals->GetBDSeBremOn())
+    {
+      // first reset all the step lengths
+      for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
+	(*iBeam)->GetInnerBPUserLimits()->
+	  SetMaxAllowedStep((*iBeam)->GetLength());
+      
+      //   if(LastComp)
+      //     {
+      //     if(LastComp->GetInnerBPUserLimits())
+      //       {
+      // LastComp->GetInnerBPUserLimits()->
+      //   SetMaxAllowedStep(LastComp->GetLength());
+      
+      
+      
+      BDSeBremFireDist=BDSGlobals->GetTotalS()*(0.5-G4UniformRand());
+      BDSeBremsFiredThisEvent=false;
+      
+      // determine which Log volume the event occurs
+      
+      for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
+	{
+	  if( ((*iBeam)->GetZLower()<BDSeBremFireDist)&&
+	      ((*iBeam)->GetZUpper()>BDSeBremFireDist)  )
+	    {
+	      BDSeBremZMin=(*iBeam)->GetZLower();
+	      BDSeBremZMax=(*iBeam)->GetZUpper();	 
+	      
+	      G4double MaxStep=BDSeBremFireDist-(*iBeam)->GetZLower()-1*cm;
+	      if(MaxStep<1*mm)MaxStep=1*mm;
+	      (*iBeam)->GetInnerBPUserLimits()->
+		SetMaxAllowedStep(MaxStep);
+	    }
+	}
+    }
+  
+  if (event_number == 0)
+    {
+      
+      G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
+	BDSGlobals->StringFromInt(itsOutputFileNumber++)+".root";
+      BDSRoot->SetupNewFile(filename);
+      
+      // old paw stuff
+      //G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
+      //  StringFromInt(itsOutputFileNumber++)+".rz";
+      //BDSPaw->SetupNewFile(filename);
+      // old paw stuff
+      //  G4int istat;
+      //  StringFromInt(itsOutputFileNumber++)+".rz";
+      //  char* cfile=filename.data();
+      //  G4String pawD="sampler"+StringFromInt(itsOutputFileNumber);
+      //  char* pawDir=pawD.data();
+      //  char* pawDir="sampler";
+      //  HROPEN(itsOutputFileNumber,pawDir,cfile,"N",itsRecordSize,istat);
+      
+    }
+  
+  if ((event_number+1)%printModulo == 0)
+    { 
+      G4cout << "\n---> Begin of event: " << event_number ;
+      if(BDSGlobals->GetUseTimer())
+	{ 
+	  BDSGlobals->GetTimer()->Stop();
+	  G4cout<<" Time: "<<*BDSGlobals->GetTimer();
+	  BDSGlobals->GetTimer()->Start();
+	}
+      G4cout<<G4endl;
+    }
+  
+  G4SDManager * SDman = G4SDManager::GetSDMpointer();
+  
+  if(BDSRoot->GetSamplerNumber()>0){   
+    if (SamplerCollID_plane==-1)
+      SamplerCollID_plane = SDman->GetCollectionID("Sampler_plane");
+  }
+  
+  if(BDSRoot->GetSampCylinderNumber()>0){   
+    if (SamplerCollID_cylin==-1)
+      SamplerCollID_cylin = SDman->GetCollectionID("Sampler_cylinder");
+  }
+  
+  if(BDSRoot->GetLWCalorimeterNumber()>0){
+    if (LWCalorimeterCollID==-1) 
+      LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
+  }
+  FireLaserCompton=true;
 }
 
 //======================================================
@@ -221,9 +227,42 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   BDSLWCalorimeterHitsCollection* LWCalHC=NULL;
   BDSEnergyCounterHitsCollection* BDSEnergyCounter_HC=NULL;
 
-  if(SamplerCollID>=0)
-    SampHC=(BDSSamplerHitsCollection*)(HCE->GetHC(SamplerCollID));
-  
+  if(SamplerCollID_plane>=0)
+    SampHC = (BDSSamplerHitsCollection*)(HCE->GetHC(SamplerCollID_plane));
+
+  if(SampHC)
+    {
+      G4int n_hit = SampHC->entries();
+      for (G4int i=0;i<n_hit;i++)
+	{
+	  BDSRoot->LoadSamplerTree((*SampHC)[i]);
+
+	  if(BunchOutputFile)
+	    {
+	      G4cout.precision(6);
+	      *BunchOutputFile<<(*SampHC)[i]->GetMom()/GeV
+			      <<" "
+			      <<(*SampHC)[i]->GetX()/micrometer
+			      <<" "
+			      <<(*SampHC)[i]->GetY()/micrometer
+			      <<" "
+			      <<(*SampHC)[i]->GetZ()/micrometer
+			      <<" "
+			      <<(*SampHC)[i]->GetXPrime()/(1.e-6*radian)
+			      <<" "
+			      <<(*SampHC)[i]->GetYPrime()/(1.e-6*radian)
+			      <<G4endl;
+	    }
+	}
+    }
+	
+  SampHC=NULL;
+  if(SamplerCollID_cylin>=0)
+    SampHC = (BDSSamplerHitsCollection*)(HCE->GetHC(SamplerCollID_cylin));
+  if (SampHC)
+    for (G4int i=0;i<SampHC->entries();i++)
+      BDSRoot->LoadSamplerTree((*SampHC)[i]);
+
   if(LWCalorimeterCollID>=0) 
     LWCalHC=(BDSLWCalorimeterHitsCollection*)(HCE->GetHC(LWCalorimeterCollID));
   
@@ -257,44 +296,6 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 	    }
 	}
     }
-  
-  if (SampHC)
-    {
-      G4int n_hit = SampHC->entries();
-      // G4int nSampler;
-      //      G4float r[14];
-      for (G4int i=0;i<n_hit;i++)
-	{
-	  BDSRoot->LoadSamplerTree((*SampHC)[i]);
-
-	  
-	  // tmp
-	  //	  if(sqrt(pow(r[6],2)+pow(r[8],2))<0.1)
-	  // tmp
-	  //if((*SampHC)[i]->GetPDGtype()!=11)
-	  //	    HFN(nSampler,r);
-
-
-	  //	 G4cout<<nSampler<<"r[6]= "<<r[6]<<G4endl;
-
-	  if(BunchOutputFile)
-	    {
-	      G4cout.precision(6);
-	      *BunchOutputFile<<(*SampHC)[i]->GetMom()/GeV
-			      <<" "
-			      <<(*SampHC)[i]->GetX()/micrometer
-			      <<" "
-			      <<(*SampHC)[i]->GetY()/micrometer
-			      <<" "
-			      <<(*SampHC)[i]->GetZ()/micrometer
-			      <<" "
-			      <<(*SampHC)[i]->GetXPrime()/(1.e-6*radian)
-			      <<" "
-			      <<(*SampHC)[i]->GetYPrime()/(1.e-6*radian)
-			      <<G4endl;
-	    }
-	}
-    }
 
   if (LWCalHC)
     {
@@ -313,7 +314,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
       else
 	{
 	  G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
-	    StringFromInt(itsOutputFileNumber++)+".root";
+	    BDSGlobals->StringFromInt(itsOutputFileNumber++)+".root";
 	  BDSRoot->SetupNewFile(filename);
 	}      
     }
@@ -381,17 +382,5 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 	    }
 	}
 }
-
-
-G4String BDSEventAction::StringFromInt(G4int N)
-{
-  //JCC 02/07/04
-  //char* CharN;
-  char CharN[50];
-  sprintf(CharN,"%d",N);
-  G4String Cnum(CharN);
-  return Cnum;
-}
-
 
 //======================================================

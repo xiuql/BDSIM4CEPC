@@ -2,6 +2,10 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Removed StringFromInt function
+   Added/Changed Sampler code for Plane Sampler or Cylinder Sampler (GABs Code)
 */
 
 // This code implementation is the intellectual property of
@@ -11,7 +15,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSEventAction.hh,v 1.1.1.1 2004/12/14 18:57:41 agapov Exp $
+// $Id: BDSEventAction.hh,v 1.1 2005/01/22 17:05:30 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -47,12 +51,11 @@ public:
   void SetDrawFlag   (G4String val)  {drawFlag = val;};
   void SetPrintModulo(G4int    val)  {printModulo = val;};
  
-  G4String StringFromInt(G4int N);
-
   TFile* GetRootOutputFile();
 
 private:
-  G4int                       SamplerCollID; 
+  G4int                       SamplerCollID_plane;                
+  G4int                       SamplerCollID_cylin;                
   G4int                       LWCalorimeterCollID;
   //    G4int                       EnergyCounterCollID;                
   G4String                    drawFlag;
