@@ -1,0 +1,41 @@
+name=bdsim
+G4TARGET=$(name)
+G4EXLIB=true
+
+G4BINDIR=@BINDIR
+G4INSTALL=@G4INSTALL
+ROOTSYS=@ROOTSYS
+
+.PHONY: all
+all: lib bin
+
+ROOTLIBS=`$(ROOTSYS)/bin/root-config --libs`
+ROOTCFLAGS=`$(ROOTSYS)/bin/root-config --cflags`
+
+LDLIBS3 += $(ROOTLIBS)
+
+# standard Geant4 make procedure
+include $(G4INSTALL)/config/binmake.gmk
+
+CPPFLAGS += -DG4VERSION=@G4VERSION
+CPPFLAGS += -Df2cFortran
+CPPFLAGS += $(ROOTCFLAGS)  
+CPPFLAGS += -g -Wall $(ROOTINCS) 
+
+LDFLAGS += -L$(G4LIBDIR) 
+
+install:
+
+distrib:
+	tar -C .. -czvf BDSIM.tar.gz BDSIM/src BDSIM/include \
+	BDSIM/bdsim.cc BDSIM/bdsimrun BDSIM/Makefile.in \
+	BDSIM/configure BDSIM/README BDSIM/optics BDSIM/BDSInput.cards \
+	BDSIM/BDS_vis.mac
+
+htmlmanual: manual.texi
+	makeinfo --no-split --html manual.texi
+
+pdfmanual:  manual.texi
+	texi2pdf manual.texi
+	rm -f *.aux *.cp *.fn *.toc *.pg *.ky *.log *.vr *.tp 
+
