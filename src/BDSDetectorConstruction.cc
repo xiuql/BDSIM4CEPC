@@ -2,6 +2,11 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Added GAB include for BDSBeamPipe.hh
+   Added GAB Gas Plug Code
+   Added X Y Offset code
 */
 
 // This code implementation is the intellectual property of
@@ -11,7 +16,7 @@
 // based on the Program) you indicatbdse your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSDetectorConstruction.cc,v 1.2 2004/12/16 22:11:50 agapov Exp $
+// $Id: BDSDetectorConstruction.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -53,6 +58,7 @@
 #include "BDSAcceleratorType.hh"
 
 #include "BDSRootObjects.hh"
+#include "BDSBeamPipe.hh"
 
 // tmp
 #include "TDirectory.h"
@@ -352,9 +358,13 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS()
    G4cout<<" total length="<<s_tot/m<< " s_local="<<s_local/m<<G4endl;
 
    // reset counters:
-   for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
-     (*LogVolCount)[(*iBeam)->GetMarkerLogicalVolume()->GetName()]=1;
-
+   for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++){
+     // JCC Mar05 - added IF to check that not resetting for Offset Component
+     // This is the only component that should have a length of zero and yet
+     // still be registered as an AcceleratorComponent
+     if((*iBeam)->GetLength()!=0.)
+       (*LogVolCount)[(*iBeam)->GetMarkerLogicalVolume()->GetName()]=1;
+   }
    G4double z_local;
    if(BDSGlobals->GetAcceleratorType()->GetType()!="atf")
      {
@@ -402,6 +412,20 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS()
 
        z=z_local+delta_z/2;
        
+       // JCC Mar05 XY Offset Code>>
+       if((*iBeam)->GetLength()==0.)
+	 {
+	   BDSGlobals->AddHorizontalComponentOffset((*iBeam)->GetXOffset());
+	   BDSGlobals->AddVerticalComponentOffset((*iBeam)->GetYOffset());
+	   G4cout << "Component Offset in X now set to: ";
+	   G4cout << BDSGlobals->GetHorizontalComponentOffset() << G4endl;
+	   G4cout << "Component Offset in Y now set to: ";
+	   G4cout << BDSGlobals->GetVerticalComponentOffset() << G4endl;
+	 }
+       x+=BDSGlobals->GetHorizontalComponentOffset();
+       y+=BDSGlobals->GetVerticalComponentOffset();
+       // << JCC Mar05
+
        TargetPos.setX(x);
        TargetPos.setY(y);
        TargetPos.setZ(z);
@@ -428,61 +452,95 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS()
 
        (*iBeam)->SetZUpper(z_local);
 
-       G4LogicalVolume* LocalLogVol=(*iBeam)->GetMarkerLogicalVolume();
-       G4String LogVolName=LocalLogVol->GetName();
-       int nCopy=(*LogVolCount)[LogVolName]-1;
-       (*LogVolCount)[LogVolName]++;
-	  
-       // set up the sensitive volumes for energy counting:
-       (*iBeam)->SetCopyNumber(nCopy);
-       G4LogicalVolume* SensVol=(*iBeam)->GetSensitiveVolume();
-       if(SensVol)
-	 {
-	   BDSEnergyCounterSD* ECounter=new BDSEnergyCounterSD(LogVolName);
-	   (*iBeam)->SetBDSEnergyCounter(ECounter);
-	   SensVol->SetSensitiveDetector(ECounter);
-	   SDman->AddNewDetector(ECounter);
-	   theECList->push_back(ECounter);
-	 }
-
-       LocalName=(*iBeam)->GetName()+"_phys";
-
-       //G4cout<<" name="<<LocalName<<" pos="<<TargetPos<<" angle_tot="<<
-       //angle_tot<<G4endl;
-
-       G4PVPlacement* PhysiComponentPlace = 
-	 new G4PVPlacement(
-			   RotateComponent,   //  rotation
-			   TargetPos,         // its position
-			   LocalName,	      // its name
-			   LocalLogVol,	      // its logical volume
-			   physiWorld,	      // its mother  volume
-			   false,	      // no boolean operation
-			   nCopy);	      // copy number
-
-       if(use_graphics)
-	 {
-	    (*iBeam)->GetVisAttributes()->SetVisibility(true);
-	   //(*iBeam)->GetVisAttributes()->SetVisibility(false);
-	   //      (*iBeam)->GetVisAttributes()->SetForceSolid(true);
-	   (*iBeam)->GetMarkerLogicalVolume()->
-	     SetVisAttributes((*iBeam)->GetVisAttributes());
-	 }   
+       // JCC Mar05 - Added IF to check for CMPOFFSET by checking against
+       // the Beamline Components Length. CMPOFFSET is only component that
+       // should have length =0
+       if((*iBeam)->GetLength()!=0.){
+	 G4LogicalVolume* LocalLogVol=(*iBeam)->GetMarkerLogicalVolume();
+	 G4String LogVolName=LocalLogVol->GetName();
+	 int nCopy=(*LogVolCount)[LogVolName]-1;
+	 (*LogVolCount)[LogVolName]++;
+	 
+	 // set up the sensitive volumes for energy counting:
+	 (*iBeam)->SetCopyNumber(nCopy);
+	 G4LogicalVolume* SensVol=(*iBeam)->GetSensitiveVolume();
+	 if(SensVol)
+	   {
+	     BDSEnergyCounterSD* ECounter=new BDSEnergyCounterSD(LogVolName);
+	     (*iBeam)->SetBDSEnergyCounter(ECounter);
+	     SensVol->SetSensitiveDetector(ECounter);
+	     SDman->AddNewDetector(ECounter);
+	     theECList->push_back(ECounter);
+	   }
+	 
+	 LocalName=(*iBeam)->GetName()+"_phys";
+	 
+	 //G4cout<<" name="<<LocalName<<" pos="<<TargetPos<<" angle_tot="<<
+	 //angle_tot<<G4endl;
+	 
+	 G4PVPlacement* PhysiComponentPlace = 
+	   new G4PVPlacement(
+			     RotateComponent,   //  rotation
+			     TargetPos,         // its position
+			     LocalName,	      // its name
+			     LocalLogVol,	      // its logical volume
+			     physiWorld,	      // its mother  volume
+			     false,	      // no boolean operation
+			     nCopy);	      // copy number
+	 
+	 if(use_graphics)
+	   {
+	     (*iBeam)->GetVisAttributes()->SetVisibility(true);
+	     //(*iBeam)->GetVisAttributes()->SetVisibility(false);
+	     //      (*iBeam)->GetVisAttributes()->SetForceSolid(true);
+	     (*iBeam)->GetMarkerLogicalVolume()->
+	       SetVisAttributes((*iBeam)->GetVisAttributes());
+	   }
+	 
+	 // If requested, insert a beam gas plug for background estimation
+	 G4double zB=BDSGlobals->GetBeamGasPlugZ()-BDSGlobals->GetWorldSizeZ();
+	 if( (BDSGlobals->GetUseBeamGasPlug())
+	     &&(zB<z_local) && (zB>=z_local-delta_z) )
+	   {
+	     G4double z_lower=z_local-delta_z;	   
+	     
+	     //build beam gas plug:
+	     G4LogicalVolume* BeamGasPlug = 
+	       new G4LogicalVolume
+	       (new G4Tubs("BeamGasPlug_solid",
+			   0.,
+			   0.9*( BDSGlobals->GetBeampipeRadius()-
+				 BDSGlobals->GetBeampipeThickness()),
+			   1.*mm,
+			   0,twopi*radian),
+		theMaterials->LCBeamGasPlugMat,
+		"BeamGasPlug");
+	     
+	     BeamGasPlug->
+	       SetVisAttributes(new G4VisAttributes(G4Colour(0.,0.,1.)));
+	     
+	     TargetPos.setX(0);
+	     TargetPos.setY(0);
+	     TargetPos.setZ(zB-z_lower-delta_z/2.);
+	     
+	     G4cout<<"TargetPos="<<TargetPos<<G4endl;
+	     
+	     G4PVPlacement* physiPlug = 
+	       new G4PVPlacement(
+				 0,   //  rotation
+				 TargetPos,         //  position
+				 BeamGasPlug,	//its logical volume
+				 "BeamGasPlug_phys",	//its name
+				 (*iBeam)->
+				 GetInnerMostLogicalVolume(),//mother volume
+				 false,		//no boolean operation
+				 0);			//copy number
+	     
+	   }
+       }
      }
-
-   /*
-   for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
-     {
-       G4cout.precision(8); 
-       G4cout<< (*iBeam)->GetName()<<" low z="<<
-	 (*iBeam)->GetZLower()/m<<" upper z="<<(*iBeam)->GetZUpper()/m
-	     <<G4endl;
-     }
-   */
-
    return physiWorld;
 
- 
 }
 
 //=================================================================
@@ -512,7 +570,7 @@ void BDSDetectorConstruction::UpdateGeometry()
 //=================================================================
 BDSDetectorConstruction::~BDSDetectorConstruction()
 { 
-  delete BDSGlobals;
+  if(BDSGlobals) delete BDSGlobals;
 }
 
 //=================================================================
