@@ -17,7 +17,7 @@
 // * work  make  any representation or  warranty, express or implied, *
 // * regarding  this  software system or assume any liability for its *
 // * use.                                                             *
-// *                                                                  *
+// *                                                                   *
 // * This  code  implementation is the  intellectual property  of the *
 // * GEANT4 collaboration.                                            *
 // * By copying,  distributing  or modifying the Program (or any work *
@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSTransportationProcess.cc,v 1.2 2005/01/27 11:35:32 agapov Exp $
+// $Id: BDSTransportationProcess.cc,v 1.3 2005/03/24 14:26:04 carter Exp $
 // GEANT4 tag $Name:  $
 // 
 // ------------------------------------------------------------

@@ -34,7 +34,7 @@ BDSDrift::BDSDrift (G4String& aName,G4double aLength, G4double bpRad):
     {
       //BuildMarkerFieldAndStepper();
       //BuildMarkerFieldMgr(itsStepper,itsMagField);
-
+ 
       itsBPFieldMgr=NULL;
       BuildDefaultMarkerLogicalVolume();
 
