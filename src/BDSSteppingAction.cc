@@ -2,7 +2,7 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 25.12.2003
    Copyright (c) 2003 by G.A.Blair.  ALL RIGHTS RESERVED. 
-
+ 
    Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
    Added code for GABs BeamGasPlug
    Changed Killer to kill just electrons/positrons if called KILLERE
@@ -15,7 +15,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSSteppingAction.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
+// $Id: BDSSteppingAction.cc,v 1.2 2005/03/24 14:26:04 carter Exp $
 // GEANT4 tag $Name:  $
 //
 // 
