@@ -17,7 +17,7 @@ BDSAcceleratorType::BDSAcceleratorType( const G4String& Type,
   if(Type=="nlc"){SetUpNLC();}
   if(Type=="atf"){SetUpATF();}
   if(Type=="PETRA"){SetUpPETRA();}
-  if(Type=="ILC"){SetUpILC();}
+  if(Type=="ilc"){SetUpILC();}
 
   itsBeamKineticEnergy=itsBeamTotalEnergy-
                          itsBeamParticleDefinition->GetPDGMass();
