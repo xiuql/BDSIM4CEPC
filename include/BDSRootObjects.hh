@@ -41,6 +41,7 @@ class BDSRootObjects
   void SetSamplerNumber(G4int n);
   void SetLWCalorimeterNumber(G4int n);
   G4int GetLWCalorimeterNumber(){return nLWCalorimeters;}
+  G4int GetSamplerNumber(){return nSamplers;}
 
   void LoadSamplerTree(BDSSamplerHit* hit);
   void LoadLWCalorimeterTree(BDSLWCalorimeterHit* hit);
