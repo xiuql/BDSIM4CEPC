@@ -2,6 +2,9 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Changed StringFromInt to BDSGlobals version
 */
 #include "BDSGlobalConstants.hh" // must be first in include list
 
@@ -81,7 +84,7 @@ BDSSextupole::BDSSextupole(G4String& aName,G4double aLength,
 	  // with synchrotron radiation, the rescaled magnetic field
 	  // means elements with the same name must have different
 	  //logical volumes, becuase they have different fields
-	  itsName+=StringFromInt((*LogVolCount)[itsName]);
+	  itsName+=BDSGlobals->StringFromInt((*LogVolCount)[itsName]);
 	  BuildBPFieldAndStepper();
 	  BuildBPFieldMgr(itsStepper,itsMagField);
 	  BuildDefaultMarkerLogicalVolume();
