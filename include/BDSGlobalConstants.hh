@@ -65,11 +65,15 @@ class BDSGlobalConstants
   G4double GetThresholdCutPhotons();
   G4double GetTrackWeightFactor();
 
+  G4bool GetUseLowEMPhysics();
+
   G4bool GetSynchRadOn();
   G4bool GetSynchRescale();
   G4bool GetSynchTrackPhotons();
   G4double GetSynchLowX();
   G4double GetSynchLowGamE();
+  G4int GetSynchPhotonMultiplicity();
+  G4int GetSynchMeanFreeFactor();
 
   G4bool GetPlanckOn();
   G4bool GetBDSeBremOn();
@@ -165,11 +169,15 @@ private:
   G4double itsThresholdCutCharged;
   G4double itsThresholdCutPhotons;
 
+  G4bool itsUseLowEMPhysics;
+
   G4bool itsSynchRadOn;
   G4bool itsSynchRescale;
   G4bool itsSynchTrackPhotons;
   G4double itsSynchLowX;
   G4double itsSynchLowGamE;
+  G4int itsSynchMeanFreeFactor;
+  G4int itsSynchPhotonMultiplicity;
 
   G4bool itsPlanckOn;
   G4bool itsBDSeBremOn;
@@ -299,6 +307,9 @@ inline G4double BDSGlobalConstants::GetTotalS()
 inline void BDSGlobalConstants::SetTotalS(G4double TotalS) 
 {itsTotalS=TotalS;}
 
+inline G4bool BDSGlobalConstants::GetUseLowEMPhysics()
+{return itsUseLowEMPhysics;}
+
 inline G4bool BDSGlobalConstants::GetSynchRadOn()
 {return itsSynchRadOn;}
 
@@ -313,6 +324,12 @@ inline G4double BDSGlobalConstants::GetSynchLowX()
 
 inline G4double BDSGlobalConstants::GetSynchLowGamE()
 {return itsSynchLowGamE ;}
+
+inline G4int BDSGlobalConstants::GetSynchPhotonMultiplicity()
+{return itsSynchPhotonMultiplicity ;}
+
+inline G4int BDSGlobalConstants::GetSynchMeanFreeFactor()
+{return itsSynchMeanFreeFactor ;}
 
 inline G4bool BDSGlobalConstants::GetPlanckOn()
 {return itsPlanckOn;}

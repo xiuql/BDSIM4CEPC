@@ -171,6 +171,8 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
   else if(name=="TURN_ON_INTERACTIONS")
     {_READ(itsTurnOnInteractions);
     }
+  else if(name=="USE_LOW_EM_PHYISCS")
+    {_READ(itsUseLowEMPhysics);}
   else if(name=="TURN_ON_SYNCHROTRON")
     {_READ(itsSynchRadOn);}
   else if(name=="RESCALE_DUE_TO_SYNCHROTRON")
@@ -184,6 +186,10 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
       _READ(itsSynchLowGamE);
       itsSynchLowGamE*=MeV;
     }
+  else if(name=="SYNCH_PHOTON_MULTIPLICITY")
+    {_READ(itsSynchPhotonMultiplicity);}
+  else if(name=="SYNCH_MEANFREE_FACTOR")
+    {_READ(itsSynchMeanFreeFactor);}
   else if(name=="TURN_ON_PLANCK")
     {_READ(itsPlanckOn);}
   else if(name=="TURN_ON_BDSeBREM")
