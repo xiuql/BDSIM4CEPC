@@ -1,0 +1,27 @@
+include test.incl;
+
+qd : QuADrUpOle,l=1.2,k1=-1.0;
+qf : quadrupole,l=0.4, k1=2.1;
+
+sb1 : sbend,l=2, angle = 0.01;
+rb1 : rbend,l=1, angle = -0.1; 
+sx1 : sextupole, l=0.5, k2=-0.6;
+
+oc1 : octupole, l=1, k3=0.2;
+
+m:marker;
+
+col : marker;
+
+qd1 : qd;
+qf1 : qf;
+
+cell : line = (qd1,qd2,sb1,rb1,sx1,oc1,m);
+
+beamline : line = (cell,cell,col);
+
+use,period=beamline;
+print;
+print,line;
+!stop;
+

@@ -1,0 +1,79 @@
+/*
+ * GMAD interface 
+ * I. Agapov 2005
+*/
+
+#ifndef _GMAD_H
+#define _GMAD_H
+
+#include <iostream>
+#include <list>
+
+// types of elements
+
+const int _NONE = -1;
+const int _MARKER = 100;
+const int _DRIFT = 0;
+const int _SBEND = 1; 
+const int _QUAD  = 2;
+const int _SEXT  = 3;
+const int _OCTUPOLE = 4;
+const int _MULT  = 5;
+const int _SOLENOID = 6;
+const int _LINE = 10;
+const int _OPTION = 20;
+
+
+const char *typestr(int type) {
+  switch(type){
+  case _MARKER : 
+    return "marker";
+  case _DRIFT :
+    return "drift";
+  case _SBEND : 
+    return "sbend";
+  case _QUAD :
+    return "quadrupole";
+  case _SEXT:
+    return "sextupole";
+  case _MULT :
+    return "multipole";
+  case _SOLENOID : 
+    return "solenoid";
+  case _LINE :
+    return "line";
+  default:
+    return "none";
+  }
+};
+
+struct Options {
+  int echo;
+  int sr;
+  char particle[32];
+  double energy;
+  int nparticles;
+} options;
+
+struct Element {
+  short type;
+  char * name;
+  
+  double l,k0,k1,k2,k3;
+  
+  list<double> knl;
+  list<double> ksl;
+  
+  // in case the element is a list itself (line)
+  list <struct Element> *lst;
+  
+} element;
+
+
+list<struct Element> beamline_list;
+
+// parse the input file and construct beamline_list and options 
+int gmad_parser();
+
+
+#endif

@@ -1,0 +1,2615 @@
+Terminals which are not used
+
+   ELEMENT
+   DIPOLE
+   SOLENOID
+   COLLIMATOR
+   APERTURE
+   FILENAME
+   VALUE
+   PRINTF
+
+
+State 49 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: input $end
+
+    1 input: /* empty */
+    2      | input stmt ';'
+
+    3 stmt: if_clause stmt
+    4     | if_clause stmt ELSE stmt
+    5     | atomic_stmt
+    6     | BEGN input END
+
+    7 if_clause: IF '(' aexpr ')'
+
+    8 atomic_stmt: /* empty */
+    9            | expr
+   10            | command
+   11            | decl
+
+   12 decl: VARIABLE ':' marker
+   13     | VARIABLE ':' drift
+   14     | VARIABLE ':' sbend
+   15     | VARIABLE ':' quad
+   16     | VARIABLE ':' sextupole
+   17     | VARIABLE ':' octupole
+   18     | VARIABLE ':' multipole
+   19     | VARIABLE ':' line
+   20     | VARIABLE ':' sequence
+   21     | VARIABLE ':' extension
+
+   22 marker: MARKER
+
+   23 drift: DRIFT parameters
+
+   24 sbend: SBEND parameters
+
+   25 quad: QUADRUPOLE parameters
+
+   26 sextupole: SEXTUPOLE parameters
+
+   27 octupole: OCTUPOLE parameters
+
+   28 multipole: MULTIPOLE parameters
+
+   29 extension: VARIABLE parameters
+
+   30 parameters: /* empty */
+   31           | parameters ',' VARIABLE '=' aexpr
+   32           | parameters ',' VARIABLE '=' vecexpr
+   33           | VARIABLE '=' vecexpr
+   34           | VARIABLE '=' aexpr
+
+   35 line: LINE '=' '(' element_seq ')'
+
+   36 sequence: SEQUENCE
+
+   37 element_seq: /* empty */
+   38            | element_seq ',' VARIABLE
+   39            | VARIABLE
+
+   40 expr: aexpr
+   41     | vecexpr
+   42     | assignment
+
+   43 aexpr: NUMBER
+   44      | VARIABLE
+   45      | FUNC '(' aexpr ')'
+   46      | aexpr '+' aexpr
+   47      | aexpr '-' aexpr
+   48      | aexpr '*' aexpr
+   49      | aexpr '/' aexpr
+   50      | aexpr '^' aexpr
+   51      | '-' aexpr
+   52      | '(' aexpr ')'
+   53      | '<' vecexpr ',' vecexpr '>'
+   54      | aexpr '<' aexpr
+   55      | aexpr LE aexpr
+   56      | aexpr '>' aexpr
+   57      | aexpr GE aexpr
+   58      | aexpr NE aexpr
+
+   59 assignment: VARIABLE '=' aexpr
+   60           | VARIABLE '=' vecexpr
+   61           | VECVAR '=' vecexpr
+
+   62 vecexpr: VECVAR
+   63        | vect
+   64        | vecexpr '+' vecexpr
+   65        | vecexpr '-' vecexpr
+   66        | vecexpr '+' aexpr
+   67        | vecexpr '*' aexpr
+   68        | vecexpr '/' aexpr
+   69        | aexpr '+' vecexpr
+   70        | aexpr '-' vecexpr
+   71        | aexpr '*' vecexpr
+
+   72 vect: '{' numbers '}'
+
+   73 numbers: /* empty */
+   74        | numbers ',' aexpr
+   75        | aexpr
+
+   76 command: STOP
+   77        | BEAM ',' beam_parameters
+   78        | PRINT
+   79        | PRINT ',' LINE
+   80        | PRINT ',' OPTION
+   81        | PRINT ',' VARIABLE
+   82        | PRINT ',' VECVAR
+   83        | USE ',' use_parameters
+   84        | OPTION option_parameters
+   85        | ECHO STR
+
+   86 use_parameters: PERIOD '=' VARIABLE
+   87               | PERIOD '=' VARIABLE ',' RANGE '=' VARIABLE '/' VARIABLE
+
+   88 option_parameters: /* empty */
+   89                  | option_parameters ',' VARIABLE '=' NUMBER
+
+   90 beam_parameters: /* empty */
+   91                | beam_parameters ',' VARIABLE '=' NUMBER
+   92                | VARIABLE '=' NUMBER
+   93                | beam_parameters ',' VARIABLE '=' STR
+   94                | VARIABLE '=' STR
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 7 35 45 52
+')' (41) 7 35 45 52
+'*' (42) 48 67 71
+'+' (43) 46 64 66 69
+',' (44) 31 32 38 53 74 77 79 80 81 82 83 87 89 91 93
+'-' (45) 47 51 65 70
+'/' (47) 49 68 87
+':' (58) 12 13 14 15 16 17 18 19 20 21
+';' (59) 2
+'<' (60) 53 54
+'=' (61) 31 32 33 34 35 59 60 61 86 87 89 91 92 93 94
+'>' (62) 53 56
+'^' (94) 50
+'{' (123) 72
+'}' (125) 72
+error (256)
+GE (258) 57
+LE (259) 55
+NE (260) 58
+UMINUS (261)
+NUMBER (262) 43 89 91 92
+VARIABLE (263) 12 13 14 15 16 17 18 19 20 21 29 31 32 33 34 38 39 44
+    59 60 81 86 87 89 91 92 93 94
+VECVAR (264) 61 62 82
+FUNC (265) 45
+STR (266) 85 93 94
+MARKER (267) 22
+ELEMENT (268)
+DRIFT (269) 23
+DIPOLE (270)
+SBEND (271) 24
+QUADRUPOLE (272) 25
+SEXTUPOLE (273) 26
+OCTUPOLE (274) 27
+MULTIPOLE (275) 28
+SOLENOID (276)
+COLLIMATOR (277)
+LINE (278) 35 79
+SEQUENCE (279) 36
+PERIOD (280) 86 87
+APERTURE (281)
+FILENAME (282)
+BEAM (283) 77
+OPTION (284) 80 84
+PRINT (285) 78 79 80 81 82
+RANGE (286) 87
+STOP (287) 76
+USE (288) 83
+VALUE (289)
+ECHO (290) 85
+PRINTF (291)
+IF (292) 7
+ELSE (293) 4
+BEGN (294) 6
+END (295) 6
+
+
+Nonterminals, with rules where they appear
+
+$accept (56)
+    on left: 0
+input (57)
+    on left: 1 2, on right: 0 2 6
+stmt (58)
+    on left: 3 4 5 6, on right: 2 3 4
+if_clause (59)
+    on left: 7, on right: 3 4
+atomic_stmt (60)
+    on left: 8 9 10 11, on right: 5
+decl (61)
+    on left: 12 13 14 15 16 17 18 19 20 21, on right: 11
+marker (62)
+    on left: 22, on right: 12
+drift (63)
+    on left: 23, on right: 13
+sbend (64)
+    on left: 24, on right: 14
+quad (65)
+    on left: 25, on right: 15
+sextupole (66)
+    on left: 26, on right: 16
+octupole (67)
+    on left: 27, on right: 17
+multipole (68)
+    on left: 28, on right: 18
+extension (69)
+    on left: 29, on right: 21
+parameters (70)
+    on left: 30 31 32 33 34, on right: 23 24 25 26 27 28 29 31 32
+line (71)
+    on left: 35, on right: 19
+sequence (72)
+    on left: 36, on right: 20
+element_seq (73)
+    on left: 37 38 39, on right: 35 38
+expr (74)
+    on left: 40 41 42, on right: 9
+aexpr (75)
+    on left: 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58,
+    on right: 7 31 34 40 45 46 47 48 49 50 51 52 54 55 56 57 58 59
+    66 67 68 69 70 71 74 75
+assignment (76)
+    on left: 59 60 61, on right: 42
+vecexpr (77)
+    on left: 62 63 64 65 66 67 68 69 70 71, on right: 32 33 41 53 60
+    61 64 65 66 67 68 69 70 71
+vect (78)
+    on left: 72, on right: 63
+numbers (79)
+    on left: 73 74 75, on right: 72 74
+command (80)
+    on left: 76 77 78 79 80 81 82 83 84 85, on right: 10
+use_parameters (81)
+    on left: 86 87, on right: 83
+option_parameters (82)
+    on left: 88 89, on right: 84 89
+beam_parameters (83)
+    on left: 90 91 92 93 94, on right: 77 91 93
+
+
+state 0
+
+    0 $accept: . input $end
+
+    $default  reduce using rule 1 (input)
+
+    input  go to state 1
+
+
+state 1
+
+    0 $accept: input . $end
+    2 input: input . stmt ';'
+
+    $end      shift, and go to state 2
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 6
+    VECVAR    shift, and go to state 7
+    FUNC      shift, and go to state 8
+    BEAM      shift, and go to state 9
+    OPTION    shift, and go to state 10
+    PRINT     shift, and go to state 11
+    STOP      shift, and go to state 12
+    USE       shift, and go to state 13
+    ECHO      shift, and go to state 14
+    IF        shift, and go to state 15
+    BEGN      shift, and go to state 16
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    $default  reduce using rule 8 (atomic_stmt)
+
+    stmt         go to state 19
+    if_clause    go to state 20
+    atomic_stmt  go to state 21
+    decl         go to state 22
+    expr         go to state 23
+    aexpr        go to state 24
+    assignment   go to state 25
+    vecexpr      go to state 26
+    vect         go to state 27
+    command      go to state 28
+
+
+state 2
+
+    0 $accept: input $end .
+
+    $default  accept
+
+
+state 3
+
+   51 aexpr: '-' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 30
+
+
+state 4
+
+   53 aexpr: '<' . vecexpr ',' vecexpr '>'
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 32
+    vecexpr  go to state 33
+    vect     go to state 27
+
+
+state 5
+
+   43 aexpr: NUMBER .
+
+    $default  reduce using rule 43 (aexpr)
+
+
+state 6
+
+   12 decl: VARIABLE . ':' marker
+   13     | VARIABLE . ':' drift
+   14     | VARIABLE . ':' sbend
+   15     | VARIABLE . ':' quad
+   16     | VARIABLE . ':' sextupole
+   17     | VARIABLE . ':' octupole
+   18     | VARIABLE . ':' multipole
+   19     | VARIABLE . ':' line
+   20     | VARIABLE . ':' sequence
+   21     | VARIABLE . ':' extension
+   44 aexpr: VARIABLE .
+   59 assignment: VARIABLE . '=' aexpr
+   60           | VARIABLE . '=' vecexpr
+
+    ':'  shift, and go to state 34
+    '='  shift, and go to state 35
+
+    $default  reduce using rule 44 (aexpr)
+
+
+state 7
+
+   61 assignment: VECVAR . '=' vecexpr
+   62 vecexpr: VECVAR .
+
+    '='  shift, and go to state 36
+
+    $default  reduce using rule 62 (vecexpr)
+
+
+state 8
+
+   45 aexpr: FUNC . '(' aexpr ')'
+
+    '('  shift, and go to state 37
+
+
+state 9
+
+   77 command: BEAM . ',' beam_parameters
+
+    ','  shift, and go to state 38
+
+
+state 10
+
+   84 command: OPTION . option_parameters
+
+    $default  reduce using rule 88 (option_parameters)
+
+    option_parameters  go to state 39
+
+
+state 11
+
+   78 command: PRINT .
+   79        | PRINT . ',' LINE
+   80        | PRINT . ',' OPTION
+   81        | PRINT . ',' VARIABLE
+   82        | PRINT . ',' VECVAR
+
+    ','  shift, and go to state 40
+
+    $default  reduce using rule 78 (command)
+
+
+state 12
+
+   76 command: STOP .
+
+    $default  reduce using rule 76 (command)
+
+
+state 13
+
+   83 command: USE . ',' use_parameters
+
+    ','  shift, and go to state 41
+
+
+state 14
+
+   85 command: ECHO . STR
+
+    STR  shift, and go to state 42
+
+
+state 15
+
+    7 if_clause: IF . '(' aexpr ')'
+
+    '('  shift, and go to state 43
+
+
+state 16
+
+    6 stmt: BEGN . input END
+
+    $default  reduce using rule 1 (input)
+
+    input  go to state 44
+
+
+state 17
+
+   52 aexpr: '(' . aexpr ')'
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 45
+
+
+state 18
+
+   72 vect: '{' . numbers '}'
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    $default  reduce using rule 73 (numbers)
+
+    aexpr    go to state 46
+    numbers  go to state 47
+
+
+state 19
+
+    2 input: input stmt . ';'
+
+    ';'  shift, and go to state 48
+
+
+state 20
+
+    3 stmt: if_clause . stmt
+    4     | if_clause . stmt ELSE stmt
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 6
+    VECVAR    shift, and go to state 7
+    FUNC      shift, and go to state 8
+    BEAM      shift, and go to state 9
+    OPTION    shift, and go to state 10
+    PRINT     shift, and go to state 11
+    STOP      shift, and go to state 12
+    USE       shift, and go to state 13
+    ECHO      shift, and go to state 14
+    IF        shift, and go to state 15
+    BEGN      shift, and go to state 16
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    $default  reduce using rule 8 (atomic_stmt)
+
+    stmt         go to state 49
+    if_clause    go to state 20
+    atomic_stmt  go to state 21
+    decl         go to state 22
+    expr         go to state 23
+    aexpr        go to state 24
+    assignment   go to state 25
+    vecexpr      go to state 26
+    vect         go to state 27
+    command      go to state 28
+
+
+state 21
+
+    5 stmt: atomic_stmt .
+
+    $default  reduce using rule 5 (stmt)
+
+
+state 22
+
+   11 atomic_stmt: decl .
+
+    $default  reduce using rule 11 (atomic_stmt)
+
+
+state 23
+
+    9 atomic_stmt: expr .
+
+    $default  reduce using rule 9 (atomic_stmt)
+
+
+state 24
+
+   40 expr: aexpr .
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '+'  shift, and go to state 50
+    '-'  shift, and go to state 51
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 40 (expr)
+
+
+state 25
+
+   42 expr: assignment .
+
+    $default  reduce using rule 42 (expr)
+
+
+state 26
+
+   41 expr: vecexpr .
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '+'  shift, and go to state 60
+    '-'  shift, and go to state 61
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 41 (expr)
+
+
+state 27
+
+   63 vecexpr: vect .
+
+    $default  reduce using rule 63 (vecexpr)
+
+
+state 28
+
+   10 atomic_stmt: command .
+
+    $default  reduce using rule 10 (atomic_stmt)
+
+
+state 29
+
+   44 aexpr: VARIABLE .
+
+    $default  reduce using rule 44 (aexpr)
+
+
+state 30
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   51      | '-' aexpr .
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    $default  reduce using rule 51 (aexpr)
+
+
+state 31
+
+   62 vecexpr: VECVAR .
+
+    $default  reduce using rule 62 (vecexpr)
+
+
+state 32
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '+'  shift, and go to state 50
+    '-'  shift, and go to state 51
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+
+state 33
+
+   53 aexpr: '<' vecexpr . ',' vecexpr '>'
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '+'  shift, and go to state 60
+    '-'  shift, and go to state 61
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+    ','  shift, and go to state 67
+
+
+state 34
+
+   12 decl: VARIABLE ':' . marker
+   13     | VARIABLE ':' . drift
+   14     | VARIABLE ':' . sbend
+   15     | VARIABLE ':' . quad
+   16     | VARIABLE ':' . sextupole
+   17     | VARIABLE ':' . octupole
+   18     | VARIABLE ':' . multipole
+   19     | VARIABLE ':' . line
+   20     | VARIABLE ':' . sequence
+   21     | VARIABLE ':' . extension
+
+    VARIABLE    shift, and go to state 68
+    MARKER      shift, and go to state 69
+    DRIFT       shift, and go to state 70
+    SBEND       shift, and go to state 71
+    QUADRUPOLE  shift, and go to state 72
+    SEXTUPOLE   shift, and go to state 73
+    OCTUPOLE    shift, and go to state 74
+    MULTIPOLE   shift, and go to state 75
+    LINE        shift, and go to state 76
+    SEQUENCE    shift, and go to state 77
+
+    marker     go to state 78
+    drift      go to state 79
+    sbend      go to state 80
+    quad       go to state 81
+    sextupole  go to state 82
+    octupole   go to state 83
+    multipole  go to state 84
+    extension  go to state 85
+    line       go to state 86
+    sequence   go to state 87
+
+
+state 35
+
+   59 assignment: VARIABLE '=' . aexpr
+   60           | VARIABLE '=' . vecexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 88
+    vecexpr  go to state 89
+    vect     go to state 27
+
+
+state 36
+
+   61 assignment: VECVAR '=' . vecexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 32
+    vecexpr  go to state 90
+    vect     go to state 27
+
+
+state 37
+
+   45 aexpr: FUNC '(' . aexpr ')'
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 91
+
+
+state 38
+
+   77 command: BEAM ',' . beam_parameters
+
+    VARIABLE  shift, and go to state 92
+
+    $default  reduce using rule 90 (beam_parameters)
+
+    beam_parameters  go to state 93
+
+
+state 39
+
+   84 command: OPTION option_parameters .
+   89 option_parameters: option_parameters . ',' VARIABLE '=' NUMBER
+
+    ','  shift, and go to state 94
+
+    $default  reduce using rule 84 (command)
+
+
+state 40
+
+   79 command: PRINT ',' . LINE
+   80        | PRINT ',' . OPTION
+   81        | PRINT ',' . VARIABLE
+   82        | PRINT ',' . VECVAR
+
+    VARIABLE  shift, and go to state 95
+    VECVAR    shift, and go to state 96
+    LINE      shift, and go to state 97
+    OPTION    shift, and go to state 98
+
+
+state 41
+
+   83 command: USE ',' . use_parameters
+
+    PERIOD  shift, and go to state 99
+
+    use_parameters  go to state 100
+
+
+state 42
+
+   85 command: ECHO STR .
+
+    $default  reduce using rule 85 (command)
+
+
+state 43
+
+    7 if_clause: IF '(' . aexpr ')'
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 101
+
+
+state 44
+
+    2 input: input . stmt ';'
+    6 stmt: BEGN input . END
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 6
+    VECVAR    shift, and go to state 7
+    FUNC      shift, and go to state 8
+    BEAM      shift, and go to state 9
+    OPTION    shift, and go to state 10
+    PRINT     shift, and go to state 11
+    STOP      shift, and go to state 12
+    USE       shift, and go to state 13
+    ECHO      shift, and go to state 14
+    IF        shift, and go to state 15
+    BEGN      shift, and go to state 16
+    END       shift, and go to state 102
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    $default  reduce using rule 8 (atomic_stmt)
+
+    stmt         go to state 19
+    if_clause    go to state 20
+    atomic_stmt  go to state 21
+    decl         go to state 22
+    expr         go to state 23
+    aexpr        go to state 24
+    assignment   go to state 25
+    vecexpr      go to state 26
+    vect         go to state 27
+    command      go to state 28
+
+
+state 45
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   52      | '(' aexpr . ')'
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    '+'  shift, and go to state 64
+    '-'  shift, and go to state 65
+    '*'  shift, and go to state 66
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+    ')'  shift, and go to state 103
+
+
+state 46
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   75 numbers: aexpr .
+
+    '+'  shift, and go to state 64
+    '-'  shift, and go to state 65
+    '*'  shift, and go to state 66
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 75 (numbers)
+
+
+state 47
+
+   72 vect: '{' numbers . '}'
+   74 numbers: numbers . ',' aexpr
+
+    ','  shift, and go to state 104
+    '}'  shift, and go to state 105
+
+
+state 48
+
+    2 input: input stmt ';' .
+
+    $default  reduce using rule 2 (input)
+
+
+state 49
+
+    3 stmt: if_clause stmt .
+    4     | if_clause stmt . ELSE stmt
+
+    ELSE  shift, and go to state 106
+
+    ELSE      [reduce using rule 3 (stmt)]
+    $default  reduce using rule 3 (stmt)
+
+
+state 50
+
+   46 aexpr: aexpr '+' . aexpr
+   69 vecexpr: aexpr '+' . vecexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 107
+    vecexpr  go to state 108
+    vect     go to state 27
+
+
+state 51
+
+   47 aexpr: aexpr '-' . aexpr
+   70 vecexpr: aexpr '-' . vecexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 109
+    vecexpr  go to state 110
+    vect     go to state 27
+
+
+state 52
+
+   48 aexpr: aexpr '*' . aexpr
+   71 vecexpr: aexpr '*' . vecexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 111
+    vecexpr  go to state 112
+    vect     go to state 27
+
+
+state 53
+
+   49 aexpr: aexpr '/' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 113
+
+
+state 54
+
+   50 aexpr: aexpr '^' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 114
+
+
+state 55
+
+   54 aexpr: aexpr '<' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 115
+
+
+state 56
+
+   56 aexpr: aexpr '>' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 116
+
+
+state 57
+
+   57 aexpr: aexpr GE . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 117
+
+
+state 58
+
+   55 aexpr: aexpr LE . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 118
+
+
+state 59
+
+   58 aexpr: aexpr NE . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 119
+
+
+state 60
+
+   64 vecexpr: vecexpr '+' . vecexpr
+   66        | vecexpr '+' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 120
+    vecexpr  go to state 121
+    vect     go to state 27
+
+
+state 61
+
+   65 vecexpr: vecexpr '-' . vecexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 32
+    vecexpr  go to state 122
+    vect     go to state 27
+
+
+state 62
+
+   67 vecexpr: vecexpr '*' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 123
+
+
+state 63
+
+   68 vecexpr: vecexpr '/' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 124
+
+
+state 64
+
+   46 aexpr: aexpr '+' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 125
+
+
+state 65
+
+   47 aexpr: aexpr '-' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 126
+
+
+state 66
+
+   48 aexpr: aexpr '*' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 127
+
+
+state 67
+
+   53 aexpr: '<' vecexpr ',' . vecexpr '>'
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 32
+    vecexpr  go to state 128
+    vect     go to state 27
+
+
+state 68
+
+   29 extension: VARIABLE . parameters
+
+    VARIABLE  shift, and go to state 129
+
+    $default  reduce using rule 30 (parameters)
+
+    parameters  go to state 130
+
+
+state 69
+
+   22 marker: MARKER .
+
+    $default  reduce using rule 22 (marker)
+
+
+state 70
+
+   23 drift: DRIFT . parameters
+
+    VARIABLE  shift, and go to state 129
+
+    $default  reduce using rule 30 (parameters)
+
+    parameters  go to state 131
+
+
+state 71
+
+   24 sbend: SBEND . parameters
+
+    VARIABLE  shift, and go to state 129
+
+    $default  reduce using rule 30 (parameters)
+
+    parameters  go to state 132
+
+
+state 72
+
+   25 quad: QUADRUPOLE . parameters
+
+    VARIABLE  shift, and go to state 129
+
+    $default  reduce using rule 30 (parameters)
+
+    parameters  go to state 133
+
+
+state 73
+
+   26 sextupole: SEXTUPOLE . parameters
+
+    VARIABLE  shift, and go to state 129
+
+    $default  reduce using rule 30 (parameters)
+
+    parameters  go to state 134
+
+
+state 74
+
+   27 octupole: OCTUPOLE . parameters
+
+    VARIABLE  shift, and go to state 129
+
+    $default  reduce using rule 30 (parameters)
+
+    parameters  go to state 135
+
+
+state 75
+
+   28 multipole: MULTIPOLE . parameters
+
+    VARIABLE  shift, and go to state 129
+
+    $default  reduce using rule 30 (parameters)
+
+    parameters  go to state 136
+
+
+state 76
+
+   35 line: LINE . '=' '(' element_seq ')'
+
+    '='  shift, and go to state 137
+
+
+state 77
+
+   36 sequence: SEQUENCE .
+
+    $default  reduce using rule 36 (sequence)
+
+
+state 78
+
+   12 decl: VARIABLE ':' marker .
+
+    $default  reduce using rule 12 (decl)
+
+
+state 79
+
+   13 decl: VARIABLE ':' drift .
+
+    $default  reduce using rule 13 (decl)
+
+
+state 80
+
+   14 decl: VARIABLE ':' sbend .
+
+    $default  reduce using rule 14 (decl)
+
+
+state 81
+
+   15 decl: VARIABLE ':' quad .
+
+    $default  reduce using rule 15 (decl)
+
+
+state 82
+
+   16 decl: VARIABLE ':' sextupole .
+
+    $default  reduce using rule 16 (decl)
+
+
+state 83
+
+   17 decl: VARIABLE ':' octupole .
+
+    $default  reduce using rule 17 (decl)
+
+
+state 84
+
+   18 decl: VARIABLE ':' multipole .
+
+    $default  reduce using rule 18 (decl)
+
+
+state 85
+
+   21 decl: VARIABLE ':' extension .
+
+    $default  reduce using rule 21 (decl)
+
+
+state 86
+
+   19 decl: VARIABLE ':' line .
+
+    $default  reduce using rule 19 (decl)
+
+
+state 87
+
+   20 decl: VARIABLE ':' sequence .
+
+    $default  reduce using rule 20 (decl)
+
+
+state 88
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   59 assignment: VARIABLE '=' aexpr .
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '+'  shift, and go to state 50
+    '-'  shift, and go to state 51
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 59 (assignment)
+
+
+state 89
+
+   60 assignment: VARIABLE '=' vecexpr .
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '+'  shift, and go to state 60
+    '-'  shift, and go to state 61
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 60 (assignment)
+
+
+state 90
+
+   61 assignment: VECVAR '=' vecexpr .
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '+'  shift, and go to state 60
+    '-'  shift, and go to state 61
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 61 (assignment)
+
+
+state 91
+
+   45 aexpr: FUNC '(' aexpr . ')'
+   46      | aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    '+'  shift, and go to state 64
+    '-'  shift, and go to state 65
+    '*'  shift, and go to state 66
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+    ')'  shift, and go to state 138
+
+
+state 92
+
+   92 beam_parameters: VARIABLE . '=' NUMBER
+   94                | VARIABLE . '=' STR
+
+    '='  shift, and go to state 139
+
+
+state 93
+
+   77 command: BEAM ',' beam_parameters .
+   91 beam_parameters: beam_parameters . ',' VARIABLE '=' NUMBER
+   93                | beam_parameters . ',' VARIABLE '=' STR
+
+    ','  shift, and go to state 140
+
+    $default  reduce using rule 77 (command)
+
+
+state 94
+
+   89 option_parameters: option_parameters ',' . VARIABLE '=' NUMBER
+
+    VARIABLE  shift, and go to state 141
+
+
+state 95
+
+   81 command: PRINT ',' VARIABLE .
+
+    $default  reduce using rule 81 (command)
+
+
+state 96
+
+   82 command: PRINT ',' VECVAR .
+
+    $default  reduce using rule 82 (command)
+
+
+state 97
+
+   79 command: PRINT ',' LINE .
+
+    $default  reduce using rule 79 (command)
+
+
+state 98
+
+   80 command: PRINT ',' OPTION .
+
+    $default  reduce using rule 80 (command)
+
+
+state 99
+
+   86 use_parameters: PERIOD . '=' VARIABLE
+   87               | PERIOD . '=' VARIABLE ',' RANGE '=' VARIABLE '/' VARIABLE
+
+    '='  shift, and go to state 142
+
+
+state 100
+
+   83 command: USE ',' use_parameters .
+
+    $default  reduce using rule 83 (command)
+
+
+state 101
+
+    7 if_clause: IF '(' aexpr . ')'
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    '+'  shift, and go to state 64
+    '-'  shift, and go to state 65
+    '*'  shift, and go to state 66
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+    ')'  shift, and go to state 143
+
+
+state 102
+
+    6 stmt: BEGN input END .
+
+    $default  reduce using rule 6 (stmt)
+
+
+state 103
+
+   52 aexpr: '(' aexpr ')' .
+
+    $default  reduce using rule 52 (aexpr)
+
+
+state 104
+
+   74 numbers: numbers ',' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+
+    aexpr  go to state 144
+
+
+state 105
+
+   72 vect: '{' numbers '}' .
+
+    $default  reduce using rule 72 (vect)
+
+
+state 106
+
+    4 stmt: if_clause stmt ELSE . stmt
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 6
+    VECVAR    shift, and go to state 7
+    FUNC      shift, and go to state 8
+    BEAM      shift, and go to state 9
+    OPTION    shift, and go to state 10
+    PRINT     shift, and go to state 11
+    STOP      shift, and go to state 12
+    USE       shift, and go to state 13
+    ECHO      shift, and go to state 14
+    IF        shift, and go to state 15
+    BEGN      shift, and go to state 16
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    $default  reduce using rule 8 (atomic_stmt)
+
+    stmt         go to state 145
+    if_clause    go to state 20
+    atomic_stmt  go to state 21
+    decl         go to state 22
+    expr         go to state 23
+    aexpr        go to state 24
+    assignment   go to state 25
+    vecexpr      go to state 26
+    vect         go to state 27
+    command      go to state 28
+
+
+state 107
+
+   46 aexpr: aexpr . '+' aexpr
+   46      | aexpr '+' aexpr .
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 46 (aexpr)
+
+
+state 108
+
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+   69        | aexpr '+' vecexpr .
+
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 69 (vecexpr)
+
+
+state 109
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   47      | aexpr '-' aexpr .
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 47 (aexpr)
+
+
+state 110
+
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+   70        | aexpr '-' vecexpr .
+
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 70 (vecexpr)
+
+
+state 111
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   48      | aexpr '*' aexpr .
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 48 (aexpr)
+
+
+state 112
+
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+   71        | aexpr '*' vecexpr .
+
+    $default  reduce using rule 71 (vecexpr)
+
+
+state 113
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   49      | aexpr '/' aexpr .
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 49 (aexpr)
+
+
+state 114
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   50      | aexpr '^' aexpr .
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    $default  reduce using rule 50 (aexpr)
+
+
+state 115
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   54      | aexpr '<' aexpr .
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    $default  reduce using rule 54 (aexpr)
+
+
+state 116
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   56      | aexpr '>' aexpr .
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    $default  reduce using rule 56 (aexpr)
+
+
+state 117
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   57      | aexpr GE aexpr .
+   58      | aexpr . NE aexpr
+
+    $default  reduce using rule 57 (aexpr)
+
+
+state 118
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   55      | aexpr LE aexpr .
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    $default  reduce using rule 55 (aexpr)
+
+
+state 119
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   58      | aexpr NE aexpr .
+
+    $default  reduce using rule 58 (aexpr)
+
+
+state 120
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   66 vecexpr: vecexpr '+' aexpr .
+   69        | aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 66 (vecexpr)
+
+
+state 121
+
+   64 vecexpr: vecexpr . '+' vecexpr
+   64        | vecexpr '+' vecexpr .
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 64 (vecexpr)
+
+
+state 122
+
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   65        | vecexpr '-' vecexpr .
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 65 (vecexpr)
+
+
+state 123
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   67 vecexpr: vecexpr '*' aexpr .
+
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 67 (vecexpr)
+
+
+state 124
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   68 vecexpr: vecexpr '/' aexpr .
+
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 68 (vecexpr)
+
+
+state 125
+
+   46 aexpr: aexpr . '+' aexpr
+   46      | aexpr '+' aexpr .
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    '*'  shift, and go to state 66
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 46 (aexpr)
+
+
+state 126
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   47      | aexpr '-' aexpr .
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    '*'  shift, and go to state 66
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 47 (aexpr)
+
+
+state 127
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   48      | aexpr '*' aexpr .
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 48 (aexpr)
+
+
+state 128
+
+   53 aexpr: '<' vecexpr ',' vecexpr . '>'
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '+'  shift, and go to state 60
+    '-'  shift, and go to state 61
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+    '>'  shift, and go to state 146
+
+
+state 129
+
+   33 parameters: VARIABLE . '=' vecexpr
+   34           | VARIABLE . '=' aexpr
+
+    '='  shift, and go to state 147
+
+
+state 130
+
+   29 extension: VARIABLE parameters .
+   31 parameters: parameters . ',' VARIABLE '=' aexpr
+   32           | parameters . ',' VARIABLE '=' vecexpr
+
+    ','  shift, and go to state 148
+
+    $default  reduce using rule 29 (extension)
+
+
+state 131
+
+   23 drift: DRIFT parameters .
+   31 parameters: parameters . ',' VARIABLE '=' aexpr
+   32           | parameters . ',' VARIABLE '=' vecexpr
+
+    ','  shift, and go to state 148
+
+    $default  reduce using rule 23 (drift)
+
+
+state 132
+
+   24 sbend: SBEND parameters .
+   31 parameters: parameters . ',' VARIABLE '=' aexpr
+   32           | parameters . ',' VARIABLE '=' vecexpr
+
+    ','  shift, and go to state 148
+
+    $default  reduce using rule 24 (sbend)
+
+
+state 133
+
+   25 quad: QUADRUPOLE parameters .
+   31 parameters: parameters . ',' VARIABLE '=' aexpr
+   32           | parameters . ',' VARIABLE '=' vecexpr
+
+    ','  shift, and go to state 148
+
+    $default  reduce using rule 25 (quad)
+
+
+state 134
+
+   26 sextupole: SEXTUPOLE parameters .
+   31 parameters: parameters . ',' VARIABLE '=' aexpr
+   32           | parameters . ',' VARIABLE '=' vecexpr
+
+    ','  shift, and go to state 148
+
+    $default  reduce using rule 26 (sextupole)
+
+
+state 135
+
+   27 octupole: OCTUPOLE parameters .
+   31 parameters: parameters . ',' VARIABLE '=' aexpr
+   32           | parameters . ',' VARIABLE '=' vecexpr
+
+    ','  shift, and go to state 148
+
+    $default  reduce using rule 27 (octupole)
+
+
+state 136
+
+   28 multipole: MULTIPOLE parameters .
+   31 parameters: parameters . ',' VARIABLE '=' aexpr
+   32           | parameters . ',' VARIABLE '=' vecexpr
+
+    ','  shift, and go to state 148
+
+    $default  reduce using rule 28 (multipole)
+
+
+state 137
+
+   35 line: LINE '=' . '(' element_seq ')'
+
+    '('  shift, and go to state 149
+
+
+state 138
+
+   45 aexpr: FUNC '(' aexpr ')' .
+
+    $default  reduce using rule 45 (aexpr)
+
+
+state 139
+
+   92 beam_parameters: VARIABLE '=' . NUMBER
+   94                | VARIABLE '=' . STR
+
+    NUMBER  shift, and go to state 150
+    STR     shift, and go to state 151
+
+
+state 140
+
+   91 beam_parameters: beam_parameters ',' . VARIABLE '=' NUMBER
+   93                | beam_parameters ',' . VARIABLE '=' STR
+
+    VARIABLE  shift, and go to state 152
+
+
+state 141
+
+   89 option_parameters: option_parameters ',' VARIABLE . '=' NUMBER
+
+    '='  shift, and go to state 153
+
+
+state 142
+
+   86 use_parameters: PERIOD '=' . VARIABLE
+   87               | PERIOD '=' . VARIABLE ',' RANGE '=' VARIABLE '/' VARIABLE
+
+    VARIABLE  shift, and go to state 154
+
+
+state 143
+
+    7 if_clause: IF '(' aexpr ')' .
+
+    $default  reduce using rule 7 (if_clause)
+
+
+state 144
+
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   74 numbers: numbers ',' aexpr .
+
+    '+'  shift, and go to state 64
+    '-'  shift, and go to state 65
+    '*'  shift, and go to state 66
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 74 (numbers)
+
+
+state 145
+
+    4 stmt: if_clause stmt ELSE stmt .
+
+    $default  reduce using rule 4 (stmt)
+
+
+state 146
+
+   53 aexpr: '<' vecexpr ',' vecexpr '>' .
+
+    $default  reduce using rule 53 (aexpr)
+
+
+state 147
+
+   33 parameters: VARIABLE '=' . vecexpr
+   34           | VARIABLE '=' . aexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 155
+    vecexpr  go to state 156
+    vect     go to state 27
+
+
+state 148
+
+   31 parameters: parameters ',' . VARIABLE '=' aexpr
+   32           | parameters ',' . VARIABLE '=' vecexpr
+
+    VARIABLE  shift, and go to state 157
+
+
+state 149
+
+   35 line: LINE '=' '(' . element_seq ')'
+
+    VARIABLE  shift, and go to state 158
+
+    $default  reduce using rule 37 (element_seq)
+
+    element_seq  go to state 159
+
+
+state 150
+
+   92 beam_parameters: VARIABLE '=' NUMBER .
+
+    $default  reduce using rule 92 (beam_parameters)
+
+
+state 151
+
+   94 beam_parameters: VARIABLE '=' STR .
+
+    $default  reduce using rule 94 (beam_parameters)
+
+
+state 152
+
+   91 beam_parameters: beam_parameters ',' VARIABLE . '=' NUMBER
+   93                | beam_parameters ',' VARIABLE . '=' STR
+
+    '='  shift, and go to state 160
+
+
+state 153
+
+   89 option_parameters: option_parameters ',' VARIABLE '=' . NUMBER
+
+    NUMBER  shift, and go to state 161
+
+
+state 154
+
+   86 use_parameters: PERIOD '=' VARIABLE .
+   87               | PERIOD '=' VARIABLE . ',' RANGE '=' VARIABLE '/' VARIABLE
+
+    ','  shift, and go to state 162
+
+    $default  reduce using rule 86 (use_parameters)
+
+
+state 155
+
+   34 parameters: VARIABLE '=' aexpr .
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '+'  shift, and go to state 50
+    '-'  shift, and go to state 51
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 34 (parameters)
+
+
+state 156
+
+   33 parameters: VARIABLE '=' vecexpr .
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '+'  shift, and go to state 60
+    '-'  shift, and go to state 61
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 33 (parameters)
+
+
+state 157
+
+   31 parameters: parameters ',' VARIABLE . '=' aexpr
+   32           | parameters ',' VARIABLE . '=' vecexpr
+
+    '='  shift, and go to state 163
+
+
+state 158
+
+   39 element_seq: VARIABLE .
+
+    $default  reduce using rule 39 (element_seq)
+
+
+state 159
+
+   35 line: LINE '=' '(' element_seq . ')'
+   38 element_seq: element_seq . ',' VARIABLE
+
+    ')'  shift, and go to state 164
+    ','  shift, and go to state 165
+
+
+state 160
+
+   91 beam_parameters: beam_parameters ',' VARIABLE '=' . NUMBER
+   93                | beam_parameters ',' VARIABLE '=' . STR
+
+    NUMBER  shift, and go to state 166
+    STR     shift, and go to state 167
+
+
+state 161
+
+   89 option_parameters: option_parameters ',' VARIABLE '=' NUMBER .
+
+    $default  reduce using rule 89 (option_parameters)
+
+
+state 162
+
+   87 use_parameters: PERIOD '=' VARIABLE ',' . RANGE '=' VARIABLE '/' VARIABLE
+
+    RANGE  shift, and go to state 168
+
+
+state 163
+
+   31 parameters: parameters ',' VARIABLE '=' . aexpr
+   32           | parameters ',' VARIABLE '=' . vecexpr
+
+    '-'       shift, and go to state 3
+    '<'       shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    VARIABLE  shift, and go to state 29
+    VECVAR    shift, and go to state 31
+    FUNC      shift, and go to state 8
+    '('       shift, and go to state 17
+    '{'       shift, and go to state 18
+
+    aexpr    go to state 169
+    vecexpr  go to state 170
+    vect     go to state 27
+
+
+state 164
+
+   35 line: LINE '=' '(' element_seq ')' .
+
+    $default  reduce using rule 35 (line)
+
+
+state 165
+
+   38 element_seq: element_seq ',' . VARIABLE
+
+    VARIABLE  shift, and go to state 171
+
+
+state 166
+
+   91 beam_parameters: beam_parameters ',' VARIABLE '=' NUMBER .
+
+    $default  reduce using rule 91 (beam_parameters)
+
+
+state 167
+
+   93 beam_parameters: beam_parameters ',' VARIABLE '=' STR .
+
+    $default  reduce using rule 93 (beam_parameters)
+
+
+state 168
+
+   87 use_parameters: PERIOD '=' VARIABLE ',' RANGE . '=' VARIABLE '/' VARIABLE
+
+    '='  shift, and go to state 172
+
+
+state 169
+
+   31 parameters: parameters ',' VARIABLE '=' aexpr .
+   46 aexpr: aexpr . '+' aexpr
+   47      | aexpr . '-' aexpr
+   48      | aexpr . '*' aexpr
+   49      | aexpr . '/' aexpr
+   50      | aexpr . '^' aexpr
+   54      | aexpr . '<' aexpr
+   55      | aexpr . LE aexpr
+   56      | aexpr . '>' aexpr
+   57      | aexpr . GE aexpr
+   58      | aexpr . NE aexpr
+   69 vecexpr: aexpr . '+' vecexpr
+   70        | aexpr . '-' vecexpr
+   71        | aexpr . '*' vecexpr
+
+    '+'  shift, and go to state 50
+    '-'  shift, and go to state 51
+    '*'  shift, and go to state 52
+    '/'  shift, and go to state 53
+    '^'  shift, and go to state 54
+    '<'  shift, and go to state 55
+    '>'  shift, and go to state 56
+    GE   shift, and go to state 57
+    LE   shift, and go to state 58
+    NE   shift, and go to state 59
+
+    $default  reduce using rule 31 (parameters)
+
+
+state 170
+
+   32 parameters: parameters ',' VARIABLE '=' vecexpr .
+   64 vecexpr: vecexpr . '+' vecexpr
+   65        | vecexpr . '-' vecexpr
+   66        | vecexpr . '+' aexpr
+   67        | vecexpr . '*' aexpr
+   68        | vecexpr . '/' aexpr
+
+    '+'  shift, and go to state 60
+    '-'  shift, and go to state 61
+    '*'  shift, and go to state 62
+    '/'  shift, and go to state 63
+
+    $default  reduce using rule 32 (parameters)
+
+
+state 171
+
+   38 element_seq: element_seq ',' VARIABLE .
+
+    $default  reduce using rule 38 (element_seq)
+
+
+state 172
+
+   87 use_parameters: PERIOD '=' VARIABLE ',' RANGE '=' . VARIABLE '/' VARIABLE
+
+    VARIABLE  shift, and go to state 173
+
+
+state 173
+
+   87 use_parameters: PERIOD '=' VARIABLE ',' RANGE '=' VARIABLE . '/' VARIABLE
+
+    '/'  shift, and go to state 174
+
+
+state 174
+
+   87 use_parameters: PERIOD '=' VARIABLE ',' RANGE '=' VARIABLE '/' . VARIABLE
+
+    VARIABLE  shift, and go to state 175
+
+
+state 175
+
+   87 use_parameters: PERIOD '=' VARIABLE ',' RANGE '=' VARIABLE '/' VARIABLE .
+
+    $default  reduce using rule 87 (use_parameters)

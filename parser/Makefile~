@@ -1,0 +1,29 @@
+CC=g++
+OBJ=lex.yy.o parser.tab.o
+LIB=-lfl
+
+LEX=flex
+LOPT=-i
+
+YACC=bison
+YOPT=-d -v
+
+parser : $(OBJ)
+	$(CC) -o parser $(OBJ) $(LIB)
+ 
+lex.yy.o : lex.yy.c parser.tab.c parser.tab.h sym_table.h
+	$(CC) -c  lex.yy.c
+                                                                                
+y.tab.o : parser.tab.h parser.tab.c sym_table.h 
+	$(CC) -c $(INCL)  parser.tab.c
+                                                                                
+                                                                                
+lex.yy.c : parser.l parser.tab.h parser.y parser.h
+	$(LEX) $(LOPT) parser.l
+                                                                                
+parser.tab.h parser.tab.c : parser.y parser.h
+	$(YACC) $(YOPT) parser.y
+                                                                                
+clean :
+	rm parser $(OBJ) lex.yy.c parser.tab.c parser.tab.h
+ 

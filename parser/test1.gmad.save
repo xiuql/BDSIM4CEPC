@@ -1,0 +1,13 @@
+cccc! test gmad file
+
+qd1 : QUADRUPOLE,l=1.2,k1=1.0;
+qd2 : quadrupole,l=2, k1=2;
+
+qj : qd1 , l=100;
+
+cell : line = (qd1,qd2,qj);
+
+use,period=cell;
+print,line;
+stop;
+

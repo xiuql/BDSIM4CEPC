@@ -1,0 +1,237 @@
+! ==============================================================================
+! area=ebsy
+! ------------------------------------------------------------------------------
+! 20-MAY-2003, M. Woodley
+!    NLC2003 configuration (250 GeV beam)
+! ------------------------------------------------------------------------------
+
+! ==============================================================================
+! QUADs
+! ------------------------------------------------------------------------------
+
+! skew source section
+
+  BQF90  :=  9.32870009865*Efact
+  BQD90  := -BQF90
+  BQF180 :=  6.383722143932*Efact
+  BQD180 := -4.784844946028*Efact
+
+  QF90  : QBDS2, K1=BQF90*QFACT2
+  QD90  : QBDS2, K1=BQD90*QFACT2
+  QF180 : QBDS3, K1=BQF180*QFACT3
+  QD180 : QBDS3, K1=BQD180*QFACT3
+
+  BSQ1 := 0 !1.0E-6
+  BSQ2 := 0 !1.0E-6
+  BSQ3 := 0 !1.0E-6
+  BSQ4 := 0 !1.0E-6
+
+  SQ1 : QBDS1, K1=BSQ1*QFACT1, TILT
+  SQ2 : QBDS1, K1=BSQ2*QFACT1, TILT
+  SQ3 : QBDS1, K1=BSQ3*QFACT1, TILT
+  SQ4 : QBDS1, K1=BSQ4*QFACT1, TILT
+
+! match from skew source section to emittance diagnostic section
+
+  BQD9045 := -8.819060050165*Efact
+  BQF9045 :=  9.523039801269*Efact
+
+  QD9045 : QBDS2, K1=BQD9045*QFACT2
+  QF9045 : QBDS2, K1=BQF9045*QFACT2
+
+! emittance diagnostic section
+
+  BQD45 := -8.460739400782*Efact
+  BQF45 := -BQD45
+
+  QD45 : QBDS2, K1=BQD45*QFACT2
+  QF45 : QBDS2, K1=BQF45*QFACT2
+
+! SBD section (narrow-QD 90 degree FODO)
+! (NOTE: narrow QD is Tesla "Type B" BDS quadrupole with 171 mm full width
+!        cross-section)
+
+  LQ90XD := 1.5
+  rQ90XD := 0.01
+
+  BQF90X :=  3.951848838681*Efact
+  BQD90X := -3.549392190031*Efact
+
+  QF90X : QUAD,  L=LQ90XD/2, K1=BQF90X/(Brho*rQ90XD), APER=rQ90XD
+  QD90X : QBDS2, K1=BQD90X*QFACT2
+
+! match from emittance diagnostic section to SBD section
+
+  BQF4590 :=  5.706803270611*Efact
+  BQD4590 := -5.393167349956*Efact
+
+  QF4590 : QBDS2, K1=BQF4590*QFACT2
+  QD4590 : QBDS2, K1=BQD4590*QFACT2
+
+! ==============================================================================
+! DRIFTs
+! ------------------------------------------------------------------------------
+
+  LMLS   :=  0.168588725    !NLC2001 value was 0.5
+  L90    := 14.508          !90 degree cell drift
+  L180A  :=  9.567631278909 !180 degree cell drift (1)
+  L180B  :=  8.960829921929 !180 degree cell drift (2)
+  L9045A := 14.499467191263 !90/45 matching drift (1)
+  L9045B := 11.240943258947 !90/45 matching drift (2)
+  L45    :=  8.39216        !45 degree cell drift
+  L4590A := 20.205817611648 !45/90 matching drift (1)
+  L4590B := 19.453436301042 !45/90 matching drift (2)
+  L90X   := 39.0            !90 degree SBD cell drift
+
+! cell and matching drifts
+
+  DMLS   : DRIF, L=LMLS
+  D90    : DRIF, L=L90
+  D180A  : DRIF, L=L180A
+  D180B  : DRIF, L=L180B
+  D9045A : DRIF, L=L9045A
+  D9045B : DRIF, L=L9045B
+  D45    : DRIF, L=L45
+  D4590A : DRIF, L=L4590A
+  D4590B : DRIF, L=L4590B
+  D90X   : DRIF, L=L90X
+
+! drifts around skew quads, wire scanners, and SBDs
+
+  LQSQ  := 2.313 !skew-quad-to-quad drift
+  LQWS  := 0.5   !quad-to-wire-scanner drift
+  LWS45 := 2.99  !location adjustment for first wire scanner
+  LFBQ  := 0.5   !feedback-kicker-to-quad drift
+  LDSBD := 0.5   !quad-to-SBD and SBD-to-SBD drift
+
+  D90a    : DRIF, L=L90-(LQSQ+L50CM)
+  D90b    : DRIF, L=LQSQ
+  D180Aa  : DRIF, L=L180A-(LQSQ+L50CM)
+  D180Ab  : DRIF, L=LQSQ
+  D9045Ba : DRIF, L=LQWS+LWS45
+  D9045Bb : DRIF, L=L9045B-(LQWS+LWS45)
+  D45a    : DRIF, L=LQWS
+  D45b    : DRIF, L=L45-LQWS
+  D90Xa   : DRIF, L=LDSBD
+  D90Xb   : DRIF, L=L90X-LDSBD
+
+! drifts around feedback correctors and kickers
+
+  DFB1 : DRIF, L=LQSQ-(LFBC/2+Lspace+LFBK+LFBQ)
+  DFB2 : DRIF, L=LFBC/2+Lspace+LFBK/2
+  DFB3 : DRIF, L=LFBQ
+  DFB4 : DRIF, L=L9045A-(LFBC/2+Lspace+LFBK+LFBQ)
+
+! ==============================================================================
+! MARKERs
+! ------------------------------------------------------------------------------
+
+  BEGEBSY : MARK
+  EXT0    : MARK
+  ENDEBSY : MARK
+
+! ==============================================================================
+! BEAMLINEs
+! ------------------------------------------------------------------------------
+! C90F   : skew source section 90 degree FODO cell (begins with QF)
+! C90D   : skew source section 90 degree FODO cell (begins with QD)
+! C180   : skew source section 180/90 degree FODO cell
+! C45F   : emittance diagnostic section 45 degree FODO cell (begins with QF)
+! C45D   : emittance diagnostic section 45 degree FODO cell (begins with QD)
+! C90X   : SBD 90 degree FODO cell
+! M9045  : match from skew source section to emittance diagnostic section
+! M4590X : match from emittance diagnostic section to C90X
+! SKSRC0 : skew source + emittance diagnostic + extraction (lattice only)
+! SKSRC1 : skew source + emittance diagnostic (lattice + SQ's and WS's)
+! SKSRC  : skew source + emittance diagnostic (lattice + the works) ...
+!          drifts in extraction/matching section adjusted for dump line
+!          geometry; quads rematched
+! L2SS   : connect ELIN4/EBTL to SKSRC (no matching)
+! ------------------------------------------------------------------------------
+
+  C90F   : LINE=(QF90,D90,QD90,QD90,D90,QF90)
+  C90D   : LINE=(QD90,D90,QF90,QF90,D90,QD90)
+  C180   : LINE=(QD90,D180A,QF180,QF180,D180B,QD180,&
+                 QD180,D180B,QF180,QF180,D180A,QD90)
+  C45    : LINE=(QD45,D45,QF45,QF45,D45,QD45)
+  C90X   : LINE=(QF90X,D90X,QD90X,QD90X,D90X,QF90X)
+  M9045  : LINE=(QF90,D9045A,QD9045,QD9045,D9045B,QF9045,QF9045,D45,QD45)
+  M4590X : LINE=(QD45,D45a,D4590A,QF4590,QF4590,D4590B,QD4590,QD4590,D90X,QF90X)
+
+  SKSRC0 : LINE=(QF90,D90,QD90,&
+                 QD90,D90,QF90,&
+                 QF90,D90,QD90,&
+                 QD90,D180A,QF180,QF180,D180B,QD180,&
+                 QD180,D180B,QF180,QF180,D180A,QD90,&
+                 QD90,D90,QF90,&
+                 QF90,D90,QD90,&
+                 QD90,D90,QF90,&
+                 QF90,D9045A,QD9045,QD9045,D9045B,QF9045,QF9045,D45,QD45,&
+                 QD45,D45,QF45,QF45,D45,QD45,&
+                 QD45,D45,QF45,QF45,D45,QD45,&
+                 QD45,D45a,D4590A,QF4590,QF4590,D4590B,QD4590,&
+                 QD4590,D90X,QF90X,QF90X,D90X,QD4590,&
+                 QD4590,D4590B,QF4590,QF4590,D4590A,D45a,QD45)
+  SKSRC1 : LINE=(QF90,D90a,&
+                 SQ1,SQ1,D90b,&
+                 QD90,QD90,D90,&
+                 QF90,QF90,D90a,&
+                 SQ2,SQ2,D90b,&
+                 QD90,QD90,D180A,&
+                 QF180,QF180,D180B,&
+                 QD180,QD180,D180B,&
+                 QF180,QF180,D180Aa,&
+                 SQ3,SQ3,D180Ab,&
+                 QD90,QD90,D90,&
+                 QF90,QF90,D90a,&
+                 SQ4,SQ4,D90b,&
+                 QD90,QD90,D90,&
+                 QF90,QF90,D9045A,&
+                 QD9045,QD9045,D9045Ba,WS,D9045Bb,&
+                 QF9045,QF9045,D45,&
+                 QD45,QD45,D45a,WS,D45b,&
+                 QF45,QF45,D45,&
+                 QD45,QD45,D45a,WS,D45b,&
+                 QF45,QF45,D45,&
+                 QD45,QD45,D45a,WS,D4590A,&
+                 QF4590,QF4590,D4590B,&
+                 QD4590,QD4590,D90X,&
+                 QF90X,QF90X,D90X,&
+                 QD4590,QD4590,D4590B,&
+                 QF4590,QF4590,D4590A,D45a,&
+                 QD45)
+  SKSRC  : LINE=(BPMQ,MMOVER,QF90,D90a,&
+                 SQ1,SQ1,D90b,&
+                 QD90,BPMQ,MMOVER,QD90,D90,&
+                 QF90,BPMQ,MMOVER,QF90,D90a,&
+                 SQ2,SQ2,D90b,&
+                 QD90,BPMQ,MMOVER,QD90,D180A,&
+                 QF180,BPMQ,MMOVER,QF180,D180B,&
+                 QD180,BPMQ,MMOVER,QD180,D180B,&
+                 QF180,BPMQ,MMOVER,QF180,D180Aa,&
+                 SQ3,SQ3,D180Ab,&
+                 QD90,BPMQ,MMOVER,QD90,D90,&
+                 QF90,BPMQ,MMOVER,QF90,D90a,&
+                 SQ4,SQ4,DFB1,FBCXY,DFB2,FBKXY,DFB3,&
+                 QD90,BPMMB,MMOVER,QD90,D90,&
+                 QF90,BPMMB,MMOVER,QF90,DFB4,FBCXY,DFB2,FBKXY,DFB3,&
+                 QD9045,BPMMB,MMOVER,QD9045,D9045Ba,WS,BPMWS,D9045Bb,&
+                 QF9045,BPMMB,MMOVER,QF9045,D45,&
+                 QD45,BPMMB,MMOVER,QD45,D45a,WS,BPMWS,D45b,&
+                 QF45,BPMMB,MMOVER,QF45,D45,&
+                 QD45,BPMMB,MMOVER,QD45,D45a,WS,BPMWS,D45b,&
+                 QF45,BPMMB,MMOVER,QF45,D45,&
+                 QD45,BPMMB,MMOVER,QD45,D45a,WS,BPMWS,D4590A,&
+                 QF4590,BPMQ,QF4590,D4590B,&
+                 QD4590,BPMQ,QD4590,D90Xa,EXT0,D90Xb,&
+                 QF90X,BPMQ079,QF90X,D90X,&
+                 QD4590,BPMQ,QD4590,D4590B,&
+                 QF4590,BPMQ,QF4590,D4590A,D45a,&
+                 QD45,BPMQ,QD45,D45a)
+  L2SS   : LINE=(DMLS,QF90)
+
+  EBSY   : LINE=(BEGEBSY,L2SS,SKSRC,ENDEBSY)
+
+! ==============================================================================
+
+  RETURN

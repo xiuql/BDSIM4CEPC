@@ -1,0 +1,2 @@
+qtp : quadrupole, l=0, k1 =0;
+qj : qtp, l=1,k1=2;

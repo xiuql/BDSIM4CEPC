@@ -1,0 +1,132 @@
+
+! ==============================================================================
+! load intial conditions and common definitions
+! ------------------------------------------------------------------------------
+
+  include nlc000.nlc_common.xsif
+  include ebdh_250gev_initial.xsif
+  include nlc040.bds_common.xsif
+
+! ==============================================================================
+! load beamline definitions
+! ------------------------------------------------------------------------------
+
+  include nlc601.ebsy.xsif
+  include nlc611.eirth.xsif
+  call, filename="nlc612.effh.xsif
+  call, filename="nlc614.edlh.xsif
+
+! ==============================================================================
+! input beam definitions
+! ------------------------------------------------------------------------------
+
+! set up twss0
+
+  twss0  : beta0,&
+           energy=ef, betx=tbetx, alfx=talfx, bety=tbety, alfy=talfy
+
+! construct input beam matrix (assumes dy=dpy=0)
+
+  emitx := emitxn/(twss0[energy]/emass) 
+  emity := emityn/(twss0[energy]/emass) 
+  tgamx := (1+twss0[alfx]*twss0[alfx])/twss0[betx]
+  tgamy := (1+twss0[alfy]*twss0[alfy])/twss0[bety]
+  sig11 := emitx*twss0[betx]
+  sig21 := -emitx*twss0[alfx]
+  sig22 := emitx*tgamx
+  sig33 := emity*twss0[bety]
+  sig43 := -emity*twss0[alfy]
+  sig44 := emity*tgamy
+  sig66 := esprd*esprd
+  c21   := sig21/sqrt(sig11*sig22)
+  c43   := sig43/sqrt(sig33*sig44)
+  sig0  : sigma0, sigx=sqrt(sig11), sigpx=sqrt(sig22), r21=c21, &
+                  sigy=sqrt(sig33), sigpy=sqrt(sig44), r43=c43, &
+                  sigt=bleng, sigpt=esprd
+
+  value, ef,emitxn,emityn
+  value, emitx,emity
+  value, 1.e6*sqrt(sig11),1.e6*sqrt(sig22),1.e6*sqrt(sig33),1.e6*sqrt(sig44)
+  value, c21,c43
+
+  beam, particle=electron, energy=twss0[energy], ex=emitx, ey=emity, &
+        sigt=bleng, sige=esprd
+
+! ==============================================================================
+! commands
+! ------------------------------------------------------------------------------
+
+  setplot, xsize=25.4, ysize=20.32
+  option, echo
+
+! generate output files and plots
+
+  use, (ebsy,eirth,effh,edlh)
+  print, full
+  select, optics, full
+  savebeta, twssff, begeffh
+  savebeta, twssip, ip
+ 
+
+  !twiss, beta0 = twss0,&
+  !       save, tape="ebdh_250gev_twiss.tape"
+  twiss,energy=ef,betx=tbetx,alfx=talfx,bety=tbety,alfy=talfy,save=twiss
+
+  envelope, sigma0=sig0, save, tape="ebdh_250gev_envelope.tape"
+
+  !optics,energy=ef,betx=tbetx,alfx=talfx,bety=tbety,alfy=talfy,&
+  !       columns=name,keyword,s,l,k0l,k1l,k2l,k3l,k4l,tilt,type
+
+  print,full
+  select,optics,full
+
+  optics,energy=ef,betx=tbetx,alfx=talfx,bety=tbety,alfy=talfy,&
+         columns=name,s,betx,bety,filename="opt"
+
+
+ !plot, table=twiss,haxis=s,&
+ !    vaxis1=rbetx,rbety, vaxis2=dx, style=100, &
+ !   spline=.t., title="nlc2003 500 gev cm"
+ plot, table=envelope, haxis=s, vaxis=sigx, style=100, spline=.t., &
+   title="nlc2003 500 gev cm: <g>ge<g><?>x<?>=3.6x10<!>-6<!> m"
+ plot, table=envelope, haxis=s, vaxis=sigy, style=100, spline=.t., &
+   title="nlc2003 500 gev cm: <g>ge<g><?>y<?>=4.0x10<!>-8<!> m"
+ plot, table=twiss, haxis=s, vaxis1=betx,vaxis2=bety, style=100, &
+    range=ebsy, title="skew correction & diagnostics"
+ plot, table=twiss, haxis=s, vaxis=betx,bety, style=100, spline=.t., &
+    range=eirth, title="high energy ir transport"
+ plot, table=twiss, haxis=s, vaxis1=betx,bety, vaxis2=dx, style=100, &
+    spline=.t., range=effh, title="full raimondi/seryi compact ff"
+ plot, table=twiss, haxis=s, vaxis1=betx,bety, vaxis2=dx, style=100, &
+    spline=.t., range=edlh, title="dump line"
+
+  
+
+! display twiss at start of ff and at ip
+! (note: ff optics has been optimized for maximum luminosity using tracking,
+!        guineapig, etc. ... first order ip twiss will not be the nominal
+!        8 x 0.11 mm)
+
+  value, twssff[energy]
+  value, twssff[betx],twssff[alfx],twssff[dx],twssff[dpx]
+  value, twssff[bety],twssff[alfy]
+
+  value, twssip[energy]
+  value, twssip[betx],twssip[alfx],twssip[dx],twssip[dpx]
+  value, twssip[bety],twssip[alfy]
+
+! create survey
+
+ !set, legeoh, 0
+ !value, legeoh
+
+  xi     := 20.309745091569
+  zi     := -1.981352044465e3
+  thetai := -0.90115187067e-2
+  value, xi,zi,thetai
+
+  !use, (ebsy,eirth,effh,edlh)
+  !print, full
+  !survey, x0=xi, z0=zi, theta0=thetai, tape="ebdh_250gev_survey.tape"
+
+  stop

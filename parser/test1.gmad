@@ -1,0 +1,17 @@
+echo "testing ifs";
+x=3;
+echo "first x="; x; 
+
+if(x<4)
+ begin 
+   echo "inside  if";
+   x = x+2;
+   if(x<4) echo "second nested loop";
+   echo "hhh";
+ end;
+
+
+echo "outside";
+
+print, x;
+
