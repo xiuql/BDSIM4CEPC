@@ -2,7 +2,7 @@
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
    Last modified 25.12.2003
    Copyright (c) 2003 by G.A.Blair.  ALL RIGHTS RESERVED. 
-*/
+*/ 
 //
 // ********************************************************************
 // * DISCLAIMER                                                       *
@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSGammaConversion.cc,v 1.2 2005/01/27 11:35:32 agapov Exp $
+// $Id: BDSGammaConversion.cc,v 1.3 2005/03/24 14:26:04 carter Exp $
 // GEANT4 tag $Name:  $
 //
 //------------------ BDSGammaConversion physics process -------------------------
