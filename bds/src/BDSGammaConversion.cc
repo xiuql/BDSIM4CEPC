@@ -401,8 +401,11 @@ G4VParticleChange* BDSGammaConversion::PostStepDoIt(const G4Track& aTrack,
                       G4Positron::Positron(),PositDirection,PositKineEnergy);
    fParticleChange.AddSecondary(aParticle2); 
 
+#ifdef G4VERSION_4_7
+   fParticleChange.ProposeLocalEnergyDeposit(localEnergyDeposit);
+#else
    fParticleChange.SetLocalEnergyDeposit(localEnergyDeposit);
-
+#endif
 
    // --------------------------
    // gab add muons (doesn't conserve energy, but good for stats)
@@ -562,9 +565,15 @@ G4VParticleChange* BDSGammaConversion::PostStepDoIt(const G4Track& aTrack,
    //
    // Kill the incident photon 
    //
+   
    fParticleChange.SetMomentumChange( 0., 0., 0. );
    fParticleChange.SetEnergyChange( 0. ); 
+#ifdef G4VERSION_4_7
+   fParticleChange.ProposeTrackStatus( fStopAndKill );
+#else
    fParticleChange.SetStatusChange( fStopAndKill );
+#endif
+
 
    //  Reset NbOfInteractionLengthLeft and return fParticleChange
    // return G4VDiscreteProcess::PostStepDoIt( aTrack, aStep );

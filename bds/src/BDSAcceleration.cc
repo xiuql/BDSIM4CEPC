@@ -32,9 +32,20 @@ G4double NewKinEnergy;
   //
   // Update the incident particle 
   //
-  aParticleChange.SetMomentumChange(trackData.GetMomentumDirection());
-  aParticleChange.SetEnergyChange(NewKinEnergy);
-  aParticleChange.SetLocalEnergyDeposit (0.); 
+
+#ifdef G4VERSION_4_7 
+{
+    aParticleChange.ProposeMomentumDirection(trackData.GetMomentumDirection());
+    aParticleChange.ProposeEnergy(NewKinEnergy);
+    aParticleChange.ProposeLocalEnergyDeposit (0.); 
+}
+#else  // check how to handle in 4.7
+{
+    aParticleChange.SetMomentumChange(trackData.GetMomentumDirection());
+    aParticleChange.SetEnergyChange(NewKinEnergy);
+    aParticleChange.SetLocalEnergyDeposit (0.);
+}
+#endif
 
   return G4VDiscreteProcess::PostStepDoIt(trackData,stepData);
 }

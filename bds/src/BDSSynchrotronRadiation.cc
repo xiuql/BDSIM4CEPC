@@ -90,11 +90,28 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
       G4cout<<" beamline:"<<(*iBeam)->GetName()<<" z="<<zpos/m<<G4endl;
       */
 
+
+#ifdef G4VERSION_4_7
       if (NewKinEnergy > 0.)
 	{
 	  //
 	  // Update the incident particle 
-	    aParticleChange.SetEnergyChange(NewKinEnergy);
+	    aParticleChange.ProposeEnergy(NewKinEnergy);
+	} 
+      else
+	{ 
+	  aParticleChange.ProposeEnergy( 0. );
+	  aParticleChange.ProposeLocalEnergyDeposit (0.);
+	  G4double charge= trackData.GetDynamicParticle()->GetCharge();
+	  if (charge<0.) aParticleChange.ProposeTrackStatus(fStopAndKill);
+	  else       aParticleChange.ProposeTrackStatus(fStopButAlive);
+	}
+#else
+      if (NewKinEnergy > 0.)
+	{
+	  //
+	  // Update the incident particle 
+	  aParticleChange.SetEnergyChange(NewKinEnergy);
 	} 
       else
 	{ 
@@ -104,6 +121,8 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
 	  if (charge<0.) aParticleChange.SetStatusChange(fStopAndKill);
 	  else       aParticleChange.SetStatusChange(fStopButAlive);
 	}
+#endif
+
     }
   return G4VDiscreteProcess::PostStepDoIt(trackData,stepData);
 }

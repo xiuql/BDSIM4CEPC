@@ -82,6 +82,22 @@ G4VParticleChange* BDSPlanckScatter::PostStepDoIt(const G4Track& trackData,
   
   G4LorentzVector ScatEl=itsComptonEngine->GetScatteredElectron();
 
+#ifdef G4VERSION_4_7
+  if (NewKinEnergy > 0.)
+    {
+      aParticleChange.ProposeMomentumDirection(ScatEl.vect().unit());
+      aParticleChange.ProposeEnergy(NewKinEnergy);
+      aParticleChange.ProposeLocalEnergyDeposit (0.); 
+    } 
+  else
+    { 
+      aParticleChange.ProposeEnergy( 0. );
+      aParticleChange.ProposeLocalEnergyDeposit (0.);
+      G4double charge= aDynamicParticle->GetCharge();
+      if (charge<0.) aParticleChange.ProposeTrackStatus(fStopAndKill);
+      else       aParticleChange.ProposeTrackStatus(fStopButAlive);
+    }    
+#else
   if (NewKinEnergy > 0.)
     {
       aParticleChange.SetMomentumChange(ScatEl.vect().unit());
@@ -96,6 +112,9 @@ G4VParticleChange* BDSPlanckScatter::PostStepDoIt(const G4Track& trackData,
       if (charge<0.) aParticleChange.SetStatusChange(fStopAndKill);
       else       aParticleChange.SetStatusChange(fStopButAlive);
     }    
+#endif
+
+
 
   return G4VContinuousDiscreteProcess::PostStepDoIt(trackData,stepData);
 }

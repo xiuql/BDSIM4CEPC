@@ -69,15 +69,27 @@ G4VParticleChange* BDSLaserCompton::PostStepDoIt(const G4Track& trackData,
 	 aParticleChange.AddSecondary(aGamma); 
 	 if(!BDSGlobals->GetLaserwireTrackElectrons())
 	   {
+#ifdef G4VERSION_4_7
+	     aParticleChange.ProposeEnergy( 0. );
+	     aParticleChange.ProposeLocalEnergyDeposit (0.);
+	     aParticleChange.ProposeTrackStatus(fStopAndKill);
+#else
 	     aParticleChange.SetEnergyChange( 0. );
 	     aParticleChange.SetLocalEnergyDeposit (0.);
 	     aParticleChange.SetStatusChange(fStopAndKill);
+#endif
 	   }
        }
      else
        {
+#ifdef G4VERSION_4_7
+	 aParticleChange.SetNumberOfSecondaries(0);
+     	 aParticleChange.ProposeLocalEnergyDeposit (0.);
+#else
 	 aParticleChange.SetNumberOfSecondaries(0);
      	 aParticleChange.SetLocalEnergyDeposit (0.);
+#endif
+
        }
      //
      // Update the incident particle 
@@ -94,17 +106,33 @@ G4VParticleChange* BDSLaserCompton::PostStepDoIt(const G4Track& trackData,
      
      if (NewKinEnergy > 0.)
        {
+#ifdef G4VERSION_4_7
+	 aParticleChange.ProposeMomentumDirection(ScatEl.vect().unit());
+	 aParticleChange.ProposeEnergy(NewKinEnergy);
+	 aParticleChange.ProposeLocalEnergyDeposit (0.); 
+#else
 	 aParticleChange.SetMomentumChange(ScatEl.vect().unit());
 	 aParticleChange.SetEnergyChange(NewKinEnergy);
 	 aParticleChange.SetLocalEnergyDeposit (0.); 
+#endif
        } 
      else
        { 
+
+#ifdef G4VERSION_4_7
+	 aParticleChange.ProposeEnergy( 0. );
+	 aParticleChange.ProposeLocalEnergyDeposit (0.);
+	 G4double charge= aDynamicParticle->GetCharge();
+	 if (charge<0.) aParticleChange.ProposeTrackStatus(fStopAndKill);
+	 else       aParticleChange.ProposeTrackStatus(fStopButAlive);
+#else
 	 aParticleChange.SetEnergyChange( 0. );
 	 aParticleChange.SetLocalEnergyDeposit (0.);
 	 G4double charge= aDynamicParticle->GetCharge();
 	 if (charge<0.) aParticleChange.SetStatusChange(fStopAndKill);
 	 else       aParticleChange.SetStatusChange(fStopButAlive);
+#endif
+
        }    
      
    }

@@ -108,8 +108,15 @@ G4VParticleChange* BDSUserSpecialCuts::PostStepDoIt(
 // 			    			    			    
 {
    aParticleChange.Initialize(aTrack);
+
+#ifdef G4VERSION_4_7
+   aParticleChange.ProposeEnergy(0.) ;
+   aParticleChange.ProposeLocalEnergyDeposit (aTrack.GetKineticEnergy()) ;
+#else
    aParticleChange.SetEnergyChange(0.) ;
    aParticleChange.SetLocalEnergyDeposit (aTrack.GetKineticEnergy()) ;
+#endif
+
    // gab: killing now would remove positron rest mass from the total energy...
    //   aParticleChange.SetStatusChange(fStopAndKill);
    return &aParticleChange;
