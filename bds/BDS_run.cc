@@ -55,6 +55,19 @@ G4bool UsePrimaryPhoton_gab=false;
 
 #include "BDSRootObjects.hh"
 
+// Print program usage
+static void usage()
+{
+  G4cout<<"Usage: BDS_run [options]"<<G4endl;
+  G4cout<<"Options:"<<G4endl;
+  G4cout<<"--file=<filename> : specify the cards file"<<G4endl
+	<<"--optics=<filename> : specify the optics fie"<<G4endl
+	<<"--help              : display this message"<<G4endl
+	<<"--verbose           : run in verbose mode"<<G4endl;
+}
+
+
+
 BDSGlobalConstants* BDSGlobals;
 BDSRootObjects* BDSRoot;
 
@@ -103,13 +116,9 @@ int main(int argc,char** argv) {
 	
 	if( !strcmp(LongOptions[OptionIndex].name , "help") )
 	  {
-	    G4cout<<"Usage: BDS_run [options]"<<G4endl;
-	    G4cout<<"Options:"<<G4endl;
-	    G4cout<<"--file=<filename> : specify the cards file"<<G4endl
-		  <<"--optics=<filename> : specify the optics fie"<<G4endl
-		  <<"--help              : display this message"<<G4endl
-		  <<"--verbose           : run in verbose mode"<<G4endl;
-	    exit(0);
+
+	    usage();
+	    return 1;
 	  }
 	
 	if( !strcmp(LongOptions[OptionIndex].name , "verbose") )
