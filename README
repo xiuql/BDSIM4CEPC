@@ -30,7 +30,7 @@ Quit Geant4 session with  'exit' to save the Root file
 
 2)==========Other files========================
 
-optics           : sample optics file
+xxx.optics           : sample optics file
 BDSInput.cards   : sample cards file 
 BDS_vis.mac      : sample G4 visualization script
 
