@@ -13,14 +13,16 @@ BDSRootObjects::BDSRootObjects ()
 
 BDSRootObjects::~BDSRootObjects()
 {  
+
   if(theRootOutputFile)
     {
       theRootOutputFile->Write();
       theRootOutputFile->Close();
       delete theRootOutputFile;
     }
-  if(h1) 
-      delete h1;
+
+  //if(h1)    delete h1;
+
 
   G4int i;
   for(i=0;i<nSamplers;i++)
@@ -30,6 +32,7 @@ BDSRootObjects::~BDSRootObjects()
       if(sTree)delete sTree;
     }
 
+
   for(i=0;i<nLWCalorimeters;i++)
     {
       G4String name="lwcal"+StringFromInt(i+1);
@@ -37,12 +40,15 @@ BDSRootObjects::~BDSRootObjects()
       if(sTree)delete sTree;
     }
 
+
   for(i=0;i<nTrajectories;i++)
     {
       G4String name="Trajectory"+StringFromInt(i+1);
       TTree* tTree=(TTree*)gDirectory->Get(name);
       if(tTree)delete tTree;
     }
+
+
 }
 
 void  BDSRootObjects::SetupNewFile(G4String filename)

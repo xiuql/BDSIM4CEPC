@@ -11,7 +11,7 @@
 // based on the Program) you indicatbdse your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSDetectorConstruction.cc,v 1.1.1.1 2004/11/18 17:42:38 ilia Exp $
+// $Id: BDSDetectorConstruction.cc,v 1.1.1.1 2004/12/14 18:57:39 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -107,6 +107,9 @@ G4FieldManager* theOuterFieldManager;
 
 //=================================================================
 
+extern G4String OpticsFilename;
+
+
 BDSDetectorConstruction::BDSDetectorConstruction()
 {  // create commands for interactive definition of the beamline  
   G4double pi_ov_2 = asin(1.);
@@ -157,19 +160,17 @@ G4VPhysicalVolume* BDSDetectorConstruction::Construct()
   
 G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS()
 {
-
-  // TheAccelerator=new AcceleratorType("clic","halo");
-  //     TheAccelerator=new AcceleratorType("clic","normal");
   
   BDSAcceleratorType* TheAccelerator=BDSGlobals->GetAcceleratorType();
 
-  // Read in the MAD decks:Linux-g++/BDS_run/BDSDetectorConstruction.o] Error 1
+  // Read in the MAD decks
   // Construct the BDS beamline model
 
 
-  BDSMADInterface mad(TheAccelerator->GetType()+"_BDS.optics",
+  BDSMADInterface mad(OpticsFilename,
 		      TheAccelerator->GetBeamTotalEnergy() );
   
+
   G4cout<<" Beam total energy="<<TheAccelerator->GetBeamTotalEnergy()/GeV<<
     " GeV"<<G4endl;
   // ofstream madlog("construction.log");

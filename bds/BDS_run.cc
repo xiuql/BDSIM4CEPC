@@ -1,10 +1,16 @@
 /** BDSIM code.    Version 1.0
-   @Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.7.2002
-   @Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+*   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
+*   Last modified 24.7.2002
+*   @Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
 
-//#include "G4RunManager.hh"
+//  TODO: place brief BDSIM discription here
+//
+//
+//
+//
+
+
 #include "BDSGlobalConstants.hh" // must be first in the list
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
@@ -20,13 +26,11 @@
 #include "BDSVisManager.hh"
 #endif
 
-//#define DECFortran 1
-//#include "/cern/pro/include/cfortran/cfortran.h"
-//#include "/cern/pro/include/cfortran/packlib.h"
-//#include "packlib.h"
 
 #include "stdlib.h"      
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
 
 // tmp
 #include "G4ParticleDefinition.hh"
@@ -35,17 +39,8 @@
 #include "G4ParticleTable.hh"
 
 
-//=======================================================
-
-//#define PAWC_SIZE 5000000c
-//typedef struct { float PAW[PAWC_SIZE]; } PAWC_DEF;
-//#define PAWC COMMON_BLOCK(PAWC,pawc)
-//COMMON_BLOCK_DEF(PAWC_DEF,PAWC);
-//PAWC_DEF PAWC;
-
 // link to G4eBremsstrahlung.cc and G4GammaConversion.cc for muon studies
 G4bool UsePrimaryPhoton_gab=false;
-
 //=======================================================
 #include "BDSDetectorConstruction.hh"
 #include "BDSPhysicsList.hh"
@@ -63,27 +58,111 @@ G4bool UsePrimaryPhoton_gab=false;
 BDSGlobalConstants* BDSGlobals;
 BDSRootObjects* BDSRoot;
 
+G4String CardsFilename= "BDSInput.cards";
+G4String OpticsFilename = "optics";
+G4bool verbose = false;
 
 int main(int argc,char** argv) {
 
 
+  // NOTE: Visualization crashes when the argument parsing is added 
+  // Parse the command line options 
+
+  
+   static struct option LongOptions[] = {
+     { "help" , 0, 0, 0 },
+     { "verbose", 0, 0, 0 },
+     { "file", 1, 0, 0 },
+     { "optics", 1, 0, 0 },
+     { 0, 0, 0, 0 }
+   };
+  
+  int OptionIndex = 0;
+  int c;
+  int ThisOptionId;
+  
+  for(;;)
+    {
+      
+      ThisOptionId = optind ? optind : 1;
+      OptionIndex = 0;
+      
+      c = getopt_long(argc, argv, "Vv",
+		      LongOptions, &OptionIndex );
+      
+      if ( c == -1 ) // end of options list
+  	break;
+      
+      switch (c) {
+      case 0:
+	
+	//G4cout<<"option "<<LongOptions[OptionIndex].name;
+	//if(optarg) {
+	//  G4cout<<" with arg "<<optarg;}
+	//G4cout<<G4endl;
+	
+	if( !strcmp(LongOptions[OptionIndex].name , "help") )
+	  {
+	    G4cout<<"Usage: BDS_run [options]"<<G4endl;
+	    G4cout<<"Options:"<<G4endl;
+	    G4cout<<"--file=<filename> : specify the cards file"<<G4endl
+		  <<"--optics=<filename> : specify the optics fie"<<G4endl
+		  <<"--help              : display this message"<<G4endl
+		  <<"--verbose           : run in verbose mode"<<G4endl;
+	    exit(0);
+	  }
+	
+	if( !strcmp(LongOptions[OptionIndex].name , "verbose") )
+	  {
+	    verbose = true; 
+	  }
+	  
+	if( !strcmp(LongOptions[OptionIndex].name , "file") )
+	  {
+	    if(optarg) {
+	      CardsFilename = optarg;
+	    }
+	    else {
+	      G4cout<<"please specify the cards filename"<<G4endl;
+	    }
+	  }
+	
+	if( !strcmp(LongOptions[OptionIndex].name , "optics") )
+	  {
+	    
+	    if(optarg) {
+	      OpticsFilename = optarg;
+	    }
+	    else {
+	      G4cout<<"please specify the optics filename"<<G4endl;
+	    }
+	  }
+	
+	break;
+      case -1:
+	break;
+      default:
+	break;
+      }
+      
+    }
+  
+  
+//   G4cout<<"using cards file "<<CardsFilename<<
+//     G4endl<<"using optics file "<<OpticsFilename<<G4endl;
+  
+  
+  
   // Read in the global constants
-  BDSGlobals=new BDSGlobalConstants("BDSInput.cards");
-  BDSRoot=new BDSRootObjects();
+  // IA: TODO: change to xml input format
+
+  BDSGlobals = new BDSGlobalConstants(CardsFilename);
+  BDSRoot = new BDSRootObjects();
 
   gDirectory->mkdir("Histos");
   gDirectory->mkdir("Trees");
   gDirectory->mkdir("Trajectories");
 
-
-  // paw stuff:
-  //HLIMIT(PAWC_SIZE);
-  //  G4int record_size=1024;
-  //  G4int istat,icycle;
-  //  HROPEN(1,"sampler","sampler_output.rz","N",record_size,istat);
-
-  //  HMDIR("//sampler","S");
-  //  HCDIR("//sampler"," ");
 
   // ROOT stuff:
   TROOT RootStartup("BDSROOT", "Beam Delivery System Simulation");
@@ -96,7 +175,7 @@ int main(int argc,char** argv) {
   HepRandom::setTheSeed(BDSGlobals->GetRandomSeed());
 
   G4cout<<" seed from bdsglobals="<<BDSGlobals->GetRandomSeed()<<G4endl;
-  G4cout<<"Random Number SEED ="<<HepRandom::getTheSeed<<G4endl;
+  G4cout<<"Random Number SEED ="<<HepRandom::getTheSeed()<<G4endl;
 
   BDSRunManager * runManager = new BDSRunManager;
 
@@ -113,14 +192,12 @@ int main(int argc,char** argv) {
   G4UIsession* session=0;
   
   if(!BDSGlobals->GetUseBatch())
-    {  if (argc==1)   // Define UI session for interactive mode.
-      {
+    {
 #ifdef G4UI_USE_TCSH
-	session = new G4UIterminal(new G4UItcsh);      
+      session = new G4UIterminal(new G4UItcsh);
 #else
-	session = new G4UIterminal();
+      session = new G4UIterminal();
 #endif    
-      }
     }
 
 
@@ -155,87 +232,90 @@ int main(int argc,char** argv) {
 
   //Initialize G4 kernel
   runManager->Initialize();
- 
+  
   //  PhysList->BDSAddTransportation();
+  
+  // bias inelastic events
+  
+  G4ProcessManager *pManager = 0;
+  G4ProcessVector *procVec = 0;
+  G4String pName;
+  G4HadronInelasticProcess* HadInProc=0;
+  
+  pManager = G4Electron::Electron()->GetProcessManager();
+  procVec=pManager->GetProcessList();
+  G4int nProc,iProc;
+  nProc=pManager->GetProcessListLength();
+  
+  for(iProc=0;iProc<nProc;iProc++)
+    {
+      pName=(*procVec)[iProc]->GetProcessName();
+      if(pName=="ElectroNuclear") 
+	{
+	  HadInProc=
+	    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
+	  HadInProc->
+	    BiasCrossSectionByFactor(BDSGlobals->
+				     GetHadronInelasticScaleFactor());
+	}
+    }
+  
+  pManager = G4Positron::Positron()->GetProcessManager();
+  procVec=pManager->GetProcessList();
+  nProc=pManager->GetProcessListLength();
 
-	  // bias inelastic events
-
-	  G4ProcessManager *pManager = 0;
-	  G4ProcessVector *procVec = 0;
-	  G4String pName;
-	  G4HadronInelasticProcess* HadInProc=0;
-
-	  pManager = G4Electron::Electron()->GetProcessManager();
-	  procVec=pManager->GetProcessList();
-	  G4int nProc,iProc;
-	  nProc=pManager->GetProcessListLength();
-	  for(iProc=0;iProc<nProc;iProc++)
-	    {
-	      pName=(*procVec)[iProc]->GetProcessName();
-	      if(pName=="ElectroNuclear") 
-		{
-		  HadInProc=
-		    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
-		  HadInProc->
-		    BiasCrossSectionByFactor(BDSGlobals->
-					     GetHadronInelasticScaleFactor());
-		}
-	    }
-
-	  pManager = G4Positron::Positron()->GetProcessManager();
-	  procVec=pManager->GetProcessList();
-	  nProc=pManager->GetProcessListLength();
-	  for(iProc=0;iProc<nProc;iProc++)
-	    {
-	      pName=(*procVec)[iProc]->GetProcessName();
-	      if(pName=="PositronNuclear")
-		{
-		  HadInProc=
-		    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
-		  HadInProc->
-		    BiasCrossSectionByFactor(BDSGlobals->
-					     GetHadronInelasticScaleFactor());
-		}
-	    }
-
-	  
-	  pManager =G4Gamma::Gamma()->GetProcessManager();
-	  procVec=pManager->GetProcessList();
-	  nProc=pManager->GetProcessListLength();
-	  for(iProc=0;iProc<nProc;iProc++)
-	    {
-	      pName=(*procVec)[iProc]->GetProcessName();
-	      if(pName=="PhotoNuclear")
-		{
-		  HadInProc=
-		    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
-		  HadInProc->
-		    BiasCrossSectionByFactor(BDSGlobals->
-					     GetHadronInelasticScaleFactor());
-		}
-	    }
-
-	  /*
-	  pManager = G4Neutron::Neutron()->GetProcessManager();
-	  procVec=pManager->GetProcessList();
-	  nProc=pManager->GetProcessListLength();
-	  for(iProc=0;iProc<nProc;iProc++)
-	    {
-	      pName=(*procVec)[iProc]->GetProcessName();
-	      G4cout<<"proc neutron="<<pName<<endl;
-	      if(pName=="ElectroNuclear" || pName=="PhotonInelastic"
-		 || pName=="NeutronInelastic")
-		{
-		  HadInProc=
-		    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
-		  HadInProc->
-		    BiasCrossSectionByFactor(BDSGlobals->
-					     GetHadronInelasticScaleFactor());
-		}
-	    }
-	  */
-
-
+  for(iProc=0;iProc<nProc;iProc++)
+    {
+      pName=(*procVec)[iProc]->GetProcessName();
+      if(pName=="PositronNuclear")
+	{
+	  HadInProc=
+	    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
+	  HadInProc->
+	    BiasCrossSectionByFactor(BDSGlobals->
+				     GetHadronInelasticScaleFactor());
+	}
+    }
+  
+  
+  pManager =G4Gamma::Gamma()->GetProcessManager();
+  procVec=pManager->GetProcessList();
+  nProc=pManager->GetProcessListLength();
+  
+  for(iProc=0;iProc<nProc;iProc++)
+    {
+      pName=(*procVec)[iProc]->GetProcessName();
+      if(pName=="PhotoNuclear")
+	{
+	  HadInProc=
+	    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
+	  HadInProc->
+	    BiasCrossSectionByFactor(BDSGlobals->
+				     GetHadronInelasticScaleFactor());
+	}
+    }
+  
+  /*
+    pManager = G4Neutron::Neutron()->GetProcessManager();
+    procVec=pManager->GetProcessList();
+    nProc=pManager->GetProcessListLength();
+    for(iProc=0;iProc<nProc;iProc++)
+    {
+    pName=(*procVec)[iProc]->GetProcessName();
+    G4cout<<"proc neutron="<<pName<<endl;
+    if(pName=="ElectroNuclear" || pName=="PhotonInelastic"
+    || pName=="NeutronInelastic")
+    {
+    HadInProc=
+    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
+    HadInProc->
+    BiasCrossSectionByFactor(BDSGlobals->
+    GetHadronInelasticScaleFactor());
+    }
+    }
+  */
+  
+  
   if (!BDSGlobals->GetUseBatch())   // Define UI session for interactive mode.
     {
       // get the pointer to the User Interface manager 
@@ -259,7 +339,7 @@ int main(int argc,char** argv) {
   
   // gab: remove this in order to make a version that works on cosmos
 #ifdef G4VIS_USE
-  if(!BDSGlobals->GetUseBatch())delete visManager;
+  if(!BDSGlobals->GetUseBatch()) delete visManager;
 #endif
 
   if(BDSRoot->theRootOutputFile)
@@ -268,12 +348,14 @@ int main(int argc,char** argv) {
       gDirectory->Write();
       BDSRoot->theRootOutputFile->ls();
       BDSRoot->theRootOutputFile->Close();
+    
     }
 
-  //delete theBDSEventAction;
-  //delete runManager;
 
+  delete runManager;
+
+  delete BDSRoot; 
+  delete BDSGlobals;
      
   return 0;
 }
-

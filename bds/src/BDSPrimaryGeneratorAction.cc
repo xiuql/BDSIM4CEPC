@@ -1,6 +1,5 @@
 /* BDSIM code.    Version 1.0
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 15.12.2004 by Ilya Agapov, agapov@pp.rhul.ac.uk
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
 
@@ -11,7 +10,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSPrimaryGeneratorAction.cc,v 1.1.1.1 2004/12/14 18:57:39 agapov Exp $
+// $Id: BDSPrimaryGeneratorAction.cc,v 1.2 2004/12/16 19:27:28 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 

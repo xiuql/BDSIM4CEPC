@@ -378,7 +378,6 @@ void BDSExtract::GenerateParticle(G4double& x_rndm,
 BDSExtract::~BDSExtract()
 {
 
-
   if(s_e) delete s_e;
   if(s_x) delete s_x;
   if(s_xp) delete s_xp;
@@ -391,10 +390,11 @@ BDSExtract::~BDSExtract()
   if(s_y_yp) delete s_y_yp;
   if(s_yp_yp) delete s_yp_yp;
 
-  if(s_transv)delete s_transv;
+  if(s_transv) delete s_transv;
 
   //if(&xvalue)delete &xvalue;
   //if(&yvalue) delete &yvalue;
   //if(&ytransv) delete &ytransv;
+
 }
 
