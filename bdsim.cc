@@ -2,6 +2,11 @@
 *   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
 *   Last modified 24.7.2002
 *   @Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+   Modified 23.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
+   Removed delete BDSGlobals and BDSRoot at the end of file - not needed
+     and were causing Malloc errors
+   Added build session for XM visualisation.
 */
 
 //  TODO: place brief BDSIM discription here
@@ -209,7 +214,7 @@ int main(int argc,char** argv) {
 
 
   G4UIsession* session=0;
-  
+   
   if(!isBatch)
     {
 #ifdef G4UI_USE_XM
