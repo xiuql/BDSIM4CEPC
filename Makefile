@@ -31,5 +31,5 @@ LDFLAGS += -L$(G4LIBDIR) -L$(CERN)/pro/lib
 INCFLAGS += -I$(ROOTSYS)/include
 
 distrib:
-	tar -czvf BDSIM.tar.gz .
+	tar -C .. -czvf BDSIM.tar.gz BDSIM
 
