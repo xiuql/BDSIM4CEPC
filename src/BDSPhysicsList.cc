@@ -34,6 +34,7 @@
 #include "BDSSynchRadPhysics.hh"
 #include "BDSeBremPhysics.hh"
 #include "BDSGammaConversionPhysics.hh"
+#include "BDSLowEMPhysics.hh"
 
 #include "G4Electron.hh"
 
@@ -51,8 +52,6 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
   // BDS Transportation
   RegisterPhysics( new BDSTransportation("BDS Transportation") );
  
-  G4cout << BDSGlobals->GetUseHaloRadius() << "test"<<G4endl;
-  G4cout << BDSGlobals->GetTurnOnInteractions()<<"ssdfasfasfsdff"<<G4endl;  
   if(BDSGlobals->GetTurnOnInteractions())
     {
       if(BDSGlobals->GetUseEMHadronic())
@@ -70,7 +69,8 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
 	}
       else
 	// EM Physics
-	RegisterPhysics( new EMPhysics("standard EM"));
+	if(!BDSGlobals->GetUseLowEMPhysics())
+	  RegisterPhysics( new EMPhysics("standard EM"));
 
       if(BDSGlobals->GetAcceleratorType()->GetType()!="PETRA")
       // Muon Physics
@@ -89,11 +89,12 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
 
       if(BDSGlobals->GetBDSeBremOn())
 	RegisterPhysics( new BDSeBremPhysics("BDSeBrem"));
-
   
       if(BDSGlobals->GetUseMuonPairProduction())
 	RegisterPhysics( new BDSGammaConversionPhysics("BDSGamConv"));
 
+      if(BDSGlobals->GetUseLowEMPhysics())
+	RegisterPhysics( new BDSLowEMPhysics("LowEM"));
     }
 
 }
