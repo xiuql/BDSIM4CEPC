@@ -25,7 +25,6 @@
 #include <map>
 #include<string>
 
-G4LogicalVolume* TempLogVol;
 
 //============================================================
 
@@ -253,7 +252,6 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
 
   itsInnerBPLogicalVolume->SetFieldManager(itsBPFieldMgr,false) ;
 
-  TempLogVol=itsInnerBPLogicalVolume;
 
   // now protect the fields inside the marker volume by giving the
   // marker a null magnetic field (otherwise G4VPlacement can

@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSTransportationProcess.hh,v 1.1.1.1 2004/12/14 18:57:41 agapov Exp $
+// $Id: BDSTransportationProcess.hh,v 1.1.2.1 2005/01/27 14:40:38 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -164,6 +164,10 @@ class BDSTransportationProcess : public G4VProcess
      G4int    fVerboseLevel;
        // Verbosity level for warnings
        // eg about energy non-conservation in magnetic field.
+
+     //gab Dec04
+     G4int nKill;
+
 };
 
 #include "BDSTransportationProcess.icc"

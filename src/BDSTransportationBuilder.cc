@@ -20,6 +20,8 @@ BDSTransportationBuilder::
 #include "G4ParticleTable.hh"
 #include "G4Electron.hh"
 #include "G4Positron.hh"
+#include "G4MuonPlus.hh"
+#include "G4MuonMinus.hh"
 #include "G4ProcessManager.hh"
 
 
@@ -56,5 +58,21 @@ void BDSTransportationBuilder::Build()
   pManager->AddProcess(&theBDSTransportationProcess);
   pManager ->SetProcessOrderingToFirst(&theBDSTransportationProcess,idxAlongStep);
   pManager ->SetProcessOrderingToFirst(&theBDSTransportationProcess,idxPostStep);
+
+  // gab Dec04
+  pManager = G4MuonMinus::MuonMinus()->GetProcessManager();
+  pManager->RemoveProcess(0);
+  pManager->AddProcess(&theBDSTransportationProcess);
+  pManager ->SetProcessOrderingToFirst(&theBDSTransportationProcess,idxAlongStep);
+  pManager ->SetProcessOrderingToFirst(&theBDSTransportationProcess,idxPostStep);
+  
+  pManager = G4MuonPlus::MuonPlus()->GetProcessManager();
+  pManager->RemoveProcess(0);
+  pManager->AddProcess(&theBDSTransportationProcess);
+  pManager ->SetProcessOrderingToFirst(&theBDSTransportationProcess,idxAlongStep);
+  pManager ->SetProcessOrderingToFirst(&theBDSTransportationProcess,idxPostStep);
+  
 }
 // 2002 by J.P. Wellisch
+
+

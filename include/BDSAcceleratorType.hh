@@ -28,6 +28,7 @@ public:
   void SetUpNLC();
   void SetUpATF();
   void SetUpPETRA();
+  void SetUpILC();
 
 
   G4String GetType();

@@ -47,7 +47,7 @@ private:
     G4LorentzVector itsIncomingEl;
     G4LorentzVector itsIncomingGam;
 
-   const static G4int ntryMax = 10000000;
+   static const G4int ntryMax = 10000000;
 
 };
 

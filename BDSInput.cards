@@ -42,7 +42,7 @@ WRITE_BUNCH_FILE 0
 * Generic Output Ntuple File Name (will have _N.rz appended for integer N) :
 * (Default is sampler_output.rz)
 OUTPUT_NTUPLE_FILE_NAME
-PETRA_laserwire_FULLBP
+OUTPUT
 * Number of events to include per file; insurance against crashes during batch.
 * a new file is created _(N+1).rz after this number of events
 NUMBER_OF_EVENTS_PER_NTUPLE
@@ -58,10 +58,6 @@ NUMBER_TO_GENERATE 10
 * Random Number Seed 
 RANDOM_SEED
 100000
-* Choose to use Grid Farm multiple job submission. Setting to true places the
-* handling of OUTPUT_NTUPLE_FILE_NAME and RANDOM_SEED over to the job script.
-* The values entered above will NOT be used if this is set to true.
-GRID_FARM_JOB_USE 0
 * =====================================================
 *
 * Energy offset of bunch (GeV) - for collimation studies
@@ -228,14 +224,16 @@ VERBOSE_EVENT_NUMBER 0
 * volumes meet without gaps (mm)
 * LENGTH_SAFETY 1.e-9
 LENGTH_SAFETY 0.
+
+
 * =====================================================
 * 
 * Laser-wire Calorimeter parameters
 * Length is given in the optics file as usual.
 * total width of calorimeter in cm:
-LW_CAL_WIDTH 5.4
+* LW_CAL_WIDTH 5.4
 * horizontal offset: centre of crystal matrix from the beampipe centre in cm
-LW_CAL_OFFSET 29.0
+* LW_CAL_OFFSET 29.0
 * Laserwire calorimeter material
-LW_CAL_MATERIAL LeadTungstate
+* LW_CAL_MATERIAL LeadTungstate
 

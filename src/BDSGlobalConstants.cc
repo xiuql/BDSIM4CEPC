@@ -1,7 +1,7 @@
 /* BDSIM code.    Version 1.0
    Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.7.2002
-   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+   Last modified 24.12.2004
+   Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
 
 #include "BDSGlobalConstants.hh"
@@ -10,10 +10,10 @@
 
 #include <cstdlib>
 
+#include <assert.h>
+
 #include<string>
 #include<stack>
-
-/* IA: */ #include <assert.h> 
 
 using namespace std;
 
@@ -249,6 +249,12 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
     {
       _READ(itsUseMuonShowers);
     }
+  // gab Dec04
+  else if(name=="MUON_LOWEST_GENRATED_ENERGY")
+    {
+      _READ(itsMuonLowestGeneratedEnergy);
+      itsMuonLowestGeneratedEnergy*=GeV;
+    }
   else if(name=="INCLUDE_IRON_MAG_FIELDS")
     {
       _READ(itsIncludeIronMagFields);
@@ -277,16 +283,7 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
     {_READ(itsOutputNtupleFileName);}
   else if(name=="NUMBER_OF_EVENTS_PER_NTUPLE")
     {_READ(itsNumberOfEventsPerNtuple);}
-  else if(name=="LW_CAL_WIDTH")
-    {_READ(itsLWCalWidth);
-      itsLWCalWidth*=cm;
-    }
-  else if(name=="LW_CAL_OFFSET")
-    {_READ(itsLWCalOffset);
-      itsLWCalOffset*=cm;
-    }
-  else if(name=="LW_CAL_MATERIAL")
-    {_READ(itsLWCalMaterial);}
+
 
   // JCC Addded for Grid Farm multiple job runs 06/07/04
   // ===========================================================
@@ -305,11 +302,14 @@ G4int BDSGlobalConstants::ReadCard (G4String& accelerator,
     }
   // ===========================================================
 
+
+
   else
     {
       G4cout<<" Unknown card in BDSInput.cards:"<<name<<G4endl;
       G4Exception("BDSGlobalConstants: UNRECOGNISED CARD");
     } 
+ 
   return 0;
 }
 

@@ -53,7 +53,7 @@ protected:
 
 private:
   // Data Members for Class Attributes
-  G4int EnergyLossZMax;
+  G4double EnergyLossZMax;
   G4int nSamplers;
   G4int nLWCalorimeters;
   G4int nTrajectories;

@@ -108,7 +108,7 @@ public:
   inline G4int GetPDGtype() const
     {return itsPDGtype;}
   inline G4int SetEventNo(G4int nEvent)
-    {itsEventNo=nEvent;}
+    {return itsEventNo=nEvent;}
   inline G4int GetEventNo() const
     {return itsEventNo;}
   

@@ -110,7 +110,7 @@ BDSAcceleratorComponent (
 			G4VisAttributes* aVisAtt,G4double angle  ): 
   itsName(aName),itsLength(aLength),itsBpRadius(aBpRadius),
   itsXAper(aXAper),itsYAper(aYAper),
-  itsVisAttributes(aVisAtt),itsAngle(angle)
+  itsAngle(angle), itsVisAttributes(aVisAtt)
 {itsSensitiveVolume=NULL;
  itsInnerBeampipeUserLimits =new G4UserLimits();
 };

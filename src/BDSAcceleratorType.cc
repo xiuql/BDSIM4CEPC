@@ -17,6 +17,7 @@ BDSAcceleratorType::BDSAcceleratorType( const G4String& Type,
   if(Type=="nlc"){SetUpNLC();}
   if(Type=="atf"){SetUpATF();}
   if(Type=="PETRA"){SetUpPETRA();}
+  if(Type=="ILC"){SetUpILC();}
 
   itsBeamKineticEnergy=itsBeamTotalEnergy-
                          itsBeamParticleDefinition->GetPDGMass();
@@ -38,6 +39,51 @@ BDSAcceleratorType::BDSAcceleratorType( const G4String& Type,
 
 }
 
+
+void BDSAcceleratorType::SetUpILC()
+{// GAB Dec04
+                                                                                
+   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+   itsBeamParticleDefinition= particleTable->FindParticle("e-");
+   // tmp for muon studies
+   //itsBeamParticleDefinition= particleTable->FindParticle("mu-");
+                                                                                
+   itsBeamTotalEnergy= 250*GeV;
+                                                                                
+   itsBeamMomentum=sqrt(pow(itsBeamTotalEnergy,2)-
+                        pow(itsBeamParticleDefinition->GetPDGMass(),2));
+                                                                                
+   itsBetaX  = 50.525915605603 *m ;
+   itsBetaY  = 9.563928674469  *m ;
+                                                                                
+   itsAlphaX=-2.379589233378;
+   itsAlphaY=0.51099718123;
+                                                                                
+   itsSigmaZ = 0.0003*m ;   //please change
+                                                                                
+   itsNormalisedXEmittance = 3.6e-06*m  ;
+   itsNormalisedYEmittance = 0.04e-06*m  ;
+   itsBunchCharge          = 0.75e+10;
+                                                                                
+  // electrons (after undulator for positron production:)
+     //itsRelativeEnergySpread=1.5e-3;
+  // positrons (no undulator)
+   itsGaussianRelativeEnergySpread=3.2e-4 ;  //please change
+   itsEDisType="gaussian";
+   
+   // Halo variables:
+   itsXCollimationDepthInSigma      = 27.;
+   itsXPrimeCollimationDepthInSigma = 27.;
+   itsYCollimationDepthInSigma      = 115.;
+   itsYPrimeCollimationDepthInSigma = 115.;
+   
+   itsHaloLowerRelativeEnergySpread = 0.99;    //please change
+   itsHaloUpperRelativeEnergySpread = 1.01;   //please change
+   
+   // may need to be updated to take account of supercondicting linac:
+   itsTemperature=300*kelvin;
+   
+}
 
 
 

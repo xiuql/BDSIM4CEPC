@@ -48,6 +48,7 @@
 #include "BDSAbsorber.hh"
 #include "BDSLaserWire.hh"
 #include "BDSLWCalorimeter.hh"
+#include "BDSMuSpoiler.hh"
 
 
 #include "BDSMaterials.hh"
@@ -150,6 +151,8 @@ G4double BDSMADInterface::ReadComponent ()
 {
 #define  _READ(value) if(!(ifs>>value)) return 0;
 
+  // gab Dec04
+  G4double rInner,rOuter, MuBfield;
   G4String name,type,aptype;
   G4double len,s,angle,k1,k2,k3,k4,tilt;
   
@@ -327,7 +330,17 @@ G4double BDSMADInterface::ReadComponent ()
   //G4cout<<"type="<<type<<G4endl;
 
 
+  //gab dec 04
+  
+  if( (type=="RCOLLIMATOR")&&(len<0.1))type="SPOILER";
+  if( (type=="RCOLLIMATOR"||type=="ECOLLIMATOR")&&(len>0.1))type="ABSORBER";
 
+  if(type=="MUSPOILER")
+    {
+      rOuter=angle*m;
+      MuBfield=k1*tesla;
+    }
+  
 
   if(type=="DRIFT"){
     //G4cout<<"adding drift "<<name<<" len="<<len<<" bpRad="<<bpRad<<endl;

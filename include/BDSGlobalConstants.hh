@@ -14,18 +14,15 @@
 #include <set>
 #include <list>
 
-// gab tmp
-#include "G4ios.hh"
-
 #include "G4ThreeVector.hh"
 #include "globals.hh"
 #include "BDSAcceleratorType.hh"
 #include "G4FieldManager.hh"
 
-using std::ofstream;
 using std::istream;
-using std::ifstream;
 using std::ostream;
+using std::ifstream;
+using std::ofstream;
 using std::list;
 
 class BDSGlobalConstants 
@@ -94,8 +91,12 @@ class BDSGlobalConstants
   G4bool GetUseMuonPairProduction();
   G4bool GetStoreMuonTrajectories();
   G4bool GetUseMuonShowers();
-
   G4bool GetIncludeIronMagFields();
+
+  // gab Dec04
+  G4double GetMuonLowestGeneratedEnergy();
+  void SetMuonEnergyCutScaleFactor(G4double aScaleFactor);
+  G4double GetMuonEnergyCutScaleFactor();
 
   G4bool GetUseHaloRadius();
   G4double GetHaloInnerRadius();
@@ -130,10 +131,6 @@ class BDSGlobalConstants
   // Internally transmitted variables:
   void SetGlobalBeamlineRotationY(G4double aYRotation);
   G4double GetGlobalBeamlineRotationY();
-
-  G4double GetLWCalWidth();
-  G4double GetLWCalOffset();
-  G4String GetLWCalMaterial();
 
 
   G4FieldManager* GetZeroFieldManager();
@@ -192,6 +189,8 @@ private:
   G4bool itsUseMuonPairProduction;
   G4bool itsStoreMuonTrajectories;
   G4bool itsUseMuonShowers;
+  G4double itsMuonLowestGeneratedEnergy;
+  G4double itsMuonEnergyCutScaleFactor;
 
   G4bool itsIncludeIronMagFields;
 
@@ -226,9 +225,17 @@ private:
 
   G4FieldManager* itsZeroFieldManager;
 
+public:
+  G4double GetLWCalWidth();
+  G4double GetLWCalOffset();
+  G4String GetLWCalMaterial();
+
+private:
   G4double itsLWCalWidth;
   G4double itsLWCalOffset;
   G4String itsLWCalMaterial;
+
+
 
 };
 
@@ -361,6 +368,15 @@ inline G4bool BDSGlobalConstants::GetStoreMuonTrajectories()
 inline G4bool BDSGlobalConstants::GetUseMuonShowers()
 {return itsUseMuonShowers;}
 
+inline G4double BDSGlobalConstants::GetMuonLowestGeneratedEnergy()
+{return itsMuonLowestGeneratedEnergy;}
+
+inline G4double BDSGlobalConstants::GetMuonEnergyCutScaleFactor()
+{return itsMuonEnergyCutScaleFactor;}
+
+inline void BDSGlobalConstants::SetMuonEnergyCutScaleFactor(G4double aScaleFactor)
+{itsMuonEnergyCutScaleFactor=aScaleFactor;}
+
 inline G4Timer* BDSGlobalConstants::GetTimer()
 {return itsTimer;}
 
@@ -418,12 +434,16 @@ inline G4double BDSGlobalConstants::GetGlobalBeamlineRotationY()
 inline G4FieldManager* BDSGlobalConstants::GetZeroFieldManager()
 {return itsZeroFieldManager;}
 
+
 inline  G4double BDSGlobalConstants::GetLWCalWidth()
 {return itsLWCalWidth;}
+
 inline  G4double BDSGlobalConstants::GetLWCalOffset()
 {return itsLWCalOffset;}
+
 inline  G4String BDSGlobalConstants::GetLWCalMaterial()
 {return itsLWCalMaterial;}
+
 
 extern BDSGlobalConstants* BDSGlobals;
 #endif

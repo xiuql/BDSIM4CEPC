@@ -11,8 +11,8 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSPrimaryGeneratorAction.cc,v 1.2 1999/12/15 14:49:25 gunter Exp $
-// GEANT4 tag $Name: geant4-02-00 $
+// $Id: BDSPrimaryGeneratorAction.cc,v 1.2.2.1 2005/01/27 12:16:35 agapov Exp $
+// GEANT4 tag $Name:  $
 //
 // 
 
@@ -61,8 +61,8 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
 				      -BDSGlobals->GetWorldSizeZ()));
   particleGun->SetParticleEnergy(TheAccelerator->GetBeamKineticEnergy());
 
-  GaussGen=new RandGauss(HepRandom::getTheEngine());
-  FlatGen=new RandFlat(HepRandom::getTheEngine());
+  GaussGen=new RandGauss(*HepRandom::getTheEngine());
+  FlatGen=new RandFlat(*HepRandom::getTheEngine());
 
   if (BDSGlobals->GetReadBunchFile() && BDSGlobals->GetExtractBunchFile())
     G4Exception(" Both the Extract Bunch and the Read Bunch flags are set!");
@@ -148,7 +148,7 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double y0 = 0.;
   G4double z0 = 0.;
 
-  if(BDSGlobals->GetAcceleratorType()!="atf")
+  if(BDSGlobals->GetAcceleratorType()->GetType()!="atf")
     z0 = -BDSGlobals->GetWorldSizeZ();
   
   G4double t,dx,xp,dy,yp,zp,E,dz;
