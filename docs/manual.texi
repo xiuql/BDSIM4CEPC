@@ -1,0 +1,767 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename bdsim.info
+@settitle BDSIM beta User's Manual
+@c This date is automagically updated when you save this file:
+@set lastupdate April 05, 2005
+@c %**end of header
+
+@setchapternewpage off
+
+
+@copying
+
+Copyright @copyright{} 2005 Royal Holloway.
+
+@c @quotation
+@c This code ia an intellectual property of the British Empire.
+@c @end quotation
+@end copying
+
+
+@titlepage
+@title BDSIM User's Manual
+@author Ilya Agapov
+@author last updated @value{lastupdate}
+@end titlepage
+@setcontentsaftertitlepage
+
+@contents
+
+@node Top, Intro, (dir), (dir)
+@top BDSIM beta User's Manual
+
+This file is updated automatically from @file{manual.texi}, which was
+last updated on @value{lastupdate}.
+
+
+@insertcopying
+
+@menu
+* Intro::                       
+* Installation::                
+* Lattice::                       
+* Physics::                     
+* Architecture::                
+* Geometry::                    
+* Fields::                      
+* Authors::                     
+* References::                  
+@end menu
+
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Intro, Installation, Top, Top
+@chapter About BDSIM
+
+BDSIM is a particle tracking code designed for simulation of particle
+transport in accelerator beam lines. It combines tracking 
+techniques in conventional electromagnetic fields with Monte-Carlo simulations of various 
+particle interactions. It is intended for use in such problems as collimation
+design, background studies, laser beam diagnostics etc, @xref{Blair}.
+ 
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Installation, Lattice,Intro, Top
+@chapter Obtaining, Installing and Running
+
+
+To run @code{BDSIM} you will need two files:one with accelerator geometry definition (optics) 
+and the second with various run-time parameters (input cards).
+
+@code{BDSIM} is invoked by the command
+@code{bdsim} @option{options}
+
+where the options are
+
+@table @code
+@item --batch
+run in batch mode
+@item --verbose
+verbose
+@item --file = @var{file}
+use @var{file} for GMAD input
+@end table
+
+@code{BDSIM} can be also invoked by the @code{bdsimrun} shell script which handles batch job support and opther features.
+
+@code{bdsimrun} @option{options}
+
+@table @code
+@item -b
+run in batch mode
+@item -v
+verbose
+@item -f file
+use @var{file} for GMAD input
+@end table
+
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Lattice,Physics,Installation,Top
+@chapter Lattice description
+
+@menu
+* program-structure::
+* elements::
+* run-control::                       
+@end menu
+
+The beamline, beam properties and physics processes are specified in the input file written in the 
+GMAD language. @footnote{Note: To increase flexibility, application spectrum and compatibility GMAD will probably 
+be replaced by an XML-based lattice description. This however needs more investigation.}
+This language is a variation of the MAD language and is described in this section.
+
+@node program-structure
+@section Program structure
+
+
+A GMAD consists of a sequence of element definitions and control commands.
+For example, tracking a 1 Gev electron beam through a FODO cell will require file like :
+
+@example
+
+@code{qf: quadrupole, l=0.5, k1=0.1};
+@code{qd: quadrupole, l=0.5, k1=-0.1};
+@code{d: drift, l=0.5};
+@code{fodo : line=(qf,d,qd,d)};
+@code{use,period=fodo,range=#s/#e};
+@code{beam, particle=electron,energy=1};
+
+@end example
+
+The parser is case sensitive. However, for convenience of porting lattice 
+descriptions from MAD the keywords can be both lower and upper case.
+The GMAD language is discussed in more detail in this section.
+
+@node elements
+@section Physical elements and Entities
+
+@menu
+* coordinate-system::
+* units::
+* marker::                       
+@end menu
+
+
+GMAD implements almost all standard MAD elements, but also allows to define arbitrary geometric entities and 
+magnetic field configurations.
+The syntax of a physical element declaration is
+
+@code{element : element_type, attributes;}
+
+for example
+
+@code{qd : quadrupole, l = 0.1, k1 = 0.01;}
+
+@code{element_type} can be of basic type or inherited. Allowed basic types are
+
+@itemize
+@item marker
+@item drift
+@item sbend
+@item rbend
+@item quadrupole
+@end itemize
+
+
+An already defined element can be used as a new element type. Its attributes are
+then inherited. 
+
+@node coordinate-system
+@subsection Coordinate system
+
+@node units
+@subsection Units
+
+In GMAD the SI units are used. 
+
+@table @code
+@item Length  	
+ [m] (metres)
+@item angle 
+ [rad] (radians)
+@item quadrupole coefficient 
+ [m**(-2)]
+@item multipole coefficient
+ 2n poles 	[m**(-n)]
+@item electric voltage 	
+ [MV] (Megavolts)
+@item electric field strength 	
+ [MV/m]
+@item particle energy 	
+ [GeV]
+@item particle mass 	
+ [eV/c**2]
+@item particle momentum 
+ [eV/c]
+@item beam current 	
+ [A] (Amperes)
+@item particle charge 	
+ [e] (elementary charges)
+@item emittances 	
+ [pi m mrad]
+@end table 
+
+There are some predefined numerical values
+
+@table @code
+@item pi 
+ 3.14159265358979
+@item me 
+ electron rest mass
+@item mp 
+ proton rest mass
+@item KeV 
+ 10^3 (in [eV] units) 
+@item MeV 
+ 10^6 (in [eV] units) 
+@item GeV 
+ 10^9 (in [eV] units)
+@item TeV 
+ 10^12 
+@end table
+
+for example, instead of one can write either 100 or 0.1 * KeV when energy constants are concerned.
+
+@node marker
+@subsection marker
+
+@code{marker} has no effect but allows one to identify a position in the beam line.
+It has no attributes.
+
+Example:
+
+@code{m1 : marker;}
+
+
+@subsection drift
+
+@code{drift} defines a straight drift space.
+Attributes:
+@itemize 
+@item @code{l} - length [m] (default 0)
+@end itemize
+
+Example :
+
+@code{d13 : drift, l=0.5;}
+
+
+@subsection rbend
+
+@code{rbend} defines a rectangulat bending magnet.
+Attributes:
+@itemize 
+@item @code{l} - length [m] (default 0)
+@item @code{angle} - bending angle [rad] (default 0)
+@item @code{B} - magnetic field [T] 
+@end itemize
+
+when @code{B} is set, this defines a magnet with appropriate field strength and @code{angle}
+is not taken into account. Otherwise, @code{B} that corresponds to bending angle @code{angle} for a particle in use 
+(defined by the @code{beam} command, with appropriate energy and rest mass) is calculated and used in the simulations.
+
+Example :
+
+@code{rb1 : rbend, l=0.5, angle = 0.01;}
+
+@subsection sbend
+
+@code{sbend} defines a sector bending magnet.
+Attributes:
+@itemize 
+@item @code{l} - length [m] (default 0)
+@item @code{angle} - bending angle [rad] (default 0)
+@item @code{B} - magnetic field [T] 
+@end itemize
+
+Example :
+
+The meaning of @code{B} and @code{angle} is the same as for @code{rbend}.
+
+@code{rb1 : rbend, l=0.5, angle = 0.01;}
+
+@subsection quadrupole
+
+@code{quadrupole} defines a quadrupole.
+Attributes:
+@itemize 
+@item @code{l} - length [m] (default 0)
+@item @code{k1} - normal quadrupole coefficient
+k1 = (1/B rho ) (dBy  / dx) [m^-2]
+Positive @code{k1} means horisontal focusing of positively charged particles. (default 0)
+@item ks1 - skew quadrupole coefficient
+ks1 =  (1/B rho ) (dBy  / dx) [m^-2]
+where (x,y) is now a coordinate system rotated by 45 degrees around s with respect to the normal one.(default 0). 
+@item @code{tilt} [rad] - roll angle about the longitudinal axis, clockwise.
+@end itemize
+
+Example :
+
+@code{qf : quadrupole, l=0.5 , k1 = 0.5 , tilt = 0.01;}
+
+@subsection sextupole
+
+@code{sextupole} defines a quadrupole.
+Attributes:
+@itemize 
+@item @code{l} - length [m] (default 0)
+@item @code{k2} - normal sextupole coefficient
+k2 = (1/B rho ) (d^2 By  / dx^2) [m^-3]
+Positive @code{k1} means horisontal focusing of positively charged particles. (default 0)
+@item ks1 - skew sextupole coefficient
+ks2 =  (1/B rho ) (d^2 By  / dx^2) [m^-3]
+where (x,y) is now a coordinate system rotated by 30 degrees around s with respect to the normal one.(default 0). 
+@item @code{tilt} [rad] - roll angle about the longitudinal axis, clockwise.
+@end itemize
+
+Example :
+
+@code{sf : sextupole, l=0.5 , k2 = 0.5 , tilt = 0.01;}
+
+@subsection octupole
+
+@subsection multipole
+
+@subsection collimator
+
+@code{collimator} defines a collimator
+
+Attributes:
+@itemize 
+@item @code{l} - length [m] (default 0)
+@item @code{aperture} - aperture , defined by the @code{aperture} element
+@item @code{material} - material , defined by @code{material}
+@end itemize
+
+Example : 
+
+@code{coll : collimator,l=1, aperture=<aperture>, material=<material>}
+
+@subsection solenoid
+ 
+@subsection coordinate transformation
+
+@subsection element
+
+All the elements are in principle examples of a general type @code{element} 
+which can represent an arbitrary geometric 
+entity with arbitrary E and B field maps. Its attributes are
+
+@itemize
+@item @code{geometry} = @code{<geometry_description>}
+@item @code{bmap} = @code{<bmap_description> }
+@item @code{emap} = @code{<emap_description>}
+@end itemize
+
+
+Descriptions are of the form @code{format:filename}, where @code{filename} is the path to the 
+file with the geometry description and @code{format} defines the geometry description format.
+The possible formats are given in @ref{Geometry}.
+
+
+Example :
+
+@code{qq : element, geometry = plain:qq.geom, bmap = plain:qq.bmap;}
+
+@code{<bmap>} and @code{<emap>} 
+are definitions of E and B field maps according to (field maps).
+
+@subsection line
+
+elements are grouped into sequences by the @code{line} command.
+
+@code{@var{line_name} : line=(@var{element1},@var{element2},...);}
+
+@var{element}@code{n} can be any element or another line.
+
+Example : 
+
+A sequence of three FODO cells can be defines as
+
+@example
+
+@code{qf: quadrupole, l=0.5, k1=0.1};
+@code{qd: quadrupole, l=0.5, k1=-0.1};
+@code{d: drift, l=0.5};
+@code{fodo : line=(qf,d,qd,d)};
+@code{beamline : line@{fodo,fodo,fodo@};}
+
+@end example
+
+@subsection aperture
+
+@subsection material
+
+@code{<material> : material,Z=,A=,density=,temperature= }
+
+Attributes
+@itemize
+@item @code{Z} - atomic number
+@item @code{A} - mass number
+@item @code{density} - [kg/m]
+@item @code{temperature} [K]
+@end itemize
+
+@subsection pipe
+
+the beam pipe parameters are used for particle tracking inside elements when the use geometry is
+not defined. The beam pipe radius is assigned by the @code{pipe} command 
+
+@code{pipe, range=<range>, range=, r=, thickness=, material=<material>};
+
+Attributes
+@itemize
+@item @code{range} - element range to assign the radius for
+@item @code{r} - radius [m]
+@item @code{thickness} - thickness [m]
+@item @code{material} - beam pipe material
+@end itemize
+
+Example :
+
+Supposing we want to define a copper beam pipe for ...  
+
+@example
+@code{iron : material, Z=1,A=1,density=100, temperature=;}
+@code{copper : material,Z=,A=,density=,temperature=;;}
+
+@code{fodo : line=(qf,d,qd,d);}
+@code{pipe, range=qf/qd, r=0.2, thickness = 0.1,material=copper; }
+@code{pipe, range=d[2], r=0.1, thickness = 0.05,material=iron; }
+
+@end example
+
+@subsection laser
+
+@code{laser} defines a drift section with a laser beam inside.
+
+@code{<laser_name>: laser, position = @{<x>,<y>,<z>@},direction=@{ <dx>, <dy>, <dz>  @}
+wavelen=<val>, spotsize=<val>, intensity=<val>;}
+
+Attributes
+@itemize
+@item @code{l} - length of the drift section
+@item @code{position} - position of an arbitrary point on the beam axis relative to the center of the
+                        drift section
+@item @code{direction} - vector pointing in the beam direction
+@item @code{wavelen} - laser wave length [m]
+@item @code{spotsize} - spot size (sigma)[m]
+@item @code{intensity} -[W]
+@end itemize
+
+the laser is considered to be the intersection of the laser beaam with the volume of the drift section.
+
+@subsection gas
+
+@code{gas} command is used to introduce gas into the beam pipe. 
+@footnote{in realistic situations the gas profile can vary in transverse dimensions.
+This is not taken into account for a)technical reasons b)one does not know the profile anyway}
+
+@code{gas, period=, components=@{c1,c2,...@},parts=@{p1,p2,...@} };
+
+where
+@itemize
+@item @code{c1,c2,...} - gas components names 
+@item @code{p1,p2,...} - parts (100%=1). They need not sum up to 1.
+@end itemize 
+
+the gas componens are defined by
+
+@code{c1 : gas, name=<name>, A=<A>, Z=<Z>, profile=<profile_name>};
+
+where
+@itemize
+@item @code{<Z>} - atomic number
+@item @code{<A>} - mass number
+@item @code{<profile_name>} - name of gas profile definition 
+@end itemize 
+
+the gas profile is defined as 
+
+@code{<profile_name> : gas_profile = (<element>:<pressure>, <element>:<pressure>) };
+
+where
+@itemize
+@item @code{<element>} - name of the beamline component
+@item @code{<pressure>} - gas pressure (bar)
+@end itemize 
+
+
+The gas pressure is then interpolated between the points where it is defined.
+Issuing multiple @code{gas} commands acts additively.
+
+Example :
+
+To introduce the gas into a fodo cell
+
+@example
+
+@code{...element definitions...}
+
+@code{fodo : line=(qf,d,qd,d);}
+
+@code{co2 : gas, name="c02", Z=22,A=44,profile=co2profile;}
+@code{h20 : gas, name="h2", Z=1,A=1,profile=co2profile;}
+
+@code{c02profile : gas_profile = (qd:0.01, qf:0.02*nbar,d:0.03*nbar); }
+@code{h20profile : gas_profile = (qd:0.04, qf:0.01*nbar,d:0.03*nbar); }
+
+@code{gas, period=fodo,components= @{ c02,h20@},parts=@{0.7,0.8@}; }
+
+
+@end example 
+
+@node run-control
+@section Run control and output
+
+The execution control is performed in the GMAD input file through @code{option} and @code{beam}
+commands. How the results are recorded is controlledby the @code{sample} command.
+When the visualization is turned on, it is however controlled through command prompt
+and has different syntax (Geant4 syntax). 
+
+@subsection  @code{option}
+
+
+@code{option, <name>=value,...};
+
+the baseic options are
+
+@table @code
+
+@item use_low_em_physics
+use low em physics
+@item turn_on_synhrotron
+turn on synchrotron
+@item
+
+@end table
+
+
+Other options (more advanced) can be used to control the tracking procedure.
+For a full list if options and their effects see @ref{Physics}
+
+Example : 
+
+@code{beam, particle=electron,energy=100, momentum=1,1,1;}
+
+@subsection @code{beam}
+
+@subsection @code{sample}
+
+To record the tracking results one uses the @code{sample} command. It can have two syntax variants:
+
+@code{sample, range=<range>,particle=<particle>,values=@{value1,value2,...@}}
+@code{sample, element=<element>,particle=<particle>,values=@{value1,value2,...@} ;}
+
+the parameters are
+
+@itemize
+@item @code{element}
+@item @code{range}
+@item @code{particle} - particle to record. One @code{sample} command activates sampling only for one 
+                        particle type
+@item @code{value} 
+   @itemize    
+   @item @code{x} - horizontal
+   @item @code{px} - horizontal momentum
+   @item @code{xx} - 
+   @item @code{y}
+   @item @code{py}
+   @item @code{E} - energy
+   @item @code{id} - track id. This enables later trajectory analysis.  
+   @end itemize
+@end itemize
+
+
+Example :
+@example
+@code{sample, element=qd,particle=electron, values=@{x,px,y,py,e,id @}; }
+@code{sample, range=qd/qf:0.1*m,particle=photon, values=@{x,px,y,py,e,id @}; }
+@end example
+
+
+@subsection @code{use}
+
+@code{use} command selects the beam line for study
+
+@code{use, period=,range=}
+
+@subsection visualization control
+
+when bdsim is invoked in interactive mode, the run is controlled by the Geant4 shell. Some examples 
+
+@code{/run/beamOn 100} runs the simulation with 100 particles
+
+
+To display help menu
+
+@code{/help};
+
+For more details see @ref{Geant}.
+
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Physics,Architecture,Lattice,Top
+@chapter Physics
+
+@section Transportation 
+
+@subsection Tracking of charged particles in EM fields of low multipole order
+
+@subsection Tracking of charged particles in arbitrary EM fileds
+
+@subsection Neutron transport
+
+not implemented yet
+
+@section Showers
+
+@section Synchrotron Radiation
+
+@section Bremsstrahlung
+
+@section Compton
+
+@section Gas scattering
+
+@section Tuning the tracking procedure
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Architecture,Geometry,Physics,Top
+@chapter Implementation Notes
+
+BDSIM uses Geant4 libraries and execution control mechanism. 
+
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Geometry,Fields,Architecture,Top
+@appendix Geometry description formats
+
+The element with user-defined physical geometry is defined by command 
+
+@code{<element_name> : element, geometry=format:filename, attributes}
+
+for example,
+
+@code{ colli : element, geometry=plain:colli.geom}
+
+
+@section @code{plain} format
+
+@code{plain} is the format which can basically describe elements with axial simmetry and
+should work for most accelerator components like collimators, RF cavities etc.
+
+The idea is to represent the elements as sequence of simpler elements which 
+have axial simmetry and ... ( @xref{geometry_image}. )
+
+
+
+@anchor{geometry_image}
+@c @image{geometry}
+
+Example :
+
+For example, an absorber of NLC type can be represented by the following code
+
+@code{}
+
+
+@section @code{mokka}
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Fields,Authors,Geometry,Top
+@appendix Field description formats
+
+The element with user-defined physical geometry is defined by command 
+
+@code{<element_name> : element, geometry=format:filename, attributes}
+
+for example,
+
+@code{ colli : element, geometry=plain:colli.geom}
+
+
+
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Authors, References, Fields, Top
+@chapter Authors 
+
+@table @code
+
+@item Ilya Agapov @email{agapov@@pp.rhul.ac.uk}
+@item Grahame Blair @email{blair@@pp.rhul.ac.uk}
+@item John Carter @email{carter@@pp.rhul.ac.uk}
+
+@end table 
+
+
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node References, , Authors, Top
+@chapter References
+
+@enumerate
+
+@anchor{Blair}
+@item
+G. Blair, Simulation of the CLIC Beam Delivery System Using BDSIM, CLIC Note 509
+
+@anchor{Root}
+@item 
+Root User's Guide, @uref{http://root.cern.ch/root/doc/RootDoc.html}
+
+@anchor{Geant}
+@item 
+Geant4 User's Guide, @uref{http://wwwasd.web.cern.ch/wwwasd/geant4/G4UsersDocuments/Overview/html/index.html}
+
+@anchor{MAD}
+@item 
+MAD-X User's Guide, @uref{http://mad.home.cern.ch/mad/uguide.html}
+
+@anchor{NLC}
+@item 
+NLC Zero-order design report 
+
+@end enumerate
+
+@bye
+@c  LocalWords:  dir texi lastupdate uref http www org html helpgnu ifinfo ftp
+@c  LocalWords:  dvi hurd toc gvc URL GTK XmHTML xs nl ripley NT com gettext Qt
+@c  LocalWords:  GUI libstdc Docbook SGML libc sed STL Gforth GNUstep TCSH Perl
+@c  LocalWords:  Ghostscript PIC GCC Texinfo grep dc bc ethernet GDB IP CIFS CU
+@c  LocalWords:  SMB SVGA Khoros Automake OpenStep diff roff Smail tron veritas
+@c  LocalWords:  cxref ctrace API LilyPond xephem labanotation LessTif outliner
+@c  LocalWords:  Hypercard morphing SeeMe ICQ Diffie Helman RSA SSLv TLSv GPL
+@c  LocalWords:  OpenBIOS BIOS LILO dbase dbased Harbour harbour WYSIWYG ISBN
+@c  LocalWords:  TruePrint Baecker siff sif cs arizona edu TR ps mt sulaco MP
+@c  LocalWords:  RTSP MPEG jasonw ariel ucs unimelb AU stutz dsl TCL Javascript
+@c  LocalWords:  Rexx GnuGo jhall isd Biomorph regexp eval gd gnuorg
