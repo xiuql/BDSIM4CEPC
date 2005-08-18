@@ -1,0 +1,52 @@
+### BDSIM output created Fri Jul  1 15:21:39 2005
+ ####
+#Begin of event:0
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 -2892.58 341.909 -1.09111 -854.802 77.7878
+
+#Begin of event:1
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 -291.782 297.427 -1.09121 -88.4629 -4.42536
+
+#Begin of event:2
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 -2374.14 545.336 -1.09115 -714.984 79.1568
+
+#Begin of event:3
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 -65.7927 307.896 -1.09121 -20.7954 -9.13597
+
+#Begin of event:4
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 -302.22 -15.7261 -1.09121 -88.4673 0.417904
+
+#Begin of event:5
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 1469.28 128.208 -1.09122 438.3 -15.1202
+
+#Begin of event:6
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 1464.67 470.669 -1.09122 431.353 -57.4446
+
+#Begin of event:7
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 -1120.73 243.113 -1.0912 -334.262 12.0546
+
+#Begin of event:8
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 895.353 860.323 -1.09121 249.944 -90.9198
+
+#Begin of event:9
+#processing end of event
+#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
+11 1.54051 1084.24 22.0563 -1.09122 326.154 -2.11125
+
