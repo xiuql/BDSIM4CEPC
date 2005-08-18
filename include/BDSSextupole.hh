@@ -5,7 +5,7 @@
 */
 
 #ifndef BDSSextupole_h
-#define BDSSextupole_h 1
+#define BDSSextupole_h 
 
 #include"globals.hh"
 #include "BDSMaterials.hh"
@@ -25,7 +25,7 @@
 class BDSSextupole :public BDSMultipole
 {
   public:
-    BDSSextupole(G4String& aName, G4double aLength,
+    BDSSextupole(G4String aName, G4double aLength,
 		 G4double bpRad,G4double FeRad,
 		  G4double BDblPrime);
     ~BDSSextupole();

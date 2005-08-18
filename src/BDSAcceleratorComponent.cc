@@ -9,6 +9,11 @@
 //
 // Class BDSAcceleratorComponent 
 
+void BDSAcceleratorComponent::CreateFieldMesh(G4VPhysicalVolume *referenceVolume)
+{//do nothing by default
+  return;
+}
+
 BDSAcceleratorComponent::~BDSAcceleratorComponent ()
 {
   if(itsOuterLogicalVolume)delete itsOuterLogicalVolume;

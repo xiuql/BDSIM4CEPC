@@ -3,59 +3,7 @@
    Last modified 4.1.2004
    Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
-//
-// ********************************************************************
-// * DISCLAIMER                                                       *
-// *                                                                  *
-// * The following disclaimer summarizes all the specific disclaimers *
-// * of contributors to this software. The specific disclaimers,which *
-// * govern, are listed with their locations in:                      *
-// *   http://cern.ch/geant4/license                                  *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.                                                             *
-// *                                                                   *
-// * This  code  implementation is the  intellectual property  of the *
-// * GEANT4 collaboration.                                            *
-// * By copying,  distributing  or modifying the Program (or any work *
-// * based  on  the Program)  you indicate  your  acceptance of  this *
-// * statement, and all its terms.                                    *
-// ********************************************************************
-//
-//
-// $Id: BDSTransportationProcess.cc,v 1.3 2005/03/24 14:26:04 carter Exp $
-// GEANT4 tag $Name:  $
-// 
-// ------------------------------------------------------------
-//  GEANT 4  include file implementation
-//
-// ------------------------------------------------------------
-//
-// This class is a process responsible for the transportation of 
-// a particle, ie the geometrical propagation that encounters the 
-// geometrical sub-volumes of the detectors.
-//
-// It is also tasked with part of updating the "safety".
-//
-// =======================================================================
-// Modified:   
-//            21 June 2003, J.Apostolakis: Calling field manager with 
-//                            track, to enable it to configure its accuracy
-//            13 May  2003, J.Apostolakis: Zero field areas now taken into
-//                            account correclty in all cases (thanks to W Pokorski).
-//            29 June 2001, J.Apostolakis, D.Cote-Ahern, P.Gumplinger: 
-//                          correction for spin tracking   
-//            20 Febr 2001, J.Apostolakis:  update for new FieldTrack
-//            22 Sept 2000, V.Grichine:     update of Kinetic Energy
-//             9 June 1999, J.Apostolakis & S.Giani: protect full relocation
-//                          used in DEBUG for track that started on surface
-//                          and went step < tolerance. Also forced fast
-//                          relocation in all DEBUG cases
-// Created:  19 March 1997, J. Apostolakis
-// =======================================================================
+
 
 #include "BDSTransportationProcess.hh"
 #include "G4ProductionCutsTable.hh"
@@ -64,12 +12,6 @@
 
 // gab>>>>
 #include "BDSGlobalConstants.hh"
-
-//extern G4FieldManager* theOuterFieldManager;
-
-//typedef std::map<G4String,G4MagneticField*> OuterFieldMap;
-//extern OuterFieldMap* theOuterFieldMap;
-// gab <<<<
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -125,6 +67,9 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
                                              G4double& currentSafety,
                                              G4GPILSelection* selection )
 {
+
+  // G4cout<<"AlongStepGetPhysicalInteractionLength"<<G4endl;
+
   G4double geometryStepLength, newSafety ; 
   fParticleIsLooping = false ;
 
@@ -413,7 +358,7 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
      }
 
      fTransportEndSpin = aFieldTrack.GetSpin();
-     fParticleIsLooping = fFieldPropagator->IsParticleLooping() ;
+     fParticleIsLooping = fFieldPropagator->IsParticleLooping();
      endpointDistance   = (fTransportEndPosition - startPosition).mag() ;
   }
 
@@ -482,7 +427,7 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
   fParticleChange.ProposePolarization(fTransportEndSpin);
   
 #else
- fParticleChange.SetPositionChange(fTransportEndPosition) ;
+  fParticleChange.SetPositionChange(fTransportEndPosition) ;
   fParticleChange.SetMomentumChange(fTransportEndMomentumDir) ;
   fParticleChange.SetEnergyChange(fTransportEndKineticEnergy) ;
   fParticleChange.SetMomentumChanged(fMomentumChanged) ;
@@ -535,11 +480,11 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
      deltaTime = fCandidateEndGlobalTime - startTime ;
   }
 
-  #if G4VERSION > 6
+#if G4VERSION > 6
   fParticleChange.ProposeProperTime( fCandidateEndGlobalTime ) ;
-  #else
+#else
   fParticleChange.SetTimeChange( fCandidateEndGlobalTime ) ;
-  #endif
+#endif
 
   // Now Correct by Lorentz factor to get "proper" deltaTime
   

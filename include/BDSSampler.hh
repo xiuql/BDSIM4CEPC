@@ -5,7 +5,7 @@
 */
 
 #ifndef BDSSampler_h
-#define BDSSampler_h 1
+#define BDSSampler_h 
 
 #include "globals.hh"
 #include "BDSAcceleratorComponent.hh"
@@ -18,10 +18,11 @@
 #include "G4UserLimits.hh"
 #include "G4VisAttributes.hh"
 
-class BDSSampler :public BDSAcceleratorComponent
+
+class BDSSampler : public BDSAcceleratorComponent
 {
 public:
-  BDSSampler(G4String& aName,G4double aLength);
+  BDSSampler(G4String aName,G4double aLength);
   ~BDSSampler();
 
 protected:

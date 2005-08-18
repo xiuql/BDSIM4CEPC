@@ -20,7 +20,6 @@
 
 #include "G4Navigator.hh"
 #include "G4AffineTransform.hh"
-#include "BDSRootObjects.hh"
 
 #include "G4RunManager.hh"
 #include <vector.h>

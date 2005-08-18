@@ -10,7 +10,7 @@
 */
 
 #ifndef BDSMultipole_h
-#define BDSMultipole_h 1
+#define BDSMultipole_h 
 
 #include "globals.hh"
 #include "BDSAcceleratorComponent.hh"
@@ -30,7 +30,7 @@ class BDSMultipole :public BDSAcceleratorComponent
 {
 public:
   
-  BDSMultipole( G4String& aName, 
+  BDSMultipole( G4String aName, 
 		G4double aLength,
 		G4double aBpRadius,
 		G4double aInnerIronRadius,
@@ -66,7 +66,7 @@ protected:
   G4FieldManager* itsBPFieldMgr;
   G4FieldManager* itsOuterFieldMgr;
 
-private:
+protected:   // these might need to be accessed from the child classes
   G4double itsInnerIronRadius;
   G4Tubs* itsBPTube;
   G4Tubs* itsInnerBPTube;

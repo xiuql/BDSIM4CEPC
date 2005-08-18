@@ -16,17 +16,6 @@
 
 #include <map>
 
-//#define DECFortran 1
-//#include"/cern/pro/include/cfortran/cfortran.h"
-//#include"/cern/pro/include/cfortran/packlib.h"
-//#include "hbook.h"
-//#include "packlib.h"
-//#include "stdlib.h"
-
-//============================================================
-//typedef std::map<G4String,MagFieldFunction*> PhysFieldMap;
-//extern PhysFieldMap* MagFieldMap;
-
 typedef std::map<G4String,int> LogVolCountMap;
 extern LogVolCountMap* LogVolCount;
 
@@ -36,8 +25,9 @@ extern LogVolMap* LogVol;
 extern BDSMaterials* theMaterials;
 //============================================================
 
-BDSLaserWire::BDSLaserWire (G4String& aName,G4double aLength,
-G4double aWavelength, G4ThreeVector aDirection):
+BDSLaserWire::BDSLaserWire (G4String aName,G4double aLength,
+G4double aWavelength, G4ThreeVector aDirection,
+ G4ThreeVector aPosition, G4double xSigma, G4double ySigma):
   BDSAcceleratorComponent(
     aName,
     aLength,0,0,0,

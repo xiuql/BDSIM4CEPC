@@ -13,25 +13,11 @@
 #include "G4PVPlacement.hh"               
 #include "G4UserLimits.hh"
 
+#include <map>
+
 #include "BDSSamplerSD.hh"
 #include "G4SDManager.hh"
 
-#include "BDSRootObjects.hh"
-
-#include <map>
-
-#include "BDSRootObjects.hh"
-
-
-// #define DECFortran 1
-//#include "/cern/pro/include/cfortran/cfortran.h"
-//#include "hbook.h"
-//#include "/cern/pro/include/cfortran/packlib.h"
-//#include "stdlib.h"
-
-//============================================================
-//typedef std::map<G4String,MagFieldFunction*> PhysFieldMap;
-//extern PhysFieldMap* MagFieldMap;
 
 typedef std::map<G4String,int> LogVolCountMap;
 extern LogVolCountMap* LogVolCount;
@@ -39,11 +25,13 @@ extern LogVolCountMap* LogVolCount;
 typedef std::map<G4String,G4LogicalVolume*> LogVolMap;
 extern LogVolMap* LogVol;
 
+
+
 extern BDSMaterials* theMaterials;
 //============================================================
 
 BDSSamplerCylinder::
-BDSSamplerCylinder (G4String& aName,G4double aLength,G4double aRadius):
+BDSSamplerCylinder (G4String aName,G4double aLength,G4double aRadius):
   itsRadius(aRadius),
   BDSAcceleratorComponent(
 			 aName,
@@ -52,7 +40,7 @@ BDSSamplerCylinder (G4String& aName,G4double aLength,G4double aRadius):
 {
   SamplerCylinderLogicalVolume();
   G4int nSamplers=(*LogVolCount)[itsName];
-  BDSRoot->SetSampCylinderNumber(nSamplers);
+  //BDSRoot->SetSampCylinderNumber(nSamplers);
 }
 
 
@@ -61,10 +49,7 @@ void BDSSamplerCylinder::SamplerCylinderLogicalVolume()
   if(!(*LogVolCount)[itsName])
     {
       G4double SampTransSize;
-      if(BDSGlobals->GetAcceleratorType()->GetType()=="atf")
-	SampTransSize=BDSGlobals->GetComponentBoxSize();
-      else
-	SampTransSize=2.*BDSGlobals->GetTunnelRadius();
+      SampTransSize=2.*BDSGlobals->GetTunnelRadius();
 
       itsMarkerLogicalVolume=
 	new G4LogicalVolume(new G4Tubs(itsName+"_body",

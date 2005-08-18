@@ -27,7 +27,7 @@ extern LogVolMap* LogVol;
 extern BDSMaterials* theMaterials;
 //============================================================
 
-BDSDrift::BDSDrift (G4String& aName,G4double aLength, G4double bpRad):
+BDSDrift::BDSDrift (G4String aName,G4double aLength, G4double bpRad):
   BDSMultipole(aName,aLength, bpRad, bpRad, SetVisAttributes())
 {
   if (!(*LogVolCount)[itsName])

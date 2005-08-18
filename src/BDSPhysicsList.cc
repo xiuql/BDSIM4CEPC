@@ -25,8 +25,6 @@
 #include "MuonPhysics.hh"
 #include "HadronPhysicsQGSP_HP.hh"
 #include "IonPhysics.hh"
-
-#include "BDSAcceleratorType.hh"
 #include "BDSTransportation.hh"
 
 #include "BDSLaserWirePhysics.hh"
@@ -40,8 +38,6 @@
 
 BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
 {
-  // default cut value  (1.0mm) 
-  // defaultCutValue = 1.0*mm;
   defaultCutValue = 0.7*mm;  
 
   SetVerboseLevel(1);
@@ -54,6 +50,7 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
  
   if(BDSGlobals->GetTurnOnInteractions())
     {
+
       if(BDSGlobals->GetUseEMHadronic())
 	{
 	  G4cout<<" constructing EMHadronic"<<G4endl;
@@ -71,32 +68,31 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
 	// EM Physics
 	if(!BDSGlobals->GetUseLowEMPhysics())
 	  RegisterPhysics( new EMPhysics("standard EM"));
-
-      if(BDSGlobals->GetAcceleratorType()->GetType()!="PETRA")
+      
       // Muon Physics
-	RegisterPhysics(  new MuonPhysics("muon"));
-
-
+      RegisterPhysics(  new MuonPhysics("muon"));
+      
+      
       // Special process
       if(BDSGlobals->GetPlanckOn())
 	RegisterPhysics( new BDSPlanckScatterPhysics("BDSPlanckScatter"));
-
+      
       if(BDSGlobals->GetLaserwireWavelength())
 	RegisterPhysics( new BDSLaserWirePhysics("BDSLaserWire"));
-
+      
       if(BDSGlobals->GetSynchRadOn())
 	RegisterPhysics( new BDSSynchRadPhysics("BDSSynchRad"));
-
+      
       if(BDSGlobals->GetBDSeBremOn())
 	RegisterPhysics( new BDSeBremPhysics("BDSeBrem"));
-  
+      
       if(BDSGlobals->GetUseMuonPairProduction())
 	RegisterPhysics( new BDSGammaConversionPhysics("BDSGamConv"));
-
+      
       if(BDSGlobals->GetUseLowEMPhysics())
 	RegisterPhysics( new BDSLowEMPhysics("LowEM"));
     }
-
+  
 }
 BDSPhysicsList::~BDSPhysicsList()
 {

@@ -25,7 +25,7 @@
 class BDSDrift :public BDSMultipole
 {
   public:
-    BDSDrift(G4String& aName, G4double aLength,G4double bpRad);
+    BDSDrift(G4String aName, G4double aLength,G4double bpRad);
     ~BDSDrift();
 
   protected:

@@ -20,7 +20,7 @@ BDS_SbendField::BDS_SbendField(const G4ThreeVector& aField,
       itsLocalRadius=-length/angle;// minus sign for correct machine convention
       // check for synchrotron radiation factors
       G4double B_inferred= 
-	(BDSGlobals->GetAcceleratorType()->GetBeamMomentum()/GeV)/
+	(BDSGlobals->GetBeamMomentum()/GeV)/
 	(0.299792458 * (GeV/tesla/m)*itsLocalRadius/m);
 
       G4cout<<"B_inferred="<<B_inferred/tesla<<

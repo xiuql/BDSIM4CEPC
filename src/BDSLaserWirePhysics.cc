@@ -51,6 +51,8 @@ void BDSLaserWirePhysics::ConstructProcess()
     }
 
 
+
+
   // if(BDSGlobals->GetSynchRadOn())
   //  theBDSSynchrotronRadiation.Build();
 

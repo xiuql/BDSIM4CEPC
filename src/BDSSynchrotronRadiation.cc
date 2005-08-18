@@ -36,7 +36,7 @@ BDSSynchrotronRadiation::BDSSynchrotronRadiation(const G4String& processName)
   : G4VDiscreteProcess(processName)
      // initialization
 {
-  nExpConst=5*fine_structure_const/(2*sqrt(3))/electron_mass_c2;
+  nExpConst=5*fine_structure_const/(2*sqrt(3.0))/electron_mass_c2;
   CritEngFac=3./2.*hbarc/pow(electron_mass_c2,3);
 
 } 

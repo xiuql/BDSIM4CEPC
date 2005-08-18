@@ -30,7 +30,7 @@ extern LogVolMap* LogVol;
 extern BDSMaterials* theMaterials;
 //============================================================
 
-BDSQuadrupole::BDSQuadrupole(G4String& aName,G4double aLength, 
+BDSQuadrupole::BDSQuadrupole(G4String aName,G4double aLength, 
 			     G4double bpRad,G4double FeRad,
 			     G4double bGrad):
   BDSMultipole(aName,aLength, bpRad, FeRad,SetVisAttributes()),
@@ -54,8 +54,8 @@ BDSQuadrupole::BDSQuadrupole(G4String& aName,G4double aLength,
 	  G4double polePos[4];
 	  G4double Bfield[3];
 
-	  polePos[0]=-BDSGlobals->GetMagnetPoleRadius()/sqrt(2);
-	  polePos[1]=BDSGlobals->GetMagnetPoleRadius()/sqrt(2);
+	  polePos[0]=-BDSGlobals->GetMagnetPoleRadius()/sqrt(2.0);
+	  polePos[1]=BDSGlobals->GetMagnetPoleRadius()/sqrt(2.0);
 	  polePos[2]=0.;
 	  polePos[3]=-999.;//flag to use polePos rather than local track
 	                   //coordinate in GetFieldValue

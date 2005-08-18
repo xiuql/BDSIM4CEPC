@@ -4,14 +4,12 @@
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 
    Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
-   Added GABs Resetter Material
    Added GABs LCBeamGasPlugMat Material
    Added LCLead
 */
 #include "BDSGlobalConstants.hh" // must be first in include list
 
 #include "BDSMaterials.hh"
-#include "BDSAcceleratorType.hh"
 
 BDSMaterials::BDSMaterials()
 {
@@ -53,7 +51,7 @@ BDSMaterials::BDSMaterials()
 
   density = 4.54*g/cm3;
   a = 47.867*g/mole;
-  LCTitanium=new G4Material(name="LCTtitanium", z=22., a, density);
+  LCTitanium=new G4Material(name="LCTitanium", z=22., a, density);
 
   density = 2.265*g/cm3;
   a = 12.011*g/mole;
@@ -91,8 +89,10 @@ BDSMaterials::BDSMaterials()
   //  should represent this number of particles - hence ~10^7:
   pressure*=BDSGlobals->GetBackgroundScaleFactor();
 
-  BDSAcceleratorType* TheAccelerator=BDSGlobals->GetAcceleratorType();
-  temperature = TheAccelerator->GetTemperature();
+ 
+  // NB : temperature should be defined for individual elements
+  // setting temporarily to 300K 
+  temperature = 300 * kelvin;
 
   density=1.205*g/(1.e-3*m3); // 1 litre= 1.e-3 m^3
   LCAir = new G4Material(name="LCAir"  , density, ncomponents=2);
@@ -133,9 +133,6 @@ BDSMaterials::BDSMaterials()
 			    kStateGas,temperature,pressure);
   LaserVac->AddMaterial(LCAir, fractionmass=1.);
 
-  LCResetter = new G4Material(name="LCReset", density, ncomponents=1,
-			      kStateGas,temperature,pressure);
-  LCResetter->AddMaterial(LCAir, fractionmass=1.);
 
   //concrete
   G4Element* Ca = new G4Element
@@ -183,7 +180,7 @@ BDSMaterials::BDSMaterials()
   LCBeamGasPlugMat->AddElement(C, nAtoms);
   LCBeamGasPlugMat->AddElement(O, nAtoms);  
 
-  G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+  //G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 
 
 

@@ -10,7 +10,7 @@
 // adapted from code supplied by D.Schulte (CERN)
 
 #ifndef BDSExtract_h
-#define BDSExtract_h 1
+#define BDSExtract_h 
 
 #include "globals.hh"
 #include "G4ParticleTable.hh"

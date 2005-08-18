@@ -27,7 +27,9 @@ void BDSHelixStepper::AdvanceHelix( const G4double  yIn[],
   G4ThreeVector positionMove, endTangent;
 
   const G4double *pIn = yIn+3;
+ 
   G4ThreeVector v0= G4ThreeVector( pIn[0], pIn[1], pIn[2]);  
+  
   G4ThreeVector GlobalPosition= G4ThreeVector( yIn[0], yIn[1], yIn[2]);  
 
   G4double InitMag=v0.mag();
@@ -38,24 +40,16 @@ void BDSHelixStepper::AdvanceHelix( const G4double  yIn[],
     G4TransportationManager::GetTransportationManager()->
     GetNavigatorForTracking();
 
-  /*
-  // tmp
-  G4double safety=HelixNavigator->ComputeSafety(GlobalPosition);
-  G4AffineTransform LocalAffine=HelixNavigator->GetLocalToGlobalTransform();
-  LocalR = HelixNavigator->GetCurrentLocalCoordinate();
-  LocalRp= HelixNavigator->ComputeLocalAxis(v0).unit();
-
-  */
-
-
 
   LocalR=GlobalPosition;
   LocalRp=v0.unit();
 
-  G4ThreeVector itsInitialPoint=LocalR;
   G4ThreeVector itsFinalPoint,itsFinalDir;
+  
   G4ThreeVector yhat(0.,1.,0.);
-    G4ThreeVector vhat=LocalRp;
+
+  G4ThreeVector vhat=LocalRp;
+  
   G4ThreeVector vnorm=vhat.cross(yhat);
    
   G4double R;
@@ -68,19 +62,18 @@ void BDSHelixStepper::AdvanceHelix( const G4double  yIn[],
     }
   else
     {
-      R=-(InitMag/GeV)/(0.299792458 * itsBField/tesla) *m;
+      R=-(InitMag/GeV)/(0.299792458 * itsBField/tesla) * m;
     }
 
  // include the sign of the charge of the particles
 
-  if( its_EqRhs->FCof()<0)R*=-1.;
-  else if (its_EqRhs->FCof()==0)R=DBL_MAX;
+  if( its_EqRhs->FCof()<0) R*=-1.;
+  else if (its_EqRhs->FCof()==0) R=DBL_MAX;
 
   // check that the approximations are valid, else do a linear step:
   if(abs(R)<DBL_MAX) 
     { 
-      //     itsInitialPoint=LocalPosition;
-
+  
       G4double Theta   = h/R;
 
       G4double CosT_ov_2, SinT_ov_2, CosT, SinT;
@@ -92,47 +85,25 @@ void BDSHelixStepper::AdvanceHelix( const G4double  yIn[],
 
       BDSLocalRadiusOfCurvature=R;
 
-      // chord distance (simple quadratic approx)
-      //      G4double h2=h*h;
-      //      itsDist= h2/(8*R);
       itsDist=abs(R)*(1.-CosT_ov_2);
 
       G4ThreeVector dPos=R*(SinT*vhat + (1-CosT)*vnorm);
-      // check for precision problems
-      //      G4double ScaleFac=dPos.mag2()/h2;
-      //  if(ScaleFac>1.0000001) dPos=1/sqrt(ScaleFac) * dPos;
-	
+ 	
       itsFinalPoint=LocalR+dPos;
       itsFinalDir=CosT*vhat +SinT*vnorm;
 
-      /*
-      // now for the mid point:
-      CosT=(CosT_ov_2*CosT_ov_2)- (SinT_ov_2*SinT_ov_2);
-      SinT=2*CosT_ov_2*SinT_ov_2;
-
-      G4ThreeVector itsMidPoint=LocalR+SinT_ov_2*vnorm + 
-	(1-CosT_ov_2)*vhat;
-      
-      G4ThreeVector itsDistVec=
-	itsMidPoint-0.5*(itsFinalPoint+itsInitialPoint);
-
-      itsDistVec=itsMidPoint.mag();
-      */
 
     }
   else
     {
-      itsFinalPoint=LocalR + h*LocalRp;
+      itsFinalPoint=LocalR + h * LocalRp;
       itsFinalDir=LocalRp;
-      itsDist=0.;}
+      itsDist=0.;
+    }
 
 
   G4ThreeVector GlobalTangent;
 
-  /*  
-  GlobalPosition=LocalAffine.TransformPoint(itsFinalPoint); 
-  GlobalTangent=LocalAffine.TransformAxis(itsFinalDir);
-  */
   GlobalPosition=itsFinalPoint;
   GlobalTangent=itsFinalDir;
 

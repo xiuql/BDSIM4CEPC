@@ -20,23 +20,10 @@
 #include "BDSSamplerSD.hh"
 #include "G4SDManager.hh"
 
-#include "BDSRootObjects.hh"
-
 //#include"MagFieldFunction.hh"
 #include <map>
 
-#include "BDSRootObjects.hh"
 
-
-// #define DECFortran 1
-//#include "/cern/pro/include/cfortran/cfortran.h"
-//#include "hbook.h"
-//#include "/cern/pro/include/cfortran/packlib.h"
-//#include "stdlib.h"
-
-//============================================================
-//typedef std::map<G4String,MagFieldFunction*> PhysFieldMap;
-//extern PhysFieldMap* MagFieldMap;
 
 typedef std::map<G4String,int> LogVolCountMap;
 extern LogVolCountMap* LogVolCount;
@@ -47,7 +34,7 @@ extern LogVolMap* LogVol;
 extern BDSMaterials* theMaterials;
 //============================================================
 
-BDSSampler::BDSSampler (G4String& aName,G4double aLength):
+BDSSampler::BDSSampler (G4String aName,G4double aLength):
   BDSAcceleratorComponent(
 			 aName,
 			 aLength,0,0,0,
@@ -57,31 +44,9 @@ BDSSampler::BDSSampler (G4String& aName,G4double aLength):
 
   G4int nSamplers=(*LogVolCount)[itsName];
 
-  BDSRoot->SetSamplerNumber(nSamplers);
+  //BDSRoot->SetSamplerNumber(nSamplers);
 
-  /*
-  // G4int nVar=8;
-  G4int nVar=14;
-  //            |----------this is the number of variables
-  char chtag_in[14][6]={
-    "x0",
-    "xp0",
-    "y0",
-    "yp0",
-    "E0",
-    "z0",
-    "x",
-    "xp",
-    "y",
-    "yp",
-    "E",
-    "z",
-    "part",
-    "nev"};
-  */
-
-  //gab to Root:  HBOOKN(nSamplers,"Sampler Ntuple",nVar,"sampler",5000,chtag_in);
-
+ 
 }
 
 
@@ -91,17 +56,14 @@ void BDSSampler::SamplerLogicalVolume()
     {
 
       G4double SampTransSize;
-      if(BDSGlobals->GetAcceleratorType()->GetType()=="atf")
-	SampTransSize=BDSGlobals->GetComponentBoxSize();
-      else
-	SampTransSize=2.*BDSGlobals->GetTunnelRadius();
+      SampTransSize=2.*BDSGlobals->GetTunnelRadius();
 
       itsMarkerLogicalVolume=
 	new G4LogicalVolume(
 			    new G4Box(itsName+"_solid",
 				      SampTransSize,
 				      SampTransSize,
-				      itsLength/2),
+				      itsLength/2.0),
 			    theMaterials->LCVacuum,
 			    itsName);
 

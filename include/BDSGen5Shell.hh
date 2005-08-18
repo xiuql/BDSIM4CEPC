@@ -4,7 +4,7 @@
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
 #ifndef BDSGen5Shell_h
-#define BDSGen5Shell_h 1
+#define BDSGen5Shell_h 
 #include "BDSGlobalConstants.hh" // must be first in include list
 #include "globals.hh"
 #include "Randomize.hh"
@@ -39,13 +39,6 @@ private:
   G4double ShellInnerRadius,ShellOuterRadius;
 
 };
-
-
-
-
-
-
-
 
 
 #endif

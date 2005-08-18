@@ -9,7 +9,7 @@
 */
 
 #ifndef BDSAcceleratorComponent_h
-#define BDSAcceleratorComponent_h 1
+#define BDSAcceleratorComponent_h 
 
 #include <string>
 #include "G4LogicalVolume.hh"
@@ -33,22 +33,36 @@ public:
   //	Returns the geometry length of the component.
   const G4double GetLength () const;
   void SetLength(G4double aLength);
+
   const G4String GetName () const;
   void SetName(G4String aName);
+
   const G4double GetAngle () const;
+  
   G4LogicalVolume* GetMarkerLogicalVolume() const;
+  
   BDSEnergyCounterSD* GetBDSEnergyCounter() const;
+  
   void SetBDSEnergyCounter( BDSEnergyCounterSD* anBDSEnergyCounter);
+  
   G4int GetCopyNumber() const;
+  
   G4double GetSPos() const;
+  
   void SetSPos(G4double spos);
+  
   void SetCopyNumber(G4int nCopy);
+  
   void SetBDSEnergyCounterID(G4int anID);
+  
   G4int GetBDSEnergyCounterID();
+  
   void SetSensitiveVolume(G4LogicalVolume* aLogVol);
+  
   G4LogicalVolume* GetSensitiveVolume();
 
   void SetInnerMostLogicalVolume(G4LogicalVolume* aLogVol);
+  
   G4LogicalVolume* GetInnerMostLogicalVolume() const;
 
   G4double GetXOffset();
@@ -65,6 +79,8 @@ public:
   
   BDSAcceleratorComponent();
   void BuildOuterFieldManager();
+
+  virtual void CreateFieldMesh(G4VPhysicalVolume *referenceVolume); // creates a field mesh in global coordinates 
 
   BDSAcceleratorComponent (
 			  G4String& aName, 
@@ -127,11 +143,12 @@ BDSAcceleratorComponent (
 			G4VisAttributes* aVisAtt,G4double angle,
 			G4double XOffset, G4double YOffset): 
   itsName(aName),itsLength(aLength),itsBpRadius(aBpRadius),
-  itsXAper(aXAper),itsYAper(aYAper),
-  itsVisAttributes(aVisAtt),itsAngle(angle),
+  itsXAper(aXAper),itsYAper(aYAper),itsAngle(angle),
+  itsVisAttributes(aVisAtt),
   itsXOffset(XOffset),itsYOffset(YOffset)
-{itsSensitiveVolume=NULL;
- itsInnerBeampipeUserLimits =new G4UserLimits();
+{
+  itsSensitiveVolume=NULL;
+  itsInnerBeampipeUserLimits =new G4UserLimits();
 };
 
 

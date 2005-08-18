@@ -26,7 +26,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSTransportationProcess.hh,v 1.1.2.1 2005/01/27 14:40:38 agapov Exp $
+// $Id: BDSTransportationProcess.hh,v 1.2 2005/01/27 14:47:09 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -83,7 +83,7 @@ class BDSTransportationProcess : public G4VProcess
                              const G4Track& track,
                              const G4Step&  stepData
                             );
-       // Responsible for the relocation.
+    // Responsible for the relocation.
 
      G4double PostStepGetPhysicalInteractionLength(
                              const G4Track& ,

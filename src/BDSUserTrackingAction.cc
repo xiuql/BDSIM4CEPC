@@ -36,6 +36,8 @@
 
 void BDSUserTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 {
+
+  // store muon trajectories
     if(BDSGlobals->GetStoreMuonTrajectories())
       {
 	if( abs(aTrack->GetDefinition()->GetPDGEncoding())==13)
@@ -44,13 +46,15 @@ void BDSUserTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 	  { fpTrackingManager->SetStoreTrajectory(false); }
       }
 
-    /*
-  // Create trajectory only for primaries
-  if(aTrack->GetParentID()==0)
-  { fpTrackingManager->SetStoreTrajectory(true); }
-  else
-  { fpTrackingManager->SetStoreTrajectory(false); }
-    */
+    
+  // Store trajectories for primaries
+    if(BDSGlobals->GetStoreTrajectory())
+      { 
+	if(aTrack->GetParentID()==0)
+	  { fpTrackingManager->SetStoreTrajectory(true); }
+	else
+	  { fpTrackingManager->SetStoreTrajectory(false); }
+      }
  
 
   /*  

@@ -8,17 +8,6 @@
    Changed Killer to kill just electrons/positrons if called KILLERE
 */
 
-// This code implementation is the intellectual property of
-// the GEANT4 collaboration.
-//
-// By copying, distributing or modifying the Program (or any work
-// based on the Program) you indicate your acceptance of this statement,
-// and all its terms.
-//
-// $Id: BDSSteppingAction.cc,v 1.2 2005/03/24 14:26:04 carter Exp $
-// GEANT4 tag $Name:  $
-//
-// 
 
 //====================================================
 //====================================================
@@ -42,10 +31,6 @@
 #include "Randomize.hh"
 
 #include "G4UserLimits.hh"
-//#define DECFortran 1
-//#include "/cern/pro/include/cfortran/cfortran.h"
-//#include "/cern/pro/include/cfortran/packlib.h"
-//#include <packlib.h>
 
 #include "BDSNeutronTrackInfo.hh"
 
@@ -54,13 +39,10 @@
 #include "G4VProcess.hh"
 
 
-//#include "BDSMultipoleOuterMagField.hh"
 #include "G4MagneticField.hh"
 
 extern BDSMaterials* theMaterials;
 
-
-//extern  G4Navigator* StepperNavigator;
 
 extern G4double BDS_Threshold_Energy;
 extern G4double BDSLocalRadiusOfCurvature;
@@ -74,7 +56,6 @@ extern G4int event_number;
 
 extern G4double initial_x,initial_xp,initial_y,initial_yp,initial_z,initial_E;
 
-extern G4int TempNProc;
 
 //static G4LogicalVolume* LastLogVol;
 //====================================================
@@ -100,6 +81,7 @@ extern G4double htot;
 //void BDSSteppingAction::UserSteppingAction(G4Step* ThisStep)
 void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 { 
+  // G4cout<<"user stepping action called"<<G4endl;
 
   G4Track* ThisTrack=ThisStep->GetTrack();
   
@@ -180,15 +162,6 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
     }
   
   
-  if((TrackID==1) && LocMatName=="LCBeamGasPlugMat")
-    {
-      G4VProcess* proc=ThisStep->GetPostStepPoint()->GetProcessDefinedStep();
-      if(proc)
-	{
-	  G4String procName=proc->GetProcessName();
-	  if(procName!="Transportation")TempNProc++;
-	}
-    }
 
   /*
   // tmp gab 25.04.04

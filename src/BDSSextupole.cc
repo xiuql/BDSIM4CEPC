@@ -30,7 +30,7 @@ extern LogVolMap* LogVol;
 extern BDSMaterials* theMaterials;
 //============================================================
 
-BDSSextupole::BDSSextupole(G4String& aName,G4double aLength, 
+BDSSextupole::BDSSextupole(G4String aName,G4double aLength, 
 			   G4double bpRad,G4double FeRad,
 			   G4double BDblPrime):
   BDSMultipole(aName,aLength, bpRad, FeRad,SetVisAttributes()),

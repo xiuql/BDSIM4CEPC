@@ -22,8 +22,9 @@
 class BDSLaserWire :public BDSAcceleratorComponent
 {
 public:
-  BDSLaserWire(G4String& aName,G4double aLength,
-	      G4double aWavelength, G4ThreeVector aDirection);
+  BDSLaserWire(G4String aName,G4double aLength,
+	       G4double aWavelength, G4ThreeVector aDirection,
+	       G4ThreeVector aPosition=0, G4double xSigma=0, G4double ySigma=0);
   ~BDSLaserWire();
 
   inline void SetLaserDirection(G4ThreeVector aDirection);

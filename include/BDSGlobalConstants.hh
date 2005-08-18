@@ -15,7 +15,7 @@
 */
 
 #ifndef BDSGlobalConstants_h
-#define BDSGlobalConstants_h 1
+#define BDSGlobalConstants_h 
 
 #include "G4Timer.hh" // This must be the first in the include list
 
@@ -24,10 +24,14 @@
 #include <set>
 #include <list>
 
+#include "G4ParticleTable.hh"
+#include "G4ParticleDefinition.hh"
+
 #include "G4ThreeVector.hh"
 #include "globals.hh"
-#include "BDSAcceleratorType.hh"
 #include "G4FieldManager.hh"
+
+#include "parser/gmad.h"
 
 using std::istream;
 using std::ostream;
@@ -37,17 +41,28 @@ using std::list;
 
 class BDSGlobalConstants 
 {
-  public:
-  BDSGlobalConstants (const G4String& CardsFileName);
+public:
+ 
+  BDSGlobalConstants(struct Options&);
+
   ~BDSGlobalConstants();
-  G4int ReadCard(G4String& AccName, G4String& BunchType);
+  
+  
+
+  
+
   void SetLogFile(ofstream & os);
   void StripHeader(istream& is);
-  
+
   G4String StringFromInt(G4int anInt);
   G4String StringFromDigit(G4int anInt);
 
-  BDSAcceleratorType* GetAcceleratorType();
+  G4ParticleDefinition* GetParticleDefinition();
+  void SetParticleDefinition(G4ParticleDefinition* aBeamParticleDefinition);
+  G4double GetBeamKineticEnergy();
+  G4double GetBeamTotalEnergy();
+  G4double GetBeamMomentum();
+  
   G4double GetBackgroundScaleFactor();
 
   G4String GetOutputNtupleFileName();
@@ -102,6 +117,7 @@ class BDSGlobalConstants
 
   G4double GetLaserwireWavelength();
   G4ThreeVector GetLaserwireDir();
+
   G4bool GetLaserwireTrackPhotons();
   G4bool GetLaserwireTrackElectrons();
 
@@ -114,6 +130,7 @@ class BDSGlobalConstants
   G4bool GetUseEMHadronic();
   G4bool GetUseMuonPairProduction();
   G4bool GetStoreMuonTrajectories();
+  G4bool GetStoreTrajectory();
   G4bool GetUseMuonShowers();
   G4bool GetIncludeIronMagFields();
 
@@ -130,11 +147,6 @@ class BDSGlobalConstants
   G4double GetOuterHaloX();
   G4double GetInnerHaloY();
   G4double GetOuterHaloY();
-  /*
-  ifstream* GetInputBunchFile();
-  ifstream* GetInputExtractBunchFile();
-  ofstream* GetOutputBunchFile();
-  */
 
   G4double GetLengthSafety();
   G4double GetEnergyOffset();
@@ -178,7 +190,18 @@ private:
   ifstream ifs;
   ostream* log;
 
-  BDSAcceleratorType* itsAccelerator;
+
+  // initial bunch parameters
+
+  G4ParticleDefinition* itsBeamParticleDefinition;
+  G4double itsBeamTotalEnergy;
+
+  //G4double itsSigmaT;
+
+  G4double itsNumberOfParticles;
+
+  G4double itsBeamMomentum, itsBeamGamma, itsBeamKineticEnergy;
+
   G4double itsBackgroundScaleFactor;
 
   G4double itsComponentBoxSize;
@@ -220,6 +243,7 @@ private:
 
   G4double itsLaserwireWavelength;
   G4ThreeVector itsLaserwireDir;
+
   G4bool itsLaserwireTrackPhotons;
   G4bool itsLaserwireTrackElectrons;
   G4bool itsTurnOnInteractions;
@@ -235,6 +259,8 @@ private:
   G4bool itsUseMuonShowers;
   G4double itsMuonLowestGeneratedEnergy;
   G4double itsMuonEnergyCutScaleFactor;
+
+  G4bool itsStoreTrajectory;
 
   G4bool itsIncludeIronMagFields;
 
@@ -297,8 +323,37 @@ inline void BDSGlobalConstants::SetLogFile(ofstream & os)
   log=&os;
 }
 
-inline BDSAcceleratorType* BDSGlobalConstants::GetAcceleratorType()
-{return itsAccelerator;}
+
+inline G4double BDSGlobalConstants::GetBeamKineticEnergy()
+{
+  return itsBeamKineticEnergy;
+}
+
+inline G4double BDSGlobalConstants::GetBeamTotalEnergy()
+{
+  return itsBeamTotalEnergy;
+}
+
+inline G4double BDSGlobalConstants::GetBeamMomentum()
+{
+  return itsBeamMomentum;
+}
+
+
+inline G4ParticleDefinition* BDSGlobalConstants::GetParticleDefinition()
+{
+  return itsBeamParticleDefinition;
+}
+
+inline void BDSGlobalConstants::SetParticleDefinition(G4ParticleDefinition* aBeamParticleDefinition)
+{
+  itsBeamParticleDefinition = aBeamParticleDefinition;
+}
+
+//inline G4double BDSGlobalConstants::GetSigmaT()
+//{
+//  return itsSigmaT;
+//}
 
 inline G4double BDSGlobalConstants::GetBackgroundScaleFactor()
 {return itsBackgroundScaleFactor;}
@@ -441,6 +496,9 @@ inline G4bool BDSGlobalConstants::GetUseMuonPairProduction()
 
 inline G4bool BDSGlobalConstants::GetStoreMuonTrajectories()
 {return itsStoreMuonTrajectories;}
+
+inline G4bool BDSGlobalConstants::GetStoreTrajectory()
+{return itsStoreTrajectory;}
 
 inline G4bool BDSGlobalConstants::GetUseMuonShowers()
 {return itsUseMuonShowers;}

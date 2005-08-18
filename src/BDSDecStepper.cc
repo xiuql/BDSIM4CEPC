@@ -72,8 +72,7 @@ void BDSDecStepper::AdvanceHelix( const G4double  yIn[],
 
       G4double x0=LocalR.x(); 
       G4double y0=LocalR.y();
-      G4double z0=LocalR.z();
-
+    
       G4double x02My02=(x0*x0-y0*y0);
 
       G4double xp=LocalRp.x();

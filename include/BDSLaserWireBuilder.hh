@@ -4,7 +4,7 @@
    Copyright (c) 2003 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
 #ifndef BDSLaserWireBuilder_h
-#define BDSLaserWireBuilder_h 1
+#define BDSLaserWireBuilder_h 
 
 #include "globals.hh"
 #include "G4ios.hh"

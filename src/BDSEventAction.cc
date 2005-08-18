@@ -8,28 +8,15 @@
    Added/Changed Sampler code for Plane Sampler or Cylinder Sampler (GABs Code)
 */
 
-// This code implementation is the intellectual property of
-// the GEANT4 collaboration.
-//
-// By copying, distributing or modifying the Program (or any work
-// based on the Program) you indicate your acceptance of this statement,
-// and all its terms.
-//
 
+
+const int DEBUG = 1;
 
 //======================================================
 //======================================================
 #include "BDSGlobalConstants.hh" // must be first in include list
 
-// link to G4eBremsstrahlung.cc and G4GammaConversion.cc for muon studies
-extern G4bool BDSeBremsFiredThisEvent;
-extern G4double BDSeBremFireDist;
-
 #include "BDSEventAction.hh"
-
-//#include "BDSCalorHit.hh"
-#include "BDSEventActionMessenger.hh"
-
 #include "G4Event.hh"
 #include "G4EventManager.hh"
 #include "G4HCofThisEvent.hh"
@@ -52,14 +39,15 @@ extern G4double BDSeBremFireDist;
 
 #include "BDSLWCalorimeter.hh"
 #include "BDSLWCalorimeterHit.hh"
-#include "BDSRootObjects.hh"
+
 #include "BDSSynchrotronRadiation.hh"
 
 #include "BDSAcceleratorComponent.hh"
+
+#include "BDSOutput.hh"
+
 typedef list<BDSAcceleratorComponent*>  BDSBeamline;
 extern BDSBeamline theBeamline;
-
-#include "BDSRootObjects.hh"
 
 typedef std::vector<G4int> MuonTrackVector;
 MuonTrackVector* theMuonTrackVector;
@@ -73,49 +61,43 @@ extern ECList* theECList;
 extern G4double BDSeBremFireDist;
 extern G4double BDSeBremZMin,BDSeBremZMax;
 
-G4int TempNProc;
+// link to G4eBremsstrahlung.cc and G4GammaConversion.cc for muon studies
+extern G4bool BDSeBremsFiredThisEvent;
+extern G4double BDSeBremFireDist;
 
 G4double htot;
-
 G4int event_number;
-
 G4bool FireLaserCompton;
 
+
+extern BDSOutput bdsOutput;
+extern G4String outputFilename;
 
 //======================================================
 
 BDSEventAction::BDSEventAction()
-:SamplerCollID_plane(-1),SamplerCollID_cylin(-1),drawFlag("all"),
- eventMessenger(NULL),LWCalorimeterCollID(-1)
-{  eventMessenger = new BDSEventActionMessenger(this);
- if(BDSGlobals->GetWriteBunchFile())
-   {BunchOutputFile=new ofstream("Bunch.output");}
- else BunchOutputFile=NULL;
-
- if(BDSGlobals->GetUseBatch())printModulo=1000;
- else printModulo=1;
-
- itsOutputFileNumber=0;
-
- itsRecordSize=1024;
-
-
- LastComp=NULL;
+:SamplerCollID_plane(-1),SamplerCollID_cylin(-1),drawFlag("all"), LWCalorimeterCollID(-1)
+{ 
+  if(BDSGlobals->GetUseBatch()) printModulo=1000;
+  else printModulo=1;
+  
+  itsOutputFileNumber=0;
+  
+  itsRecordSize=1024;
+    
+  LastComp=NULL;
 }
 
 //======================================================
 
 BDSEventAction::~BDSEventAction()
 {
-  delete eventMessenger;  
 }
 
 //======================================================
 
 void BDSEventAction::BeginOfEventAction(const G4Event* evt)
-{
-  TempNProc=0; 
-  
+{ 
   event_number = evt->GetEventID();
   htot=0.;
   
@@ -130,16 +112,8 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 	(*iBeam)->GetInnerBPUserLimits()->
 	  SetMaxAllowedStep((*iBeam)->GetLength());
       
-      //   if(LastComp)
-      //     {
-      //     if(LastComp->GetInnerBPUserLimits())
-      //       {
-      // LastComp->GetInnerBPUserLimits()->
-      //   SetMaxAllowedStep(LastComp->GetLength());
       
-      
-      
-      BDSeBremFireDist=BDSGlobals->GetTotalS()*(0.5-G4UniformRand());
+      BDSeBremFireDist=BDSGlobals->GetTotalS() * ( 0.5-G4UniformRand() );
       BDSeBremsFiredThisEvent=false;
       
       // determine which Log volume the event occurs
@@ -160,54 +134,39 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 	}
     }
   
-  if (event_number == 0)
+  if ((event_number+1)%printModulo ==0)
     {
-      
-      G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
-	BDSGlobals->StringFromInt(itsOutputFileNumber++)+".root";
-      BDSRoot->SetupNewFile(filename);
-      
-      // old paw stuff
-      //G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
-      //  StringFromInt(itsOutputFileNumber++)+".rz";
-      //BDSPaw->SetupNewFile(filename);
-      // old paw stuff
-      //  G4int istat;
-      //  StringFromInt(itsOutputFileNumber++)+".rz";
-      //  char* cfile=filename.data();
-      //  G4String pawD="sampler"+StringFromInt(itsOutputFileNumber);
-      //  char* pawDir=pawD.data();
-      //  char* pawDir="sampler";
-      //  HROPEN(itsOutputFileNumber,pawDir,cfile,"N",itsRecordSize,istat);
-      
-    }
-  
-  if ((event_number+1)%printModulo == 0)
-    { 
       G4cout << "\n---> Begin of event: " << event_number ;
+      
       if(BDSGlobals->GetUseTimer())
 	{ 
 	  BDSGlobals->GetTimer()->Stop();
 	  G4cout<<" Time: "<<*BDSGlobals->GetTimer();
 	  BDSGlobals->GetTimer()->Start();
 	}
-      G4cout<<G4endl;
+      G4cout << G4endl;
     }
+
+  bdsOutput.Echo("Begin of event:" + BDSGlobals->StringFromInt(event_number) ) ;
+
   
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
-  
-  if(BDSRoot->GetSamplerNumber()>0){   
-    if (SamplerCollID_plane==-1)
+  G4cout << bdsOutput.GetPlaneSamplerNumber() << " < PlaneSamplers" << G4endl;
+  //if( bdsOutput.GetPlaneSamplerNumber() > 0)
+  {   
+    //if (SamplerCollID_plane==-1)
       SamplerCollID_plane = SDman->GetCollectionID("Sampler_plane");
   }
   
-  if(BDSRoot->GetSampCylinderNumber()>0){   
-    if (SamplerCollID_cylin==-1)
+//if( bdsOutput.GetCylinderSamplerNumber() > 0 )
+  {   
+    //if (SamplerCollID_cylin==-1)
       SamplerCollID_cylin = SDman->GetCollectionID("Sampler_cylinder");
   }
   
-  if(BDSRoot->GetLWCalorimeterNumber()>0){
-    if (LWCalorimeterCollID==-1) 
+  //if( bdsOutput.GetLWCalorimeterNumber() > 0 )
+  {
+    //if (LWCalorimeterCollID==-1) 
       LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
   }
   FireLaserCompton=true;
@@ -218,6 +177,8 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
 
+  if(DEBUG) G4cout<<"BDSEventAction : end of event action"<<G4endl;
+  bdsOutput.Echo("processing end of event");
 
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
 
@@ -227,160 +188,158 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   BDSLWCalorimeterHitsCollection* LWCalHC=NULL;
   BDSEnergyCounterHitsCollection* BDSEnergyCounter_HC=NULL;
 
+  
+  if(DEBUG) G4cout<<"processing planar hits collection"<<G4endl;
+  // are there any planar samplers?
   if(SamplerCollID_plane>=0)
     SampHC = (BDSSamplerHitsCollection*)(HCE->GetHC(SamplerCollID_plane));
+  
+  // if so, record the hits for each sampler 
 
-  if(SampHC)
-    {
-      G4int n_hit = SampHC->entries();
-      for (G4int i=0;i<n_hit;i++)
-	{
-	  BDSRoot->LoadSamplerTree((*SampHC)[i]);
+  if(SampHC)  bdsOutput.WriteHits(SampHC);
 
-	  if(BunchOutputFile)
-	    {
-	      G4cout.precision(6);
-	      *BunchOutputFile<<(*SampHC)[i]->GetMom()/GeV
-			      <<" "
-			      <<(*SampHC)[i]->GetX()/micrometer
-			      <<" "
-			      <<(*SampHC)[i]->GetY()/micrometer
-			      <<" "
-			      <<(*SampHC)[i]->GetZ()/micrometer
-			      <<" "
-			      <<(*SampHC)[i]->GetXPrime()/(1.e-6*radian)
-			      <<" "
-			      <<(*SampHC)[i]->GetYPrime()/(1.e-6*radian)
-			      <<G4endl;
-	    }
-	}
-    }
 	
+  // are there any cylindrical samplers?
+  // if so, record the hits
+
   SampHC=NULL;
+
+  if(DEBUG) G4cout<<"processing cylinder hits collection"<<G4endl;
+
   if(SamplerCollID_cylin>=0)
     SampHC = (BDSSamplerHitsCollection*)(HCE->GetHC(SamplerCollID_cylin));
-  if (SampHC)
-    for (G4int i=0;i<SampHC->entries();i++)
-      BDSRoot->LoadSamplerTree((*SampHC)[i]);
 
-  if(LWCalorimeterCollID>=0) 
-    LWCalHC=(BDSLWCalorimeterHitsCollection*)(HCE->GetHC(LWCalorimeterCollID));
+  if (SampHC) bdsOutput.WriteHits(SampHC);
+
+
+  // are there any Laser wire clorimeters?
+  // TODO : check it !!! at present not writing LW stuff
+
+//   if(LWCalorimeterCollID>=0) 
+//     LWCalHC=(BDSLWCalorimeterHitsCollection*)(HCE->GetHC(LWCalorimeterCollID));
   
-  for(iEC=theECList->begin();iEC!=theECList->end();iEC++)
-    {
-      G4String name=(*iEC)->GetCollectionName(0);
+//   for(iEC=theECList->begin();iEC!=theECList->end();iEC++)
+//     {
+//       G4String name=(*iEC)->GetCollectionName(0);
       
-      G4int BDSEnergyCounter_ID= SDman->GetCollectionID(name);
+//       G4int BDSEnergyCounter_ID= SDman->GetCollectionID(name);
       
-      if(BDSEnergyCounter_ID>=0)
-	{
-	  BDSEnergyCounter_HC=
-	    (BDSEnergyCounterHitsCollection*)(HCE->GetHC(BDSEnergyCounter_ID));
-	  if(BDSEnergyCounter_HC) 
-	    {
-	      G4int n_hit = BDSEnergyCounter_HC->entries();
-	      //G4float r[2];
-	      for (G4int i=0;i<n_hit;i++)
-		{
-		  G4double Energy=(*BDSEnergyCounter_HC)[i]->GetEnergy();
-		  G4double EWeightZ=(*BDSEnergyCounter_HC)[i]->
-		    GetEnergyWeightedPosition()/Energy;
-		  //r[0]=Energy/GeV;
-		  //r[1]=(EWeightZ+BDSGlobals->GetWorldSizeZ())/m;
-		  //		  HF1(100,r[1],r[0]);
+//       if(BDSEnergyCounter_ID>=0)
+// 	{
+// 	  BDSEnergyCounter_HC=
+// 	    (BDSEnergyCounterHitsCollection*)(HCE->GetHC(BDSEnergyCounter_ID));
+// 	  if(BDSEnergyCounter_HC) 
+// 	    {
+// 	      G4int n_hit = BDSEnergyCounter_HC->entries();
+
+// 	      for (G4int i=0;i<n_hit;i++)
+// 		{
+// 		  G4double Energy=(*BDSEnergyCounter_HC)[i]->GetEnergy();
+// 		  G4double EWeightZ=(*BDSEnergyCounter_HC)[i]->
+// 		    GetEnergyWeightedPosition()/Energy;
 	       
-		  BDSRoot->h1->
-		    Fill((EWeightZ+BDSGlobals->GetWorldSizeZ())/m,
-			  Energy/GeV);
-		}
-	    }
-	}
-    }
+// 		  BDSRoot->h1->
+// 		    Fill((EWeightZ+BDSGlobals->GetWorldSizeZ())/m,
+// 			  Energy/GeV);
+// 		}
+// 	    }
+// 	}
+//     }
 
-  if (LWCalHC)
-    {
-      G4int nLWCal_hit = LWCalHC->entries();
-      for (G4int i=0;i<nLWCal_hit;i++){ 
-	BDSRoot->LoadLWCalorimeterTree((*LWCalHC)[i]);
-      }
-    }	
 
+//   if (LWCalHC)
+//     {
+//       G4int nLWCal_hit = LWCalHC->entries();
+//       for (G4int i=0;i<nLWCal_hit;i++){ 
+// 	BDSRoot->LoadLWCalorimeterTree((*LWCalHC)[i]);
+//       }
+//     }	
+
+  
   if ((event_number+1)%BDSGlobals->GetNumberOfEventsPerNtuple() == 0)
-    { 
-      gDirectory->Write();
-      BDSRoot->theRootOutputFile->Close();
-      if ((event_number+1)==BDSGlobals->GetNumberToGenerate())
-	BDSRoot->theRootOutputFile=NULL;
-      else
-	{
-	  G4String filename=BDSGlobals->GetOutputNtupleFileName()+"_"+
-	    BDSGlobals->StringFromInt(itsOutputFileNumber++)+".root";
-	  BDSRoot->SetupNewFile(filename);
-	}      
+    {
+      if(DEBUG) G4cout<<"writing to file "<<G4endl;
+      // notify the output about the event end
+      // this can be used for splitting output files etc.
+      bdsOutput.Commit(itsOutputFileNumber++);
+      if(DEBUG) G4cout<<"done"<<G4endl;
     }
 
   // Save interesting trajectories:
   G4TrajectoryContainer* TrajCont=evt->GetTrajectoryContainer();
-  if(!TrajCont)return;
 
+  if(!TrajCont) return;
   
   TrajectoryVector* TrajVec=TrajCont->GetVector();
-  if(BDSGlobals->GetStoreMuonTrajectories()&& TrajVec)
-    {
-      G4int tID;
-      G4TrajectoryPoint* TrajPoint;
-      G4ThreeVector TrajPos;  
-      G4bool storeTraj;
-      if(TrajVec)
-	{
-	  TrajectoryVector::iterator iT;
-	  for(iT=TrajVec->begin();iT<TrajVec->end();iT++)
-	    {
-	      G4Trajectory* Traj=(G4Trajectory*)(*iT);
-	      tID=Traj->GetTrackID();	      
-	      storeTraj=false;
-	      for(G4int i=0;i<theMuonTrackVector->size();i++)
-		if((*theMuonTrackVector)[i]==tID)
-		  storeTraj=true;
 
-	      if(storeTraj)
-		{
-		  BDSRoot->BuildTrajectoryTree();
-		  
-		  for(G4int j=0; j<Traj->GetPointEntries(); j++)
-		    {
-		      TrajPoint=(G4TrajectoryPoint*)Traj->GetPoint(j);
-		      TrajPos=TrajPoint->GetPosition();
-		      BDSRoot->LoadTrajectoryTree(&TrajPos);
-		      G4cout<<"TrajPos="<<TrajPos<<G4endl;
-		    }
-		}
-	      else
-		{// trajectory not a muon - so delete it
-		  delete Traj;
-		  TrajVec->erase(iT);
-		  iT--;
-		}
-	    }
-	}
-      delete theMuonTrackVector;
+  if(BDSGlobals->GetStoreTrajectory()&& TrajVec) // store trajectories of primaries
+    {
+      bdsOutput.WriteTrajectory(TrajVec);
     }
 
-// needed to draw trajectories and hits:
-      if(!BDSGlobals->GetUseBatch())evt->Draw();
+  if(BDSGlobals->GetStoreMuonTrajectories()&& TrajVec)
+    {
+      
+      //bdsOutput.WriteTrajectory();
+      // TODO : implement trajectory storage
+      
+      //   G4int tID;
+      //       G4TrajectoryPoint* TrajPoint;
+      //       G4ThreeVector TrajPos;  
+      //       G4bool storeTraj;
+      //       if(TrajVec)
+      // 	{
+      // 	  TrajectoryVector::iterator iT;
+      // 	  for(iT=TrajVec->begin();iT<TrajVec->end();iT++)
+      // 	    {
+      // 	      G4Trajectory* Traj=(G4Trajectory*)(*iT);
+      // 	      tID=Traj->GetTrackID();	      
+      // 	      storeTraj=false;
+      // 	      for(G4int i=0;i<theMuonTrackVector->size();i++)
+      // 		if((*theMuonTrackVector)[i]==tID)
+      // 		  storeTraj=true;
+      
+      // 	      if(storeTraj)
+      // 		{
+      // 		  BDSRoot->BuildTrajectoryTree();
+      
+      // 		  for(G4int j=0; j<Traj->GetPointEntries(); j++)
+      // 		    {
+      // 		      TrajPoint=(G4TrajectoryPoint*)Traj->GetPoint(j);
+      // 		      TrajPos=TrajPoint->GetPosition();
+      // 		      BDSRoot->LoadTrajectoryTree(&TrajPos);
+      // 		      G4cout<<"TrajPos="<<TrajPos<<G4endl;
+      // 		    }
+      // 		}
+      // 	      else
+      // 		{// trajectory not a muon - so delete it
+      // 		  delete Traj;
+      // 		  TrajVec->erase(iT);
+      // 		  iT--;
+      // 		}
+      // 	    }
+      // 	}
+      //       delete theMuonTrackVector;
+    }
+  
 
-      // clear out the remaining trajectories
-      TrajectoryVector::iterator iT;
-      if(TrajVec)
+  // needed to draw trajectories and hits:
+  if(!BDSGlobals->GetUseBatch()) evt->Draw();
+  
+  // clear out the remaining trajectories
+  TrajectoryVector::iterator iT;
+  if(TrajVec)
+    {
+      for(iT=TrajVec->begin();iT<TrajVec->end();iT++)
 	{
-	  for(iT=TrajVec->begin();iT<TrajVec->end();iT++)
-	    {
-	      G4Trajectory* Traj=(G4Trajectory*)(*iT);
-	      delete Traj;
-	      TrajVec->erase(iT);
-	      iT--;
-	    }
+	  G4Trajectory* Traj=(G4Trajectory*)(*iT);
+	  delete Traj;
+	  TrajVec->erase(iT);
+	  iT--;
 	}
+    }
+  
+  if(DEBUG) G4cout<<"End of event ended"<<G4endl;
 }
 
 //======================================================

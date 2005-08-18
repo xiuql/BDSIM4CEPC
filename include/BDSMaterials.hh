@@ -4,7 +4,6 @@
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 
    Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
-   Added GABs Resetter Material
    Added GABs LCBeamGasPlugMat Material
    Added LCLead
 */
@@ -38,7 +37,7 @@ public:
   G4Material*  LCLeadTungstate;
   G4Material*  LCLead;
   G4Material*  LCBeamGasPlugMat;
-  G4Material*  LCResetter;
+
 
 private:
 

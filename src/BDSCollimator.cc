@@ -1,10 +1,9 @@
-/* BDSIM code.    Version 1.0
-   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.7.2002
-   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+/* BDSIM code.    Version beta
+   Author: Grahame I. Agapov, Royal Holloway, Univ. of London.
+
 */
 #include "BDSGlobalConstants.hh" // must be first in include list
-#include "BDSAbsorber.hh"
+#include "BDSCollimator.hh"
 #include "G4VisAttributes.hh"
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
@@ -30,13 +29,13 @@ extern LogVolMap* LogVol;
 extern BDSMaterials* theMaterials;
 //============================================================
 
-BDSAbsorber::BDSAbsorber (G4String& aName,G4double aLength,G4double bpRad,
-			  G4double xAper,G4double yAper,
-			  G4Material* AbsorberMaterial):
+BDSCollimator::BDSCollimator (G4String aName,G4double aLength,G4double bpRad,
+			      G4double xAper,G4double yAper, G4int type,
+			  G4Material *CollimatorMaterial):
   BDSAcceleratorComponent(aName,
 			  aLength,bpRad,xAper,yAper,
 			  SetVisAttributes()),
-  itsAbsorberMaterial(AbsorberMaterial)
+  itsCollimatorMaterial(CollimatorMaterial), itsType(type)
 {
   
   if ( (*LogVolCount)[itsName]==0)
@@ -47,10 +46,9 @@ BDSAbsorber::BDSAbsorber (G4String& aName,G4double aLength,G4double bpRad,
 				      BDSGlobals->GetComponentBoxSize()/2,
 				      BDSGlobals->GetComponentBoxSize()/2,
 				      itsLength/2),
-			    theMaterials->LCIron,
+			    theMaterials->LCVacuum,
 			    itsName);
-
-      BuildInnerAbsorber();
+      BuildInnerCollimator();
 
       (*LogVolCount)[itsName]=1;
       (*LogVol)[itsName]=itsMarkerLogicalVolume;
@@ -63,34 +61,51 @@ BDSAbsorber::BDSAbsorber (G4String& aName,G4double aLength,G4double bpRad,
 }
 
 
-G4VisAttributes* BDSAbsorber::SetVisAttributes()
+G4VisAttributes* BDSCollimator::SetVisAttributes()
 {
   itsVisAttributes=new G4VisAttributes(G4Colour(0.3,0.4,0.2));
   return itsVisAttributes;
 }
 
 
-void BDSAbsorber::BuildInnerAbsorber()
+void BDSCollimator::BuildInnerCollimator()
 {
+
+  // zero aperture --> no aperture
+
+  if(itsXAper <= 0) itsXAper = BDSGlobals->GetComponentBoxSize()/2;
+  if(itsYAper <= 0) itsYAper = BDSGlobals->GetComponentBoxSize()/2;
+  
   itsSolidLogVol=
     new G4LogicalVolume(new G4Box(itsName+"_solid",
 				  BDSGlobals->GetComponentBoxSize()/2,
 				  BDSGlobals->GetComponentBoxSize()/2,
 				  itsLength/2),
-			itsAbsorberMaterial,
+			//itsCollimatorMaterial,
+			itsCollimatorMaterial,
 			itsName+"_solid");
 
-  itsInnerLogVol=
-    new G4LogicalVolume(new G4Box(itsName+"_inner",
-				  itsXAper,
-				  itsYAper,
-				  itsLength/2),
-			theMaterials->LCVacuum,
-			itsName+"_inner");
-
-  itsSolidLogVol->
-    SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,DBL_MAX,
-				       BDSGlobals->GetThresholdCutCharged()));
+  if(itsType == _RCOL)
+    {
+      itsInnerLogVol=
+	new G4LogicalVolume(new G4Box(itsName+"_inner",
+				      itsXAper,
+				      itsYAper,
+				      itsLength/2),
+			    theMaterials->LCVacuum,
+			    itsName+"_inner");
+    }
+  
+  if(itsType == _ECOL)
+    {
+      itsInnerLogVol=
+	new G4LogicalVolume(new G4EllipticalTube(itsName+"_inner",
+				      itsXAper,
+				      itsYAper,
+				      itsLength/2),
+			    theMaterials->LCVacuum,
+			    itsName+"_inner");
+    }
   
   itsPhysiComp2 = 
     new G4PVPlacement(
@@ -104,6 +119,10 @@ void BDSAbsorber::BuildInnerAbsorber()
 
   SetSensitiveVolume(itsSolidLogVol);
 
+  itsSolidLogVol->
+    SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,DBL_MAX,
+				       BDSGlobals-> GetThresholdCutCharged()));
+  
   itsPhysiComp = 
     new G4PVPlacement(
 		      0,		     // no rotation
@@ -112,13 +131,11 @@ void BDSAbsorber::BuildInnerAbsorber()
 		      itsName+"_solid",	     // its name
 		      itsMarkerLogicalVolume, // its mother  volume
 		      false,		     // no boolean operation
-		      0);		     // copy number 
-  
-
+		      0);		     // copy number  
 }
 
 
-BDSAbsorber::~BDSAbsorber()
+BDSCollimator::~BDSCollimator()
 {
   if(itsVisAttributes) delete itsVisAttributes;
   if(itsUserLimits) delete itsUserLimits;

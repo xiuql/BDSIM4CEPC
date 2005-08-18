@@ -13,24 +13,8 @@
 #include "G4PVPlacement.hh"               
 #include "G4UserLimits.hh"
 
-
-#include "BDSRootObjects.hh"
-
-//#include"MagFieldFunction.hh"
 #include <map>
 
-#include "BDSRootObjects.hh"
-
-
-// #define DECFortran 1
-//#include "/cern/pro/include/cfortran/cfortran.h"
-//#include "hbook.h"
-//#include "/cern/pro/include/cfortran/packlib.h"
-//#include "stdlib.h"
-
-//============================================================
-//typedef std::map<G4String,MagFieldFunction*> PhysFieldMap;
-//extern PhysFieldMap* MagFieldMap;
 
 typedef std::map<G4String,int> LogVolCountMap;
 extern LogVolCountMap* LogVolCount;
@@ -57,10 +41,7 @@ void BDSKiller::KillerLogicalVolume()
     {
 
       G4double SampTransSize;
-      if(BDSGlobals->GetAcceleratorType()->GetType()=="atf")
-	SampTransSize=2.*BDSGlobals->GetComponentBoxSize();
-      else
-	SampTransSize=2.*BDSGlobals->GetTunnelRadius();
+      SampTransSize=2.*BDSGlobals->GetTunnelRadius();
 
       itsMarkerLogicalVolume=
 	new G4LogicalVolume(

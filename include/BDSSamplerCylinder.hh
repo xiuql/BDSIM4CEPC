@@ -18,7 +18,7 @@
 class BDSSamplerCylinder :public BDSAcceleratorComponent
 {
 public:
-  BDSSamplerCylinder(G4String& aName,G4double aLength, G4double aRadius);
+  BDSSamplerCylinder(G4String aName,G4double aLength, G4double aRadius);
   ~BDSSamplerCylinder();
 
 protected:

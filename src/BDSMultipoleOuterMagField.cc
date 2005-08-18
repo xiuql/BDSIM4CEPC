@@ -51,7 +51,7 @@ void BDSMultipoleOuterMagField::GetFieldValue(const G4double Point[4],
 
   G4int nSector=G4int(phi/itsSectorPhi);
 
-  BFactor*=pow(-1,nSector);
+  BFactor*=pow(-1.0,nSector);
 
 
   Bfield[0]= LocalR.y()*BFactor;

@@ -32,7 +32,7 @@ extern G4RotationMatrix* RotY90;
 
 //============================================================
 
-BDSSectorBend::BDSSectorBend(G4String& aName,G4double aLength, 
+BDSSectorBend::BDSSectorBend(G4String aName,G4double aLength, 
 			     G4double bpRad,G4double FeRad,
 			     G4double bField, G4double angle,
 			     G4int nSegments):
@@ -61,12 +61,6 @@ BDSSectorBend::BDSSectorBend(G4String& aName,G4double aLength,
 
       BuildDefaultOuterLogicalVolume(2.*HalfLength);
 
-      if(BDSGlobals->GetAcceleratorType()->GetType()=="atf")
-	{
-	  // apply the magnetic field to the entire marker volume,
-	  // to avoid end effects for large bends
-	  GetMarkerLogicalVolume()->SetFieldManager(GetBPFieldMgr(),false);
-	}
 
       //SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
       SetSensitiveVolume(itsOuterLogicalVolume);// otherwise
@@ -109,7 +103,7 @@ BDSSectorBend::BDSSectorBend(G4String& aName,G4double aLength,
 	  BuildBPFieldAndStepper();
 	  BuildBPFieldMgr(itsStepper,itsMagField);
 
-  G4cout<<"BPFieldMgr="<<GetBPFieldMgr()<<G4endl;
+	  G4cout<<"BPFieldMgr="<<GetBPFieldMgr()<<G4endl;
 
 	  BuildSBMarkerLogicalVolume();
 
@@ -122,12 +116,6 @@ BDSSectorBend::BDSSectorBend(G4String& aName,G4double aLength,
 	    BDSGlobals->GetComponentBoxSize()*tan(abs(itsAngle)/2);
 	  BuildDefaultOuterLogicalVolume(2.*HalfLength);
 
-	  if(BDSGlobals->GetAcceleratorType()->GetType()=="atf")
-	    {
-	      // apply the magnetic field to the entire marker volume,
-	      // to avoid end effects for large bends
-	      GetMarkerLogicalVolume()->SetFieldManager(GetBPFieldMgr(),false);
-	    }
 
 	  SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron  
 	  // SetSensitiveVolume(itsOuterLogicalVolume);// for laserwire
@@ -178,8 +166,11 @@ void BDSSectorBend::BuildBPFieldAndStepper()
   // set up the magnetic field and stepper
   G4ThreeVector Bfield(0.,itsBField,0.);
   itsMagField=new BDS_SbendField(Bfield,itsLength,itsAngle);
+ 
+  
   itsEqRhs=new G4Mag_UsualEqRhs(itsMagField);  
-
+  
+ 
   itsStepper=new BDSHelixStepper(itsEqRhs);
   itsStepper->SetBField(itsBField);
 }

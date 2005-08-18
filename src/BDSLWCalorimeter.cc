@@ -19,12 +19,9 @@
 #include "BDSLWCalorimeterSD.hh"
 #include "G4SDManager.hh"
 
-#include "BDSRootObjects.hh"
 
 //#include"MagFieldFunction.hh"
 #include <map>
-
-#include "BDSRootObjects.hh"
 
 
 //============================================================
@@ -51,7 +48,7 @@ BDSLWCalorimeter::BDSLWCalorimeter (G4String& aName,G4double aLength,
   BuildBeampipe(aLength);
   G4int nLWCalorimeters=(*LogVolCount)[itsName];
 
-  BDSRoot->SetLWCalorimeterNumber(nLWCalorimeters);
+  //BDSRoot->SetLWCalorimeterNumber(nLWCalorimeters);
 
 }
 
@@ -62,10 +59,7 @@ void BDSLWCalorimeter::LWCalorimeterLogicalVolume()
     {
 
       G4double SampTransSize;
-      if(BDSGlobals->GetAcceleratorType()->GetType()=="atf")
-	SampTransSize=BDSGlobals->GetComponentBoxSize();
-      else
-	SampTransSize=2.*BDSGlobals->GetTunnelRadius();
+      SampTransSize=2.*BDSGlobals->GetTunnelRadius();
 
       itsMarkerLogicalVolume=
 	new G4LogicalVolume(

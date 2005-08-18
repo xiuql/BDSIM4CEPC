@@ -13,7 +13,7 @@
 
 
 BDSLaserCompton::BDSLaserCompton(const G4String& processName)
-  :  G4VeEnergyLoss(processName)      // initialization
+  :  G4VeEnergyLoss(processName)
 {
   itsLaserWavelength=BDSGlobals->GetLaserwireWavelength();
   itsLaserDirection=BDSGlobals->GetLaserwireDir();

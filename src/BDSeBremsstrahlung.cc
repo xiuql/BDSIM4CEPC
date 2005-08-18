@@ -21,7 +21,7 @@
 // ********************************************************************
 //
 //
-// $Id: BDSeBremsstrahlung.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
+// $Id: BDSeBremsstrahlung.cc,v 1.2 2005/01/27 11:35:32 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -760,9 +760,7 @@ G4VParticleChange* BDSeBremsstrahlung::PostStepDoIt(const G4Track& trackData,
 
   // gab>>: make sure only one brem per event
    BDSeBremsFiredThisEvent=true;
-   float ztemp=trackData.GetPosition().z()/m;
-   //<< gab
-
+   
    G4double GammaEnergy ;
    G4bool LPMOK = false ;
 

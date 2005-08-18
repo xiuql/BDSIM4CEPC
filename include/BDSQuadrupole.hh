@@ -26,7 +26,7 @@
 class BDSQuadrupole :public BDSMultipole
 {
   public:
-    BDSQuadrupole(G4String& aName, G4double aLength,
+    BDSQuadrupole(G4String aName, G4double aLength,
 		  G4double bpRad,G4double FeRad,
 		  G4double bGrad);
     ~BDSQuadrupole();

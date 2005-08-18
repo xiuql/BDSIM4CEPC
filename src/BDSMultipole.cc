@@ -25,11 +25,12 @@
 
 #include "BDSMultipoleOuterMagField.hh"
 #include "G4MagneticField.hh"
-#include "BDSAcceleratorType.hh"
 
 #include <map>
 #include<string>
 
+
+const int DEBUG= 1;
 
 //============================================================
 
@@ -49,7 +50,7 @@ extern G4RotationMatrix* RotY90;
 
 //============================================================
 
-BDSMultipole::BDSMultipole( G4String& aName, 
+BDSMultipole::BDSMultipole( G4String aName, 
 			    G4double aLength,
 			    G4double aBpRadius,
 			    G4double aInnerIronRadius,
@@ -76,6 +77,9 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
   G4double dSegments=double(nSegments);
 
   // build beampipe
+
+  if(DEBUG) G4cout<<"Outer pipe : r="<<itsBpRadius/m<<"m,  l="<< aLength/(2.*dSegments)/m<<" m"<<G4endl;
+
   itsBPTube=new G4Tubs(itsName+"_tube",
 		       0.,
 		       itsBpRadius,
@@ -84,11 +88,15 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
 
   if(nSegments==1)
     {
+      if(DEBUG) G4cout<<"Inner pipe : r="<<(itsBpRadius-BDSGlobals->GetBeampipeThickness() )/m
+		      <<"m  l="<< aLength/2/m<<" m"<<G4endl;
+
       itsInnerBPTube=new G4Tubs(itsName+"_InnerTube",
 				0.,
 				itsBpRadius-BDSGlobals->GetBeampipeThickness(),
 				aLength/2,
 				0,twopi*radian);
+
     }
   else
     {
@@ -121,65 +129,6 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
 		      false,		       // no boolean operation
 		      0);		       // copy number
     
-  // increase structure for PETRA beampipe:
-  BDSAcceleratorType* TheAccelerator=BDSGlobals->GetAcceleratorType();
-  if(TheAccelerator->GetType()=="PETRA")
-    {
-      G4double sign=1.;
-      if(GetAngle()!=0)sign=-1.;
-      // build water cavity
-      G4LogicalVolume* WaterLogicalVolume=	
-	new G4LogicalVolume
-	(new G4Box( itsName+"_waterLog",             
-		    0.5*cm,//x half length
-		    1*cm, // y half length
-		    (itsLength+BDSGlobals->GetLengthSafety())/2), //z 
-	 theMaterials->LCWater,
-	 itsName+"_Water");
-
-      G4ThreeVector TargetPos;
-
-      // sign factor is to compensate for different orientation of sector bend
-      // beampipe
-      TargetPos.setX(sign*(itsBpRadius-BDSGlobals->GetBeampipeThickness()
-		     +1.5*cm));
-      
-      G4VPhysicalVolume* WaterCavity = 
-	new G4PVPlacement(
-			  0,		       // rotation
-			  TargetPos,	               // at TargetPos
-			  WaterLogicalVolume, // its logical volume
-			  itsName+"_Water",     // its name
-			  itsBeampipeLogicalVolume, // its mother  volume
-			  false,		       // no boolean operation
-			  0);		       // copy number
-
-
-      // build end volume for outer pipe (that doesn't exist in our region)
-      G4LogicalVolume* PipeGroove=	
-	new G4LogicalVolume
-	(new G4Box( itsName+"_PipeGroove",             
-		    0.5*cm,//x half length
-		    0.5*cm, // y half length
-		    (itsLength+BDSGlobals->GetLengthSafety())/2), //z 
-	 theMaterials->LCAir,
-	 itsName+"_PipeGroove");
-
-      TargetPos.setX(sign*(itsBpRadius-BDSGlobals->GetBeampipeThickness()
-		     +3.4*cm));
-      
-      G4VPhysicalVolume* Groove = 
-	new G4PVPlacement(
-			  0,		       // rotation
-			  TargetPos,	               // at TargetPos
-			  PipeGroove, // its logical volume
-			  itsName+"_Groove",     // its name
-			  itsBeampipeLogicalVolume, // its mother  volume
-			  false,		       // no boolean operation
-			  0);		       // copy number
-      
-    }
-
   if(nSegments==1)
     {
       G4RotationMatrix* Rot=NULL;
@@ -238,7 +187,6 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
     }
 
 
-
   itsBeampipeUserLimits =
      new G4UserLimits("beampipe cuts",DBL_MAX,DBL_MAX,DBL_MAX,
   		     BDSGlobals->GetThresholdCutCharged());
@@ -268,6 +216,7 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
   itsMarkerLogicalVolume->
     SetFieldManager(BDSGlobals->GetZeroFieldManager(),false);
 
+
 }
 
 
@@ -280,7 +229,7 @@ void BDSMultipole::BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
 		      aStepper);
 
   itsChordFinder->SetDeltaChord(BDSGlobals->GetDeltaChord());
-  
+
   itsBPFieldMgr= new G4FieldManager();
   itsBPFieldMgr->SetDetectorField(aField);
   itsBPFieldMgr->SetChordFinder(itsChordFinder);
@@ -291,6 +240,8 @@ void BDSMultipole::BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
 
 void BDSMultipole::BuildDefaultMarkerLogicalVolume()
 {
+  if(DEBUG) G4cout<<"marker volume : x/y="<<BDSGlobals->GetComponentBoxSize()/2/m<<
+	      " m, l= "<<  (itsLength+BDSGlobals->GetLengthSafety())/2/m <<" m"<<G4endl;
 
   itsMarkerLogicalVolume=new G4LogicalVolume
     (new G4Box( itsName+"_marker",             
@@ -312,8 +263,12 @@ void BDSMultipole::BuildDefaultMarkerLogicalVolume()
 void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
 						  G4bool OuterMaterialIsVacuum)
 {
+
+  //G4cout<<"length="<<aLength<<G4endl;
+
   // compute saggita:
   G4double sagitta=0.;
+
   if(itsNSegments>1)
     {
       sagitta=itsLength/itsAngle*(1.-cos(itsAngle/2.));
