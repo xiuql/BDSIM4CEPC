@@ -3,19 +3,16 @@
 @setfilename bdsim.info
 @settitle BDSIM beta User's Manual
 @c This date is automagically updated when you save this file:
-@set lastupdate April 05, 2005
+@set lastupdate June 14, 2005
 @c %**end of header
 
 @setchapternewpage off
-
 
 @copying
 
 Copyright @copyright{} 2005 Royal Holloway.
 
-@c @quotation
-@c This code ia an intellectual property of the British Empire.
-@c @end quotation
+
 @end copying
 
 
@@ -28,8 +25,11 @@ Copyright @copyright{} 2005 Royal Holloway.
 
 @contents
 
+
+
 @node Top, Intro, (dir), (dir)
 @top BDSIM beta User's Manual
+
 
 This file is updated automatically from @file{manual.texi}, which was
 last updated on @value{lastupdate}.
@@ -44,7 +44,8 @@ last updated on @value{lastupdate}.
 * Physics::                     
 * Architecture::                
 * Geometry::                    
-* Fields::                      
+* Fields::     
+* Bunches::
 * Authors::                     
 * References::                  
 @end menu
@@ -58,9 +59,7 @@ last updated on @value{lastupdate}.
 @chapter About BDSIM
 
 BDSIM is a particle tracking code designed for simulation of particle
-transport in accelerator beam lines. It combines tracking 
-techniques in conventional electromagnetic fields with Monte-Carlo simulations of various 
-particle interactions. It is intended for use in such problems as collimation
+transport in accelerator beam lines. It is intended for use in such problems as collimation
 design, background studies, laser beam diagnostics etc, @xref{Blair}.
  
 
@@ -72,8 +71,8 @@ design, background studies, laser beam diagnostics etc, @xref{Blair}.
 @chapter Obtaining, Installing and Running
 
 
-To run @code{BDSIM} you will need two files:one with accelerator geometry definition (optics) 
-and the second with various run-time parameters (input cards).
+To run @code{BDSIM} you will need a file with accelerator geometry definition (optics) 
+and  various run-time parameters (input cards).
 
 @code{BDSIM} is invoked by the command
 @code{bdsim} @option{options}
@@ -171,6 +170,9 @@ for example
 @item sbend
 @item rbend
 @item quadrupole
+@item sextupole
+@item octupole
+@item multipole
 @end itemize
 
 
@@ -312,7 +314,7 @@ Example :
 
 @subsection sextupole
 
-@code{sextupole} defines a quadrupole.
+@code{sextupole} defines a sextupole.
 Attributes:
 @itemize 
 @item @code{l} - length [m] (default 0)
@@ -559,10 +561,9 @@ Example :
 
 @subsection @code{sample}
 
-To record the tracking results one uses the @code{sample} command. It can have two syntax variants:
+To record the tracking results one uses the @code{sample} command:
 
 @code{sample, range=<range>,particle=<particle>,values=@{value1,value2,...@}}
-@code{sample, element=<element>,particle=<particle>,values=@{value1,value2,...@} ;}
 
 the parameters are
 
@@ -663,12 +664,12 @@ The element with user-defined physical geometry is defined by command
 
 for example,
 
-@code{ colli : element, geometry=plain:colli.geom}
+@code{colli : element, geometry=plain:colli.geom}
 
 
-@section @code{plain} format
+@section @code{gmad} format
 
-@code{plain} is the format which can basically describe elements with axial simmetry and
+@code{gmad} is the format which can basically describe elements with axial simmetry and
 should work for most accelerator components like collimators, RF cavities etc.
 
 The idea is to represent the elements as sequence of simpler elements which 
@@ -692,7 +693,7 @@ For example, an absorber of NLC type can be represented by the following code
 @c
 @c cccccccccccccccccccccccccccccccccccccccccc
 
-@node Fields,Authors,Geometry,Top
+@node Fields,Bunches,Geometry,Top
 @appendix Field description formats
 
 The element with user-defined physical geometry is defined by command 
@@ -703,14 +704,15 @@ for example,
 
 @code{ colli : element, geometry=plain:colli.geom}
 
-
+@node Bunches, Authors, Fields, Top
+@appendix Bunch description formats
 
 
 @c cccccccccccccccccccccccccccccccccccccccccc
 @c
 @c cccccccccccccccccccccccccccccccccccccccccc
 
-@node Authors, References, Fields, Top
+@node Authors, References, Bunches, Top
 @chapter Authors 
 
 @table @code
