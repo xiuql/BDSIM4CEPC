@@ -1,0 +1,391 @@
+  TITLE "ATF2: Extraction Line (EXT)"
+  ASSIGN, PRINT="EXT.print"
+  ASSIGN, ECHO="EXT.echo"
+  OPTION, -ECHO, VERIFY, DOUBLE
+! ==============================================================================
+! initial conditions (entrance to DR extraction kicker)
+! ------------------------------------------------------------------------------
+  E0d   := 1.542282           !design beam energy (GeV)
+  E0    := 1.28               !nominal beam energy (GeV)
+  EMITX := 2.0E-9             !geometric horizontal emittance (m)
+  EMITY := 2.0E-11            !geometric vertical emittance (m)
+  BLENG := 5.5E-3             !bunch length (m)
+  ESPRD := 0.6E-3             !energy spread (1)
+  TBETX := 7.328756752062     !twiss beta x (m)
+  TALFX := 1.182561568783     !twiss alpha x
+  TDX   := -0.178437351534E-2 !eta x (m)
+  TDPX  := 0.376468633842E-3  !eta' x
+  TBETY := 3.138666109153     !twiss beta y (m)
+  TALFY := -1.770354080712    !twiss alpha y
+  TDY   := 0                  !eta y (m)
+  TDPY  := 0                  !eta' y
+! ==============================================================================
+! construct input beam matrix (assumes TDY=TDPY=0)
+! ------------------------------------------------------------------------------
+  BEAM, PARTICLE=ELECTRON, ENERGY=E0, EX=EMITX, EY=EMITY, &
+        SIGT=BLENG, SIGE=ESPRD, NPART=2.0E+10
+
+  TWSS0 : BETA0, BETX=TBETX, ALFX=TALFX, DX=TDX, DPX=TDPX, &
+                 BETY=TBETY, ALFY=TALFY, DY=TDY, DPY=TDPY
+
+  TGAMX := (1+TALFX*TALFX)/TBETX
+  TGAMY := (1+TALFY*TALFY)/TBETY
+  SIG11 := EMITX*TBETX+TDX*TDX*ESPRD*ESPRD
+  SIG21 := -EMITX*TALFX+TDX*TDPX*ESPRD*ESPRD
+  SIG22 := EMITX*TGAMX+TDPX*TDPX*ESPRD*ESPRD
+  C21   := SIG21/SQRT(SIG11*SIG22)
+  SIG33 := EMITY*TBETY
+  SIG43 := -EMITY*TALFY
+  SIG44 := EMITY*TGAMY
+  C43   := SIG43/SQRT(SIG33*SIG44)
+  SIG61 := TDX*ESPRD*ESPRD
+  SIG62 := TDPX*ESPRD*ESPRD
+  SIG66 := ESPRD*ESPRD
+  C61   := SIG61/SQRT(SIG11*SIG66)
+  C62   := SIG62/SQRT(SIG22*SIG66)
+  SIG0  : SIGMA0, SIGX=SQRT(SIG11), SIGPX=SQRT(SIG22), R21=C21, &
+                  SIGY=SQRT(SIG33), SIGPY=SQRT(SIG44), R43=C43, &
+                  SIGT=BLENG      , SIGPT=ESPRD      , R61=C61, R62=C62
+
+! ==============================================================================
+! global parameters
+! ------------------------------------------------------------------------------
+
+  Cb   := 1.0E10/CLIGHT
+  Brho := Cb*E0
+
+! ==============================================================================
+! load XSIF file
+! ------------------------------------------------------------------------------
+
+  CALL, FILENAME="EXT.xsif"
+
+! ==============================================================================
+! BEAMLINEs
+! ------------------------------------------------------------------------------
+
+  LFODO := 2.2
+  KFODO := 3.673
+  QFE   : QUAD, L=0.1987/2, K1=+KFODO
+  QDE   : QUAD, L=0.1987/2, K1=-KFODO
+  DFODO : DRIF, L=LFODO-0.1987
+  FODO  : LINE=(QFE,DFODO,QDE,QDE,DFODO,QFE)
+
+! ==============================================================================
+! SUBROUTINEs
+! ------------------------------------------------------------------------------
+
+  MFODO : SUBROUTINE
+
+  ! match emittance diagnostic cell
+
+    USE, FODO
+    CELL
+      VARY, KFODO, STEP=1.E-5
+      CONSTR, #E, MUX=45/360, MUY=45/360
+      LMDIF
+      MIGRAD
+    ENDMATCH
+    VALUE, KFODO
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  MDX : SUBROUTINE
+
+  ! match dispersion at diagnostic section
+
+    USE, EXT
+    MATCH, BETA0=TWSS0
+      VARY, KLQF3X, STEP=1.E-5
+      VARY, KLQF4X, STEP=1.E-5
+      CONSTR, MC2X, DX=0, DPX=0
+      LMDIF, TOL=1.E-20
+      MIGRAD, TOL=1.E-20
+    ENDMATCH
+    VALUE, KLQF3X,KLQF4X
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+  MIP2 : SUBROUTINE
+
+  ! match beta functions at diagnostic point
+
+    USE, EXT
+    MATCH, BETA0=TWSS0
+      VARY, KLQF3X, STEP=1.E-5
+      VARY, KLQF4X, STEP=1.E-5
+      VARY, KLQF1X, STEP=1.E-5
+      VARY, KLQF5X, STEP=1.E-5
+      CONSTR, IP2, BETX=0.01, BETY=0.1
+      LMDIF, TOL=1.E-20
+      MIGRAD, TOL=1.E-20
+    ENDMATCH
+    VALUE, KLQF3X,KLQF4X
+  ENDSUBROUTINE
+
+
+! ------------------------------------------------------------------------------
+
+  MIP3 : SUBROUTINE
+
+  ! match beta functions at diagnostic point
+
+    USE, EXT
+    MATCH, BETA0=TWSS0
+      VARY, KLQF2X, STEP=1.E-6
+      VARY, KLQF3X, STEP=1.E-6
+      VARY, KLQF4X, STEP=1.E-6
+      VARY, KLQF1X, STEP=1.E-6
+      VARY, KLQD2X, STEP=1.E-6
+      VARY, KLQD3X, STEP=1.E-6
+      VARY, KLQD4X, STEP=1.E-6
+      VARY, KLQD1X, STEP=1.E-6
+      CONSTR, LASER, BETX=0, BETY=0,DX=0,DDX=0
+      !CONSTR, LASER, DX=0,DDX=0
+      LMDIF, TOL=1.E-20
+      MIGRAD, TOL=1.E-20
+    ENDMATCH
+    VALUE, KLQF1X,KLQF2X,KLQF3X,KLQF4X
+    VALUE, KLQD1X,KLQD2X,KLQD3X,KLQD4X
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  MDY : SUBROUTINE
+
+  ! match dispersion at diagnostic section
+
+    USE, EXT
+    MATCH, BETA0=TWSS0
+      VARY, QS1X[K1], STEP=1.E-5
+      VARY, QS2X[K1], STEP=1.E-5
+      CONSTR, ML8X, DY=0, DPY=0
+      LMDIF, TOL=1.E-20
+      MIGRAD, TOL=1.E-20
+    ENDMATCH
+    VALUE, QS1X[K1],QS1X[K1]*(2*QS1X[L])
+    VALUE, QS2X[K1],QS2X[K1]*(2*QS2X[L])
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+
+
+  M2ND : SUBROUTINE
+
+  ! match 2nd order dispersion at diagnostic section
+
+    USE, EXT
+    TWISS, CHROM, SAVE, BETA0=TWSS0
+    MATCH, BETA0=TWSS0
+      VARY, KLSD1X, STEP=1.E-5
+      VARY, KLSD2X, STEP=1.E-5
+      VARY, KLSF1X, STEP=1.E-5
+      WEIGHT, DDX=10, DDPX=100, WY=0.1
+      CONSTR, IP2, DDX=0, DDPX=0
+      CONSTR, ML8X, WY=0
+      CONSTR, ML9X, WY=0
+      CONSTR, ML10X, WY=0
+      CONSTR, ML11X, WY=0
+      CONSTR, ML12X, WY=0
+      CONSTR, ML13X, WY=0
+      LMDIF
+      MIGRAD
+    ENDMATCH
+    VALUE, KLSD1X,KLSD2X,KLSF1X
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+ M2NDIP3 : SUBROUTINE
+
+  ! match 2nd order dispersion at diagnostic section
+
+    USE, EXT
+    TWISS, CHROM, SAVE, BETA0=TWSS0
+    MATCH, BETA0=TWSS0
+      VARY, KLSD1X, STEP=1.E-7, LOWER=-7.0,UPPER=7.0
+      VARY, KLSD2X, STEP=1.E-7, LOWER=-7.0,UPPER=7.0
+      VARY, KLSF1X, STEP=1.E-7, LOWER=-7.0,UPPER=7.0
+      WEIGHT, DDX=10, DDPX=100, WY=0.1
+      CONSTR, LASER, DDX=0, DDPX=0
+      CONSTR, LASER, WY=0
+      !CONSTR, LASER, WY=0
+      !CONSTR, LASER, WY=0
+      !CONSTR, LASER, WY=0
+      !CONSTR, LASER, WY=0
+      !CONSTR, LASER, WY=0
+      LMDIF
+      MIGRAD
+    ENDMATCH
+    VALUE, KLSD1X,KLSD2X,KLSF1X
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  BTRNS : SUBROUTINE
+
+  ! compute TRANSPORT pole-tip fields (kG)
+
+    VALUE, Brho*KE1X_1[ANGLE]/KE1X_1[L]
+    VALUE, Brho*KE2X_1[ANGLE]/KE2X_1[L]
+    VALUE, Brho*BS1X_1[ANGLE]/BS1X_1[L]
+    VALUE, Brho*BS2X_1[ANGLE]/BS2X_1[L]
+    VALUE, Brho*BS3X_1[ANGLE]/BS3X_1[L]
+    VALUE, Brho*BH1X_1[ANGLE]/BH1X_1[L]
+    VALUE, Brho*BH2X_1[ANGLE]/BH2X_1[L]
+    VALUE, Brho*BH3X_1[ANGLE]/BH3X_1[L]
+    VALUE, Brho*BH4X_1[ANGLE]/BH4X_1[L]
+    VALUE, Brho*BH5X_1[ANGLE]/BH5X_1[L]
+
+    VALUE, Brho*QD1X[K1]*QD1X[APER]
+    VALUE, Brho*QD2X[K1]*QD2X[APER]
+    VALUE, Brho*QF1X[K1]*QF1X[APER]
+    VALUE, Brho*QK0X[K1]*QK0X[APER]
+    VALUE, Brho*QS1X[K1]*QS1X[APER]
+    VALUE, Brho*QF2X[K1]*QF2X[APER]
+    VALUE, Brho*QD3X[K1]*QD3X[APER]
+    VALUE, Brho*QF3X[K1]*QF3X[APER]
+    VALUE, Brho*QF4X[K1]*QF4X[APER]
+    VALUE, Brho*QS2X[K1]*QS2X[APER]
+    VALUE, Brho*QD4X[K1]*QD4X[APER]
+    VALUE, Brho*QD5X[K1]*QD5X[APER]
+    VALUE, Brho*QF5X[K1]*QF5X[APER]
+    VALUE, Brho*QK1X[K1]*QK1X[APER]
+    VALUE, Brho*QD6X[K1]*QD6X[APER]
+    VALUE, Brho*QK2X[K1]*QK2X[APER]
+    VALUE, Brho*QD7X[K1]*QD7X[APER]
+    VALUE, Brho*QK3X[K1]*QK3X[APER]
+    VALUE, Brho*QF6X[K1]*QF6X[APER]
+    VALUE, Brho*QK4X[K1]*QK4X[APER]
+    VALUE, Brho*QD8X[K1]*QD8X[APER]
+    VALUE, Brho*QF7X[K1]*QF7X[APER]
+    VALUE, Brho*QD9X[K1]*QD9X[APER]
+
+  ! compute TRANSPORT field index values for off-axis DR quads
+
+    VALUE, -QM6R[K1]*(LQHitachi4/AQM6R)^2
+    VALUE, -QM7R[K1]*(LQTokin6/AQM7R)^2
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  ATF2MAG : SUBROUTINE
+
+  ! set magnets to ATF2 values
+
+   !SET, KLQM6R, -0.703
+   !SET, KLQM7R,  0.378
+    SET, KLQD1X, -0.223625572938
+    SET, KLQD2X, -0.299778656624
+    SET, KLQF1X,  0.412453872703
+    SET, KLQF2X,  0.147477864147
+    SET, KLQD3X, -0.517709422699
+    SET, KLQF3X,  1.324644936927
+    SET, KLQF4X,  1.32879179635
+    SET, KLQD4X, -0.701034093855
+    SET, KLQD5X, -0.40236598671
+    SET, KLQF5X, -0.165303014921
+    SET, KLQK1X,  0
+    SET, KLQD6X,  0.688288442771
+    SET, KLQK2X,  0
+    SET, KLQD7X, -1.041764290366
+    SET, KLQK3X,  0
+    SET, KLQF6X,  0.586706428787
+    SET, KLQK4X,  0
+    SET, KLQD8X, -0.6611561338
+    SET, KLQF7X,  0.6611561338
+    SET, KLQD9X, -0.45865563471
+  ENDSUBROUTINE
+
+! ==============================================================================
+! COMMANDs
+! ------------------------------------------------------------------------------
+
+  SETPLOT, XSIZE=25.4, YSIZE=20.32
+  OPTION, ECHO
+
+ !ATF2MAG
+
+! do matching
+
+  !MDX
+  !MDY
+  !M2ND
+
+  ! match beta functions at IP
+  MIP3
+
+  
+  ! match chromatic effects
+ 
+  KLSD1X := 5.0
+  KLSD2X := 0.0
+  KLSF1X := 0.0
+ 
+  M2NDIP3
+
+! generate output files and plots
+
+  COMMENT
+    USE, EXT
+    SAVEBETA, TREATY, IPFF
+    TWISS, BETA0=TWSS0
+    VALUE, TREATY[ENERGY]
+    VALUE, TREATY[BETX],TREATY[ALFX],TREATY[DX],TREATY[DPX]
+    VALUE, TREATY[BETY],TREATY[ALFY],TREATY[DY],TREATY[DPY]
+    STOP
+  ENDCOMMENT
+
+  USE, EXT
+  PRINT, FULL
+  SELECT, OPTICS, FULL
+  TWISS, CHROM, SAVE, BETA0=TWSS0, TAPE="EXT_twiss.tape"
+  SURVEY, TAPE="EXT_survey.tape"
+  ENVELOPE, SAVE=ENVELOPE, SIGMA0=SIG0, TAPE="EXT_envelope.tape"
+
+  ! dump the optics
+
+  OPTICS, BETA0=TWSS0, COLUMNS=NAME,TYPE,S,BETX,BETY,DX,WX,WY,DDX,DDPX
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &
+    STYLE=100, SPLINE=.T., FILE="EXT"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=BETX,BETY, &
+    STYLE=100, SPLINE=.T., FILE="EXT"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=RBETX,RBETY, &
+    STYLE=100, SPLINE=.T., FILE="EXT"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DX,DY, &
+    STYLE=100, SPLINE=.T., VMIN=-2.5, VMAX=2.5, FILE="EXT"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DDX,DDY, &
+    STYLE=100, SPLINE=.T., TITLE="BH1 Sextupole ON", FILE="EXT"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=WX,WY, &
+    STYLE=100, SPLINE=.T., TITLE="BH1 Sextupole ON", FILE="EXT"
+
+
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &
+    STYLE=100, SPLINE=.T., FILE="EXT", HMIN=12,HMAX=21
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=BETX,BETY, &
+    STYLE=100, SPLINE=.T., FILE="EXT", HMIN=12,HMAX=21
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=RBETX,RBETY, &
+    STYLE=100, SPLINE=.T., FILE="EXT", HMIN=12,HMAX=21
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DX,DY, &
+    STYLE=100, SPLINE=.T., VMIN=-2.5, VMAX=2.5, FILE="EXT", HMIN=12,HMAX=21
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DDX,DDY, &
+    STYLE=100, SPLINE=.T., TITLE="BH1 Sextupole ON", FILE="EXT", HMIN=12,HMAX=21
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=WX,WY, &
+    STYLE=100, SPLINE=.T., TITLE="BH1 Sextupole ON", FILE="EXT", HMIN=12,HMAX=21
+
+  ! PRINT BEAM PARAMETERS
+
+  BMPM, RANGE=BPM1B/MS6X
+
+
+! dump TRANSPORT values
+
+ !BTRNS
+
+  STOP
+

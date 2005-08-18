@@ -1,0 +1,6 @@
+rbpc1  := zbpc1/sin(1)  ;!bend radius;
+
+use;
+us;
+usq;
+q:quadrupolerupole;
