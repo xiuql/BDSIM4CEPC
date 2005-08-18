@@ -1,0 +1,158 @@
+ 
+ FLASSI.  ECHO stream rerouted to file: ATF2.echo
+ 
+         5       OPTION, -ECHO, VERIFY, DOUBLE                                                 
+ 
+ ENBEAM.  ## Warning ## Redundant data on BEAM --- SIGE will be ignored.
+ 
+ 
+ FLCALL.  Now reading file: EXT.xsif
+ 
+ 
+ FLCALL.  Now reading file: ATF2.mad
+ 
+ 
+ FLCALL.  Now reading file: FF.xsif
+ 
+ 
+ FLCALL.  Now reading file: ATF2.mad
+ 
+                                                                                               
+                 BASELINE                                                                      
+                                                                                               
+       120     ! generate twiss functions and plots                                            
+                                                                                               
+                !COMMENT                                                                       
+                   USE, ATF2                                                                   
+ 
+ ENUSE.   New beam line expanded: ATF2
+ 
+                   PRINT, FULL                                                                 
+       125         SAVEBETA, TWSSff, IPFF                                                      
+                   SAVEBETA, TWSSip, IP                                                        
+                   TWISS, SAVE, BETA0=TWSS0, TAPE="ATF2_twiss.tape"                            
+ 
+ LNREFE.  *** Error *** Invalid line reference.
+          Statement beginning at line   127:
+          TWISS,SAVE,BETA0=TWSS0,TAPE="ATF2_twiss.tape"???;
+ 
+ 
+ AAMAIN.  Entering scanning mode.
+ 
+                   PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &                
+                     STYLE=100, SPLINE=.T., FILE="ATF2"                                        
+       130         PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &                
+                     STYLE=100, SPLINE=.T., FILE="ATF2", &                                     
+                     RANGE=EXT2, TITLE="EXT"                                                   
+                   PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &                
+                     STYLE=100, SPLINE=.T., FILE="ATF2", &                                     
+       135           RANGE=FF, TITLE="Final Focus"                                             
+                   VALUE, TWSSff[ENERGY]                                                       
+                   VALUE, TWSSff[BETX],TWSSff[ALFX],TWSSff[DX],TWSSff[DPX]                     
+                   VALUE, TWSSff[BETY],TWSSff[ALFY],TWSSff[DY],TWSSff[DPY]                     
+                   VALUE, TWSSip[ENERGY]                                                       
+       140         VALUE, TWSSip[BETX],TWSSip[ALFX],TWSSip[DX],TWSSip[DPX]                     
+                   VALUE, TWSSip[BETY],TWSSip[ALFY],TWSSip[DY],TWSSip[DPY]                     
+                !ENDCOMMENT                                                                    
+                                                                                               
+               ! generate chromatic functions and plots                                        
+       145                                                                                     
+                !COMMENT                                                                       
+                   USE, ATF2                                                                   
+                   PRINT, FULL                                                                 
+                   TWISS, CHROM, SAVE, BETA0=TWSS0, TAPE="ATF2_chrom.tape"                     
+       150         PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=WX,WY, VAXIS2=DDX,DDY, &                 
+                     STYLE=100, SPLINE=.T., FILE="ATF2"                                        
+                   PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=WX,WY, VAXIS2=DDX,DDY, &                 
+                     STYLE=100, SPLINE=.T., FILE="ATF2", &                                     
+                     RANGE=EXT2, TITLE="EXT (BH1 Sextupole ON)"                                
+       155         PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=WX,WY, VAXIS2=DDX,DDY, &                 
+                     STYLE=100, SPLINE=.T., FILE="ATF2", &                                     
+                     RANGE=FF, TITLE="Final Focus"                                             
+                !ENDCOMMENT                                                                    
+                                                                                               
+       160     ! generate envelope and plots                                                   
+                                                                                               
+                !COMMENT                                                                       
+                   USE, ATF2                                                                   
+                   PRINT, FULL                                                                 
+       165         SELECT, OPTICS, FULL                                                        
+                   ENVELOPE, SAVE=ENVELOPE, SIGMA0=SIG0, TAPE="ATF2_envelope.tape"             
+                   XMM : STRING, "1.E3*SIGX"                                                   
+                   YMM : STRING, "1.E3*SIGY"                                                   
+                   PLOT, TABLE=ENVELOPE, HAXIS=S, VAXIS1=XMM, VAXIS2=YMM, &                    
+       170           STYLE=100, SPLINE=.T., FILENAME="ATF2", &                                 
+                     TITLE="<G>e<G><?>x<?>=2e-9 m, <G>e<G><?>y<?>=2e-11 m"                     
+                !ENDCOMMENT                                                                    
+                                                                                               
+               ! generate survey                                                               
+       175                                                                                     
+                !COMMENT                                                                       
+                   Xi     := 1.390253952E+01                                                   
+                   Zi     := -1.402856123E+01                                                  
+                   THETAi := PI                                                                
+       180         USE, ATF2                                                                   
+                   PRINT, FULL                                                                 
+                   SURVEY, X0=Xi, Z0=Zi, THETA0=THETAi, TAPE="ATF2_survey.tape"                
+                !ENDCOMMENT                                                                    
+                                                                                               
+       185     ! plot the bandwidth (+-1%) ... final focus only                                
+                                                                                               
+                 COMMENT                                                                       
+                   BX        := BXip                                                           
+                   AX        := 0                                                              
+       190         BY        := BYip                                                           
+                   AY        := 0                                                              
+                   L_OVER_L0 := 1                                                              
+                   DP        := -0.01                                                          
+                   DO, TIMES=21                                                                
+       195           USE, FF                                                                   
+                     SAVEBETA, TWSSip, IP                                                      
+                     PRINT, IP                                                                 
+                     TWISS, BETA0=TWSSff, DELTAP=DP                                            
+                     SET, BX, TWSSip[BETX]                                                     
+       200           SET, AX, TWSSip[ALFX]                                                     
+                     SET, BY, TWSSip[BETY]                                                     
+                     SET, AY, TWSSip[ALFY]                                                     
+                     SET, L_OVER_L0, SQRT(BXip*BYip/(TWSSip[BETX]*TWSSip[BETY]))               
+                     PUSH, DP, L_OVER_L0, BX, AX, BY, AY                                       
+       205           SET, DP, DP+0.001                                                         
+                   ENDDO                                                                       
+                   ENDPUSH, SAVE="BW.dat"                                                      
+                  !PLOT, TABLE=SPECIAL, HAXIS=DP, VAXIS=L_OVER_L0, FILE="ATF2"                 
+                  !PLOT, TABLE=SPECIAL, HAXIS=DP, VAXIS1=BX, VAXIS2=BY, &                      
+       210        !  STYLE=100, FILE="ATF2"                                                    
+                  !PLOT, TABLE=SPECIAL, HAXIS=DP, VAXIS1=AX, VAXIS2=AY, &                      
+                  !  STYLE=100, FILE="ATF2"                                                    
+                                                                                               
+                   TITLE "ATF2 Final Focus"                                                    
+       215         USE, FF                                                                     
+                   TWISS, SAVE, BETA0=TWSSff, DELTAP=-0.01:0.01:0.001                          
+                   PLOT, TABLE=TWISS, HAXIS=DELTAP, VAXIS1=BETX, VAXIS2=BETY, &                
+                     RANGE=#E, STYLE=100, FILE="ATF2", &                                       
+                     VMIN=0,0, VMAX=0.02,0.0004                                                
+       220         PLOT, TABLE=TWISS, HAXIS=DELTAP, VAXIS1=ALFX, VAXIS2=ALFY, &                
+                     RANGE=#E, STYLE=100, FILE="ATF2"                                          
+                   PLOT, TABLE=TWISS, HAXIS=DELTAP, VAXIS1=GAMX, VAXIS2=GAMY, &                
+                     RANGE=#E, STYLE=100, FILE="ATF2"                                          
+                 ENDCOMMENT                                                                    
+       225                                                                                     
+                 STOP                                                                          
+ 
+ ZEND.        1 Warning messages,
+              1 Error messages.
+                MAD terminated on 31/07/05 at 22.34.49
+ 
+
+ MZEND.   Usage statistics for  1 dynamic stores.
+
+   Map of store  0 / /     
+   ------------------------
+
+   Division                                        Number of times
+              Kind                Max-size                Garb-coll.
+            Mode    Position      used   allowed   Wiped  user  auto Pushd Redcd
+
+    1 QDIV1    0 1         9         0   4000006       0     0     0     0     0
+    2 QDIV2    1 1   3999606    192358   4000006       0     0     0     0     0
+   20 system   1 8   4000006       111   4000006       0     0     0     0     0

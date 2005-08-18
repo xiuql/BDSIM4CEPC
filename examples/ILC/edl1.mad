@@ -1,0 +1,111 @@
+  TITLE, "e- Post-IP Dump Line [20 mr] (ILC2005)"
+
+  OPTION, -INTER, -ECHO, VERIFY
+  ASSIGN, PRINT="edl1.print"
+  ASSIGN, ECHO="edl1.echo"
+
+! ==============================================================================
+! Common parameters and definitions
+! (NOTE: magnet field values in the deck are for 500 GeV/beam; Bscl scales the
+!        field from 500 GeV to the energy Ef (except in solenoid), hence the
+!        K-values are not changed except in solenoid)
+! (NOTE: Escl scales BRHO, hence, scales K-values for an off-energy particle;
+!        example: Escl = 0.8 is for a particle with 80% of nominal energy)
+! ------------------------------------------------------------------------------
+
+  Cb : CONSTANT=1.0E10/CLIGHT
+
+  Ef   := 250.0
+  Escl := 1
+  BRHO := Cb*Ef*Escl
+  Bscl := Ef/500
+
+! ==============================================================================
+! Load beamline definitions
+! ------------------------------------------------------------------------------
+
+  CALL, FILENAME="edl1.xsif"
+
+! ==============================================================================
+! Input beam definitions
+! ------------------------------------------------------------------------------
+
+! set up TWSS0
+
+! 250 GeV/beam undisrupted
+
+ !TBETX := 21.0e-3
+ !TALFX := 0
+ !TBETY := 0.4e-3
+ !TALFY := 0
+
+! 250 GeV/beam disrupted
+
+  TBETX := 6.835e-3
+  TALFX := 1.857
+  TBETY := 3.633e-4
+  TALFY := 0.6983
+
+  TWSS0 : BETA0, ENERGY=Ef, BETX=TBETX, ALFX=TALFX, BETY=TBETY, ALFY=TALFY
+
+! set up BEAM
+
+  EMITXn := 1.0e-5 
+  EMITYn := 4.0e-8
+  EMITX  := EMITXn/(Ef/EMASS) 
+  EMITY  := EMITYn/(Ef/EMASS)
+  BLENG  := 3.0e-4
+  ESPRD  := 3.0e-3
+
+  BEAM, PARTICLE=ELECTRON, ENERGY=Ef, EX=EMITX, EY=EMITY
+
+! set up SIGMA0 for ENVELOPE plot (assumes DX=DPX=DY=DPY=0)
+
+  EBETX := TBETX
+  EALFX := TALFX
+  EBETY := TBETY
+  EALFY := TALFY
+  EGAMX := (1+EALFX*EALFX)/EBETX
+  EGAMY := (1+EALFY*EALFY)/EBETY
+  SIG11 := EMITX*EBETX
+  SIG21 := -EMITX*EALFX
+  SIG22 := EMITX*EGAMX
+  SIG33 := EMITY*EBETY
+  SIG43 := -EMITY*EALFY
+  SIG44 := EMITY*EGAMY
+  C21   := SIG21/SQRT(SIG11*SIG22)
+  C43   := SIG43/SQRT(SIG33*SIG44)
+  SIG0  : SIGMA0, SIGX=SQRT(SIG11), SIGPX=SQRT(SIG22), R21=C21, &
+                  SIGY=SQRT(SIG33), SIGPY=SQRT(SIG44), R43=C43, &
+                  SIGT=BLENG, SIGPT=ESPRD
+
+! ==============================================================================
+! COMMANDs
+! ------------------------------------------------------------------------------
+
+  SETPLOT, XSIZE=25.4, YSIZE=20.32
+ !SETPLOT, LWIDTH=5, LSCALE=1.5,SSCALE=1.5,RSCALE=1.5 
+  OPTION, ECHO
+
+! generate output files and plots
+
+ !COMMENT
+    USE, EXLINE
+    PRINT, FULL
+    TWISS, COUPLE, BETA0=TWSS0, SAVE, TAPE="exline_twiss.tape"
+    SURVEY, TAPE="exline_survey.tape"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DY, &
+      STYLE=100, SPLINE=.T., FILE="exline", &
+      TITLE="Disrupred beta and vertical dispersion"
+ !ENDCOMMENT
+
+  USE, EDL1
+  PRINT, FULL
+  TWISS, COUPLE, BETA0=TWSS0, SAVE, TAPE="edl1_twiss.tape"
+  SURVEY, TAPE="edl1_survey.tape"
+
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DY, &
+    STYLE=100, SPLINE=.T., FILE="edl1", &
+    TITLE="Disrupred beta and vertical dispersion"
+
+  STOP

@@ -1,0 +1,155 @@
+  TITLE, "e- Beam Switchyard Dump Line (ILC2005)"
+
+  OPTION, -INTER, -ECHO, VERIFY
+  ASSIGN, PRINT="ebsyd.print"
+  ASSIGN, ECHO="ebsyd.echo"
+
+! ==============================================================================
+! Common parameters and definitions
+! ------------------------------------------------------------------------------
+
+  Cb : CONSTANT=1.0E10/CLIGHT
+
+  Ef     := 250.0
+  Brho   := Cb*Ef
+  Efact  := Ef/500
+  Bsign  := -1
+
+! ==============================================================================
+! Load beamline definitions
+! ------------------------------------------------------------------------------
+
+  CALL, FILENAME="ebsyd.xsif"
+
+! ==============================================================================
+! Input beam definitions
+! ------------------------------------------------------------------------------
+
+  TBETX := 24.304783448024
+  TALFX := -0.468055096577
+  TBETY :=  1.337422221565E2
+  TALFY :=  2.393293374706
+
+  TWSS0 : BETA0, ENERGY=Ef, BETX=TBETX, ALFX=TALFX, BETY=TBETY, ALFY=TALFY
+
+  EMITXN :=   3.0E-06
+  EMITYN :=   2.0E-08
+  BLENG  := 110.0E-06
+  ESPRD  :=   3.0E-03
+
+  EMITX := EMITXN/(TWSS0[ENERGY]/EMASS) 
+  EMITY := EMITYN/(TWSS0[ENERGY]/EMASS) 
+  TGAMX := (1+TWSS0[ALFX]*TWSS0[ALFX])/TWSS0[BETX]
+  TGAMY := (1+TWSS0[ALFY]*TWSS0[ALFY])/TWSS0[BETY]
+  SIG11 := EMITX*TWSS0[BETX]
+  SIG21 := -EMITX*TWSS0[ALFX]
+  SIG22 := EMITX*TGAMX
+  SIG33 := EMITY*TWSS0[BETY]
+  SIG43 := -EMITY*TWSS0[ALFY]
+  SIG44 := EMITY*TGAMY
+  SIG66 := ESPRD*ESPRD
+  C21   := SIG21/SQRT(SIG11*SIG22)
+  C43   := SIG43/SQRT(SIG33*SIG44)
+  SIG0  : SIGMA0, SIGX=SQRT(SIG11), SIGPX=SQRT(SIG22), R21=C21, &
+                  SIGY=SQRT(SIG33), SIGPY=SQRT(SIG44), R43=C43, &
+                  SIGT=BLENG, SIGPT=ESPRD
+
+  BEAM, PARTICLE=ELECTRON, ENERGY=TWSS0[ENERGY], EX=EMITX, EY=EMITY, &
+        SIGT=BLENG, SIGE=ESPRD
+
+! ==============================================================================
+! SUBROUTINEs
+! ------------------------------------------------------------------------------
+
+  MDX : SUBROUTINE
+
+  ! -I between DX peaks gives DX=DDX=0
+
+    USE, EBSYD
+    MATCH, BETA0=TWSS0
+      VARY, AHBD0,   STEP=1.E-5
+      VARY, BQBSYD1, STEP=1.E-5
+      VARY, BQBSYD2, STEP=1.E-5
+      RMATRIX, FIT1/FIT2, RM(1,1)=-1, RM(2,2)=-1, RM(1,2)=0, RM(2,1)=0
+      CONSTR, FIT3, DX=0, DPX=0
+      LMDIF
+      MIGRAD
+    ENDMATCH
+    VALUE, AHBD0
+    VALUE, BQBSYD1/Efact
+    VALUE, BQBSYD2/Efact
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  MDDX : SUBROUTINE
+
+  ! second order horizontal dispersion match
+
+    USE, EBSYD
+    MATCH, BETA0=TWSS0
+      VARY, BSBSYD1, STEP=1.E-5
+      VARY, BSBSYD2, STEP=1.E-5
+      WEIGHT, DDX=1, DDPX=10
+      CONSTR, FIT3, DDX=0, DDPX=0
+      LMDIF
+      MIGRAD
+    ENDMATCH
+    VALUE, BSBSYD1/Efact
+    VALUE, BSBSYD2/Efact
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  MDY : SUBROUTINE
+
+  ! match vertical dispersion
+
+    USE, EBSYD
+    MATCH, BETA0=TWSS0
+      VARY, BQBSYD5, STEP=1.E-5
+      CONSTR, FIT4, DY=0, DPY=0
+      LMDIF
+      MIGRAD
+    ENDMATCH
+    VALUE, BQBSYD5/Efact
+  ENDSUBROUTINE
+
+! ==============================================================================
+! COMMANDs
+! ------------------------------------------------------------------------------
+
+  SETPLOT, XSIZE=25.4, YSIZE=20.32
+  OPTION, ECHO
+
+! match
+
+ !MDX
+ !MDDX
+ !MDY
+
+! generate output files and plots
+
+  USE, EBSYD
+  PRINT, FULL
+  SELECT, OPTICS, FULL
+  TWISS, CHROM, BETA0=TWSS0, SAVE, TAPE="ebsyd_twiss.tape"
+  ENVELOPE, SIGMA0=SIG0, SAVE=ENVELOPE, TAPE="ebsyd_envelope.tape"
+  SURVEY, Z0=2.553339755E+02, TAPE="ebsyd_survey.tape"
+
+  PLOT, TABLE=ENVELOPE, HAXIS=S, VAXIS=SIGX,SIGY, &
+    STYLE=100, SPLINE=.T., FILE="ebsyd"
+ !PLOT, TABLE=TWISS, HAXIS=S, VAXIS=RBETX, &
+ !  STYLE=100, SPLINE=.T., FILE="ebsyd"
+ !PLOT, TABLE=TWISS, HAXIS=S, VAXIS=RBETY, &
+ !  STYLE=100, SPLINE=.T., FILE="ebsyd"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DX,DY, &
+    STYLE=100, SPLINE=.T., FILE="ebsyd"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DDX,DDY, &
+    STYLE=100, SPLINE=.F., FILE="ebsyd"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=WX,WY, &
+    STYLE=100, SPLINE=.F., FILE="ebsyd"
+ !PLOT, TABLE=TWISS, HAXIS=S, VAXIS=X,Y, &
+ !  STYLE=100, SPLINE=.T., FILE="ebsyd"
+
+  STOP

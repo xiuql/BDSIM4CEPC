@@ -1,0 +1,117 @@
+  TITLE, "e- Beam Delivery System 1 [20 mr] (ILC2005)"
+
+  OPTION, -INTER, -ECHO, VERIFY
+  ASSIGN, PRINT="ebds1.print"
+  ASSIGN, ECHO="ebds1.echo"
+
+! ==============================================================================
+! Common parameters and definitions
+! ------------------------------------------------------------------------------
+
+  Cb : CONSTANT=1.0E10/CLIGHT
+
+  Ef     := 250.0
+  Brho   := Cb*Ef
+  Efact  := Ef/500
+  Bsign  := -1
+  Bscl   := Ef/500
+  L12MM  := 0.012
+  L50CM  := 0.5
+  L1M    := 1.0
+  L2M    := 2.0
+  LFBC   := 0.2
+  LFBK   := 0.3
+  Lspace := 0.1
+  Bmax   := 9.6 !maximum quadrupole pole-tip field for 500 GeV beam (kG)
+  TFOC   :=  0
+
+  QBDS1  : QUAD, TYPE="QBDS1", L=L50CM/2, APER=L12MM/2
+  QFACT1 := 1/(QBDS1[APER]*Brho)
+  QBDS2  : QUAD, TYPE="QBDS2", L=L1M/2,   APER=L12MM/2
+  QFACT2 := 1/(QBDS2[APER]*Brho)
+  QBDS3  : QUAD, TYPE="QBDS3", L=L2M/2, APER=L12MM/2
+  QFACT3 := 1/(QBDS3[APER]*Brho)
+
+  BPMQ079  : MONI
+  MMOVER   : MARK
+  FBCXY    : INST
+  FBKXY    : INST
+  BPMMB079 : MONI
+  WS       : WIRE
+  BPMWS    : MONI
+  BPME     : MONI
+  BPMVIRT  : MONI
+
+! ==============================================================================
+! Load beamline definitions
+! ------------------------------------------------------------------------------
+
+  CALL, FILENAME="../ebsy/ebsy.xsif"
+  CALL, FILENAME="../eirt1/eirt1.xsif"
+  CALL, FILENAME="../eff1/eff1.xsif"
+  CALL, FILENAME="../edl1/edl1.xsif"
+
+! ==============================================================================
+! Input beam definitions
+! ------------------------------------------------------------------------------
+
+  TBETX := 50.525915605603
+  TALFX := -2.379589233378
+  TBETY :=  9.563928674469
+  TALFY :=  0.510997181234
+
+  TWSS0 : BETA0, ENERGY=Ef, BETX=TBETX, ALFX=TALFX, BETY=TBETY, ALFY=TALFY
+
+  BEAM, PARTICLE=ELECTRON, ENERGY=Ef
+
+! ==============================================================================
+! COMMANDs
+! ------------------------------------------------------------------------------
+
+  SETPLOT, XSIZE=25.4, YSIZE=20.32
+  OPTION, ECHO
+
+! generate output files and plots
+
+  COMMENT
+    USE, (EBSY,EIRT1,EFF1,EDL1)
+    PRINT, FULL
+    SAVEBETA, TWSSip, IP
+    TWISS, BETA0=TWSS0, SAVE, TAPE="ebds1_twiss.tape"
+    VALUE, TWSSip[ENERGY]
+    VALUE, TWSSip[BETX],TWSSip[ALFX],TWSSip[DX],TWSSip[DPX]
+    VALUE, TWSSip[BETY],TWSSip[ALFY],TWSSip[DY],TWSSip[DPY]
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &
+      STYLE=100, SPLINE=.T., FILE="ebds1"
+  ENDCOMMENT
+
+! generate a SAVE set
+
+ !COMMENT
+    USE, (EBSY,EIRT1,EFF1,EDL1)
+    SAVELINE, NAME="EBDS1", FILENAME="ebds1_save.mad"
+ !ENDCOMMENT
+
+! generate survey
+
+ !COMMENT
+    SET, LEGEO1, 3.041816244269E2
+    THETAi := -0.01
+    Xi     := 25.405348075162
+    Zi     := -2.373925021738E3
+    VALUE, LEGEO1,THETAi,Xi,Zi
+   !USE, (EBSY,EIRT1G,EFF1,EDL1)
+    USE, (EBSY,EIRT1,EFF1,EDL1)
+    SURVEY, X0=Xi, Z0=Zi, THETA0=THETAi, TAPE="ebds1_survey.tape"
+ !ENDCOMMENT
+
+! generate OPTICS output
+
+ !COMMENT
+    USE, (EBSY,EIRT1,EFF1,EDL1)
+    SELECT, OPTICS, FULL
+    OPTICS, BETA0=TWSS0, FILE="ebds1.optics", &
+      COLUMN=NAME,KEYWORD,S,L,K0L,K1L,K2L,K3L,K4L,TILT,TYPE
+ !ENDCOMMENT
+
+  STOP

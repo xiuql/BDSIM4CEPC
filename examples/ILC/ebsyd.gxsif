@@ -1,0 +1,198 @@
+! ==============================================================================;
+! area=ebsyd;
+! ------------------------------------------------------------------------------;
+! 16-mar-2005, m. woodley;
+!    ilc2005 configuration;
+! 15-dec-2004, m. woodley;
+!    ilc2004 configuration;
+! 24-jul-2003, pt:;
+!    new preamble.;
+! 23-jul-2003, pt:;
+!    add instrumentation.;
+! 20-may-2003, m. woodley;
+!    nlc2003 configuration (250 gev beam);
+! ------------------------------------------------------------------------------;
+
+! ==============================================================================;
+! sbends;
+! ------------------------------------------------------------------------------;
+
+! single beam dumpers (there are 5 @ 1 mrad each);
+
+  lsbd := 3.0;
+  asbd := bsign*(-0.001) ; bsbd := brho*asbd/lsbd/efact;
+
+  sbd  : sbend, l=lsbd/2, angle=asbd/2;
+
+! horizontal dump bends;
+
+  lhbd  := 3.0;
+  ahbd0 := bsign*(-0.128647312448e-2) ; bhbd0 := brho*ahbd0/lhbd/efact;
+  ahbd1 := bsign*(-0.001)             ; bhbd1 := brho*ahbd1/lhbd/efact;
+
+  hbd0 : sbend, l=lhbd/2, angle=ahbd0/2;
+  hbd1 : sbend, l=lhbd/2, angle=ahbd1/2;
+
+! vertical dump bends;
+
+  lvbd := 3.0;
+  avbd := 0.00125 ; bvbd := brho*avbd/lvbd/efact;
+
+  vbd : sbend, l=lvbd/2, angle=avbd/2, tilt;
+
+! instrumentation;
+
+  bpmbsyd  : marker, type = "bpm_bsy_d";
+  ws_esm_w : marker, type = "marker_metal_esm";
+
+! ==============================================================================;
+! quadrupoles;
+! ------------------------------------------------------------------------------;
+
+
+  lqbsyd := 3.0;
+  rqbsyd := 0.04;
+
+  qbsyd : quadrupole, l=lqbsyd/2, aper=rqbsyd;
+
+  bqbsyd1 := 4.753152295731*efact;
+  bqbsyd2 := 4.670430352758*efact;
+  bqbsyd3 := 5.188224615103*efact;
+  bqbsyd4 := 4.9*efact;
+  bqbsyd5 := -7.349999675309*efact;
+
+  qbsyd1  : qbsyd, k1=bqbsyd1/(rqbsyd*brho);
+  qbsyd2  : qbsyd, k1=bqbsyd2/(rqbsyd*brho);
+  qbsyd3  : qbsyd, k1=bqbsyd3/(rqbsyd*brho);
+  qbsyd4  : qbsyd, k1=bqbsyd4/(rqbsyd*brho);
+  qbsyd5  : qbsyd, k1=bqbsyd5/(rqbsyd*brho);
+
+! ==============================================================================;
+! sextupoles;
+! ------------------------------------------------------------------------------;
+
+
+  lsbsyd := 1.0;
+  rsbsyd := 0.04;
+
+  sbsyd : sextupole, l=lsbsyd/2, aper=rsbsyd;
+
+  bsbsyd1 := bsign*(-3.050282702899)*efact;
+  bsbsyd2 := bsign*(-4.62457173365)*efact;
+  bsbsyd3 := -7.8*efact;
+
+  sbsyd1 : sbsyd, k2=2*bsbsyd1/(rsbsyd*rsbsyd*brho);
+  sbsyd2 : sbsyd, k2=2*bsbsyd2/(rsbsyd*rsbsyd*brho);
+  sbsyd3 : sbsyd, k2=2*bsbsyd3/(rsbsyd*rsbsyd*brho), tilt;
+
+! ==============================================================================;
+! ------------------------------------------------------------------------------;
+
+
+  lobsyd := 1.0;
+  robsyd := 0.04;
+
+  obsyd : octu, l=lobsyd/2, aper=robsyd;
+
+  bobsyd1 := 0.52*efact;
+  bobsyd2 := 1.54*efact;
+  bobsyd3 := 8.0*efact;
+
+  obsyd1 : obsyd, k3=6*bobsyd1/(robsyd*robsyd*robsyd*brho);
+  obsyd2 : obsyd, k3=6*bobsyd2/(robsyd*robsyd*robsyd*brho);
+  obsyd3 : obsyd, k3=6*bobsyd3/(robsyd*robsyd*robsyd*brho);
+
+! ==============================================================================;
+! driftts;
+! ------------------------------------------------------------------------------;
+
+  dbd0  : drift, l=0.5;
+  dbd1  : drift, l=23.5;
+  dbd1a : drift, l=dbd1[l]-dbd0[l];
+  dhbd0 : drift, l=2.95;
+  dbd2  : drift, l=23.0;
+  dbd3  : drift, l=3.5;
+  dbd4  : drift, l=43.5;
+  dbd5  : drift, l=4.0;
+  dbd6  : drift, l=53.1;
+
+  dbd2o : drift, l=dbd2[l]-(lobsyd+dbd0[l]);
+  dbd3s : drift, l=dbd3[l]-(lsbsyd+dbd0[l]);
+  dbd5s : drift, l=dbd5[l]-2*(lsbsyd+dbd0[l]);
+
+! ==============================================================================;
+! markerers;
+! ------------------------------------------------------------------------------;
+
+  begebsyd : marker;
+  fit1     : marker;
+  fit2     : marker;
+  fit3     : marker;
+  fit4     : marker;
+  dump     : marker;
+  endebsyd : marker;
+
+! ==============================================================================;
+! beamlines;
+! ------------------------------------------------------------------------------;
+
+  ebsyd : line=(begebsyd,
+                sbd,sbd,dbd0,
+                sbd,sbd,dbd0,
+                sbd,sbd,dbd0,
+                sbd,sbd,dbd0,
+                sbd,sbd,dbd1,
+                qbsyd1,bpmbsyd,qbsyd1,dbd0,
+                sbsyd1,bpmbsyd,fit1,sbsyd1,dbd0,
+                qbsyd1,bpmbsyd,qbsyd1,dbd2o,
+                obsyd1,bpmbsyd,obsyd1,dbd0,
+                hbd0,hbd0,dbd0,
+                hbd0,hbd0,dhbd0,
+                hbd0,hbd0,dbd0,
+                hbd0,hbd0,dbd0,
+                obsyd2,bpmbsyd,obsyd2,dbd0,
+                sbsyd2,bpmbsyd,sbsyd2,dbd0,
+                qbsyd2,bpmbsyd,qbsyd2,dbd0,
+                qbsyd2,bpmbsyd,qbsyd2,dbd0,
+                sbsyd2,bpmbsyd,sbsyd2,dbd3s,
+                hbd0,hbd0,dbd0,
+                hbd0,hbd0,dhbd0,
+                hbd0,hbd0,dbd0,
+                hbd0,hbd0,dbd0,
+                obsyd1,bpmbsyd,obsyd1,dbd2o,
+                qbsyd1,bpmbsyd,qbsyd1,dbd0,
+                sbsyd1,bpmbsyd,fit2,sbsyd1,dbd0,
+                qbsyd1,bpmbsyd,qbsyd1,dbd0,
+                ws_esm_w,dbd1a,
+                hbd1,hbd1,dbd0,
+                hbd1,hbd1,dbd0,
+                hbd1,hbd1,dbd0,
+                hbd1,hbd1,dbd0,
+                hbd1,hbd1,fit3,dbd0,
+                qbsyd4,bpmbsyd,qbsyd4,dbd4,
+                vbd,vbd,dbd0,
+                vbd,vbd,dbd0,
+                vbd,vbd,dbd0,
+                vbd,vbd,dbd0,
+                vbd,vbd,dbd5s,
+                obsyd3,bpmbsyd,obsyd3,dbd0,
+                obsyd3,bpmbsyd,obsyd3,dbd0,
+                qbsyd5,bpmbsyd,qbsyd5,dbd0,
+                sbsyd3,bpmbsyd,sbsyd3,dbd0,
+                qbsyd5,bpmbsyd,qbsyd5,dbd0,
+                sbsyd3,bpmbsyd,sbsyd3,dbd0,
+                sbsyd3,bpmbsyd,sbsyd3,dbd0,
+                qbsyd5,bpmbsyd,qbsyd5,dbd0,
+                sbsyd3,bpmbsyd,sbsyd3,dbd0,
+                qbsyd5,bpmbsyd,qbsyd5,dbd0,
+                obsyd3,bpmbsyd,obsyd3,dbd0,
+                obsyd3,bpmbsyd,obsyd3,dbd5s,
+                vbd,vbd,dbd0,
+                vbd,vbd,dbd0,
+                vbd,vbd,dbd0,
+                vbd,vbd,dbd0,
+                vbd,vbd,fit4,dbd6,dump,
+                endebsyd);
+
+! ==============================================================================;
+

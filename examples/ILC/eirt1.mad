@@ -1,0 +1,232 @@
+  TITLE, "e- IR1 Transport [20 mr] (ILC2005)"
+
+  OPTION, -INTER, -ECHO, VERIFY
+  ASSIGN, PRINT="eirt1.print"
+  ASSIGN, ECHO="eirt1.echo"
+
+! ==============================================================================
+! Common parameters and definitions
+! ------------------------------------------------------------------------------
+
+  Cb : CONSTANT=1.0E10/CLIGHT
+
+  Ef     := 250.0
+  Brho   := Cb*Ef
+  Efact  := Ef/500
+  L12MM  := 0.012
+  L1M    := 1.0
+  L2M    := 2.0
+  LFBC   := 0.2
+  LFBK   := 0.3
+  Lspace := 0.1
+  Bmax   := 9.6 !maximum quadrupole pole-tip field for 500 GeV beam (kG)
+
+  QBDS2  : QUAD, TYPE="QBDS2", L=L1M/2, APER=L12MM/2
+  QFACT2 := 1/(QBDS2[APER]*Brho)
+  QBDS3  : QUAD, TYPE="QBDS3", L=L2M/2, APER=L12MM/2
+  QFACT3 := 1/(QBDS3[APER]*Brho)
+
+  BPMQ079 : MONI
+  MMOVER  : MARK
+
+! ==============================================================================
+! Load beamline definitions
+! ------------------------------------------------------------------------------
+
+  CALL, FILENAME="eirt1.xsif"
+
+! ==============================================================================
+! Input beam definitions
+! ------------------------------------------------------------------------------
+
+  TBETX := 17.631471173565
+  TALFX := -0.783864506794
+  TBETY := 34.22848181227
+  TALFY :=  1.461165852379
+
+  TWSS0 : BETA0, ENERGY=Ef, BETX=TBETX, ALFX=TALFX, BETY=TBETY, ALFY=TALFY
+
+  BEAM, PARTICLE=ELECTRON, ENERGY=Ef
+
+! ==============================================================================
+! SUBROUTINEs
+! ------------------------------------------------------------------------------
+
+  MFF : SUBROUTINE
+
+  ! match into FF system with polarimeter
+
+    USE, BBDGN
+    TWISS, CHROM, BETA0=TWSS0 !so we can fit WX and WY
+    MATCH, BETA0=TWSS0
+     !VARY, BQMD5,  STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+      VARY, BQMD6,  STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+     !VARY, BQMD7,  STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+      VARY, BQMD8,  STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+      VARY, BQXL1,  STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+      VARY, BQXL2,  STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+      VARY, BQXL3,  STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+      VARY, BQXL4,  STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+      VARY, BQXL5,  STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+      VARY, BQXL6,  STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+     !VARY, BQXL7,  STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+     !VARY, BQXL8,  STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+     !VARY, BQXL9,  STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+     !VARY, BQXL10, STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+     !VARY, BQXL11, STEP=1.E-5, LOWER=0, UPPER=+Bmax*Efact
+      VARY, BQXL12, STEP=1.E-5, UPPER=0, LOWER=-Bmax*Efact
+      VARY, BQPFFa, STEP=1.E-5
+      VARY, BQPFFb, STEP=1.E-5
+      VARY, BQPFFc, STEP=1.E-5
+      VARY, BQPFFd, STEP=1.E-5
+      VARY, BQPFFe, STEP=1.E-5
+      WEIGHT, WX=0.05, WY=0.05
+      CONSTR, #S/QXL12[2], PATTERN="BPMQ079", WX<4, WY<4
+      CONSTR, QXL6[1], ALFX=0, ALFY=0
+      CONSTR, POL, ALFX=0, ALFY=0
+      CONSTR, #E, BETX=MBETX, ALFX=MALFX, BETY=MBETY, ALFY=MALFY
+      WEIGHT, BETX=0.1, BETY=0.1
+      CONSTR, #S/QXL12[2], PATTERN="BPMQ079", BETX<150, BETY<150
+      LMDIF, CALLS=10000, TOL=1.E-20
+      MIGRAD
+    ENDMATCH
+    MATCH, BETA0=TWSS0
+      VARY, BQPFFa, STEP=1.E-5
+      VARY, BQPFFb, STEP=1.E-5
+      VARY, BQPFFc, STEP=1.E-5
+      VARY, BQPFFd, STEP=1.E-5
+      VARY, BQPFFe, STEP=1.E-5
+      CONSTR, #E, BETX=MBETX, ALFX=MALFX, BETY=MBETY, ALFY=MALFY, DY=0
+      LMDIF, CALLS=10000, TOL=1.E-20
+      MIGRAD, TOL=1.E-20
+    ENDMATCH
+    VALUE, BQMD5/Efact
+    VALUE, BQMD6/Efact
+    VALUE, BQMD7/Efact
+    VALUE, BQMD8/Efact
+    VALUE, BQXL1/Efact
+    VALUE, BQXL2/Efact
+    VALUE, BQXL3/Efact
+    VALUE, BQXL4/Efact
+    VALUE, BQXL5/Efact
+    VALUE, BQXL6/Efact
+    VALUE, BQXL7/Efact
+    VALUE, BQXL8/Efact
+    VALUE, BQXL9/Efact
+    VALUE, BQXL10/Efact
+    VALUE, BQXL11/Efact
+    VALUE, BQXL12/Efact
+    VALUE, BQPFFa/Efact
+    VALUE, BQPFFb/Efact
+    VALUE, BQPFFc/Efact
+    VALUE, BQPFFd/Efact
+    VALUE, BQPFFe/Efact
+
+  ! plot results
+
+    USE, BBDGN
+    TWISS, SAVE, BETA0=TWSS0
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS=BETX,BETY, STYLE=100, SPLINE=.T., &
+          TITLE="IR2 Extraction/IR1 Matching", FILE="eirt1"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS=WX,WY, STYLE=100, SPLINE=.F., &
+          TITLE="IR2 Extraction/IR1 Matching", FILE="eirt1"
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  MFFP : SUBROUTINE
+
+  ! match into final focus with polarimeter
+
+    USE, BBDGN
+    MATCH, BETA0=TWSS0
+      VARY, BQPFFa, STEP=1.E-5 !, LOWER=-Bmax*Efact, UPPER=+Bmax*Efact
+      VARY, BQPFFb, STEP=1.E-5 !, LOWER=-Bmax*Efact, UPPER=+Bmax*Efact
+      VARY, BQPFFc, STEP=1.E-5 !, LOWER=-Bmax*Efact, UPPER=+Bmax*Efact
+      VARY, BQPFFd, STEP=1.E-5 !, LOWER=-Bmax*Efact, UPPER=+Bmax*Efact
+      VARY, BQPFFe, STEP=1.E-5 !, LOWER=-Bmax*Efact, UPPER=+Bmax*Efact
+     !VARY, LPFF0,  STEP=1.E-5, LOWER=0
+     !VARY, LPFF2,  STEP=1.E-5, LOWER=0
+     !VARY, LPFF3,  STEP=1.E-5, LOWER=0
+      CONSTR, #E, BETX=MBETX, ALFX=MALFX, BETY=MBETY, ALFY=MALFY
+      WEIGHT, ALFX=1.E-6, ALFY=1.E-6
+      CONSTR, POL, ALFX=0, ALFY=0
+      LMDIF, TOL=1.E-20
+      MIGRAD, TOL=1.E-20
+    ENDMATCH
+    VALUE, BQPFFa/Efact,BQPFFb/Efact,BQPFFc/Efact,BQPFFd/Efact,BQPFFe/Efact
+    VALUE, LPFF0,LPFF2,LPFF3
+
+  ! plot results
+
+    TWISS, BETA0=TWSS0, SAVE
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS=BETX,BETY, &
+      STYLE=100, SPLINE=.T., RANGE=QXL11[1]/#E, FILE="eirt1"
+  ENDSUBROUTINE
+
+! ------------------------------------------------------------------------------
+
+  GEO : SUBROUTINE
+     SET, LEGEO1, LXL1[L]+ &
+            2*QXL1[L]+LXL2[L]+ &
+            2*QXL2[L]+LXL2[L]+ &
+            2*QXL3[L]+LXL2[L]+ &
+            2*QXL4[L]+LXL2[L]+ &
+            2*QXL5[L]+LXL2[L]+ &
+            2*QXL6[L]+LXL2[L]+ &
+            2*QXL7[L]+LXL2[L]+ &
+            2*QXL8[L]+LXL2[L]+ &
+            2*QXL9[L]+LXL2[L]+ &
+            2*QXL10[L]+LXL2[L]+ &
+            2*QXL11[L]+LXL2[L]+ &
+            2*QXL12[L]+DPFF0[L]
+     VALUE, LEGEO1
+     VALUE, 3.041816244269E2-LEGEO1
+  ENDSUBROUTINE
+
+! ==============================================================================
+! COMMANDs
+! ------------------------------------------------------------------------------
+
+  SETPLOT, XSIZE=25.4, YSIZE=20.32
+  OPTION, ECHO
+
+! do matching
+
+ !MFF
+ !MFFP
+
+! generate output files and plots
+
+  USE, EIRT1
+  SAVELINE, NAME="EIRT1", FILENAME="eirt1.saveline"
+
+  USE, EIRT1
+  PRINT, FULL
+  SELECT, OPTICS, FULL
+  SAVEBETA, TREATY, #E
+  TWISS, CHROM, BETA0=TWSS0, SAVE, TAPE="eirt1_twiss.tape"
+  SURVEY, TAPE="eirt1_survey.tape"
+
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=BETX,BETY, &
+    STYLE=100, SPLINE=.T., FILE="eirt1"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DX,DY, &
+    STYLE=100, SPLINE=.T., FILE="eirt1"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=WX,WY, &
+    STYLE=100, SPLINE=.F., FILE="eirt1"
+  PLOT, TABLE=TWISS, HAXIS=S, VAXIS=DDX,DDY, &
+    STYLE=100, SPLINE=.T., FILE="eirt1"
+
+! display twiss for input to next area
+
+  VALUE, TREATY[ENERGY]
+  VALUE, TREATY[BETX],TREATY[ALFX],TREATY[DX],TREATY[DPX]
+  VALUE, TREATY[BETY],TREATY[ALFY]
+
+! geometry matching
+
+  GEO
+  USE, EIRT1G
+  SURVEY, TAPE="eirt1g_survey.tape"
+
+  STOP

@@ -1,0 +1,540 @@
+
+! actual beam energy [gev];
+
+ ener  := 250.0;
+
+! field factor (except for solenoid) scales the field values from 500 gev ;
+! to the actual energy.;
+
+ bfact := ener / 500.0;
+
+! off-energy factor scales k-values for off-momentum particles. ;
+! for example: efact = 0.8 is for particle with 80% of nominal energy.;
+
+ efact := 1.0;
+
+! brho [kg m];
+
+ brho  := ener*efact  / .0299792458;
+
+!===================================================================== ;
+! old ip beam parameters (choose or replace below);
+
+! case h490 (undisrupted);
+ beam, ener=245.0, ex=7.51e-12, ey=7.30e-14, sige=0.0;
+ bxip := 8.0e-03;
+ byip := 0.1e-03;
+ axip := 0;
+ ayip := 0;
+
+! case h490 (disrupted);
+! beam, ener=245.0, ex=2.45e-11, ey=1.51e-13, sige=0.0;
+! bxip := 2.444e-03;
+! byip := 0.1418e-03;
+! axip := 1.852;
+! ayip := 0.675;
+
+!=====================================================================;
+! bends;
+
+ ldb := 1.0                           ;! m;
+ bdb := 8.2158657                     ;! kg;
+ theta := bdb*bfact * ldb / brho;
+
+ bd1a:  sbend, l= ldb, angle= theta;
+ bd1b:  sbend, l= ldb, angle= theta;
+ bd2a:  sbend, l= ldb, angle=-theta;
+ bd2b:  sbend, l= ldb, angle=-theta;
+ bd3a:  sbend, l= ldb, angle=-theta;
+ bd3b:  sbend, l= ldb, angle=-theta;
+ bd4a:  sbend, l= ldb, angle= theta;
+ bd4b:  sbend, l= ldb, angle= theta;
+
+! these are driftts ;!;!;!;
+
+driftt:drift;
+
+ asx1 := 54e-3;
+ asx2 := 69e-3;
+ asx3 := 84e-3;
+ asx4 := 105e-3;
+ asx5 := 120e-3;
+
+ bsx1 := 0.;
+ bsx2 := bsx1;
+ bsx3 := bsx1;
+ bsx4 := 0.;
+ bsx5 := bsx4;
+
+ sx1: sextupole, l= 1.4, k2= 2.0*bsx1*bfact/(asx1*asx1)/brho;
+ sx2: sextupole, l= 1.4, k2= 2.0*bsx2*bfact/(asx2*asx2)/brho;
+ sx3: sextupole, l= 1.4, k2= 2.0*bsx3*bfact/(asx3*asx3)/brho;
+ sx4: sextupole, l= 1.4, k2= 2.0*bsx4*bfact/(asx4*asx4)/brho;
+ sx5: sextupole, l= 1.4, k2= 2.0*bsx5*bfact/(asx5*asx5)/brho;
+
+ asx6 := 108.e-3;
+ asx7 := 92.e-3;
+ asx8 := 86.e-3;
+
+ bsx6 := 0.0;
+ bsx7 := bsx6;
+ bsx8 := 0.0;
+
+ sx6: sextupole, l= 1.5, k2= 2.0*bsx6*bfact/(asx6*asx6)/brho;
+ sx7: sextupole, l= 1.5, k2= 2.0*bsx7*bfact/(asx7*asx7)/brho;
+ sx8: sextupole, l= 1.2, k2= 2.0*bsx8*bfact/(asx8*asx8)/brho;
+
+! quadrupole pole tip field (kg);
+
+ cd4 := 1.095;
+ cf5 := 0.76;
+
+ bdq1a := 12.0;
+ bdq1b := bdq1a;
+ bdq1c := bdq1a;
+
+ bdq2a :=-12.0;
+ bdq2b := bdq2a;
+ bdq2c := -11.776624364095   ;! sol off;
+! bdq2c :=-11.786206806666;
+ bdq2d := bdq2c;
+
+ bdq3a := 12.0;
+ bdq3b := bdq3a;
+ bdq3c := 11.735413348529   ;! sol off;
+! bdq3c := 11.742366224215;
+ bdq3d := bdq3c;
+
+ bdq4a :=-12.0;
+ bdq4b := bdq4a;
+ bdq4c :=-12.0;
+ bdq4d := bdq4c;
+ bdq4e :=-11.511455960164;
+ bdq4f := bdq4e;
+
+ bdq5a := 12.0;
+ bdq5b := bdq5a;
+ bdq5c := 12.0;
+ bdq5d := bdq5c;
+ bdq5e := 11.445559376892;
+
+ bdq6a := 10.0;
+ bdq6b := bdq6a;
+
+ bdq7a :=-10.0;
+ bdq7b := bdq7a;
+ bdq7c := bdq7a;
+
+ bdq8a := 10.002550442473   ;! soloff;
+! bdq8a := 10.002550442471;
+ bdq8b := bdq8a;
+ bdq8c := bdq8a;
+ bdq8d := bdq8a;
+ bdq8e := bdq8a;
+
+ bdq9a := -9.85781476081   ;! soloff;
+! bdq9a :=-9.857814760814;
+ bdq9b := bdq9a;
+ bdq9c := bdq9a;
+
+! quadrupole length;
+
+ ldq1a := 0.86;
+ ldq1b := ldq1a;
+ ldq1c := ldq1a;
+
+ ldq2a := 0.81;
+ ldq2b := ldq2a;
+ ldq2c := ldq2a;
+ ldq2d := ldq2a;
+
+ ldq3a := 1.04;
+ ldq3b := ldq3a;
+ ldq3c := ldq3a;
+ ldq3d := ldq3a;
+
+ ldq4a := 1.14;
+ ldq4b := ldq4a;
+ ldq4c := ldq4a;
+ ldq4d := ldq4a;
+ ldq4e := ldq4a;
+ ldq4f := ldq4a;
+
+ ldq5a := 1.10;
+ ldq5b := ldq5a;
+ ldq5c := ldq5a;
+ ldq5d := ldq5a;
+ ldq5e := ldq5a;
+
+ ldq6a := 3.0;
+ ldq6b := ldq6a;
+
+ ldq7a := 3.5;
+ ldq7b := ldq7a;
+ ldq7c := ldq7a;
+
+ ldq8a := 3.0;
+ ldq8b := ldq8a;
+ ldq8c := ldq8a;
+ ldq8d := ldq8a;
+ ldq8e := ldq8a;
+
+ ldq9a := 3.1;
+ ldq9b := ldq9a;
+ ldq9c := ldq9a;
+
+
+ adq1a := 10.e-3;
+ adq1b := adq1a;
+ adq1c := adq1a;
+
+ adq2a := 11.e-3;
+ adq2b := adq2a;
+ adq2c := 13.e-3;
+ adq2d := adq2c;
+
+ adq3a := 16.e-3;
+ adq3b := adq3a;
+ adq3c := 18.e-3;
+ adq3d := adq3c;
+
+ adq4a := 21.e-3;
+ adq4b := adq4a;
+ adq4c := 23.e-3;
+ adq4d := adq4c;
+ adq4e := 25.e-3;
+ adq4f := adq4e;
+
+ adq5a := 28.e-3;
+ adq5b := adq5a;
+ adq5c := 30.e-3;
+ adq5d := adq5c;
+ adq5e := 32.e-3;
+
+ adq6a := 94.e-3;
+ adq6b := adq6a;
+
+ adq7a := 105.e-3;
+ adq7b := adq7a;
+ adq7c := adq7a;
+
+ adq8a := 122.e-3;
+ adq8b := adq8a;
+ adq8c := adq8a;
+ adq8d := adq8a;
+ adq8e := adq8a;
+
+ adq9a := 132.e-3;
+ adq9b := adq9a;
+ adq9c := adq9a;
+
+ qdf1a:  quadrupole, l= ldq1a, k1= bdq1a*bfact / adq1a / brho;
+ qdf1b:  quadrupole, l= ldq1b, k1= bdq1b*bfact / adq1b / brho;
+ qdf1c:  quadrupole, l= ldq1c, k1= bdq1c*bfact / adq1c / brho;
+
+ qdd2a:  quadrupole, l= ldq2a, k1= bdq2a*bfact / adq2a / brho;
+ qdd2b:  quadrupole, l= ldq2b, k1= bdq2b*bfact / adq2b / brho;
+ qdd2c:  quadrupole, l= ldq2c, k1= bdq2c*bfact / adq2c / brho;
+ qdd2d:  quadrupole, l= ldq2d, k1= bdq2d*bfact / adq2d / brho;
+
+ qdf3a:  quadrupole, l= ldq3a, k1= bdq3a*bfact / adq3a / brho;
+ qdf3b:  quadrupole, l= ldq3b, k1= bdq3b*bfact / adq3b / brho;
+ qdf3c:  quadrupole, l= ldq3c, k1= bdq3c*bfact / adq3c / brho;
+ qdf3d:  quadrupole, l= ldq3d, k1= bdq3d*bfact / adq3d / brho;
+
+ qdd4a:  quadrupole, l= ldq4a, k1= bdq4a*bfact / adq4a / brho;
+ qdd4b:  quadrupole, l= ldq4b, k1= bdq4b*bfact / adq4b / brho;
+ qdd4c:  quadrupole, l= ldq4c, k1= bdq4c*bfact / adq4c / brho;
+ qdd4d:  quadrupole, l= ldq4d, k1= bdq4d*bfact / adq4d / brho;
+ qdd4e:  quadrupole, l= ldq4e, k1= bdq4e*bfact / adq4e / brho;
+ qdd4f:  quadrupole, l= ldq4f, k1= bdq4f*bfact / adq4f / brho;
+
+ qdf5a:  quadrupole, l= ldq5a, k1= bdq5a*bfact / adq5a / brho;
+ qdf5b:  quadrupole, l= ldq5b, k1= bdq5b*bfact / adq5b / brho;
+ qdf5c:  quadrupole, l= ldq5c, k1= bdq5c*bfact / adq5c / brho;
+ qdf5d:  quadrupole, l= ldq5d, k1= bdq5d*bfact / adq5d / brho;
+ qdf5e:  quadrupole, l= ldq5e, k1= bdq5e*bfact / adq5e / brho;
+
+ qdd6a:  quadrupole, l= ldq6a, k1= bdq6a*bfact / adq6a / brho;
+ qdd6b:  quadrupole, l= ldq6b, k1= bdq6b*bfact / adq6b / brho;
+
+ qdf7a:  quadrupole, l= ldq7a, k1= bdq7a*bfact / adq7a / brho;
+ qdf7b:  quadrupole, l= ldq7b, k1= bdq7b*bfact / adq7b / brho;
+ qdf7c:  quadrupole, l= ldq7c, k1= bdq7c*bfact / adq7c / brho;
+
+ qdd8a:  quadrupole, l= ldq8a, k1= bdq8a*bfact / adq8a / brho;
+ qdd8b:  quadrupole, l= ldq8b, k1= bdq8b*bfact / adq8b / brho;
+ qdd8c:  quadrupole, l= ldq8c, k1= bdq8c*bfact / adq8c / brho;
+ qdd8d:  quadrupole, l= ldq8d, k1= bdq8d*bfact / adq8d / brho;
+ qdd8e:  quadrupole, l= ldq8e, k1= bdq8e*bfact / adq8e / brho;
+
+ qdf9a:  quadrupole, l= ldq9a, k1= bdq9a*bfact / adq9a / brho;
+ qdf9b:  quadrupole, l= ldq9b, k1= bdq9b*bfact / adq9b / brho;
+ qdf9c:  quadrupole, l= ldq9c, k1= bdq9c*bfact / adq9c / brho;
+
+! vertical correctors;
+
+ vd1: driftk, kick = 0.;
+ vd2: driftk, kick = 0.;
+
+! the solenoid is turned off ;!;!;!;
+! for solenoid on, orbit correction is needed.;
+
+ soloff := 0.0;
+
+ sxrot := 0.01                    ;! solenoid-to-beam angle (rad);
+
+ asd := 10e-3;
+
+ bsd1  := -59.9842 * soloff;
+ bsd2  := -59.8976 * soloff;
+ bsd3  := -59.7207 * soloff;
+ bsd4  := -59.4456 * soloff;
+ bsd5  := -59.0606 * soloff;
+ bsd6  := -58.5487 * soloff;
+ bsd7  := -57.8890 * soloff;
+ bsd8  := -57.0561 * soloff;
+ bsd9  := -56.0223 * soloff;
+ bsd10 := -54.7602 * soloff;
+ bsd11 := -53.2468 * soloff;
+ bsd12 := -51.4692 * soloff;
+ bsd13 := -49.4293 * soloff;
+ bsd14 := -47.1480 * soloff;
+ bsd15 := -44.6664 * soloff;
+ bsd16 := -42.0438 * soloff;
+ bsd17 := -39.3513 * soloff;
+ bsd18 := -36.6645 * soloff;
+ bsd19 := -34.0542 * soloff;
+ bsd20 := -31.5772 * soloff;
+ bsd21 := -29.2686 * soloff;
+ bsd22 := -27.1317 * soloff;
+ bsd23 := -25.1197 * soloff;
+ bsd24 := -23.1035 * soloff;
+ bsd25 := -20.8288 * soloff;
+ bsd26 := -17.9631 * soloff;
+ bsd27 := -14.4253 * soloff;
+ bsd28 := -10.7149 * soloff;
+ bsd29 :=  -7.5342 * soloff;
+ bsd30 :=  -5.1682 * soloff;
+ bsd31 :=  -3.5028 * soloff;
+ bsd32 :=  -2.3305 * soloff;
+ bsd33 :=  -1.4965 * soloff;
+ bsd34 :=  -0.9138 * soloff;
+ bsd35 :=  -0.5298 * soloff;
+ bsd36 :=  -0.2977 * soloff;
+ bsd37 :=  -0.1700 * soloff;
+ bsd38 :=  -0.1080 * soloff;
+ bsd39 :=  -0.0851 * soloff;
+
+ sd1:  sole, l=0.1, ks=bsd1  / brho;
+ sd2:  sole, l=0.1, ks=bsd2  / brho;
+ sd3:  sole, l=0.1, ks=bsd3  / brho;
+ sd4:  sole, l=0.1, ks=bsd4  / brho;
+ sd5:  sole, l=0.1, ks=bsd5  / brho;
+ sd6:  sole, l=0.1, ks=bsd6  / brho;
+ sd7:  sole, l=0.1, ks=bsd7  / brho;
+ sd8:  sole, l=0.1, ks=bsd8  / brho;
+ sd9:  sole, l=0.1, ks=bsd9  / brho;
+ sd10: sole, l=0.1, ks=bsd10 / brho;
+ sd11: sole, l=0.1, ks=bsd11 / brho;
+ sd12: sole, l=0.1, ks=bsd12 / brho;
+ sd13: sole, l=0.1, ks=bsd13 / brho;
+ sd14: sole, l=0.1, ks=bsd14 / brho;
+ sd15: sole, l=0.1, ks=bsd15 / brho;
+ sd16: sole, l=0.1, ks=bsd16 / brho;
+ sd17: sole, l=0.1, ks=bsd17 / brho;
+ sd18: sole, l=0.1, ks=bsd18 / brho;
+ sd19: sole, l=0.1, ks=bsd19 / brho;
+ sd20: sole, l=0.1, ks=bsd20 / brho;
+ sd21: sole, l=0.1, ks=bsd21 / brho;
+ sd22: sole, l=0.1, ks=bsd22 / brho;
+ sd23: sole, l=0.1, ks=bsd23 / brho;
+ sd24: sole, l=0.1, ks=bsd24 / brho;
+ sd25: sole, l=0.1, ks=bsd25 / brho;
+ sd26: sole, l=0.1, ks=bsd26 / brho;
+ sd27: sole, l=0.1, ks=bsd27 / brho;
+ sd28: sole, l=0.1, ks=bsd28 / brho;
+ sd29: sole, l=0.1, ks=bsd29 / brho;
+ sd30: sole, l=0.1, ks=bsd30 / brho;
+ sd31: sole, l=0.1, ks=bsd31 / brho;
+ sd32: sole, l=0.1, ks=bsd32 / brho;
+ sd33: sole, l=0.1, ks=bsd33 / brho;
+ sd34: sole, l=0.1, ks=bsd34 / brho;
+ sd35: sole, l=0.1, ks=bsd35 / brho;
+ sd36: sole, l=0.1, ks=bsd36 / brho;
+ sd37: sole, l=0.1, ks=bsd37 / brho;
+ sd38: sole, l=0.1, ks=bsd38 / brho;
+ sd39: sole, l=0.1, ks=bsd39 / brho;
+
+ sda: line=(sd1, sd2, sd3, sd4, sd5,
+            sd6, sd7, sd8, sd9, sd10,
+            sd11,sd12,sd13,sd14,sd15 );
+
+ sdb: line=(sd16,sd17,sd18,sd19,sd20,
+            sd21,sd22,sd23,sd24,sd25,
+            sd26,sd27,sd28,sd29,sd30,
+            sd31,sd32,sd33,sd34,sd35,
+            sd36,sd37,sd38,sd39 );
+
+ addsq1 := 10.e-3;
+ ddsq1: driftt, l=2.1;
+
+ sol: line=(sda,vd1,sdb,ddsq1,vd2);
+
+! this includes beamstrahlung photon aperture;
+! and delta=-90% dispersion (m).;
+! the aperture is around orbit.;
+
+ addq1ab := 10.e-3;
+ addq1bc := 10.e-3;
+ addq12 := 10.e-3;
+ addq2ab := 11.e-3;
+ addq2bc := 12.e-3;
+ addq2cd := 13.e-3;
+ addq23 := 14.e-3;
+ addq3ab := 16.e-3;
+ addq3bc := 17.e-3;
+ addq3cd := 18.e-3;
+ addq34 := 19.e-3;
+ addq4ab := 21.e-3;
+ addq4bc := 22.e-3;
+ addq4cd := 23.e-3;
+ addq4de := 24.e-3;
+ addq4ef := 25.e-3;
+ addq45 := 26.e-3;
+ addq5ab := 28.e-3;
+ addq5bc := 29.e-3;
+ addq5cd := 30.e-3;
+ addq5de := 31.e-3;
+
+ add4   := 32.e-3;
+ addb1  := 36.e-3;
+ add6a  := 41.e-3;
+ add6b  := 57.e-3;
+ add6c  := 72.e-3;
+ add6d  := 93.e-3;
+ add6e  := 108.e-3;
+ add6f  := 139.e-3;
+ add7a  := 157.e-3;
+ add7b  := 174.e-3;
+ add7c  := 192.e-3;
+ addb2  := 202.e-3;
+ add10a := 202.e-3;
+ add10b := 202.e-3;
+ add10c := 202.e-3;
+ add10d := 202.e-3;
+ addb3  := 202.e-3;
+ add13a := 192.e-3;
+ add13b := 174.e-3;
+ add13c := 157.e-3;
+ add14a := 139.e-3;
+ add14b := 95.e-3;
+ add14c := 86.e-3;
+ add14d := 86.e-3;
+ addb4  := 87.e-3;
+ add16  := 88.e-3;
+
+ addq6  := 94.e-3;
+ addq67 := 95.e-3;
+ addq7  := 105.e-3;
+ addq78 := 106.e-3;
+ addq8  := 122.e-3;
+ addq89 := 122.e-3;
+ addq9  := 132.e-3;
+ add18a := 136.e-3;
+ add18b := 140.e-3;
+ add18c := 144.e-3;
+ add18d := 148.e-3;
+ add18e := 152.e-3;
+
+ddq1ab: driftt, l=0.1;
+ddq1bc: driftt, l=0.1;
+ddq12: driftt, l=0.3;
+ddq2ab: driftt, l=0.1;
+ddq2bc: driftt, l=0.1;
+ddq2cd: driftt, l=0.1;
+ddq23: driftt, l=0.3;
+ddq3ab: driftt, l=0.1;
+ddq3bc: driftt, l=0.1;
+ddq3cd: driftt, l=0.1;
+ddq34: driftt, l=0.3;
+ddq4ab: driftt, l=0.1;
+ddq4bc: driftt, l=0.1;
+ddq4cd: driftt, l=0.1;
+ddq4de: driftt, l=0.1;
+ddq4ef: driftt, l=0.1;
+ddq45: driftt, l=0.3;
+ddq5ab: driftt, l=0.1;
+ddq5bc: driftt, l=0.1;
+ddq5cd: driftt, l=0.1;
+ddq5de: driftt, l=0.1;
+dd4:  driftt, l=0.5;
+ddb1: driftt, l=0.3;
+dd6a: driftt, l=1.0;
+dd6b: driftt, l=0.3;
+dd6c: driftt, l=0.3;
+dd6d: driftt, l=1.0;
+dd6e: driftt, l=0.3;
+dd6f: driftt, l=12.0-dd6a[l]-dd6b[l]-dd6c[l] ;
+                   -dd6d[l]-dd6e[l] ;
+                   -sx1[l]-sx2[l]-sx3[l]-sx4[l]-sx5[l];
+dd7a: driftt, l=2.0;
+dd7b: driftt, l=2.0;
+dd7c: driftt, l=2.0;
+ddb2: driftt, l=0.3;
+dd10a: driftt, l=2.5;
+dd10b: driftt, l=2.5;
+dd10c: driftt, l=2.5;
+dd10d: driftt, l=2.5;
+ddb3: driftt, l=0.3;
+dd13a: driftt, l=2.0;
+dd13b: driftt, l=2.0;
+dd13c: driftt, l=2.0;
+dd14a: driftt, l=12.0-dd14b[l]-dd14c[l]-dd14d[l] ;
+                    -sx6[l]-sx7[l]-sx8[l];
+dd14b: driftt, l=0.3;
+dd14c: driftt, l=1.0;
+dd14d: driftt, l=3.0;
+ddb4: driftt, l=0.3;
+dd16: driftt, l=0.5;
+
+ddq6: driftt, l=0.2;
+ddq67: driftt, l=0.5;
+ddq7: driftt, l=0.2;
+ddq78: driftt, l=0.5;
+ddq8: driftt, l=0.2;
+ddq89: driftt, l=0.5;
+ddq9: driftt, l=0.2;
+dd18a: driftt, l=4.0;
+dd18b: driftt, l=4.0;
+dd18c: driftt, l=4.0;
+dd18d: driftt, l=4.0;
+dd18e: driftt, l=4.0;
+
+ ipim: markerer;
+
+ dumpq: line=( ;
+       qdf1a, ddq1ab, qdf1b, ddq1bc, qdf1c, ddq12,
+       qdd2a, ddq2ab, qdd2b, ddq2bc, qdd2c, ddq2cd, qdd2d, ddq23,
+       qdf3a, ddq3ab, qdf3b, ddq3bc, qdf3c, ddq3cd, qdf3d, ddq34,
+       qdd4a, ddq4ab, qdd4b, ddq4bc, qdd4c, ddq4cd,
+       qdd4d, ddq4de, qdd4e, ddq4ef, qdd4f, ddq45,
+       qdf5a, ddq5ab, qdf5b, ddq5bc, qdf5c, ddq5cd, qdf5d, ddq5de,
+                                                    qdf5e, dd4,
+       bd1a, ddb1,  bd1b,  dd6a,
+       sx1,  dd6b, sx2,   dd6c, sx3, dd6d,
+       sx4,  dd6e, sx5,   dd6f,
+                           dd7a, dd7b, dd7c,
+       bd2a, ddb2,  bd2b,  dd10a, dd10b, ipim,
+                           dd10c, dd10d,
+       bd3a, ddb3, bd3b,  dd13a, dd13b, dd13c,
+             dd14a, sx6, dd14b, sx7, dd14c, sx8, dd14d,
+       bd4a, ddb4, bd4b,  dd16,
+       qdd6a, ddq6, qdd6b, ddq67,
+       qdf7a, ddq7, qdf7b, ddq7, qdf7c, ddq78,
+       qdd8a, ddq8, qdd8b, ddq8, qdd8c, ddq8, qdd8d, ddq8,
+                                              qdd8e, ddq89,
+       qdf9a, ddq9, qdf9b, ddq9, qdf9c,
+       dd18a, dd18b, dd18c, dd18d, dd18e );
+
+ dump: line=( sol, dumpq );

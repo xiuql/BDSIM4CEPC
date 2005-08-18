@@ -1,0 +1,226 @@
+  TITLE "ATF2 Baseline: EXT + Final Focus (FF6)"
+
+  ASSIGN, PRINT="ATF2.print"
+  ASSIGN, ECHO="ATF2.echo"
+  OPTION, -ECHO, VERIFY, DOUBLE
+
+! ==============================================================================
+! initial conditions (entrance to DR extraction kicker)
+! ------------------------------------------------------------------------------
+
+  E0d   := 1.542282           !design beam energy (GeV)
+  E0    := 1.3                !nominal beam energy (GeV)
+  EMITX := 2.0E-9             !horizontal emittance (m)
+  EMITY := 2.0E-11            !vertical emittance (m)
+  BLENG := 8.0E-3             !bunch length (m)
+  ESPRD := 0.8E-3             !energy spread (1)
+  TBETX := 7.328756752062     !twiss beta x (m)
+  TALFX := 1.182561568783     !twiss alpha x
+  TDX   := -0.178437351534E-2 !eta x (m)
+  TDPX  := 0.376468633842E-3  !eta' x
+  TBETY := 3.138666109153     !twiss beta y (m)
+  TALFY := -1.770354080712    !twiss alpha y
+  TDY   := 0                  !eta y (m)
+  TDPY  := 0                  !eta' y
+
+! ==============================================================================
+! construct input beam matrix (assumes TDY=TDPY=0)
+! ------------------------------------------------------------------------------
+
+  EMITXn := EMITX*(E0/EMASS)
+  EMITYn := EMITY*(E0/EMASS)
+
+  BEAM, PARTICLE=ELECTRON, ENERGY=E0, EX=EMITX, EY=EMITY, &
+        SIGT=BLENG, SIGE=ESPRD, NPART=2.0E+10
+
+  TWSS0 : BETA0, BETX=TBETX, ALFX=TALFX, DX=TDX, DPX=TDPX, &
+                 BETY=TBETY, ALFY=TALFY, DY=TDY, DPY=TDPY
+
+  TGAMX := (1+TALFX*TALFX)/TBETX
+  TGAMY := (1+TALFY*TALFY)/TBETY
+  SIG11 := EMITX*TBETX+TDX*TDX*ESPRD*ESPRD
+  SIG21 := -EMITX*TALFX+TDX*TDPX*ESPRD*ESPRD
+  SIG22 := EMITX*TGAMX+TDPX*TDPX*ESPRD*ESPRD
+  C21   := SIG21/SQRT(SIG11*SIG22)
+  SIG33 := EMITY*TBETY
+  SIG43 := -EMITY*TALFY
+  SIG44 := EMITY*TGAMY
+  C43   := SIG43/SQRT(SIG33*SIG44)
+  SIG61 := TDX*ESPRD*ESPRD
+  SIG62 := TDPX*ESPRD*ESPRD
+  SIG66 := ESPRD*ESPRD
+  C61   := SIG61/SQRT(SIG11*SIG66)
+  C62   := SIG62/SQRT(SIG22*SIG66)
+  SIG0  : SIGMA0, SIGX=SQRT(SIG11), SIGPX=SQRT(SIG22), R21=C21, &
+                  SIGY=SQRT(SIG33), SIGPY=SQRT(SIG44), R43=C43, &
+                  SIGT=BLENG      , SIGPT=ESPRD      , R61=C61, R62=C62
+
+! ==============================================================================
+! global parameters
+! ------------------------------------------------------------------------------
+
+  Cb   := 1.0E10/CLIGHT
+  Brho := Cb*E0
+
+! ==============================================================================
+! load XSIF files
+! ------------------------------------------------------------------------------
+
+  CALL, FILENAME="EXT.xsif"
+  CALL, FILENAME="FF.xsif"
+
+  EXT2 : LINE=(EX0,EX1,EX2)
+  ATF2 : LINE=(EXT2,FF)
+
+! ==============================================================================
+! configurations
+! ------------------------------------------------------------------------------
+
+  BASELINE : SUBROUTINE
+
+  ! set EXT magnets for ATF2 "baseline" values
+
+    SET, KLQD1X, -0.261841215404
+    SET, KLQD2X, -0.230493632883
+    SET, KLQF1X,  0.342901775093
+    SET, KLQK0X,  0
+    SET, KLQS1X,  0
+    SET, KLQF2X,  0.216692008836
+    SET, KLQD3X, -0.553524961165
+    SET, KLQF3X,  1.402412282865
+    SET, KLQF4X,  1.361903414403
+    SET, KLQS2X,  0
+    SET, KLQD4X, -0.839506261657
+    SET, KLQD5X, -0.371716675848
+    SET, KLQF5X,  0.606764951102
+    SET, KLQK1X,  0
+    SET, KLQD6X, -0.140699816313
+    SET, KLQK2X,  0
+    SET, KLQD7X, -0.950901837265
+    SET, KLQK3X,  0
+    SET, KLQF6X,  0.663157075334
+    SET, KLQK4X,  0
+    SET, KLQD8X, -0.663157075334
+    SET, KLQF7X,  0.663157075334
+    SET, KLQD9X, -0.663157075334
+    SET, KLSD1X, -0.587511146311
+    SET, KLSD2X, -1.862494679763
+    SET, KLSF1X,  2.322607076256
+  ENDSUBROUTINE
+
+! ==============================================================================
+! COMMANDs
+! ------------------------------------------------------------------------------
+
+  SETPLOT, XSIZE=25.4, YSIZE=20.32
+  OPTION, ECHO
+
+  BASELINE
+
+! generate twiss functions and plots
+
+ !COMMENT
+    USE, ATF2
+    PRINT, FULL
+    SAVEBETA, TWSSff, IPFF
+    SAVEBETA, TWSSip, IP
+    TWISS, SAVE, BETA0=TWSS0, TAPE="ATF2_twiss.tape"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &
+      STYLE=100, SPLINE=.T., FILE="ATF2"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &
+      STYLE=100, SPLINE=.T., FILE="ATF2", &
+      RANGE=EXT2, TITLE="EXT"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=RBETX,RBETY, VAXIS2=DX, &
+      STYLE=100, SPLINE=.T., FILE="ATF2", &
+      RANGE=FF, TITLE="Final Focus"
+    VALUE, TWSSff[ENERGY]
+    VALUE, TWSSff[BETX],TWSSff[ALFX],TWSSff[DX],TWSSff[DPX]
+    VALUE, TWSSff[BETY],TWSSff[ALFY],TWSSff[DY],TWSSff[DPY]
+    VALUE, TWSSip[ENERGY]
+    VALUE, TWSSip[BETX],TWSSip[ALFX],TWSSip[DX],TWSSip[DPX]
+    VALUE, TWSSip[BETY],TWSSip[ALFY],TWSSip[DY],TWSSip[DPY]
+ !ENDCOMMENT
+
+! generate chromatic functions and plots
+
+ !COMMENT
+    USE, ATF2
+    PRINT, FULL
+    TWISS, CHROM, SAVE, BETA0=TWSS0, TAPE="ATF2_chrom.tape"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=WX,WY, VAXIS2=DDX,DDY, &
+      STYLE=100, SPLINE=.T., FILE="ATF2"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=WX,WY, VAXIS2=DDX,DDY, &
+      STYLE=100, SPLINE=.T., FILE="ATF2", &
+      RANGE=EXT2, TITLE="EXT (BH1 Sextupole ON)"
+    PLOT, TABLE=TWISS, HAXIS=S, VAXIS1=WX,WY, VAXIS2=DDX,DDY, &
+      STYLE=100, SPLINE=.T., FILE="ATF2", &
+      RANGE=FF, TITLE="Final Focus"
+ !ENDCOMMENT
+
+! generate envelope and plots
+
+ !COMMENT
+    USE, ATF2
+    PRINT, FULL
+    SELECT, OPTICS, FULL
+    ENVELOPE, SAVE=ENVELOPE, SIGMA0=SIG0, TAPE="ATF2_envelope.tape"
+    XMM : STRING, "1.E3*SIGX"
+    YMM : STRING, "1.E3*SIGY"
+    PLOT, TABLE=ENVELOPE, HAXIS=S, VAXIS1=XMM, VAXIS2=YMM, &
+      STYLE=100, SPLINE=.T., FILENAME="ATF2", &
+      TITLE="<G>e<G><?>x<?>=2e-9 m, <G>e<G><?>y<?>=2e-11 m"
+ !ENDCOMMENT
+
+! generate survey
+
+ !COMMENT
+    Xi     := 1.390253952E+01
+    Zi     := -1.402856123E+01
+    THETAi := PI
+    USE, ATF2
+    PRINT, FULL
+    SURVEY, X0=Xi, Z0=Zi, THETA0=THETAi, TAPE="ATF2_survey.tape"
+ !ENDCOMMENT
+
+! plot the bandwidth (+-1%) ... final focus only
+
+  COMMENT
+    BX        := BXip
+    AX        := 0
+    BY        := BYip
+    AY        := 0
+    L_OVER_L0 := 1
+    DP        := -0.01
+    DO, TIMES=21
+      USE, FF
+      SAVEBETA, TWSSip, IP
+      PRINT, IP
+      TWISS, BETA0=TWSSff, DELTAP=DP
+      SET, BX, TWSSip[BETX]
+      SET, AX, TWSSip[ALFX]
+      SET, BY, TWSSip[BETY]
+      SET, AY, TWSSip[ALFY]
+      SET, L_OVER_L0, SQRT(BXip*BYip/(TWSSip[BETX]*TWSSip[BETY]))
+      PUSH, DP, L_OVER_L0, BX, AX, BY, AY
+      SET, DP, DP+0.001
+    ENDDO
+    ENDPUSH, SAVE="BW.dat"
+   !PLOT, TABLE=SPECIAL, HAXIS=DP, VAXIS=L_OVER_L0, FILE="ATF2"
+   !PLOT, TABLE=SPECIAL, HAXIS=DP, VAXIS1=BX, VAXIS2=BY, &
+   !  STYLE=100, FILE="ATF2"
+   !PLOT, TABLE=SPECIAL, HAXIS=DP, VAXIS1=AX, VAXIS2=AY, &
+   !  STYLE=100, FILE="ATF2"
+
+    TITLE "ATF2 Final Focus"
+    USE, FF
+    TWISS, SAVE, BETA0=TWSSff, DELTAP=-0.01:0.01:0.001
+    PLOT, TABLE=TWISS, HAXIS=DELTAP, VAXIS1=BETX, VAXIS2=BETY, &
+      RANGE=#E, STYLE=100, FILE="ATF2", & 
+      VMIN=0,0, VMAX=0.02,0.0004
+    PLOT, TABLE=TWISS, HAXIS=DELTAP, VAXIS1=ALFX, VAXIS2=ALFY, &
+      RANGE=#E, STYLE=100, FILE="ATF2"
+    PLOT, TABLE=TWISS, HAXIS=DELTAP, VAXIS1=GAMX, VAXIS2=GAMY, &
+      RANGE=#E, STYLE=100, FILE="ATF2"
+  ENDCOMMENT
+
+  STOP
