@@ -17,25 +17,23 @@ LDLIBS3 += $(ROOTLIBS)
 # standard Geant4 make procedure
 include $(G4INSTALL)/config/binmake.gmk
 
-CPPFLAGS += -DG4VERSION=@G4VERSION
+CPPFLAGS += -DG4VERSION=@G4VERSION -D@USE_ROOT
 CPPFLAGS += -Df2cFortran
 CPPFLAGS += $(ROOTCFLAGS)  
-CPPFLAGS += -g -Wall $(ROOTINCS) 
+CPPFLAGS += -g -Wall $(ROOTINCS) -I.
 
-LDFLAGS += -L$(G4LIBDIR) 
+LDFLAGS += -L$(G4LIBDIR) -L./parser -lgmad
 
 install:
 
 distrib:
 	tar --ignore-failed-read -C .. -czvf BDSIM.tar.gz BDSIM/src BDSIM/include \
 	BDSIM/bdsim.cc BDSIM/bdsimrun BDSIM/Makefile.in \
-	BDSIM/configure BDSIM/README BDSIM/optics BDSIM/BDSInput.cards \
-	BDSIM/BDS_vis.mac BDSIM/*.optics
+	BDSIM/configure BDSIM/README \
+	BDSIM/parser/*.h BDSIM/examples \
+	BDSIM/BDS_vis.mac BDSIM/gui.mac\
+        BDSIM/docs BDSIM/parser \
+	BDSIM/examples BDSIM/utils
 
-htmlmanual: manual.texi
-	makeinfo --no-split --html manual.texi
-
-pdfmanual:  manual.texi
-	texi2pdf manual.texi
-	rm -f *.aux *.cp *.fn *.toc *.pg *.ky *.log *.vr *.tp 
-
+docs:
+	$(MAKE) -C docs

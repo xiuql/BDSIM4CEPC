@@ -78,6 +78,16 @@ printf " change the G4VERSION variables \n in the Makefile if I'm  wrong \n"
 
 # Determine CERN Root installation directory
 
+USE_ROOT=""
+
+printf "\n\n Do you want to use Root output (root has to be installed) ?\n"
+
+read -p "[y/n]" value
+
+if test "$value" == "y"; then
+    USE_ROOT="USE_ROOT"
+    echo "           using Root output driver...."
+
 ROOT_sys="$ROOTSYS"
 
 printf "\n\n What is your ROOT installation directory?\n"
@@ -119,11 +129,15 @@ else
    success="0"
 fi
 
+else
+    echo "           not using Root output driver...."
+fi
+
 # Ask for binary location
 
 BIN_dir=$(pwd)
 
-printf "\n\n Where do you wand your binary file to be?\n"
+printf "\n\n Where do you want your binary file to be?\n"
 
 
 read -p "[$BIN_dir]" value
@@ -165,7 +179,8 @@ cat Makefile.in  | sed "
 s%@G4INSTALL%$G4INSTALL%g;
 s%@ROOTSYS%$ROOT_sys%g;
 s%@BINDIR%$BIN_dir%g;
-s%@G4VERSION%$G4_version%g
+s%@G4VERSION%$G4_version%g;
+s%@USE_ROOT%$USE_ROOT%g;
 " >> $Makefile
 fi
 

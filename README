@@ -1,8 +1,19 @@
 /*
 *                         README 
 *                    bdsim beta version
-*                   I.Agapov, 26.01.2005
+*                   I.Agapov, 21.01.2005
+*
+*
 */
+
+0)==========History=============================
+
+Updated: 05.05.05
+Current:
+  - Problem with Sector bend accuracy
+  - Problem with Magnetic field in BDSElement
+
+
 
 
 1)==========Installation instructions============
@@ -11,30 +22,26 @@ You will need Geant4 and Root installed before compiling
 
 to compile:
 
-    configure
+    ./configure
     make
 
 to run:
 
-    bdsimrun [options]
+    bdsim [options]
 
 to run without Geant4 interactive propmt:
 
-    bdsimrun -s 
-
-to run in batch mode using PBS batch system:
-
-    bdsimrun -b
+    bdsim --batch 
 
 Quit Geant4 session with  'exit' to save the Root file
 
 2)==========Other files========================
 
-optics           : sample optics file
-BDSInput.cards   : sample cards file 
 BDS_vis.mac      : sample G4 visualization script
+test.gmad
 
-3)==========Development stuff===================
+3)==========Directories===================
 
-parser/          : madx-like parser
-experimemtal/    : David Sagan's AML-like parser
+parser/          : gmad parser
+examples/        : sample lettices
+utils/           : various useful scripts
