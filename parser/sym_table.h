@@ -12,9 +12,10 @@ Symbol table for numeric variables and functions
 
 using namespace std;
  
-#define NSYMS 1024
+#define NSYMS 2048
  
 struct symtab {
+  int is_reserved;
   int type;
   char *name;
   double (*funcptr)(double);
@@ -23,4 +24,5 @@ struct symtab {
 };
  
 struct symtab *symlook();
+
 
