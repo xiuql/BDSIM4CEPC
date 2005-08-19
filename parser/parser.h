@@ -1,3 +1,4 @@
+
 /* parser.h
  *
  *
@@ -13,8 +14,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "gmad.h"
+#include <iostream>
 
+#include "gmad.h"
 
 using namespace std;
 
@@ -51,14 +53,26 @@ const char *typestr(int type) {
     return "sbend";
   case _QUAD :
     return "quadrupole";
-  case _SEXT:
+  case _SEXTUPOLE:
     return "sextupole";
   case _MULT :
     return "multipole";
   case _SOLENOID : 
     return "solenoid";
+  case _ECOL : 
+    return "ecol";
+  case _RCOL : 
+    return "rcol";
   case _LINE :
     return "line";
+  case _SAMPLER :
+    return "sampler";
+  case _CSAMPLER:
+    return "csampler";
+  case _LASER:
+    return "laser";
+  case _ELEMENT :
+    return "element";
   default:
     return "none";
   }
@@ -82,6 +96,7 @@ void flush(struct Element& e )
   e.k0 = 0;
   e.k1 = 0;
   e.k2 = 0;
+  e.angle= 0;
   e.name = NULL;
   e.type = _NONE;
 };
@@ -94,13 +109,32 @@ void copy_properties(list<struct Element>::iterator dest, list<struct Element>::
   (*dest).type = (*src).type;  
  
   (*dest).l = (*src).l;
+
+  (*dest).angle = (*src).angle; 
+  (*dest).xsize = (*src).xsize; 
+  (*dest).ysize = (*src).ysize; 
+
+  (*dest).xdir = (*src).xdir; 
+  (*dest).ydir = (*src).ydir; 
+  (*dest).zdir = (*src).zdir; 
+  (*dest).waveLength = (*src).waveLength; 
  
+  (*dest).aper = (*src).aper; 
+  (*dest).tilt = (*src).tilt; 
   (*dest).k0 = (*src).k0; 
   (*dest).k1 = (*src).k1;  
   (*dest).k2 = (*src).k2; 
   (*dest).k3 = (*src).k3; 
   (*dest).knl = (*src).knl;
   (*dest).ksl = (*src).ksl;
+
+  (*dest).geometryFile = (*src).geometryFile;
+
+  (*dest).bmapFile = (*src).bmapFile;
+
+  (*dest).material = (*src).material;
+
+
   return;
 }; 
 
@@ -114,8 +148,21 @@ void inherit_properties(struct Element e)
   if(!params.k1set) { params.k1 = e.k1; params.k1set = 1; }
   if(!params.k2set) { params.k2 = e.k2; params.k2set = 1; }
   if(!params.k3set) { params.k3 = e.k3; params.k3set = 1; }
+  if(!params.angleset) { params.angle = e.angle; params.angleset = 1; }
+  if(!params.xsizeset) { params.xsize = e.xsize; params.xsizeset = 1; }
+  if(!params.ysizeset) { params.ysize = e.ysize; params.ysizeset = 1; }
+ 
+  if(!params.xdirset) { params.xdir = e.xdir; params.xdirset = 1; }
+  if(!params.ydirset) { params.ydir = e.ydir; params.ydirset = 1; }
+  if(!params.zdirset) { params.zdir = e.zdir; params.zdirset = 1; }
+  if(!params.waveLength) { params.waveLength = e.waveLength; params.waveLengthset = 1; }
+
+  if(!params.aperset) { params.aper = e.aper; params.aperset = 1; }
+
+  if(!params.tiltset) { params.tilt = e.tilt; params.tiltset = 1; }
   if(!params.knlset) { params.knl = e.knl; params.knlset = 1; }
   if(!params.kslset) { params.ksl = e.ksl; params.kslset = 1; }
+
 };
 
 void set_vector(list<double>& dst, struct Array *src)
@@ -124,7 +171,7 @@ void set_vector(list<double>& dst, struct Array *src)
     dst.push_back(src->data[i]);
 };
 
-// lis of all encountered elements
+// list of all encountered elements
 list<struct Element> element_list;
 
 // temporary list
@@ -137,7 +184,7 @@ char* current_line = "";
 char* current_start = "";
 char* current_end = "";
 
-struct symtab symtab[NSYMS];
+struct symtab *symtab; 
 
 extern struct symtab * symlook(char *s);
 
@@ -169,9 +216,14 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
   
   struct Element e;
   flush(e);
+  // common parameters for all elements
   e.name = name;
   e.lst = NULL;
+  e.aper = params.aper;
+  e.xsize = params.xsize;
+  e.ysize = params.ysize;
   
+  //specific parameters
   switch(type) {
   case _MARKER :
     e.type= _MARKER;
@@ -179,6 +231,12 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
   case _DRIFT:
     e.type = _DRIFT;
     e.l = params.l;
+    break;
+
+  case _SBEND:
+    e.type = _SBEND;
+    e.l = params.l;
+    e.angle = params.angle;
     break;
 
   case _QUAD:
@@ -190,7 +248,7 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     }
     if(params.k0set) {
       if(VERBOSE)
-	printf("Warning: k2 will not be set for element %s of type QUADRUPOLE\n",name);
+	printf("Warning: k0 will not be set for element %s of type QUADRUPOLE\n",name);
     }
     if(params.k1set) {
       e.k1 = params.k1;
@@ -198,28 +256,47 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     if(params.k2set) {
       if(VERBOSE)
 	printf("Warning: k2 will not be set for element %s of type QUADRUPOLE\n",name);
+      
+    }
+    if(params.tiltset) {
+      e.tilt = params.tilt;
     }
     
     break;
-  case _SBEND:
+
+  case _SEXTUPOLE:
+
+    e.type = _SEXTUPOLE;
+      
+    if(params.lset) {
+      e.l = params.l;
+    }
+    if(params.k0set) {
+      if(VERBOSE)
+	printf("Warning: k2 will not be set for element %s of type SEXTUPOLE\n",name);
+    }
+    if(params.k2set) {
+      e.k2 = params.k2;
+    }
+    if(params.k1set) {
+      if(VERBOSE)
+	printf("Warning: k1 will not be set for element %s of type SEXTUPOLE\n",name);
+    }
     
-    e.type = _SBEND;
+    break;
+  case _OCTUPOLE:
+
+    e.type = _OCTUPOLE;
     
     if(params.lset) {
       e.l = params.l;
     }
-    if(params.k1set) {
-      if(VERBOSE)
-	printf("Warning: k1 will not be set for element %s of type SBEND\n",name);
-    }
-    if(params.k0set) {
-      e.k0 = params.k0;
-    }
-    if(params.k2set) {
-      if(VERBOSE)
-	printf("Warning: k2 will not be set for element %s of type SBEND\n",name);
+    
+    if(params.k3set) {
+      e.k3 = params.k3;
     }
     
+      
     break;
 
   case _MULT:
@@ -250,10 +327,42 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     
     break;
 
+  case _ECOL:
+    e.type = _ECOL;
+    e.l = params.l;
+    e.material = string(params.material);
+    break;
+  case _RCOL:
+    e.type = _RCOL;
+    e.l = params.l;
+    e.material = string(params.material);
+    break;
+
+  case _LASER:
+    e.type = _LASER;
+    e.l = params.l;
+    e.xdir = params.xdir;
+    e.ydir = params.ydir;
+    e.zdir = params.zdir;
+    e.waveLength = params.waveLength;
+    break;
+
+  case _ELEMENT:
+    e.type = _ELEMENT;
+    e.l = params.l;
+    e.geometryFile = string(params.geometry);
+    //strcpy(e.geometryFile,params.geometry);
+    e.bmapFile = string(params.bmap);
+    break;
+
   case _LINE:
    
     e.lst = lst;
     e.type = _LINE;
+    break;
+
+  case _SAMPLER:
+    e.type = _SAMPLER;
     break;
     
   default:
@@ -276,7 +385,7 @@ int expand_line(char *name, char *start, char* end)
       
       // delete the previous beamline
       
-      beamline_list.erase(beamline_list.begin(),beamline_list.end());
+      beamline_list.clear();
       
       // expand the desired beamline
       
@@ -290,7 +399,7 @@ int expand_line(char *name, char *start, char* end)
       
       if(!(*it).lst) return 0; //list empty
       
-      // first expand the whole range the range
+      // first expand the whole range 
       list<struct Element>::iterator sit = (*it).lst->begin();
       list<struct Element>::iterator eit = (*it).lst->end();
       
@@ -396,6 +505,7 @@ int expand_line(char *name, char *start, char* end)
 	}
 
 
+      // insert the samplers
       
       
       return 0;
@@ -432,12 +542,85 @@ list<struct Element>::iterator element_lookup(char *name,list<struct Element>& e
 }
 
 
+// insert a sampler into beamline_list
+void add_sampler(char *name, char *before, int before_count)
+{
+  if(DEBUG) cout<<"inserting sampler before "<<before<<"["<<before_count<<"]"<<endl;
+
+  list<struct Element>::iterator it;
+
+  int element_count = 1;  // count from 1 like in goddam FORTRAN -- for range parsing
+  struct Element e;
+  e.type = _SAMPLER;
+  e.name = name;
+  e.lst = NULL;
+
+  for(it = beamline_list.begin();it != beamline_list.end(); ++it)
+    {
+      if(DEBUG) cout<<"-->"<<(*it).name<<endl;
+
+      if( !strcmp((*it).name, before)) 
+	{
+
+	  if( before_count == element_count)
+	    {
+	      beamline_list.insert(it,e);
+	      return;
+	    }
+
+	  element_count++;
+	}
+
+    }
+
+  cout<<"current beamline doesn't contain element "<<before<<" with number "<<before_count<<endl;
+
+}
+
+// insert a cylindrical sampler into beamline_list
+void add_csampler(char *name, char *before, int before_count, double length, double rad)
+{
+  if(DEBUG) cout<<"inserting sampler before "<<before<<"["<<before_count<<"]"<<endl;
+
+  list<struct Element>::iterator it;
+
+  int element_count = 1;  // count from 1 like in goddam FORTRAN -- for range parsing
+  struct Element e;
+  e.type = _CSAMPLER;
+  e.l = length;
+  e.r = rad;
+  e.name = name;
+  e.lst = NULL;
+
+  for(it = beamline_list.begin();it != beamline_list.end(); ++it)
+    {
+      if(DEBUG) cout<<"-->"<<(*it).name<<endl;
+
+      if( !strcmp((*it).name, before)) 
+	{
+
+	  if( before_count == element_count)
+	    {
+	      beamline_list.insert(it,e);
+	      return;
+	    }
+
+	  element_count++;
+	}
+
+    }
+
+  cout<<"current beamline doesn't contain element "<<before<<" with number "<<before_count<<endl;
+
+}
+
 void print(list<struct Element> l, int ident)
 {
 
   if(VERBOSE) if(ident == 0) printf("using line %s\n",current_line);
 
   list<struct Element>::iterator it;
+  list<double>::iterator it2;
 
   for(it=l.begin();it!=l.end();it++)
     {
@@ -447,13 +630,15 @@ void print(list<struct Element> l, int ident)
       printf("->%s : %s",(*it).name,typestr((*it).type));
 
       switch((*it).type) {
+      case _DRIFT:
       case _SBEND :
       case _QUAD:
-	printf(", l=%.10g, k0=%.10g, k1=%.10g, k2=%.10g ",
-	       (*it).l,(*it).k0,(*it).k1,(*it).k2);
+      case _SEXTUPOLE:
+	printf(", l=%.10g, k0=%.10g, k1=%.10g, k2=%.10g,angle=%.10g ",
+	       (*it).l,(*it).k0,(*it).k1,(*it).k2, (*it).angle);
 	break;
       case _MULT:
-	list<double>::iterator it2;
+
 	printf(" , knl={");
 	for(it2=(*it).knl.begin();it2!=(*it).knl.end();it2++)
 	  printf("%.10g, ",(*it2));
@@ -461,6 +646,17 @@ void print(list<struct Element> l, int ident)
 	for(it2=(*it).ksl.begin();it2!=(*it).ksl.end();it2++)
 	  printf("%.10g, ",(*it2));
 	printf("}");
+	break;
+
+      case _ELEMENT:
+	printf("\ngeometry file : %s\n",(*it).geometryFile.c_str());
+	printf("B map file : %s\n",(*it).bmapFile.c_str());
+	//printf("E map driver : %s\n",(*it).geometryFile);
+	//printf("E map file : %s\n",(*it).geometryFile);
+	break;
+
+      case _CSAMPLER:
+	printf(" length=%.10g, radius=%.10g",(*it).l, (*it).r);
 	break;
 
       defaut:
@@ -479,10 +675,91 @@ void print(list<struct Element> l, int ident)
 
 void print(struct Options opt)
 {
-  printf(" Options: \n");
-  printf("         echo  :   %d\n",options.echo);
-  printf("         particle  :   %s\n",options.particle);
-  printf("         echo  :   %d\n",options.nparticles);
+  cout<<"Options : "<<endl;
+  cout<<"particle : "<<opt.particleName<<endl;
+  cout<<"energy : "<<opt.beamEnergy<<endl;
+  cout<<"n particles : "<<opt.numberOfParticles<<endl;
+  cout<<"n macroparticles : "<<opt.numberToGenerate<<endl;
+  cout<<"sigmaX           : "<<opt.sigmaX<<endl;
+  cout<<"interactions on           : "<<opt.turnOnInteractions<<endl;
+}
+
+
+void set_value(string name, double value )
+{
+  if(name == "energy" ) options.beamEnergy = value;
+  if(name == "energySpread" ) options.beamEnergySpread = value;
+  if(name == "nparticles" ) options.numberOfParticles = (int)value;
+  if(name == "ngenerate" ) options.numberToGenerate = (int)value;
+  if(name == "nperfile" ) options.numberOfEventsPerNtuple = (int)value;
+  if(name == "beampipeRadius" ) options.beampipeRadius = value;
+
+  if(name == "boxSize" ) options.componentBoxSize = value;
+  if(name == "tunnelRadius" ) options.tunnelRadius = value;
+  if(name == "beampipeThickness" ) options.beampipeThickness = value;
+
+  if(name == "sigmaX" ) options.sigmaX = value;
+  if(name == "sigmaY" ) options.sigmaY = value;
+  if(name == "sigmaXp" ) options.sigmaXp = value;
+  if(name == "sigmaYp" ) options.sigmaYp = value;
+  if(name == "sigmaT" ) options.sigmaT = value;
+
+  if(name == "X0" ) options.X0 = value;
+  if(name == "Y0" ) options.X0 = value;
+  if(name == "Rmin" ) options.Rmin = value;
+  if(name == "Rmax" ) options.Rmax = value;
+
+  if(name == "deltaChord") options.deltaChord = value;
+  if(name == "deltaIntersection") options.deltaIntersection = value;
+  if(name == "chordStepMinimum") options.chordStepMinimum = value;
+
+  if(name == "lengthSafety") options.lengthSafety = value;
+
+  if(name == "turnInteractions") 
+    {
+      if(value == 0) options.turnOnInteractions = false;
+      else options.turnOnInteractions = true;
+    }
+
+  if(name == "thresholdCutCharged" ) options.thresholdCutCharged = value;
+  if(name == "thresholdCutPhotons" ) options.thresholdCutPhotons = value;
+  if(name == "useEMHadronic" ) options.useEMHadronic = (int) value;
+
+
+  if(name == "verboseStep") options.verboseStep = (int) value;
+  if(name == "verboseEventNumber") options.verboseEventNumber = (int) value;
+
+  if(name == "storeTrajectory") options.storeTrajectory = (int) value; 
+  
+}
+
+
+void set_value(string name, string value )
+{
+  if(name == "particle") options.particleName = value;
+  if(name == "distrType" ) options.distribType = value;
+  if(name == "distrFile" ) options.distribFile = value;  
+}
+
+double property_lookup(char *element_name, char *property_name)
+{
+   list<struct Element>::iterator it = element_lookup(element_name);
+
+   if(it == NULL) return 0;
+   
+   if(!strcmp(property_name,"l")) return (*it).l;
+   if(!strcmp(property_name,"k0")) return (*it).k0;
+   if(!strcmp(property_name,"k1")) return (*it).k1;
+   if(!strcmp(property_name,"aper")) return (*it).aper;
+   if(!strcmp(property_name,"xsize")) return (*it).xsize;
+   if(!strcmp(property_name,"ysize")) return (*it).ysize;
+   if(!strcmp(property_name,"xdir")) return (*it).xdir;
+   if(!strcmp(property_name,"ydir")) return (*it).ydir;
+   if(!strcmp(property_name,"zdir")) return (*it).zdir;
+   if(!strcmp(property_name,"waveLength")) return (*it).waveLength;
+   if(!strcmp(property_name,"tilt")) return (*it).tilt;
+
+   return 0;
 }
 
 // ******************************************************
@@ -496,12 +773,11 @@ int add_func(char *name, double (*func)(double))
   sp->funcptr=func;
 }
 
-int add_var(char *name, double value)
+int add_var(char *name, double value, int is_reserved = 0)
 {
   struct symtab *sp=symlook(name);
   sp->value=value;
+  sp->is_reserved = is_reserved;
 }
 
 #endif
-
-

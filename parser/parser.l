@@ -22,15 +22,15 @@ using namespace std;
  
 int match_var(char *name);
 struct symtab * symlook(char *s);
-extern struct symtab symtab[NSYMS];
+extern struct symtab *symtab;
 extern int yyerror(char *s);
 
 #define MAX_INCLUDE_DEPTH 10
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
 int include_stack_ptr = 0;
 
-#define YY_USER_ACTION yylloc.first_line = yylineno;\
-                       yylloc.last_line = yylineno;
+//#define YY_USER_ACTION yylloc.first_line = yylineno;\
+//                       yylloc.last_line = yylineno;
 
 %}
 
@@ -42,7 +42,7 @@ int include_stack_ptr = 0;
 
 "!".*/\n {yylineno--;}    // ignore comments; there is a feature so that yylineno increases twice
 
-(([0-9]+)|([0-9]*\.[0-9]+))(e[+|-][0-9]+)? { yylval.dval=atof(yytext); return NUMBER; }
+(([0-9]+)|([0-9]*\.[0-9]*))(e[+|-]?[0-9]+)? { yylval.dval=atof(yytext); return NUMBER; }
 
 
 "<=" { return LE; }
@@ -58,18 +58,25 @@ sextupole { return SEXTUPOLE; }
 octupole { return OCTUPOLE; }
 multipole { return MULTIPOLE; }
 solenoid { return SOLENOID; }
+spoiler { return SPOILER ; }
+rcol { return RCOL;}
+ecol { return ECOL; } 
+absorber { return ABSORBER; }
 element { return ELEMENT; }
 collimator { return COLLIMATOR; }
-
+pipe { return PIPE; }
+gas { return GAS; }
+laser { return LASER; }
 
 line       { return LINE; } 
 
-aperture {return APERTURE; } // reserved keywords
+apertr {return APERTURE; } // reserved keywords
 filename { return FILENAME; }
 period { return PERIOD; }
 range { return RANGE; }
 
 "if" { return IF; }
+"for" { return FOR; }
 "else" { return ELSE; } 
 "begin" { return BEGN; }
 "end" { return END; }
@@ -84,6 +91,8 @@ echo { return ECHO; }
 "return" { return STOP; }
 stop {return STOP;}
 use { return USE; }
+sample { return SAMPLE; }
+csample { return CSAMPLE; }
 
 \"[^"]*\" {
   //strip quotes
@@ -159,3 +168,4 @@ struct symtab * symlook(char *s)
   yyerror("too many symbols");
   exit(1);
 }
+
