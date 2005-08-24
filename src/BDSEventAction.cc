@@ -151,7 +151,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 
   
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
-  G4cout << bdsOutput.GetPlaneSamplerNumber() << " < PlaneSamplers" << G4endl;
+  //G4cout << bdsOutput.GetPlaneSamplerNumber() << " < PlaneSamplers" << G4endl;
   //if( bdsOutput.GetPlaneSamplerNumber() > 0)
   {   
     //if (SamplerCollID_plane==-1)
