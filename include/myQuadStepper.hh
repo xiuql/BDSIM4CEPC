@@ -30,6 +30,8 @@ public:  // with description
   
   void SetBGrad(G4double aBfield);
   void SetBField(G4double aBfield);
+  void SetLength(G4double aLength);
+  void SetAngle(G4double aAngle);
   G4double GetBGrad();
   
   void StepperName();
@@ -37,7 +39,8 @@ public:  // with description
 public: // without description
   
   G4int IntegratorOrder()const { return 2; }
-  
+  G4double itsLength;
+  G4double itsAngle;
 protected:
   //  --- Methods used to implement all the derived classes -----
   
@@ -69,6 +72,14 @@ inline  void myQuadStepper::SetBGrad(G4double aBGrad)
 inline  void myQuadStepper::SetBField(G4double aBField)
 {
   itsBField=aBField;
+}
+inline  void myQuadStepper::SetLength(G4double aLength)
+{
+  itsLength=aLength;
+}
+inline  void myQuadStepper::SetAngle(G4double aAngle)
+{
+  itsAngle=aAngle;
 }
 
 inline G4double myQuadStepper::GetBGrad()
