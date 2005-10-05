@@ -76,6 +76,17 @@ fi
 
 printf " change the G4VERSION variables \n in the Makefile if I'm  wrong \n"
 
+
+# Determine for CLHEP version
+printf "\n \n Enter the CLHEP version \n"
+read -p "[1.x.x.x]" value
+
+CLHEP_version=$(echo $value | grep -o '[1].[0-9]\(.[0-9]\)*' | sed "s/1.//; s/.[0-9]//; s/.[0-9]//")
+
+
+#printf " you r version is $CLHEP_version ???\n"
+
+
 # Determine CERN Root installation directory
 
 USE_ROOT=""
@@ -180,6 +191,7 @@ s%@G4INSTALL%$G4INSTALL%g;
 s%@ROOTSYS%$ROOT_sys%g;
 s%@BINDIR%$BIN_dir%g;
 s%@G4VERSION%$G4_version%g;
+s%@CLHEP_VERSION%$CLHEP_version%g;
 s%@USE_ROOT%$USE_ROOT%g;
 " >> $Makefile
 fi

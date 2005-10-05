@@ -10,7 +10,9 @@
 #include "globals.hh"
 #include <fstream.h>
 
+#if CLHEP_VERSION > 9
 using namespace CLHEP;
+#endif
 
 // for CLHEP < 1.9
 //class RandGauss;
