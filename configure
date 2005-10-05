@@ -3,6 +3,7 @@
 # BDSIM configuration script
 # I. Agapov 21.01.05
 
+
 #default settings
 Makefile=Makefile
 success="1"
