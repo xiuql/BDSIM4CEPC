@@ -370,6 +370,9 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
   }
 
   element_list.push_back(e);
+
+  return 0;
+
 }
 
 int expand_line(char *name, char *start, char* end)
@@ -659,7 +662,7 @@ void print(list<struct Element> l, int ident)
 	printf(" length=%.10g, radius=%.10g",(*it).l, (*it).r);
 	break;
 
-      defaut:
+      default:
 	break;
       }
 
@@ -771,6 +774,7 @@ int add_func(char *name, double (*func)(double))
 {
   struct symtab *sp=symlook(name);
   sp->funcptr=func;
+  return 0;
 }
 
 int add_var(char *name, double value, int is_reserved = 0)
@@ -778,6 +782,7 @@ int add_var(char *name, double value, int is_reserved = 0)
   struct symtab *sp=symlook(name);
   sp->value=value;
   sp->is_reserved = is_reserved;
+  return 0;
 }
 
 #endif

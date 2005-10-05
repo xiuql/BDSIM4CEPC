@@ -29,8 +29,10 @@ extern int yyerror(char *s);
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
 int include_stack_ptr = 0;
 
-//#define YY_USER_ACTION yylloc.first_line = yylineno;\
-//                       yylloc.last_line = yylineno;
+/*
+#define YY_USER_ACTION yylloc.first_line = yylineno;\
+                       yylloc.last_line = yylineno;
+*/
 
 %}
 
@@ -153,13 +155,11 @@ csample { return CSAMPLE; }
       yy_switch_to_buffer(include_stack[include_stack_ptr]);
     }
 }
-
 %%
 
 
 struct symtab * symlook(char *s)
 {
-  char *p;
   struct symtab *sp;
   for( sp=symtab;sp<&symtab[NSYMS];sp++) {
     if(sp->name && !strcmp(sp->name,s)) return sp;

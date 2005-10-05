@@ -459,7 +459,7 @@ element_seq :
               {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched sequence element, %s * %d \n",$3->name,$5);
+		    if(DEBUG) printf("matched sequence element, %s * %d \n",$3->name,(int)$5);
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
@@ -475,7 +475,7 @@ element_seq :
               {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched sequence element, %s * %d \n",$5->name,$3);
+		    if(DEBUG) printf("matched sequence element, %s * %d \n",$5->name,(int)$3);
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
@@ -506,7 +506,7 @@ element_seq :
               {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched last sequence element, %s * %d\n",$1->name,$3);
+		    if(DEBUG) printf("matched last sequence element, %s * %d\n",$1->name,(int)$3);
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
@@ -522,7 +522,7 @@ element_seq :
               {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched last sequence element, %s * %d\n",$3->name,$1);
+		    if(DEBUG) printf("matched last sequence element, %s * %d\n",$3->name,(int)$1);
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
@@ -685,7 +685,7 @@ vecexpr :  VECVAR
 	      $$->data = new double[$1->size];
 	      $$->size = $1->size;
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$1->size;i++)
 		{
 		  $$->data[i] = $1->data[i];
@@ -706,7 +706,7 @@ vecexpr :  VECVAR
 	      $$->size = ($1->size < $3->size )? $1->size : $3->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $1->data[i] + $3->data[i];
@@ -729,7 +729,7 @@ vecexpr :  VECVAR
 	      $$->size = ($1->size < $3->size )? $1->size : $3->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $1->data[i] - $3->data[i];
@@ -752,7 +752,7 @@ vecexpr :  VECVAR
 	      $$->size = $1->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $1->data[i] + $3;
@@ -773,7 +773,7 @@ vecexpr :  VECVAR
 	      $$->size = $1->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $1->data[i] * $3;
@@ -793,7 +793,7 @@ vecexpr :  VECVAR
 	      $$->size = $1->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $1->data[i] / $3;
@@ -813,7 +813,7 @@ vecexpr :  VECVAR
 	      $$->size = $3->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $3->data[i] + $1;
@@ -833,7 +833,7 @@ vecexpr :  VECVAR
 	      $$->size = $3->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $1 - $3->data[i];
@@ -853,7 +853,7 @@ vecexpr :  VECVAR
 	      $$->size = $3->size;
 	      $$->data = new double[$$->size];
 	      //array_list.push_back($$);
-	      int i = 0;
+	      
 	      for(int i=0;i<$$->size;i++)
 		{
 		  $$->data[i] = $1 * $3->data[i];
