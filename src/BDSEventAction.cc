@@ -255,8 +255,12 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 //       }
 //     }	
 
-  
-  if ((event_number+1)%BDSGlobals->GetNumberOfEventsPerNtuple() == 0)
+ 
+
+  int evntsPerNtuple = BDSGlobals->GetNumberOfEventsPerNtuple();
+
+  if(evntsPerNtuple>0)
+    if ((event_number+1)% evntsPerNtuple == 0)
     {
       if(DEBUG) G4cout<<"writing to file "<<G4endl;
       // notify the output about the event end
