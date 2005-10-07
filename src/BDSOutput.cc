@@ -24,13 +24,15 @@ BDSOutput::~BDSOutput()
 {
   of.close();
 
+
 #ifdef USE_ROOT
-  if(theRootOutputFile->IsOpen())
-    {
-      theRootOutputFile->Write();
-      theRootOutputFile->Close();
-      delete theRootOutputFile;
-    }
+  if(format==_ROOT)
+    if(theRootOutputFile->IsOpen())
+      {
+	theRootOutputFile->Write();
+	theRootOutputFile->Close();
+	delete theRootOutputFile;
+      }
 #endif
 }
 
@@ -56,6 +58,8 @@ void BDSOutput::SetFormat(G4int val)
 // output initialization (ROOT only)
 void BDSOutput::Init(G4int FileNum)
 {
+  if(format != _ROOT) return;
+
 #ifdef USE_ROOT
   // set up the root file
   G4String filename = outputFilename + "_" 
@@ -96,6 +100,13 @@ void BDSOutput::Init(G4int FileNum)
       TrajTree->Branch("y",&y,"y/F");
       TrajTree->Branch("z",&z,"z/F");
     }
+
+  // build energy loss histogram
+
+  G4double zMax = BDSGlobals->GetWorldSizeZ();
+  G4int nBins = 1000;
+
+  EnergyLossHisto = new TH1F("ElossHisto", "Energy Loss",nBins,0.,zMax);
 
 #endif
 }
@@ -228,6 +239,31 @@ G4int BDSOutput::WriteTrajectory(TrajectoryVector* TrajVec)
   return 0;
 }
 
+// make energy loss histo
+
+G4int BDSOutput::WriteEnergyLoss(BDSEnergyCounterHitsCollection* hc)
+{
+
+  if( format == _ROOT) {
+#ifdef USE_ROOT
+  
+    G4int n_hit = hc->entries();
+    
+    for (G4int i=0;i<n_hit;i++)
+      {
+	G4double Energy=(*hc)[i]->GetEnergy();
+	G4double EWeightZ=(*hc)[i]->
+	  GetEnergyWeightedPosition()/Energy;
+	
+	EnergyLossHisto->Fill((EWeightZ+BDSGlobals->GetWorldSizeZ())/m,Energy/GeV);
+      }
+#endif
+  }
+
+}
+
+
+
 // write some comments to the output file
 // only for ASCII output
 void BDSOutput::Echo(G4String str)
@@ -241,26 +277,3 @@ G4int BDSOutput::Commit(G4int FileNum)
   return 0;
 }
 
-
-//  // ROOT initialization
-
-//   BDSRoot = new BDSRootObjects();
-
-//   gDirectory->mkdir("Histos");
-//   gDirectory->mkdir("Trees");
-//   gDirectory->mkdir("Trajectories");
-
-//   TROOT RootStartup("BDSROOT", "Beam Delivery System Simulation");
- 
-// if(BDSRoot->theRootOutputFile)
-//     {
-      
-//       // G4cout<<" nsamplers = "<<BDSRoot->nSamplers<<G4endl;
-//       //G4cout<<" BDS_run Writing event output file"<<G4endl;
-      
-//       gDirectory->Write();
-//       BDSRoot->theRootOutputFile->ls();
-//       BDSRoot->theRootOutputFile->Close();
-      
-//     }
-  

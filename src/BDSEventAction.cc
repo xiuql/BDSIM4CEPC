@@ -209,42 +209,34 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   if(SamplerCollID_cylin>=0)
     SampHC = (BDSSamplerHitsCollection*)(HCE->GetHC(SamplerCollID_cylin));
 
-  if (SampHC) bdsOutput.WriteHits(SampHC);
 
+  if (SampHC) bdsOutput.WriteHits(SampHC);
+  
 
   // are there any Laser wire clorimeters?
   // TODO : check it !!! at present not writing LW stuff
 
 //   if(LWCalorimeterCollID>=0) 
 //     LWCalHC=(BDSLWCalorimeterHitsCollection*)(HCE->GetHC(LWCalorimeterCollID));
-  
-//   for(iEC=theECList->begin();iEC!=theECList->end();iEC++)
-//     {
-//       G4String name=(*iEC)->GetCollectionName(0);
-      
-//       G4int BDSEnergyCounter_ID= SDman->GetCollectionID(name);
-      
-//       if(BDSEnergyCounter_ID>=0)
-// 	{
-// 	  BDSEnergyCounter_HC=
-// 	    (BDSEnergyCounterHitsCollection*)(HCE->GetHC(BDSEnergyCounter_ID));
-// 	  if(BDSEnergyCounter_HC) 
-// 	    {
-// 	      G4int n_hit = BDSEnergyCounter_HC->entries();
 
-// 	      for (G4int i=0;i<n_hit;i++)
-// 		{
-// 		  G4double Energy=(*BDSEnergyCounter_HC)[i]->GetEnergy();
-// 		  G4double EWeightZ=(*BDSEnergyCounter_HC)[i]->
-// 		    GetEnergyWeightedPosition()/Energy;
-	       
-// 		  BDSRoot->h1->
-// 		    Fill((EWeightZ+BDSGlobals->GetWorldSizeZ())/m,
-// 			  Energy/GeV);
-// 		}
-// 	    }
-// 	}
-//     }
+
+  // create energy loss histogram
+  
+  for(iEC=theECList->begin();iEC!=theECList->end();iEC++)
+    {
+      G4String name=(*iEC)->GetCollectionName(0);
+      
+      G4int BDSEnergyCounter_ID= SDman->GetCollectionID(name);
+      
+      if(BDSEnergyCounter_ID>=0)
+	{
+	  BDSEnergyCounter_HC=
+	    (BDSEnergyCounterHitsCollection*)(HCE->GetHC(BDSEnergyCounter_ID));
+	
+	  if(BDSEnergyCounter_HC) 
+	    bdsOutput.WriteEnergyLoss(BDSEnergyCounter_HC);
+	}
+    }
 
 
 //   if (LWCalHC)
@@ -255,31 +247,36 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 //       }
 //     }	
 
- 
+  // f 0 events per ntuples - set max allowed events per ntuples  
 
   int evntsPerNtuple = BDSGlobals->GetNumberOfEventsPerNtuple();
 
   if(evntsPerNtuple>0)
     if ((event_number+1)% evntsPerNtuple == 0)
-    {
-      if(DEBUG) G4cout<<"writing to file "<<G4endl;
-      // notify the output about the event end
-      // this can be used for splitting output files etc.
-      bdsOutput.Commit(itsOutputFileNumber++);
-      if(DEBUG) G4cout<<"done"<<G4endl;
-    }
+      {
+	if(DEBUG) G4cout<<"writing to file "<<G4endl;
+	// notify the output about the event end
+	// this can be used for splitting output files etc.
+	bdsOutput.Commit(itsOutputFileNumber++);
+	if(DEBUG) G4cout<<"done"<<G4endl;
+      }
+
 
   // Save interesting trajectories:
   G4TrajectoryContainer* TrajCont=evt->GetTrajectoryContainer();
 
+
   if(!TrajCont) return;
+
   
   TrajectoryVector* TrajVec=TrajCont->GetVector();
+
 
   if(BDSGlobals->GetStoreTrajectory()&& TrajVec) // store trajectories of primaries
     {
       bdsOutput.WriteTrajectory(TrajVec);
     }
+
 
   if(BDSGlobals->GetStoreMuonTrajectories()&& TrajVec)
     {
