@@ -43,6 +43,7 @@ public:
 
   G4int WriteHits(BDSSamplerHitsCollection*);
   G4int WriteTrajectory(TrajectoryVector* TrajVec);
+  G4int WriteEnergyLoss(BDSEnergyCounterHitsCollection*);
   void Echo(G4String str);
 
   G4int Commit(G4int FileNum);   // close the event
@@ -54,7 +55,7 @@ public:
   TFile* theRootOutputFile;
   TTree *theLWCalorimeterTree;
 
-  TH1F *h1;
+  TH1F *EnergyLossHisto;
 #endif
 
   G4int nSamplers;

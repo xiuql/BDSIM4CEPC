@@ -37,7 +37,21 @@ public:
   const G4String GetName () const;
   void SetName(G4String aName);
 
+  const G4String GetType () const;
+  void SetType(G4String aType);
+  
   const G4double GetAngle () const;
+
+  const G4double GetPhi () const; //polar angle with respect to original frame
+  void SetPhi (G4double val);
+  const G4double GetTheta () const; //azimuthal angle with respect to original frame
+  void SetTheta(G4double val);
+  const G4double GetPsi () const; //azimuthal angle with respect to original frame
+  void SetPsi(G4double val);
+
+  G4double GetXOffset();  // frame offset
+  G4double GetYOffset();
+  G4double GetZOffset();
   
   G4LogicalVolume* GetMarkerLogicalVolume() const;
   
@@ -64,9 +78,6 @@ public:
   void SetInnerMostLogicalVolume(G4LogicalVolume* aLogVol);
   
   G4LogicalVolume* GetInnerMostLogicalVolume() const;
-
-  G4double GetXOffset();
-  G4double GetYOffset();
   
   G4UserLimits* GetInnerBPUserLimits();
 
@@ -89,9 +100,11 @@ public:
 			  G4double aXAper,
 			  G4double aYAper,
 			  G4VisAttributes* aVisAtt,
-			  G4double angle=0.,
+			  G4double phi=0.,  // polar angle (used in hor. bends)
+			  //G4double theta=0.,
 			  G4double XOffset=0.,
-			  G4double YOffset=0.);
+			  G4double YOffset=0.,
+			  G4double ZOffset=0.);
 
 
   G4VisAttributes* GetVisAttributes()const;
@@ -100,11 +113,17 @@ public:
 
 protected:
   G4String itsName;
+  G4String itsType;
   G4double itsLength;
   G4double itsBpRadius;
   G4double itsXAper;
   G4double itsYAper;
   G4double itsAngle;
+
+  G4double itsPhi;
+  G4double itsTheta;
+  G4double itsPsi;
+
   BDSBeamPipe* itsBeamPipe;
   G4MagneticField* itsOuterMagField;
   G4Mag_EqRhs* itsOuterEqRhs;
@@ -121,6 +140,7 @@ protected:
   G4double itsXOffset;
   G4double itsYOffset;
   // << JCC Mar05
+  G4double itsZOffset;
 
 private:
   G4double itsSPos;
@@ -141,14 +161,17 @@ BDSAcceleratorComponent (
 			G4String& aName,G4double aLength, 
 			G4double aBpRadius,G4double aXAper,G4double aYAper, 
 			G4VisAttributes* aVisAtt,G4double angle,
-			G4double XOffset, G4double YOffset): 
+			G4double XOffset, G4double YOffset,G4double ZOffset): 
   itsName(aName),itsLength(aLength),itsBpRadius(aBpRadius),
   itsXAper(aXAper),itsYAper(aYAper),itsAngle(angle),
   itsVisAttributes(aVisAtt),
-  itsXOffset(XOffset),itsYOffset(YOffset)
+  itsXOffset(XOffset),itsYOffset(YOffset), itsZOffset(ZOffset)
 {
   itsSensitiveVolume=NULL;
   itsInnerBeampipeUserLimits =new G4UserLimits();
+  itsPhi = 0;
+  itsTheta = 0;
+  itsPsi = 0;
 };
 
 
@@ -158,11 +181,35 @@ inline const G4double BDSAcceleratorComponent::GetLength () const
 inline const G4double BDSAcceleratorComponent::GetAngle () const
 {return itsAngle;}
 
+inline const G4double BDSAcceleratorComponent::GetPhi () const
+{return itsPhi;}
+
+inline void BDSAcceleratorComponent::SetPhi (G4double val)
+{itsPhi = val;}
+
+inline const G4double BDSAcceleratorComponent::GetTheta () const
+{return itsTheta;}
+
+inline void BDSAcceleratorComponent::SetTheta (G4double val)
+{itsTheta = val;}
+
+inline const G4double BDSAcceleratorComponent::GetPsi () const
+{return itsPsi;}
+
+inline void BDSAcceleratorComponent::SetPsi (G4double val)
+{itsPsi = val;}
+
 inline const G4String BDSAcceleratorComponent::GetName () const
 {return itsName;}
 
 inline void BDSAcceleratorComponent::SetName (G4String aName)
 {itsName=aName;}
+
+inline const G4String BDSAcceleratorComponent::GetType () const
+{return itsType;}
+
+inline void BDSAcceleratorComponent::SetType (G4String aType)
+{itsType=aType;}
 
 inline G4LogicalVolume* BDSAcceleratorComponent::GetMarkerLogicalVolume() const
 {return itsMarkerLogicalVolume;}
@@ -236,6 +283,9 @@ inline  G4double BDSAcceleratorComponent::GetXOffset()
 
 inline  G4double BDSAcceleratorComponent::GetYOffset()
 {return itsYOffset;}
+
+inline  G4double BDSAcceleratorComponent::GetZOffset()
+{return itsZOffset;}
 
 #endif
 
