@@ -36,6 +36,8 @@ const int _LASER=14;
 const int _SAMPLER = 16;
 const int _CSAMPLER = 17;
 
+const int _TRANSFORM3D = 29;
+
 const char *typestr(int type);
 
 
@@ -48,12 +50,16 @@ const int _GAUSSIAN = 0;
 const int _RING = 1;
 const int _SQUARE = 2;
 const int _CIRCLE = 3; 
+const int _GUINEAPIG_BUNCH = 4;
+const int _GUINEAPIG_PAIRS = 5;
 
 struct Options {
   double beamEnergy;
+  double beamEnergySpread;
 
   string particleName;
   string distribType;
+  string distribFile;
 
   int numberOfParticles;
 
@@ -72,6 +78,7 @@ struct Options {
   double xsize, ysize;
 
   int numberToGenerate;
+  int numberOfEventsPerNtuple;
   int backgroundScaleFactor;
   double componentBoxSize;
   double tunnelRadius;
@@ -119,8 +126,10 @@ struct Element {
 
   
   double l,k0,k1,k2,k3,angle,aper,tilt,xsize,ysize,r;
-  double xdir, ydir, zdir, waveLength; // for laser wire
-  
+  double xdir, ydir, zdir, waveLength; // for laser wire and 3d transforms
+
+  double phi, theta, psi; // for 3d transforms
+
   list<double> knl;
   list<double> ksl;
 
@@ -129,7 +138,7 @@ struct Element {
   string material;
   
   // in case the element is a list itself (line)
-  list <struct Element> *lst;
+  list <Element> *lst;
 
   
 };
@@ -146,11 +155,11 @@ struct Parameters {
   
   double angle; int angleset;   // bending angle
   double aper; int aperset;   // aperture (circular)
+  double phi, theta, psi; // for 3d transforms
+  int phiset, thetaset, psiset;
 
-  double xsize, ysize; int xsizeset, ysizeset; // aperture (or laser 
-spotsize for laser)
-  double xdir, ydir, zdir, waveLength; int xdirset, ydirset, zdirset, 
-waveLengthset;
+  double xsize, ysize; int xsizeset, ysizeset; // aperture (or laser spotsize for laser)
+  double xdir, ydir, zdir, waveLength; int xdirset, ydirset, zdirset, waveLengthset;
 
   double tilt; int tiltset;   // tilt
   
@@ -178,6 +187,10 @@ waveLengthset;
     zdir = 0; zdirset = 0; 
     waveLength = 0; waveLengthset = 0; 
 
+    phi = 0; phiset = 0;
+    theta = 0; thetaset = 0;
+    psi = 0; psiset = 0;
+
     aper = 0; aperset = 0;
     tilt = 0; tiltset = 0;
 
@@ -202,8 +215,8 @@ waveLengthset;
 };
 
 
-extern list<struct Element> beamline_list;
-extern struct Options options;
+extern list<Element> beamline_list;
+extern Options options;
 
 // parse the input file and construct beamline_list and options 
 int gmad_parser(FILE *f);
@@ -212,4 +225,3 @@ int gmad_parser(string name);
 
 
 #endif
-
