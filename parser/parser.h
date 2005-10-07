@@ -73,6 +73,8 @@ const char *typestr(int type) {
     return "laser";
   case _ELEMENT :
     return "element";
+  case _TRANSFORM3D :
+    return "transform3d";
   default:
     return "none";
   }
@@ -97,6 +99,9 @@ void flush(struct Element& e )
   e.k1 = 0;
   e.k2 = 0;
   e.angle= 0;
+  e.phi = 0;
+  e.psi = 0;
+  e.theta = 0;
   e.name = NULL;
   e.type = _NONE;
 };
@@ -117,6 +122,9 @@ void copy_properties(list<struct Element>::iterator dest, list<struct Element>::
   (*dest).xdir = (*src).xdir; 
   (*dest).ydir = (*src).ydir; 
   (*dest).zdir = (*src).zdir; 
+  (*dest).phi = (*src).phi; 
+  (*dest).theta = (*src).theta; 
+  (*dest).psi = (*src).psi; 
   (*dest).waveLength = (*src).waveLength; 
  
   (*dest).aper = (*src).aper; 
@@ -156,6 +164,9 @@ void inherit_properties(struct Element e)
   if(!params.ydirset) { params.ydir = e.ydir; params.ydirset = 1; }
   if(!params.zdirset) { params.zdir = e.zdir; params.zdirset = 1; }
   if(!params.waveLength) { params.waveLength = e.waveLength; params.waveLengthset = 1; }
+  if(!params.phiset) { params.phi = e.phi; params.phiset = 1; }
+  if(!params.psiset) { params.psi = e.psi; params.psiset = 1; }
+  if(!params.thetaset) { params.theta = e.theta; params.thetaset = 1; }
 
   if(!params.aperset) { params.aper = e.aper; params.aperset = 1; }
 
@@ -365,6 +376,17 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     e.type = _SAMPLER;
     break;
     
+  case _TRANSFORM3D:
+    e.type = _TRANSFORM3D;
+    e.xdir = params.xdir;
+    e.ydir = params.ydir;
+    e.zdir = params.zdir;
+    e.theta = params.theta;
+    e.phi = params.phi;
+    e.psi = params.psi;
+    break;
+
+
   default:
     break;  
   }
@@ -662,6 +684,11 @@ void print(list<struct Element> l, int ident)
 	printf(" length=%.10g, radius=%.10g",(*it).l, (*it).r);
 	break;
 
+      case _TRANSFORM3D:
+	printf(" xdir=%.10g, ydir=%.10g, zdir=%.10g,  phi=%.10g, theta=%.10g,psi=%.10g",
+	       (*it).xdir, (*it).ydir, (*it).zdir, (*it).phi, (*it).theta, (*it).psi);
+	break;
+
       default:
 	break;
       }
@@ -759,6 +786,9 @@ double property_lookup(char *element_name, char *property_name)
    if(!strcmp(property_name,"xdir")) return (*it).xdir;
    if(!strcmp(property_name,"ydir")) return (*it).ydir;
    if(!strcmp(property_name,"zdir")) return (*it).zdir;
+   if(!strcmp(property_name,"phi")) return (*it).phi;
+   if(!strcmp(property_name,"psi")) return (*it).psi;
+   if(!strcmp(property_name,"theta")) return (*it).theta;
    if(!strcmp(property_name,"waveLength")) return (*it).waveLength;
    if(!strcmp(property_name,"tilt")) return (*it).tilt;
 

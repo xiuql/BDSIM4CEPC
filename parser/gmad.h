@@ -36,6 +36,8 @@ const int _LASER=14;
 const int _SAMPLER = 16;
 const int _CSAMPLER = 17;
 
+const int _TRANSFORM3D = 29;
+
 const char *typestr(int type);
 
 
@@ -124,8 +126,10 @@ struct Element {
 
   
   double l,k0,k1,k2,k3,angle,aper,tilt,xsize,ysize,r;
-  double xdir, ydir, zdir, waveLength; // for laser wire
-  
+  double xdir, ydir, zdir, waveLength; // for laser wire and 3d transforms
+
+  double phi, theta, psi; // for 3d transforms
+
   list<double> knl;
   list<double> ksl;
 
@@ -134,7 +138,7 @@ struct Element {
   string material;
   
   // in case the element is a list itself (line)
-  list <struct Element> *lst;
+  list <Element> *lst;
 
   
 };
@@ -151,6 +155,8 @@ struct Parameters {
   
   double angle; int angleset;   // bending angle
   double aper; int aperset;   // aperture (circular)
+  double phi, theta, psi; // for 3d transforms
+  int phiset, thetaset, psiset;
 
   double xsize, ysize; int xsizeset, ysizeset; // aperture (or laser spotsize for laser)
   double xdir, ydir, zdir, waveLength; int xdirset, ydirset, zdirset, waveLengthset;
@@ -181,6 +187,10 @@ struct Parameters {
     zdir = 0; zdirset = 0; 
     waveLength = 0; waveLengthset = 0; 
 
+    phi = 0; phiset = 0;
+    theta = 0; thetaset = 0;
+    psi = 0; psiset = 0;
+
     aper = 0; aperset = 0;
     tilt = 0; tiltset = 0;
 
@@ -205,8 +215,8 @@ struct Parameters {
 };
 
 
-extern list<struct Element> beamline_list;
-extern struct Options options;
+extern list<Element> beamline_list;
+extern Options options;
 
 // parse the input file and construct beamline_list and options 
 int gmad_parser(FILE *f);

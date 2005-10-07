@@ -65,6 +65,7 @@ rcol { return RCOL;}
 ecol { return ECOL; } 
 absorber { return ABSORBER; }
 element { return ELEMENT; }
+transform3d { return TRANSFORM3D ; }
 collimator { return COLLIMATOR; }
 pipe { return PIPE; }
 gas { return GAS; }

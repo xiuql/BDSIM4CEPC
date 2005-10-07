@@ -39,7 +39,7 @@
 %token <symp> VARIABLE VECVAR FUNC 
 %token <str> STR
 %token MARKER ELEMENT DRIFT DIPOLE SBEND QUADRUPOLE SEXTUPOLE OCTUPOLE MULTIPOLE 
-%token SOLENOID COLLIMATOR RCOL ECOL LINE SEQUENCE SPOILER ABSORBER LASER
+%token SOLENOID COLLIMATOR RCOL ECOL LINE SEQUENCE SPOILER ABSORBER LASER TRANSFORM3D
 %token PERIOD APERTURE FILENAME GAS PIPE
 %token BEAM OPTION PRINT RANGE STOP USE VALUE ECHO PRINTF SAMPLE CSAMPLE
 %token IF ELSE BEGN END LE GE NE FOR
@@ -188,6 +188,16 @@ decl : VARIABLE ':' marker
 	     params.flush();	 
 	   }
        }
+     | VARIABLE ':' transform3d
+       {
+	 if(execute)
+	   {	 
+	     if(ECHO_GRAMMAR) printf("VARIABLE : transform3d %s \n",$1->name);
+	     // check parameters and write into element table
+	     write_table(params,$1->name,_TRANSFORM3D);
+	     params.flush();	 
+	   }
+       }
      | VARIABLE ':' line 
        {
 	 if(execute)
@@ -250,6 +260,9 @@ rcol : RCOL parameters
 laser : LASER parameters
 ;
 
+transform3d : TRANSFORM3D parameters
+;
+
 element : ELEMENT parameters
 ;
 
@@ -282,37 +295,49 @@ parameters:
 		{
 		  if(DEBUG) printf("parameters, VARIABLE(%s) = aexpr(%.10g)\n",$3->name,$5);
 		  if(!strcmp($3->name,"l")) { params.l = $5; params.lset = 1;} 
-		  else
-		    if(!strcmp($3->name,"k0")) { params.k0 = $5; params.k0set = 1;}
+		    else
+		  if(!strcmp($3->name,"k0")) { params.k0 = $5; params.k0set = 1;}
 		    else 
-		      if(!strcmp($3->name,"k1")) { params.k1 = $5; params.k1set = 1;} 
-		      else
-			if(!strcmp($3->name,"k2")) { params.k2 = $5; params.k2set = 1;}
-			else 
-			  if(!strcmp($3->name,"k3")) { params.k3 = $5; params.k3set = 1;}
-			  else 
-			  if(!strcmp($3->name,"angle")) { params.angle = $5; params.angleset = 1;}
-			  else
-			    if(!strcmp($3->name,"aper") ||!strcmp($3->name,"aperture") ) 
+		  if(!strcmp($3->name,"k1")) { params.k1 = $5; params.k1set = 1;} 
+		    else
+		  if(!strcmp($3->name,"k2")) { params.k2 = $5; params.k2set = 1;}
+		    else 
+		  if(!strcmp($3->name,"k3")) { params.k3 = $5; params.k3set = 1;}
+		    else 
+		  if(!strcmp($3->name,"angle")) { params.angle = $5; params.angleset = 1;}
+		    else
+		  if(!strcmp($3->name,"aper") ||!strcmp($3->name,"aperture") ) 
 			      { params.aper = $5; params.aperset = 1;}
-			    else
-			      if(!strcmp($3->name,"xsize") ) { params.xsize = $5; params.xsizeset = 1;}
-			      else
-				if(!strcmp($3->name,"ysize") ) { params.ysize = $5; params.ysizeset = 1;}
-			    else
-			      if(!strcmp($3->name,"tilt")) { params.tilt = $5; params.tiltset = 1;}
-			      else
-				if(!strcmp($3->name,"fint")) {;} // fringe field parameters
-			    else
-			      if(!strcmp($3->name,"fintx")) {;}  //
-                            else
-			      if(!strcmp($3->name,"e1")) {;}  //
-                            else
-			      if(!strcmp($3->name,"e2")) {;}  //
-                            else
-			      if(!strcmp($3->name,"hgap")) {;}  //
-			    else
-			      if(VERBOSE) printf("Warning : unknown parameter %s\n",$3->name);
+		    else
+		  if(!strcmp($3->name,"xsize") ) { params.xsize = $5; params.xsizeset = 1;}
+		    else
+		  if(!strcmp($3->name,"ysize") ) { params.ysize = $5; params.ysizeset = 1;}
+		    else
+		  if(!strcmp($3->name,"tilt")) { params.tilt = $5; params.tiltset = 1;}
+		    else
+		  if(!strcmp($3->name,"x")) {params.xdir = $5; params.xdirset = 1;} // x direction
+		    else
+		  if(!strcmp($3->name,"y")) {params.ydir = $5; params.ydirset = 1;} // y direction 
+		    else
+		  if(!strcmp($3->name,"z")) {params.zdir = $5; params.zdirset = 1;} // z direction 
+		    else
+		  if(!strcmp($3->name,"phi")) {params.phi = $5; params.phiset = 1;}  // polar angle
+		    else
+		  if(!strcmp($3->name,"theta"))  {params.theta = $5; params.thetaset = 1;} // azimuthal angle
+		    else
+		  if(!strcmp($3->name,"psi"))  {params.psi = $5; params.psiset = 1;} // 3rd  angle
+		    else
+		  if(!strcmp($3->name,"fint")) {;} // fringe field parameters
+		    else
+		  if(!strcmp($3->name,"fintx")) {;}  //
+                    else
+		  if(!strcmp($3->name,"e1")) {;}  //
+                    else
+		  if(!strcmp($3->name,"e2")) {;}  //
+                    else
+		  if(!strcmp($3->name,"hgap")) {;}  //
+		    else
+		  if(VERBOSE) printf("Warning : unknown parameter %s\n",$3->name);
 		  
 		}
 	    }
