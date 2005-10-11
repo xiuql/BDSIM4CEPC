@@ -594,8 +594,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       // advance the coordinates, but not for cylindrical samplers 
       if( ( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength )  )
 	{
-	  rtot = rlast + zHalfAngle *  (*iBeam)->GetLength()/2;
-	  rlast = rtot + zHalfAngle *  (*iBeam)->GetLength()/2;
+	  rtot = rlast + zHalfAngle *  (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2;
+	  rlast = rtot + zHalfAngle *  (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2;
 	      
 	}
       // rotate to the previous reference frame
