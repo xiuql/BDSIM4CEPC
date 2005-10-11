@@ -780,6 +780,8 @@ void set_value(string name, double value )
 
   if(name == "storeTrajectory") options.storeTrajectory = (int) value; 
   
+  if(name == "stopTracks") options.stopTracks = (int) value; 
+
 }
 
 
