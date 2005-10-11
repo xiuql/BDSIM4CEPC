@@ -235,14 +235,14 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
 	
 	if(DEBUG) G4cout<<"---->adding Sbend "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
-		    " angle="<<(*it).angle<<G4endl;
+		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
 	
 	if( fabs((*it).angle) < 1.e-7 * rad ) {
 	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
 	} 
 	else {
 	  theBeamline.push_back(new mySectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,
-						 bPrime,(*it).angle));
+						 (*it).angle,(*it).tilt,bPrime));
 	  //theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,(*it).angle));
 	}
       }
@@ -254,7 +254,6 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if(DEBUG) { G4cout<<"---->adding Quad, "<<G4String( (*it).name )<<
 		      " k1 ="<<(*it).k1<<" b' ="<<bPrime<<" brho = "<<brho<<G4endl; }
 
-	//theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
 	theBeamline.push_back(new BDSQuadrupole(G4String((*it).name),(*it).l * m,bpRad,FeRad,bPrime));
       }
       
@@ -339,32 +338,16 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	
       }
       
-      
-      //   else if(type=="SEXTUPOLE") 
-      //     ctor->push_back( new BDSSextupole(name,len,bpRad,FeRad,bDoublePrime));
-      //   else if(type=="SKEWSEXT") 
-      //     ctor->push_back(new BDSSkewSextupole(name,len,bpRad,FeRad,bDoublePrime));
       //   else if(type=="OCTUPOLE") 
       //     ctor->push_back(new BDSOctupole(name,len,bpRad,FeRad,bTriplePrime));
       //   else if(type=="DECAPOLE") 
       //     ctor->push_back(new BDSDecapole(name,len,bpRad,FeRad,bQuadPrime));
-      //   else if(type=="KILLER")
-      //     ctor->push_back(new BDSKiller(name,len));
-      //   else if(type=="LASERWIRE")
-      //     {
-      //       BDSLaserWire* TheBDSLaserWire=
-      // 	new BDSLaserWire(name,len,BDSGlobals->GetLaserwireWavelength(),
-      // 			 BDSGlobals->GetLaserwireDir());
-      //       ctor->push_back(TheBDSLaserWire);
-      //     }
       //   else if(type=="LWCAL")
       //     ctor->push_back(new BDSLWCalorimeter(name,len,bpRad));
       //   else if(type=="BLOCK")
       //     ctor->push_back(new BDSBlock(name,len));
       //   else if(type=="RESETTER") 
       //     ctor->push_back(new BDSResetter(name,len));
-      //   else if(type=="SAMPCYLNDR")
-      //     ctor->push_back(new BDSSamplerCylinder(name,len,radius));
       
       
     }
@@ -493,40 +476,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
                                  0);			//copy number
 
 
-
-  // Think of building tunnel later!!!
-  //---------------------------------------
- //  //if(BDSGlobals->GetAcceleratorType()->GetType()!="atf")
-//     {
-//       //build tunnel out of concrete:
-//       G4LogicalVolume* TunnelLogVol = 
-// 	new G4LogicalVolume(new G4Tubs("Tunnel_solid",
-// 				       BDSGlobals->GetTunnelRadius(),
-// 				       1.5*BDSGlobals->GetTunnelRadius(),
-// 				       WorldSizeZ,
-// 				       0,twopi*radian),
-// 			    theMaterials->LCConcrete,
-// 			    "Tunnel");
-//       //  logicWorld->SetVisAttributes (G4VisAttributes::Invisible);
-//       TunnelLogVol->SetVisAttributes(new G4VisAttributes(G4Colour(0,1,1)));
-//       G4UserLimits* TunnelUserLimits =new G4UserLimits();
-//       TunnelUserLimits->SetMaxAllowedStep(1000*m);
-//       TunnelLogVol->SetUserLimits(TunnelUserLimits);
-      
-//       G4PVPlacement* physiTunnel = 
-// 	new G4PVPlacement(
-// 			  // TunnelRot,	        //rotation
-// 			  0,
-// 			  ZeroVec,             	//at (0,0,0)
-// 			  "Tunnel_phys",	//its name
-// 			  TunnelLogVol,		//its logical volume
-// 			  physiWorld,		//its mother  volume
-// 			  false,		//no boolean operation
-// 			  0);			//copy number
-//     }
-
-
-  // densitive detectors
+  // sensitive detectors
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
@@ -547,12 +497,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   
   // reset counters:
   for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++){
-    // JCC Mar05 - added IF to check that not resetting for Offset Component
-    // This is the only component that should have a length of zero and yet
-    // still be registered as an AcceleratorComponent
 
-    // IA - Offset changed to Transform3D
-    
+    // zero length components have no logical volumes
     if((*iBeam)->GetLength()!=0.)
       {
 	G4String logVolName = (*iBeam)->GetMarkerLogicalVolume()->GetName();
@@ -577,24 +523,9 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       G4double angle=(*iBeam)->GetAngle();
       G4double theta=(*iBeam)->GetTheta();
       G4double psi = (*iBeam)->GetPsi();
+      G4double tilt = (*iBeam)->GetTilt();
 
-      // define new coordinate system local frame	  
-     
-      globalRotation.rotate(angle,localY);
-
-      G4ThreeVector zHalfAngle = localZ; // for sectro bedn - through half angle
-      zHalfAngle.rotate(-angle/2, localY);
-
-      G4ThreeVector oldZ = localZ; 
-
-      localX.rotate(-angle,localY);
-      localZ.rotate(-angle,localY);
-      
-      globalRotation.rotate(theta,localX);
-
-      localY.rotate(theta,localX);
-      localZ.rotate(theta,localX);
-
+    
       if( (*iBeam)->GetType() == "transform3d")
 	{
 	  rtot(0) += (*iBeam)->GetXOffset(); 
@@ -628,47 +559,64 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	}
             
       
-      // placement position
-      //if(angle == 0)
-      TargetPos = rlast + zHalfAngle *  (*iBeam)->GetLength()/2;
-      //else
-      //TargetPos = rlast +  localZ / sin(angle/2) * ( (*iBeam)->GetLength()) * angle;
-      
-      G4RotationMatrix* RotateComponent=new G4RotationMatrix(globalRotation); // for component placement
+      G4RotationMatrix *rotateComponent = new G4RotationMatrix; // for component placement
 
-      if((angle!=0) && ((*iBeam)->GetType() != "transform3d"))
+      rotateComponent->rotateZ(tilt);
+
+      // special placement for sbends
+      if((*iBeam)->GetType() == "sbend")
 	{
-	// allow for the fact that trapezoids are defined along z-axis...
-	  RotateComponent->rotate(pi/2-angle/2,localY);
+	  // for sbends tilted alements need be extra rotated
 
-	  // determine where the face goes and translate the origin accordingly
+	  G4ThreeVector rotAxis = G4ThreeVector(0.,1.,0.);
+	  //rotAxis.rotateZ(tilt);
 
-	  //G4Vector difv = TargetPos - rlast;
-	  //difv.rotate
+	  // allow for the fact that trapezoids are defined along z-axis...
+	  
+	  G4cout<<"ROTATING ABOUT "<<rotAxis<<G4endl;
+	  
+	  rotateComponent->rotate(pi/2+angle/2,rotAxis);
+	  //rotateComponent->rotateY(pi/2+angle/2);
 
 	}
+
+      // define center of bended elements from the previos coordinate frame	  
+         
+      G4ThreeVector zHalfAngle = localZ; 
+      zHalfAngle.rotateZ(tilt);
+      zHalfAngle.rotateY(-angle/2);
+      zHalfAngle.transform(globalRotation);
+    
+    
+      // target position
+      TargetPos = rlast + zHalfAngle *  (*iBeam)->GetLength()/2;
 
       // advance the coordinates, but not for cylindrical samplers 
       if( ( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength )  )
 	{
-	  //if( theta ==0 && angle == 0) // sector bend
-	    {
-	      rtot = rlast + zHalfAngle *  (*iBeam)->GetLength()/2;
-	      rlast = rtot + zHalfAngle *  (*iBeam)->GetLength()/2;
+	  rtot = rlast + zHalfAngle *  (*iBeam)->GetLength()/2;
+	  rlast = rtot + zHalfAngle *  (*iBeam)->GetLength()/2;
 	      
-	    }
-	    //else // transform 3d
-	    //{
-	    //  rtot = rlast +  localZ * sin(angle/2) * ( (*iBeam)->GetLength()) / angle;
-	    //  rlast = rtot +  localZ * sin(angle/2) * ( (*iBeam)->GetLength()) / angle;
-	    //}
 	}
+      // rotate to the previous reference frame
+      rotateComponent->transform(globalRotation);
+
+      // recompute global rotation
+      // define new coordinate system local frame	  
       
+      globalRotation.rotate(-angle,localY);
+      
+      localX.rotate(-angle,localY);
+      localZ.rotate(-angle,localY);
+      
+      globalRotation.rotate(theta,localX);
+
+      localY.rotate(theta,localX);
+      localZ.rotate(theta,localX);
+
       //(*iBeam)->SetZUpper(rtot.z());
       
-      // JCC Mar05 - Added IF to check for CMPOFFSET by checking against
-      // the Beamline Components Length. CMPOFFSET is only component that
-      // should have length =0
+      // zero lenght components not placed (transform3d)
       if((*iBeam)->GetLength()!=0.){
 	
 	G4LogicalVolume* LocalLogVol=(*iBeam)->GetMarkerLogicalVolume();
@@ -695,7 +643,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	
 	G4PVPlacement* PhysiComponentPlace = 
 	  new G4PVPlacement(
-			    RotateComponent,   //  rotation
+			    rotateComponent,   //  rotation
 			    TargetPos,         // its position
 			    LocalName,	      // its name
 			    LocalLogVol,	      // its logical volume
