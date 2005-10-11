@@ -3,6 +3,8 @@
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
+#include "BDSGlobalConstants.hh"
+
 #include "BDSEnergyCounterSD.hh"
 #include "BDSEnergyCounterHit.hh"
 #include "G4VPhysicalVolume.hh"
@@ -46,6 +48,14 @@ void BDSEnergyCounterSD::Initialize(G4HCofThisEvent*HCE)
 G4bool BDSEnergyCounterSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 { 
   G4double edep = aStep->GetTotalEnergyDeposit();
+
+  G4double enrg;
+
+  if(BDSGlobals->GetStopTracks())
+    enrg = aStep->GetTrack()->GetTotalEnergy() - aStep->GetDeltaEnergy();
+  else
+    enrg = edep;
+
   if (edep==0.) return false;      
   
 
@@ -63,15 +73,20 @@ G4bool BDSEnergyCounterSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 
   if (HitID[nCopy]==-1)
     { 
-      BDSEnergyCounterHit* ECHit= new BDSEnergyCounterHit(nCopy,edep,zpos*edep);
+      BDSEnergyCounterHit* ECHit= new BDSEnergyCounterHit(nCopy,enrg,zpos*edep);
       HitID[nCopy]= BDSEnergyCounterCollection->insert(ECHit)-1;
     }
   else
     {
-      (*BDSEnergyCounterCollection)[HitID[nCopy]]-> AddEnergy(edep);
+      (*BDSEnergyCounterCollection)[HitID[nCopy]]-> AddEnergy(enrg);
       (*BDSEnergyCounterCollection)[HitID[nCopy]]-> 
 	AddEnergyWeightedPosition(edep*zpos);
     }
+
+  
+  if(BDSGlobals->GetStopTracks())
+    aStep->GetTrack()->SetTrackStatus(fStopAndKill);
+
   return true;
 }
 

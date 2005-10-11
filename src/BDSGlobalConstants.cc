@@ -143,12 +143,13 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   itsStoreMuonTrajectories = opt.storeMuonTrajectories;
   itsStoreTrajectory = opt.storeTrajectory;
 
-  G4cout<<"STOREA TRAJ = "<< itsStoreTrajectory<<G4endl;
+  //G4cout<<"STOREA TRAJ = "<< itsStoreTrajectory<<G4endl;
 
   itsUseMuonShowers = opt.useMuonShowers;
 
   itsMuonLowestGeneratedEnergy = opt.muonLowestGeneratedEnergy * GeV;
 
+  stopTracks = opt.stopTracks; 
 
   // tmp - parameters of the laserwire process - to be given in the element attributes
 
