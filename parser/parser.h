@@ -98,12 +98,30 @@ void flush(struct Element& e )
   e.k0 = 0;
   e.k1 = 0;
   e.k2 = 0;
-  e.angle= 0;
+  e.angle = 0;
+  e.tilt = 0;
   e.phi = 0;
   e.psi = 0;
   e.theta = 0;
+
+  e.aper = 0;
+  e.waveLength = 0;
+
+  e.xdir = 0;
+  e.ydir = 0;
+  e.zdir = 0;
+
   e.name = NULL;
   e.type = _NONE;
+
+  /*  
+      e.knl = list<double>(0);
+      e.ksl = list<double>(0);
+      
+      geometryFile
+      bmapFile
+      material;
+  */
 };
 
 void copy_properties(list<struct Element>::iterator dest, list<struct Element>::iterator src)
@@ -248,6 +266,7 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     e.type = _SBEND;
     e.l = params.l;
     e.angle = params.angle;
+    if(params.tiltset) e.tilt = params.tilt;
     break;
 
   case _QUAD:
@@ -659,8 +678,8 @@ void print(list<struct Element> l, int ident)
       case _SBEND :
       case _QUAD:
       case _SEXTUPOLE:
-	printf(", l=%.10g, k0=%.10g, k1=%.10g, k2=%.10g,angle=%.10g ",
-	       (*it).l,(*it).k0,(*it).k1,(*it).k2, (*it).angle);
+	printf(", l=%.10g, k0=%.10g, k1=%.10g, k2=%.10g,angle=%.10g,tilt=%.10g ",
+	       (*it).l,(*it).k0,(*it).k1,(*it).k2, (*it).angle,(*it).tilt);
 	break;
       case _MULT:
 

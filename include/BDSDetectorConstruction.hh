@@ -61,5 +61,6 @@ public:
   G4VSensitiveDetector *  BDSSensitiveDetector;
 
 };
+
 #endif
 

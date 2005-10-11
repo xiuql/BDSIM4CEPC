@@ -6,11 +6,19 @@
    Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
    Added code for GABs BeamGasPlug
    Changed Killer to kill just electrons/positrons if called KILLERE
+
+   Modified 10.05.05 IA
+   Removed Killer element, added cuts per element check
+   Can have killer functionality if cuts set to 0
+
 */
 
 
 //====================================================
+//  Class description here ...
+//
 //====================================================
+
 #include "BDSGlobalConstants.hh" // must be first in include list
 
 #include "BDSSteppingAction.hh"
@@ -77,8 +85,7 @@ BDSSteppingAction::~BDSSteppingAction()
 //====================================================
 
 extern G4double htot;
-//static G4FieldManager* LastFieldMgr=NULL;
-//void BDSSteppingAction::UserSteppingAction(G4Step* ThisStep)
+
 void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 { 
   // G4cout<<"user stepping action called"<<G4endl;
@@ -87,6 +94,7 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
   
   G4int TrackID=ThisTrack->GetTrackID();
 
+  G4String pName=ThisTrack->GetDefinition()->GetParticleName();
 
   // Check for a problem at the boundaries, where an infinite loop can
   // apparently sometimes occur
@@ -121,14 +129,16 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 
   itsLastZpos=ThisTrack->GetPosition().z();
 
-  if(ThisTrack->GetVolume()->GetName()=="KILLER_phys")
-    ThisTrack->SetTrackStatus(fStopAndKill);
 
-  G4String pName1=ThisTrack->GetDefinition()->GetParticleName();
-  if(ThisTrack->GetVolume()->GetName()=="KILLERE_phys"&&pName1=="e+")
-    ThisTrack->SetTrackStatus(fStopAndKill);
-  if(ThisTrack->GetVolume()->GetName()=="KILLERE_phys"&&pName1=="e-")
-    ThisTrack->SetTrackStatus(fStopAndKill);
+  // Killer - obsolete
+  //if(ThisTrack->GetVolume()->GetName()=="KILLER_phys")
+  //  ThisTrack->SetTrackStatus(fStopAndKill);
+
+  //G4String pName1=ThisTrack->GetDefinition()->GetParticleName();
+  //if(ThisTrack->GetVolume()->GetName()=="KILLERE_phys"&&pName1=="e+")
+  //  ThisTrack->SetTrackStatus(fStopAndKill);
+  //if(ThisTrack->GetVolume()->GetName()=="KILLERE_phys"&&pName1=="e-")
+  //  ThisTrack->SetTrackStatus(fStopAndKill);
 
 
   // for electrons (and positrons) store the last point where they
@@ -295,14 +305,17 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
   //   G4cout<<" Edep="<<ThisStep->GetTotalEnergyDeposit()/GeV<<
   //	" Vol="<<ThisTrack->GetVolume()->GetName()<<G4endl;
 
-  // temp:
-  G4String part=ThisTrack->GetDefinition()->GetParticleName();
 
   
   //  if(part!="e-"&& part!="e+"&& part!="gamma")
   //  G4cout<<part<<"Energy="<<ThisTrack->GetTotalEnergy()/GeV<<" GeV"<<G4endl;
 
+
+
   
+  // ------------  output in case of verbose step ---------------------
+
+
   if(BDSGlobals->GetVerboseStep())
     if(!BDSGlobals->GetVerboseEventNumber()||
        BDSGlobals->GetVerboseEventNumber()==event_number)
@@ -326,10 +339,6 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 	//G4cout<<"angle="<<ThisStep->GetPreStepPoint()->GetMomentumDirection().angle
 	//  (ThisStep->GetPostStepPoint()->GetMomentumDirection())<<G4endl;
 	
-	
-	
-	//			if(event_number==77)
-	//{
 	
 	
 	int ID=ThisTrack->GetTrackID();
@@ -362,23 +371,17 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 	G4cout<<" Global Position="<<ThisTrack->GetPosition()<<G4endl;
 	
 	
-	//if(ThisTrack->GetTotalEnergy()>255*GeV)G4Exception(" BDSStep: bigE");
-	//	}
-	
-	
-	//	if(abs(LocalPosVec[0]/m)>0.005)G4Exception("big x!");
-	
 	if(ThisTrack->GetMaterial()->GetName() !="LCVacuum")
 	  G4cout<<"material="<<ThisTrack->GetMaterial()->GetName()<<G4endl;
 	//	G4Exception(" wrong material");
 	
-	// IA: added type cast - REMOVE!!!!
+
 	  G4VProcess* proc=(G4VProcess*)(ThisStep->GetPostStepPoint()->
 	    GetProcessDefinedStep() );
 
        	  if(proc)G4cout<<" post-step process="<<proc->GetProcessName()<<G4endl<<G4endl;
 
-	  //IA: added type cast
+
 	  proc=(G4VProcess*)(ThisStep->GetPreStepPoint()->
 	    GetProcessDefinedStep() );
 
@@ -387,10 +390,10 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 	
 
       }
-  
-  // Threshold cut for photons        
-  G4String pName=ThisTrack->GetDefinition()->GetParticleName();
 
+
+  // -------------  kill tracks according to cuts -------------------
+  
   /*
   G4VProcess* proc=ThisStep->GetPostStepPoint()->GetProcessDefinedStep();
   G4cout<<pName<<" weight="<<ThisTrack->GetWeight()<<" ID="<<
@@ -400,7 +403,9 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
 
   if(pName=="gamma")
     {
-      if(ThisTrack->GetTotalEnergy()<BDSGlobals->GetThresholdCutPhotons())
+      G4double photonCut = BDSGlobals->GetThresholdCutPhotons();
+
+      if(ThisTrack->GetTotalEnergy()<photonCut)
 	{
 	  //ThisTrack->SetKineticEnergy(0.);
 	  ThisTrack->SetTrackStatus(fStopAndKill);

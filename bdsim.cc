@@ -402,7 +402,7 @@ int main(int argc,char** argv) {
   
     
   
-  delete BDSGlobals;
+  //delete BDSGlobals;
   delete runManager;
      
   return 0;

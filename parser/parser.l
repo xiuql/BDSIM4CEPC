@@ -77,6 +77,7 @@ apertr {return APERTURE; } // reserved keywords
 filename { return FILENAME; }
 period { return PERIOD; }
 range { return RANGE; }
+cut { return CUT; }
 
 "if" { return IF; }
 "for" { return FOR; }
