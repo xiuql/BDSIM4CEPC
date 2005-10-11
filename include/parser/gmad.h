@@ -114,6 +114,7 @@ struct Options {
   double hadronInelasticScaleFactor;
   int storeMuonTrajectories;
   int storeTrajectory;
+  int stopTracks;
   int useMuonShowers;
   double muonLowestGeneratedEnergy;
 
