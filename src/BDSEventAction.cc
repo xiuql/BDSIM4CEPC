@@ -10,7 +10,7 @@
 
 
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 //======================================================
 //======================================================
@@ -72,13 +72,14 @@ G4bool FireLaserCompton;
 
 extern BDSOutput bdsOutput;
 extern G4String outputFilename;
+extern G4bool isBatch;
 
 //======================================================
 
 BDSEventAction::BDSEventAction()
 :SamplerCollID_plane(-1),SamplerCollID_cylin(-1),drawFlag("all"), LWCalorimeterCollID(-1)
 { 
-  if(BDSGlobals->GetUseBatch()) printModulo=1000;
+  if(isBatch) printModulo=1000;
   else printModulo=1;
   
   itsOutputFileNumber=0;
@@ -147,7 +148,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
       G4cout << G4endl;
     }
 
-  bdsOutput.Echo("Begin of event:" + BDSGlobals->StringFromInt(event_number) ) ;
+  if(BDSGlobals->GetVerboseStep()) bdsOutput.Echo("Begin of event:" + BDSGlobals->StringFromInt(event_number) ) ;
 
   
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
@@ -161,13 +162,13 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 //if( bdsOutput.GetCylinderSamplerNumber() > 0 )
   {   
     //if (SamplerCollID_cylin==-1)
-      SamplerCollID_cylin = SDman->GetCollectionID("Sampler_cylinder");
+    //SamplerCollID_cylin = SDman->GetCollectionID("Sampler_cylinder");
   }
   
   //if( bdsOutput.GetLWCalorimeterNumber() > 0 )
   {
     //if (LWCalorimeterCollID==-1) 
-      LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
+    //LWCalorimeterCollID = SDman->GetCollectionID("LWCalorimeterCollection");
   }
   FireLaserCompton=true;
 }
@@ -178,7 +179,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
 
   if(DEBUG) G4cout<<"BDSEventAction : end of event action"<<G4endl;
-  bdsOutput.Echo("processing end of event");
+  if(BDSGlobals->GetVerboseStep()) bdsOutput.Echo("processing end of event");
 
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
 
