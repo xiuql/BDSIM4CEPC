@@ -146,13 +146,12 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 			       G4double& t, G4double& E)
 {
 
-  G4cout<<"distribution type: "<<distribType<<G4endl;
+  if(BDSGlobals->GetVerboseStep()) G4cout<<"distribution type: "<<distribType<<G4endl;
 
   double r, phi;
 
   if(distribType == _GAUSSIAN)
     {
-      G4cout<<"GAUSS";
       x0 = sigmaX * GaussGen->shoot() * m;
       y0 = sigmaX * GaussGen->shoot() * m;
       z0 = 0;
