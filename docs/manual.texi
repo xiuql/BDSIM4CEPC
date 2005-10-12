@@ -698,6 +698,8 @@ For example, an absorber of NLC type can be represented by the following code
 
 @section @code{mokka}
 
+@include mokka.texi
+
 @c cccccccccccccccccccccccccccccccccccccccccc
 @c
 @c cccccccccccccccccccccccccccccccccccccccccc
