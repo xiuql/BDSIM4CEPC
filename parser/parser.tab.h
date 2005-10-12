@@ -57,27 +57,29 @@
      SPOILER = 283,
      ABSORBER = 284,
      LASER = 285,
-     PERIOD = 286,
-     APERTURE = 287,
-     FILENAME = 288,
-     GAS = 289,
-     PIPE = 290,
-     BEAM = 291,
-     OPTION = 292,
-     PRINT = 293,
-     RANGE = 294,
-     STOP = 295,
-     USE = 296,
-     VALUE = 297,
-     ECHO = 298,
-     PRINTF = 299,
-     SAMPLE = 300,
-     CSAMPLE = 301,
-     IF = 302,
-     ELSE = 303,
-     BEGN = 304,
-     END = 305,
-     FOR = 306
+     TRANSFORM3D = 286,
+     PERIOD = 287,
+     APERTURE = 288,
+     FILENAME = 289,
+     GAS = 290,
+     PIPE = 291,
+     BEAM = 292,
+     OPTION = 293,
+     PRINT = 294,
+     RANGE = 295,
+     STOP = 296,
+     USE = 297,
+     VALUE = 298,
+     ECHO = 299,
+     PRINTF = 300,
+     SAMPLE = 301,
+     CSAMPLE = 302,
+     IF = 303,
+     ELSE = 304,
+     BEGN = 305,
+     END = 306,
+     FOR = 307,
+     CUT = 308
    };
 #endif
 #define GE 258
@@ -108,27 +110,29 @@
 #define SPOILER 283
 #define ABSORBER 284
 #define LASER 285
-#define PERIOD 286
-#define APERTURE 287
-#define FILENAME 288
-#define GAS 289
-#define PIPE 290
-#define BEAM 291
-#define OPTION 292
-#define PRINT 293
-#define RANGE 294
-#define STOP 295
-#define USE 296
-#define VALUE 297
-#define ECHO 298
-#define PRINTF 299
-#define SAMPLE 300
-#define CSAMPLE 301
-#define IF 302
-#define ELSE 303
-#define BEGN 304
-#define END 305
-#define FOR 306
+#define TRANSFORM3D 286
+#define PERIOD 287
+#define APERTURE 288
+#define FILENAME 289
+#define GAS 290
+#define PIPE 291
+#define BEAM 292
+#define OPTION 293
+#define PRINT 294
+#define RANGE 295
+#define STOP 296
+#define USE 297
+#define VALUE 298
+#define ECHO 299
+#define PRINTF 300
+#define SAMPLE 301
+#define CSAMPLE 302
+#define IF 303
+#define ELSE 304
+#define BEGN 305
+#define END 306
+#define FOR 307
+#define CUT 308
 
 
 
@@ -142,8 +146,8 @@ typedef union YYSTYPE {
   char *str;
   struct Array *array;
 } YYSTYPE;
-/* Line 1268 of yacc.c.  */
-#line 147 "parser.tab.h"
+/* Line 1275 of yacc.c.  */
+#line 151 "parser.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

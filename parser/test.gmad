@@ -13,12 +13,14 @@ m:marker;
 
 col : marker;
 
+td : transform3d, xdir=1.1, ydir=2.2, zdir=3.3, phi=pi/3, theta=pi/4;
+
 qd1 : qd;
 qf1 : qf;
 
 cell : line = (qd1,qd2,sb1,rb1,sx1,oc1,m);
 
-beamline : line = (cell,cell,col);
+beamline : line = (col,td);
 
 use,period=beamline;
 print;

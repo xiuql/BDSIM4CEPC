@@ -47,6 +47,7 @@ const int DEBUG = 1;
 #include "BDSRunAction.hh"
 #include "BDSEventAction.hh"
 #include "BDSSteppingAction.hh"
+#include "BDSStackingAction.hh"
 #include "BDSUserTrackingAction.hh"
 #include "BDSSteppingVerbose.hh"
 #include "BDSRunManager.hh"
@@ -294,6 +295,9 @@ int main(int argc,char** argv) {
 
   if(DEBUG) G4cout<<"user action - trackingaction"<<G4endl;
   runManager->SetUserAction(new BDSUserTrackingAction);
+
+  if(DEBUG) G4cout<<"user action - stacking"<<G4endl;
+  runManager->SetUserAction(new BDSStackingAction);
   
 
   if(DEBUG) G4cout<<"init kernel"<<G4endl;

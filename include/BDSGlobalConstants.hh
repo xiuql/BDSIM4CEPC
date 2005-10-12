@@ -134,6 +134,11 @@ public:
   G4bool GetUseMuonShowers();
   G4bool GetIncludeIronMagFields();
 
+
+  G4bool GetStopTracks();
+
+  G4bool stopTracks; // kill tracks after interactions
+
   // gab Dec04
   G4double GetMuonLowestGeneratedEnergy();
   void SetMuonEnergyCutScaleFactor(G4double aScaleFactor);
@@ -499,6 +504,9 @@ inline G4bool BDSGlobalConstants::GetStoreMuonTrajectories()
 
 inline G4bool BDSGlobalConstants::GetStoreTrajectory()
 {return itsStoreTrajectory;}
+
+inline G4bool BDSGlobalConstants::GetStopTracks()
+{ return stopTracks; }
 
 inline G4bool BDSGlobalConstants::GetUseMuonShowers()
 {return itsUseMuonShowers;}

@@ -70,8 +70,6 @@ const int DEBUG = 1;
 #include "BDSElement.hh"
 #include "BDSSamplerCylinder.hh"
 #include "BDSComponentOffset.hh"
-
-#include "mySectorBend.hh"
 #include "BDSCollimator.hh"
 
 // output interface
@@ -147,7 +145,6 @@ G4VPhysicalVolume* BDSDetectorConstruction::Construct()
 {
   theECList=new ECList;
 
-  //  MagFieldMap=new PhysFieldMap();
   LogVolCount=new LogVolCountMap();
 
   LogVol=new LogVolMap();
@@ -181,7 +178,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   
   // radius of curvature (!!!!! valid for electrons only???!!!!)
   G4double P0 = BDSGlobals->GetBeamTotalEnergy();
-  //G4double m_c2 = BDSGlobals->Get
+  
   // magnetic rigidity
   G4double brho=
     sqrt(pow(P0,2)- pow(electron_mass_c2,2))/(0.299792458 * (GeV/(tesla*m)));
@@ -225,9 +222,13 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       }
 
       if((*it).type==_DRIFT ) {
-	if(DEBUG) G4cout<<"---->adding Drift "<<G4String( (*it).name )<<" l="<<(*it).l<<G4endl;
+	G4double aper = bpRad;
+	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+
+	if(DEBUG) G4cout<<"---->adding Drift "<<G4String( (*it).name )<<" l="<<(*it).l<<
+		    "aper="<<aper<<G4endl;
 	if((*it).l > 0) // skip zero-length drift-defined elements
-	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
+	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,aper));
       }
       
       if((*it).type==_SBEND ) {
@@ -241,9 +242,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
 	} 
 	else {
-	  theBeamline.push_back(new mySectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,
+	  theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,
 						 (*it).angle,(*it).tilt,bPrime));
-	  //theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,(*it).angle));
 	}
       }
 
@@ -338,18 +338,6 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	
       }
       
-      //   else if(type=="OCTUPOLE") 
-      //     ctor->push_back(new BDSOctupole(name,len,bpRad,FeRad,bTriplePrime));
-      //   else if(type=="DECAPOLE") 
-      //     ctor->push_back(new BDSDecapole(name,len,bpRad,FeRad,bQuadPrime));
-      //   else if(type=="LWCAL")
-      //     ctor->push_back(new BDSLWCalorimeter(name,len,bpRad));
-      //   else if(type=="BLOCK")
-      //     ctor->push_back(new BDSBlock(name,len));
-      //   else if(type=="RESETTER") 
-      //     ctor->push_back(new BDSResetter(name,len));
-      
-      
     }
   
   // free the parser list
@@ -371,7 +359,6 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   G4ThreeVector rmin = G4ThreeVector(0.,0.,0.);
   G4ThreeVector rmax = G4ThreeVector(0.,0.,0.);
 
-  //G4RotationMatrix localRotation; // rotation of local coordinate system, initially unit
 
   G4ThreeVector localX = G4ThreeVector(1,0,0);  // local coordinate axis
   G4ThreeVector localY = G4ThreeVector(0,1,0);
@@ -524,7 +511,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       G4double theta=(*iBeam)->GetTheta();
       G4double psi = (*iBeam)->GetPsi();
       G4double tilt = (*iBeam)->GetTilt();
-
+      G4double phi = (*iBeam)->GetPhi();
     
       if( (*iBeam)->GetType() == "transform3d")
 	{
@@ -532,87 +519,101 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	  rtot(1) += (*iBeam)->GetYOffset(); 
 	  rtot(2) += (*iBeam)->GetZOffset(); 
 
-	  globalRotation.rotate(psi,localZ);
-
-	  localX.rotate(psi,localZ);
-	  localY.rotate(psi,localZ);
-	  localZ.rotate(psi,localZ);
-
 	  rlast(0) += (*iBeam)->GetXOffset();
 	  rlast(1) += (*iBeam)->GetYOffset(); 
 	  rlast(2) += (*iBeam)->GetZOffset(); 
-	  //G4cout<<"transform3d:   x = "<<rtot<<G4endl;
 
+	  globalRotation.rotate(psi,localZ);
+	  //localX.rotateZ(psi);
+	  //localY.rotateZ(psi);
+	  localX.rotate(psi,localZ);
+	  localY.rotate(psi,localZ);
+
+
+	  globalRotation.rotate(phi,localY);
+	  //localX.rotateY(-phi);
+	  //localZ.rotateY(-phi);
+	  localX.rotate(-phi,localY);
+	  localZ.rotate(-phi,localY);
+	  
+
+	  globalRotation.rotate(theta,localX);
+	  //localY.rotateX(theta);
+	  //localZ.rotateX(theta);
+	  localY.rotate(theta,localX);
+	  localZ.rotate(theta,localX);
+	  	  	  
 	  continue;
 	}
       
-             
-      // JCC Mar05 XY Offset Code>>
-      if((*iBeam)->GetLength()==0.)
-	{
-	  BDSGlobals->AddHorizontalComponentOffset((*iBeam)->GetXOffset());
-	  BDSGlobals->AddVerticalComponentOffset((*iBeam)->GetYOffset());
-	  G4cout << "Component Offset in X now set to: ";
-	  G4cout << BDSGlobals->GetHorizontalComponentOffset() << G4endl;
-	  G4cout << "Component Offset in Y now set to: ";
-	  G4cout << BDSGlobals->GetVerticalComponentOffset() << G4endl;
-	}
-            
-      
+                   
       G4RotationMatrix *rotateComponent = new G4RotationMatrix; // for component placement
 
       rotateComponent->rotateZ(tilt);
 
-      // special placement for sbends
-      if((*iBeam)->GetType() == "sbend")
-	{
-	  // for sbends tilted alements need be extra rotated
-
-	  G4ThreeVector rotAxis = G4ThreeVector(0.,1.,0.);
-	  //rotAxis.rotateZ(tilt);
-
-	  // allow for the fact that trapezoids are defined along z-axis...
-	  
-	  G4cout<<"ROTATING ABOUT "<<rotAxis<<G4endl;
-	  
-	  rotateComponent->rotate(pi/2+angle/2,rotAxis);
-	  //rotateComponent->rotateY(pi/2+angle/2);
-
-	}
-
+    
       // define center of bended elements from the previos coordinate frame	  
          
       G4ThreeVector zHalfAngle = localZ; 
       zHalfAngle.rotateZ(tilt);
       zHalfAngle.rotateY(-angle/2);
-      zHalfAngle.transform(globalRotation);
-    
-    
+      //zHalfAngle.transform(globalRotation);
+
+      G4cout<<"zHalfNAgle="<<zHalfAngle<<G4endl;
+      G4cout<<"localZ="<<localZ<<G4endl;
+      G4cout<<"localX="<<localX<<G4endl;
+      G4cout<<"localY="<<localY<<G4endl;
+      G4cout<<"rlast="<<rlast<<G4endl;
+
       // target position
-      TargetPos = rlast + zHalfAngle *  (*iBeam)->GetLength()/2;
+      TargetPos = rlast + zHalfAngle *  ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 ) ;
+
+      G4cout<<"TargetPos="<<TargetPos<<G4endl;
 
       // advance the coordinates, but not for cylindrical samplers 
       if( ( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength )  )
 	{
-	  rtot = rlast + zHalfAngle *  (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2;
-	  rlast = rtot + zHalfAngle *  (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2;
+	  rtot = rlast + zHalfAngle * ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 );
+	  rlast = rtot + zHalfAngle * ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 );
 	      
 	}
+
       // rotate to the previous reference frame
       rotateComponent->transform(globalRotation);
 
       // recompute global rotation
       // define new coordinate system local frame	  
+ 
+      globalRotation.rotate(tilt,localZ);
+      //localX.rotateZ(psi);
+      //localY.rotateZ(psi);
+      localX.rotate(tilt,localZ);
+      localY.rotate(tilt,localZ);
       
-      globalRotation.rotate(-angle,localY);
       
+      globalRotation.rotate(angle,localY);
+      //localX.rotateY(-phi);
+      //localZ.rotateY(-phi);
       localX.rotate(-angle,localY);
       localZ.rotate(-angle,localY);
       
+      
       globalRotation.rotate(theta,localX);
-
+      //localY.rotateX(theta);
+      //localZ.rotateX(theta);
       localY.rotate(theta,localX);
       localZ.rotate(theta,localX);
+
+      //rotateComponent->transform(globalRotation);
+
+      // special placement for sbends
+      if((*iBeam)->GetType() == "sbend")
+	{
+	  // sbend trapezoids defined along z-axis
+	  rotateComponent->rotateY(pi/2+angle/2);
+
+	}
+
 
       //(*iBeam)->SetZUpper(rtot.z());
       

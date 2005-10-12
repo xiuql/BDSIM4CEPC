@@ -6,9 +6,6 @@
    Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
    Changed StringFromInt to be BDSGlobals Version
    Modified Samplers to account for plane and cylinder types
-
-   01.10.2005 - Deprecated, Use BDSOutput instead
-
 */
 
 #include "BDSGlobalConstants.hh"

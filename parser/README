@@ -1,17 +1,6 @@
-gmad parser v beta
-(c) 2005 IA
-
-I. Parser for the gmad accelerator description language. 
-   To use include the gmad.h header in your file an link with the -lgmad
-   flag.  
-
-   Tested on : Linux 2.6.x, MaxOS, ...
-               GNU flex 2.5.4, GNU bison 1.875c 
 
 
 
-II. Known issues
+Known issues:
 
-    1) If your bison bersion is 1.875 you should patch it to 1.875c
-       otherwise semicolon has to be inserted manually __attribute__  
-       directive in parser.tab.c 
+* bison ersion > 

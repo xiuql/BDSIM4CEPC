@@ -2,7 +2,7 @@
 
 ! some beamline parameters
                                                                                                                
-option, beampipeRadius = 1 * cm,
+option, beampipeRadius = 20 * cm,
         boxSize = 2.3 * m,
         tunnelRadius= 3.0 * m,
         beampipeThickness = 0.1 * cm,
@@ -10,8 +10,8 @@ option, beampipeRadius = 1 * cm,
         deltaIntersection = 0.00000001 * m,
 	deltaChord = 0.001 * m,
         lengthSafety = 0.00001 * m,
-        thresholdCutCharged = 1 * MeV,
-        thresholdCutPhotons = 10 * KeV;
+        thresholdCutCharged = 1 * KeV,
+        thresholdCutPhotons = 1 * KeV;
                                                                                                                
                                                                                                                
 ! beamline definiton
@@ -33,15 +33,13 @@ msk:element,l=1*m,geometry="gmad:mk.geo",bmap="gmad:mk.bmap";
 
 
 sb1l = 20 * m;
-sbl = 2 *m;
+sbl = 1 *m;
 
 
-sb:sbend,l=sbl,angle=-pi/32;
+sb:sbend,l=sbl,angle=pi/16;
 sb1:sbend,l=sbl,angle=pi/32;
 startl:marker;
 endl:marker;
-
-d2 : drift, l=1 * m;
  
 cell : line = (d,qf,d);
 arc : line = (cell,cell,sb,sb);
@@ -59,6 +57,14 @@ material="Graphite";
 
 !test_e : line = (startl,c1,d,sb,d,sp1,d,sb,d,endl);
 
+dskew:drift,l=1*m, tilt=pi/4;
+
+tt : transform3d,x=0,y=0,z=0,phi=0,theta=0,psi=pi/2;
+tti : transform3d,x=0,y=0,z=0,phi=pi/4,theta=0,psi=0;
+
+d2:d,aper=40*cm;
+d3:d,aper=1*cm;
+
 test1:line=(d,d,d);
 
 !use, period=test_e;
@@ -70,15 +76,16 @@ use,period=test1;
 !sample,range=endl;
 
 beam,  particle="e-",
-       energy=10.0 * GeV,
+       energy=100.0 * GeV,
        nparticles=1e+3,
        distrType="gauss",
+       energySpread=0,
        Rmin=1.99*mm,
        Rmax=2*mm,
-       sigmaX=0.5*mm,
-       sigmaY=0.5*mm,
-       sigmaXp=0.01 ,
-       sigmaYp=0.01 ;
+       sigmaX=0.0*cm,
+       sigmaY=0.0*cm,
+       sigmaXp=0.0 ,
+       sigmaYp=0.0 ;
 
-option, ngenerate=100, turnInteractions=1, 
+option, ngenerate=100, turnInteractions=1, stopTracks=1,
 useEMHadronic=0;
