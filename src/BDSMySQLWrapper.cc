@@ -1,0 +1,185 @@
+/* * BDSIM code.    Version 1.0
+   * Author: Grahame A. Blair, Royal Holloway, Univ. of London.
+   * Last modified 24.7.2002
+   * Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+
+
+   Author of this code: John C. Carter, Royal Holloway, Univ. of London.
+   Last modified 12.10.2005
+*/
+
+#include "BDSGlobalConstants.hh" // must be first in include list
+
+#include <cstdlib>
+#include "BDSMaterials.hh"
+#include "BDSMySQLWrapper.hh"
+#include "BDSMySQLTable.hh"
+
+using namespace std;
+
+#include"globals.hh"
+#include<string>
+#include<vector>
+
+extern BDSMaterials* theMaterials;
+
+void Log(const G4String& tag, int depth, ostream& os)
+{
+  static const char* tab = "----|";
+  while(depth--) os<<tab;
+  os<<' '<<tag<<endl;
+}
+
+void StripHeader(istream& is)
+{
+  //Need to read the first 6 lines of the SQL file
+  char buffer[256];
+  for (int i=0; i<6; i++)
+    is.getline(buffer,256);
+}
+
+inline G4String StripQuotes(const G4String& text)
+{
+  if(text=="") return text;
+  return text.substr(1,text.length()-2);
+}
+
+inline G4String StripComma(const G4String& text)
+{
+  if(text=="") return text;
+  return text.substr(0,text.length()-1);
+}
+inline G4String StripFirst(const G4String& text)
+{
+  if(text=="") return text;
+  return text.substr(1,text.length());
+}
+inline G4String StripEnd(const G4String& text)
+{
+  if(text=="") return text;
+  return text.substr(0,text.length()-2);
+}
+
+BDSMySQLWrapper::BDSMySQLWrapper (const G4String& SQLFileName)
+  : ifs(SQLFileName.c_str())
+  
+{
+  assert(ifs);
+  
+  G4cout<<"Loading SQL Filename="<<SQLFileName<<G4endl;
+}
+
+vector<BDSMySQLTable*> BDSMySQLWrapper::ConstructTable ()
+{
+  // reset the stream pointer
+  ifs.seekg(0);
+  ComponentN=0;
+  tableN=-1;
+  while(ifs) ComponentN+=ReadComponent();
+  ifs.close();
+  return table;
+}
+
+BDSMySQLWrapper::~BDSMySQLWrapper()
+{
+}
+
+G4int BDSMySQLWrapper::ReadComponent()
+{
+#define  _READ(value) if(!(ifs>>value)) return 0;
+
+#define CMD_CREATE   "CREATE"
+#define CMD_TABLE    "TABLE"
+#define CMD_INSERT   "INSERT"
+#define CMD_INTO     "INTO"
+#define CMD_VALUES   "VALUES"
+#define CMD_DROP     "DROP"
+#define CMD_DATABASE "DATABASE"
+#define CMD_USE      "USE"
+#define CMD_IF       "IF"
+#define CMD_EXISTS   "EXISTS"
+
+  G4String input;
+  G4String varname;
+  G4String vartype;
+  
+  char buffer[255];
+  _READ(input);
+  if(input.contains("#")){// This is a comment line  
+    ifs.getline(buffer,255);
+    return 0;
+  }
+
+  // not using these commands yet...
+  if(input==CMD_DROP) return 0;
+  else if(input==CMD_DATABASE) return 0;
+  else if(input==CMD_IF) return 0;
+  else if(input==CMD_EXISTS) return 0;
+  else if(input==CMD_USE) return 0;
+
+  else if(input==CMD_CREATE)
+    {
+      _READ(input);
+      if(input==CMD_DATABASE) return 0;
+      else if(input==CMD_TABLE)
+	{
+	  _READ(CurrentTableName);
+	  ifs.getline(buffer,255); // dumping rest of line.
+	  table.push_back(new BDSMySQLTable(CurrentTableName));
+	  tableN++;
+
+	  do
+	    {
+	      _READ(varname);
+	      if(!varname.contains(";"))
+		{
+		  _READ(vartype);
+		  if(vartype.contains("DOUBLE")) vartype="DOUBLE";
+		  else if(vartype.contains("VARCHAR")) vartype="STRING";
+		  
+		  table[tableN]->AddVariable(varname,vartype);
+		  ifs.getline(buffer,255); // dumping rest of line
+		}
+	    }
+	  while (!varname.contains(";")); // skipping to end of SQL table creation
+	}
+      return 0;
+    }
+  
+  else if(input==CMD_INSERT)
+    {
+      _READ(input);
+      if(input==CMD_INTO)
+	{
+	  _READ(InsertTableName);
+	  
+	  _READ(input);
+	  if(input==CMD_VALUES)
+	    {
+	      
+	      for(G4int j=0; j<table.size(); j++)
+		{
+		  if(table[j]->GetName()==InsertTableName)
+		    {
+		      for(G4int k=0; k<table[j]->GetNVariables(); k++)
+			{
+			  _READ(input);
+			  if(input=="(") _READ(input);
+			  if(input.contains("(")) input = StripFirst(input);
+			  if(input.contains(",")) input = StripComma(input);
+			  if(input.contains(");")) input = StripEnd(input);
+			  
+			  if(table[j]->GetVariable(k)->GetVarType()=="DOUBLE")
+			    table[j]->GetVariable(k)->AddValue(atof(input)*mm);
+			  else if(table[j]->GetVariable(k)->GetVarType()=="STRING")
+			    table[j]->GetVariable(k)->AddValue(StripQuotes(input));
+			}
+		    }
+
+		}
+	    }
+	}
+      return 1;
+    }
+  else return 0;
+}
