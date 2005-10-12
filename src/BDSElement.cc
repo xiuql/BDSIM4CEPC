@@ -22,6 +22,7 @@ const int DEBUG = 1;
 
 // geometry drivers
 #include "ggmad.hh"
+#include "BDSGeometrySQL.hh"
 
 
 #include <map>
@@ -121,8 +122,15 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
     ggmad->Construct(itsMarkerLogicalVolume);
     
 
+  }
+  else if(gFormat=="mokka") {
+
+    BDSGeometrySQL *Mokka = new BDSGeometrySQL(gFile);
+    Mokka->Construct(itsMarkerLogicalVolume);
+    
+
   } else {
-    G4cerr<<"geometry format "<<gFormat<<"not supported"<<G4endl;
+    G4cerr<<"geometry format "<<gFormat<<" not supported"<<G4endl;
   }
 
 
