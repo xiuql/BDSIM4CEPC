@@ -10,7 +10,7 @@
 */
 
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 //=================================================================
 //=================================================================
@@ -225,8 +225,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	G4double aper = bpRad;
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 
-	if(DEBUG) G4cout<<"---->adding Drift "<<G4String( (*it).name )<<" l="<<(*it).l<<
-		    "aper="<<aper<<G4endl;
+	if(DEBUG) G4cout<<"---->adding Drift "<<G4String( (*it).name )<<" l="<<(*it).l/m<<
+		    "aper="<<aper/m<<G4endl;
 	if((*it).l > 0) // skip zero-length drift-defined elements
 	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,aper));
       }
@@ -251,17 +251,22 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	
 	//bPrime = brho * (*it).k1 / (*it).l * tesla  * synch_factor;
 	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
-	if(DEBUG) { G4cout<<"---->adding Quad, "<<G4String( (*it).name )<<
-		      " k1 ="<<(*it).k1<<" b' ="<<bPrime<<" brho = "<<brho<<G4endl; }
+	G4double aper = bpRad;
+	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 
-	theBeamline.push_back(new BDSQuadrupole(G4String((*it).name),(*it).l * m,bpRad,FeRad,bPrime));
+	if(DEBUG) { G4cout<<"---->adding Quad, "<<G4String( (*it).name )<<
+	    " k1 ="<<(*it).k1<<" b' ="<<bPrime<<" brho = "<<brho<< " aper="<<aper/m<<G4endl; }
+
+	theBeamline.push_back(new BDSQuadrupole(G4String((*it).name),(*it).l * m,aper,FeRad,bPrime));
       }
       
       if((*it).type==_SEXTUPOLE ) {
 	bDoublePrime = brho * (*it).k2 / (*it).l * tesla / (m*m) * synch_factor;
+	G4double aper = bpRad;
+	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding Sextupole, "<<G4String( (*it).name )<<
-		      " k1 ="<<(*it).k2<<" b'' ="<<bDoublePrime<<" brho = "<<brho<<G4endl;}
-	theBeamline.push_back(new BDSSextupole(G4String((*it).name),(*it).l * m,bpRad,FeRad,bDoublePrime));
+	    " k1 ="<<(*it).k2<<" b'' ="<<bDoublePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
+	theBeamline.push_back(new BDSSextupole(G4String((*it).name),(*it).l * m,aper,FeRad,bDoublePrime));
       }
       
       if((*it).type==_ELEMENT ) {
