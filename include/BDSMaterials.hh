@@ -3,9 +3,7 @@
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 
-   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
-   Added GABs LCBeamGasPlugMat Material
-   Added LCLead
+   Added Get method to enable access to materials by passing a string
 */
 #ifndef BDSMaterials_h
 #define BDSMaterials_h 1
@@ -21,6 +19,7 @@ public:
  
   BDSMaterials();
 
+  G4Material*  GetMaterial(G4String aMaterial);
 
   G4Material*  LCTitanium;
   G4Material*  LCTungsten;
@@ -44,5 +43,30 @@ private:
 
 };
 
+inline G4Material* BDSMaterials::GetMaterial(G4String aMaterial)
+{
+  
+  if(aMaterial=="Titanium") return LCTitanium;
+  else if(aMaterial=="Tungsten") return LCTungsten;
+  else if(aMaterial=="Graphite") return LCGraphite;
+  else if(aMaterial=="Air") return LCAir;
+  else if(aMaterial=="Vacuum") return LCVacuum;
+  else if(aMaterial=="Aluminium") return LCAluminium;
+  else if(aMaterial=="Iron") return LCIron;
+  else if(aMaterial=="WeightIron") return LCWeightIron;
+  else if(aMaterial=="LaserVac") return LaserVac;
+  else if(aMaterial=="Copper") return LCCopper;
+  else if(aMaterial=="Concrete") return LCConcrete;
+  else if(aMaterial=="Water") return LCWater;
+  else if(aMaterial=="LeadTungstate") return LCLeadTungstate;
+  else if(aMaterial=="Lead") return LCLead;
+  
+  else
+    {
+      G4cout <<aMaterial<<" not known. Using Vacuum instead!!" <<G4endl;
+      return LCVacuum; //default if not recognized
+    }
+
+}
 
 #endif
