@@ -3,7 +3,7 @@
 @setfilename bdsim.info
 @settitle BDSIM beta User's Manual
 @c This date is automagically updated when you save this file:
-@set lastupdate June 14, 2005
+@set lastupdate October 12, 2005
 @c %**end of header
 
 @setchapternewpage off
@@ -17,8 +17,8 @@ Copyright @copyright{} 2005 Royal Holloway.
 
 
 @titlepage
-@title BDSIM User's Manual
-@author Ilya Agapov
+@title BDSIM User's Manual v0.1
+@author bdsim development group
 @author last updated @value{lastupdate}
 @end titlepage
 @setcontentsaftertitlepage
@@ -40,7 +40,8 @@ last updated on @value{lastupdate}.
 @menu
 * Intro::                       
 * Installation::                
-* Lattice::                       
+* Lattice::      
+* Visualization::                        
 * Physics::                     
 * Architecture::                
 * Geometry::                    
@@ -106,7 +107,7 @@ use @var{file} for GMAD input
 @c
 @c cccccccccccccccccccccccccccccccccccccccccc
 
-@node Lattice,Physics,Installation,Top
+@node Lattice,Visualization,Installation,Top
 @chapter Lattice description
 
 @menu
@@ -611,12 +612,20 @@ To display help menu
 
 For more details see @ref{Geant}.
 
+@c cccccccccccccccccccccccccccccccccccccccccc
+@c
+@c cccccccccccccccccccccccccccccccccccccccccc
+
+@node Visualization,Physics,Lattice,Top
+@chapter Visualization
+
+@include visualization.texi
 
 @c cccccccccccccccccccccccccccccccccccccccccc
 @c
 @c cccccccccccccccccccccccccccccccccccccccccc
 
-@node Physics,Architecture,Lattice,Top
+@node Physics,Architecture,Visualization,Top
 @chapter Physics
 
 @section Transportation 
@@ -715,13 +724,22 @@ for example,
 @node Authors, References, Bunches, Top
 @chapter Authors 
 
-@table @code
 
-@item Ilya Agapov @email{agapov@@pp.rhul.ac.uk}
-@item Grahame Blair @email{blair@@pp.rhul.ac.uk}
-@item John Carter @email{carter@@pp.rhul.ac.uk}
-
-@end table 
+@multitable @columnfractions .25 .35 .4
+@item Name @tab Email @tab Module Responsibilities
+@item Ilya Agapov
+@tab @email{agapov@@pp.rhul.ac.uk}
+@tab Project Management, Parser, Physics 
+@item Grahame Blair
+@tab @email{blair@@pp.rhul.ac.uk}
+@tab Physics, 
+@item John Carter 
+@tab @email{carter@@pp.rhul.ac.uk}
+@tab Physics, Mokka detector Interface
+@item Olivier Dadoun
+@tab @email{dadoun@@lal.in2p3.fr}
+@tab Visualization
+@end multitable
 
 
 @c cccccccccccccccccccccccccccccccccccccccccc
