@@ -8,23 +8,33 @@ LOPT=-i
 YACC=bison
 YOPT=-d -v
 
-# For Mac (Darwin)
-#DYFLAGS=-O2 -dynamiclib -undefined error
+OS=Linux
+
+ifeq ($(OS),Linux)
+LIBNAME=libgmad.so
+endif
+ifeq ($(OS),Darwin)
+LIBNAME=libgmad.dylib
+endif
+
+ifeq ($(OS),Darwin)
+LDFLAGS=-O2 -dynamiclib -undefined error
+endif
+
+ifeq ($(OS),Linux)
+LDFLAGS=-W1 -shared -g 
+endif
 
 #parsing library
 
-# For Linux
 libgmad.so : $(OBJ)
-	$(CC) -W1 -shared -g -o libgmad.so $(OBJ) $(LIB)
+	$(CC) $(LDFLAGS) -o $(LIBNAME) $(OBJ) $(LIB)
 
-# For Mac (Darwin) - using dynamic libraries instead of shared
-# libgmad.dylib : $(OBJ)
-#	$(CC) $(DYFLAGS) -o libgmad.dylib $(OBJ) $(LIB)
 
 # gmad parser
 
 parser : parser.cc gmad.h libgmad.so 
-	$(CC) parser.cc -g -o parser -L. -lgmad
+	$(CC) parser.cc -g -o parser -L. -lgmad 
 
 
 gmad.o :gmad.cc gmad.h
