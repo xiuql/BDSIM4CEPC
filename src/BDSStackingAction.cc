@@ -27,8 +27,8 @@ BDSStackingAction::ClassifyNewTrack(const G4Track * aTrack)
   if(BDSGlobals->GetStopTracks()) // if tracks killed after interaction
     {
       
-      G4cout<<"StackingAction: ClassifyNewtrack "<<aTrack->GetTrackID()<<
-	" "<<aTrack->GetDefinition()->GetParticleName()<<G4endl;
+      //G4cout<<"StackingAction: ClassifyNewtrack "<<aTrack->GetTrackID()<<
+      //	" "<<aTrack->GetDefinition()->GetParticleName()<<G4endl;
       
       // kill secondary electrons
       
@@ -67,17 +67,9 @@ void BDSStackingAction::NewStage()
 {
   // urgent stack empty, looking into the waiting stack
  
-  G4cout<<"StackingAction: New stage"<<G4endl;
+  //G4cout<<"StackingAction: New stage"<<G4endl;
 
 
-  // kill event
-  if(1==2)
-    {
-      stackManager->clear();
-      G4cout << "++++++++ event aborted" << G4endl;
-      return;
-    }
-  
   //  stackManager->ReClassify();
   return;
  
