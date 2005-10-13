@@ -461,7 +461,7 @@ int expand_line(char *name, char *start, char* end)
 	  is_expanded = true;
 	  for(it = ++beamline_list.begin();it!=beamline_list.end();it++ )
 	    {
-	      printf("%s , %s \n",(*it).name,typestr((*it).type));
+	      if(DEBUG) printf("%s , %s \n",(*it).name,typestr((*it).type));
 	      
 	      if((*it).type == _LINE)  // list - expand further	  
 		{
