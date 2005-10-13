@@ -49,7 +49,7 @@ void init()
   add_var("m",1.0,_RESERVED);
 
   add_var("s",1.0,_RESERVED);
-  add_var("ns",1.e-6,_RESERVED);
+  add_var("ns",1.e-9,_RESERVED);
 
   add_var("clight",2.99792458e+8,_RESERVED);
 
