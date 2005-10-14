@@ -52,6 +52,7 @@ const int _SQUARE = 2;
 const int _CIRCLE = 3; 
 const int _GUINEAPIG_BUNCH = 4;
 const int _GUINEAPIG_PAIRS = 5;
+const int _GUINEAPIG_SLAC = 6;
 
 struct Options {
   double beamEnergy;

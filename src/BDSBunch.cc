@@ -71,6 +71,12 @@ void BDSBunch::SetOptions(struct Options& opt)
       inputfile = opt.distribFile;
       InputBunchFile.open(inputfile);
     }
+  if(opt.distribType == "guineapig_slac")
+    {
+      distribType = _GUINEAPIG_SLAC;
+      inputfile = opt.distribFile;
+      InputBunchFile.open(inputfile);
+    }
   if(opt.distribType == "guineapig_pairs")
     {
       distribType = _GUINEAPIG_PAIRS;
@@ -196,6 +202,29 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
            z0*= micrometer;
            xp*=1.e-6*radian;
            yp*=1.e-6*radian;
+	   zp=sqrt(1.-xp*xp -yp*yp);  
+	   t=-z0/c_light;
+	   // use the Kinetic energy:
+	   E-=BDSGlobals->GetParticleDefinition()->GetPDGMass();
+	  }
+    }
+  if(distribType == _GUINEAPIG_SLAC)
+    {
+      #define  _READ(value) InputBunchFile>>value
+      if(_READ(E))
+	  {
+	   _READ(xp);
+	   _READ(yp);
+	   _READ(z0);
+	   _READ(x0);
+	   _READ(y0);
+	   
+	   E*=GeV;
+	   x0*= nanometer;
+	   y0*= nanometer;
+           z0*= micrometer;
+           xp*=radian;
+           yp*=radian;
 	   zp=sqrt(1.-xp*xp -yp*yp);  
 	   t=-z0/c_light;
 	   // use the Kinetic energy:
