@@ -55,14 +55,17 @@ extern BDSMaterials* theMaterials;
 extern G4double BDS_Threshold_Energy;
 extern G4double BDSLocalRadiusOfCurvature;
 
-// gab tmp:
-extern G4String LastVolName;
-extern G4ThreeVector LastPos;
-extern G4ThreeVector LastMom;
-
 extern G4int event_number;
 
 extern G4double initial_x,initial_xp,initial_y,initial_yp,initial_z,initial_E;
+
+extern G4bool verbose;      // run options
+extern G4bool verboseStep;
+extern G4bool verboseEvent;
+extern G4int verboseEventNumber;
+extern G4bool isBatch;
+
+
 
 
 //static G4LogicalVolume* LastLogVol;
@@ -316,10 +319,8 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
   // ------------  output in case of verbose step ---------------------
 
 
-  if(BDSGlobals->GetVerboseStep())
-    if(!BDSGlobals->GetVerboseEventNumber()||
-       BDSGlobals->GetVerboseEventNumber()==event_number)
-      {
+  if(verboseStep)
+    {
 
 	/*
 	  

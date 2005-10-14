@@ -8,7 +8,7 @@
 */
 
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 //==================================================================
 //==================================================================
@@ -28,10 +28,8 @@ const int DEBUG = 1;
 
 #include<iostream>
 
-extern G4int event_number;
 extern BDSBunch theBunch;
 
-extern G4bool verbose;
 
 //===================================================
 // Keep initial point in phase space for diagnostics
@@ -102,7 +100,8 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   particleGun->GeneratePrimaryVertex(anEvent);
 
-  if(verbose)
+
+  if(DEBUG )
     {
       G4cout<<" BDSPrimaryGeneratorAction: mom="<<PartMomDir
 	    <<" Energy="<<E<<G4endl;

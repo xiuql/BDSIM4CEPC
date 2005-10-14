@@ -74,6 +74,14 @@ extern BDSOutput bdsOutput;
 extern G4String outputFilename;
 extern G4bool isBatch;
 
+
+extern G4bool verbose;      // run options
+extern G4bool verboseStep;
+extern G4bool verboseEvent;
+extern G4int verboseEventNumber;
+extern G4bool isBatch;
+
+
 //======================================================
 
 BDSEventAction::BDSEventAction()
@@ -148,7 +156,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
       G4cout << G4endl;
     }
 
-  if(BDSGlobals->GetVerboseStep()) bdsOutput.Echo("Begin of event:" + BDSGlobals->StringFromInt(event_number) ) ;
+  if(verboseEvent) bdsOutput.Echo("Begin of event:" + BDSGlobals->StringFromInt(event_number) ) ;
 
   
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
@@ -179,7 +187,8 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
 
   if(DEBUG) G4cout<<"BDSEventAction : end of event action"<<G4endl;
-  if(BDSGlobals->GetVerboseStep()) bdsOutput.Echo("processing end of event");
+  if(verboseEvent || verboseEventNumber == event_number)
+    bdsOutput.Echo("processing end of event");
 
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
 

@@ -113,8 +113,6 @@ public:
   G4bool GetPlanckOn();
   G4bool GetBDSeBremOn();
 
-  G4bool GetVerboseStep();
-
   G4double GetLaserwireWavelength();
   G4ThreeVector GetLaserwireDir();
 
@@ -157,7 +155,6 @@ public:
   G4double GetEnergyOffset();
   G4double GetMuonProductionScaleFactor();
   G4double GetHadronInelasticScaleFactor();
-  G4int GetVerboseEventNumber();
 
   G4Timer* GetTimer();
 
@@ -256,7 +253,6 @@ private:
   G4bool itsReadBunchFile;
   G4bool itsWriteBunchFile;
   G4bool itsExtractBunchFile;
-  G4bool itsVerboseStep;
   G4bool itsUseTimer;
   G4bool itsUseEMHadronic;
   G4bool itsUseMuonPairProduction;
@@ -277,7 +273,6 @@ private:
   G4Timer* itsTimer;
 
   G4double itsEnergyOffset;
-  G4int itsVerboseEventNumber;
 
   G4bool itsUseHaloRadius;
   G4double itsHaloInnerRadius;
@@ -457,9 +452,6 @@ inline G4bool BDSGlobalConstants::GetPlanckOn()
 inline G4bool BDSGlobalConstants::GetBDSeBremOn()
 {return itsBDSeBremOn;}
 
-inline G4bool BDSGlobalConstants::GetVerboseStep()
-{return itsVerboseStep;}
-
 inline G4double BDSGlobalConstants::GetLaserwireWavelength()
 {return itsLaserwireWavelength ;}
 
@@ -525,9 +517,6 @@ inline G4Timer* BDSGlobalConstants::GetTimer()
 
 inline G4double BDSGlobalConstants::GetEnergyOffset()
 {return itsEnergyOffset;}
-
-inline  G4int BDSGlobalConstants::GetVerboseEventNumber()
-{return itsVerboseEventNumber;}
 
 inline  G4double BDSGlobalConstants::GetTrackWeightFactor()
 {return itsTrackWeightFactor;}

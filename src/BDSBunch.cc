@@ -5,6 +5,12 @@
 
 using namespace std;
 
+extern G4bool verbose;      // run options
+extern G4bool verboseStep;
+extern G4bool verboseEvent;
+extern G4int verboseEventNumber;
+extern G4bool isBatch;
+
 BDSBunch::BDSBunch()
 {
   sigmaX = 0;
@@ -152,7 +158,7 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 			       G4double& t, G4double& E)
 {
 
-  if(BDSGlobals->GetVerboseStep()) G4cout<<"distribution type: "<<distribType<<G4endl;
+  if(verboseStep) G4cout<<"distribution type: "<<distribType<<G4endl;
 
   double r, phi;
 
@@ -210,9 +216,9 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
     }
   if(distribType == _GUINEAPIG_SLAC)
     {
-      #define  _READ(value) InputBunchFile>>value
-      if(_READ(E))
-	  {
+       #define  _READ(value) InputBunchFile>>value
+       if(_READ(E))
+	 {
 	   _READ(xp);
 	   _READ(yp);
 	   _READ(z0);
@@ -222,14 +228,14 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 	   E*=GeV;
 	   x0*= nanometer;
 	   y0*= nanometer;
-           z0*= micrometer;
-           xp*=radian;
-           yp*=radian;
+	   z0*= micrometer;
+	   xp*=radian;
+	   yp*=radian;
 	   zp=sqrt(1.-xp*xp -yp*yp);  
 	   t=-z0/c_light;
 	   // use the Kinetic energy:
 	   E-=BDSGlobals->GetParticleDefinition()->GetPDGMass();
-	  }
+	 }
     }
   if(distribType == _GUINEAPIG_PAIRS)
     {

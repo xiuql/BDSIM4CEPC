@@ -37,7 +37,6 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
 
   // defaults:
   itsEnergyOffset=0.;
-  itsVerboseEventNumber=0;
   itsTrackWeightFactor=1.0;
 
 
@@ -123,10 +122,6 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
 
   itsRandomSeed = opt.randomSeed;
  
-  itsVerboseStep= opt.verboseStep;
-  
-  itsVerboseEventNumber = opt.verboseEventNumber;
-
   if(opt.useTimer) {
     itsTimer=new G4Timer();
     itsUseTimer = opt.useTimer;
