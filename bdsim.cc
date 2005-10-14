@@ -75,7 +75,10 @@ static void usage()
         <<"                      where N = 0, 1, 2, 3... etc."<<G4endl
 	<<"--vis_mac=<file>    : file with the visualization macro script, default vis.mac"<<G4endl
 	<<"--help              : display this message"<<G4endl
-	<<"--verbose           : run in verbose mode"<<G4endl
+	<<"--verbose           : display general parameters before run"<<G4endl
+    	<<"--verbose_event     : display information for every event "<<G4endl
+    	<<"--verbose_step=N    : display tracking information after each step"<<G4endl
+	<<"--verbose_event_num : display tracking information for event number N"<<G4endl
 	<<"--batch             : batch mode - no graphics"<<G4endl;
 
 }
@@ -90,6 +93,9 @@ G4String inputFilename= "optics.gmad"; // input file with gmad lattice descripti
 G4String visMacroFile="vis.mac"; // visualization macro file
 
 G4bool verbose = false;  // run options
+G4bool verboseStep = false;
+G4bool verboseEvent = false;
+G4int verboseEventNumber = -1;
 G4bool isBatch = false;
 
 
@@ -107,6 +113,9 @@ int main(int argc,char** argv) {
    static struct option LongOptions[] = {
      { "help" , 0, 0, 0 },
      { "verbose", 0, 0, 0 },
+     { "verbose_step", 0, 0, 0 },
+     { "verbose_event", 0, 0, 0 },
+     { "verbose_event_num", 1, 0, 0 },
      { "file", 1, 0, 0 },
      { "vis_mac", 1, 0, 0 },
      { "output", 1, 0, 0},
@@ -149,6 +158,19 @@ int main(int argc,char** argv) {
 	if( !strcmp(LongOptions[OptionIndex].name , "verbose") )
 	  {
 	    verbose = true; 
+	  }
+	if( !strcmp(LongOptions[OptionIndex].name , "verbose_step") )
+	  {
+	    verboseStep = true; 
+	  }
+	if( !strcmp(LongOptions[OptionIndex].name , "verbose_event") )
+	  {
+	    verboseEvent = true; 
+	  }
+	if( !strcmp(LongOptions[OptionIndex].name , "verbose_event_num") )
+	  {
+	    if(optarg)
+	      verboseEventNumber = atoi(optarg); 
 	  }
 	if( !strcmp(LongOptions[OptionIndex].name , "output") )
 	  {
@@ -203,7 +225,12 @@ int main(int argc,char** argv) {
     }
 
 
+  // we shouldn't have verbose steps without verbose events etc.
+  if(verboseStep) verboseEvent = true;
+
+
   BDSGlobals = new BDSGlobalConstants(options);
+
   theBunch.SetOptions(options);
  
 
