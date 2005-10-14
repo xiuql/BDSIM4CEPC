@@ -774,10 +774,6 @@ void set_value(string name, double value )
   if(name == "thresholdCutPhotons" ) options.thresholdCutPhotons = value;
   if(name == "useEMHadronic" ) options.useEMHadronic = (int) value;
 
-
-  if(name == "verboseStep") options.verboseStep = (int) value;
-  if(name == "verboseEventNumber") options.verboseEventNumber = (int) value;
-
   if(name == "storeTrajectory") options.storeTrajectory = (int) value; 
   
   if(name == "stopTracks") options.stopTracks = (int) value; 
