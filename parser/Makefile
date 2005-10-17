@@ -8,7 +8,7 @@ LOPT=-i
 YACC=bison
 YOPT=-d -v
 
-OS=Linux
+OS        := $(shell uname)
 
 ifeq ($(OS),Linux)
 LIBNAME=libgmad.so
