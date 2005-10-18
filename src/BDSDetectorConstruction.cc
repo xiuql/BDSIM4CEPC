@@ -124,7 +124,7 @@ G4FieldManager* theOuterFieldManager;
 //OuterFieldMap* theOuterFieldMap;
 
 extern BDSOutput bdsOutput;
-
+extern G4bool verbose;
 //=================================================================
 
 
@@ -370,7 +370,12 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   G4ThreeVector localZ = G4ThreeVector(0,0,1);
 
   G4double s_tot = 0; // position along the beamline
-
+  ofstream BDSOutline;
+  if(verbose)
+    {
+      BDSOutline.open("BDSOutline.dat");
+      BDSOutline << "Name of Element\t" << "Length/m\t" << "Position/m" << G4endl; 
+    }
   // define geometry scope
   for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
     {
@@ -379,12 +384,13 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 		  "  "<<(*iBeam)->GetAngle()<<G4endl;
 
       (*iBeam)->SetSPos(s_tot+(*iBeam)->GetLength()/2);
-
       // advance coordinates , but not for cylindrical sampler
       if(( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength ) )
 	{
 	  s_tot+= (*iBeam)->GetLength();
 
+	  
+	  if(verbose) BDSOutline << (*iBeam)->GetName() <<"\t\t"<<(*iBeam)->GetLength()/m<<"\t\t"<<s_tot/m<<G4endl;
 	  rtot += localZ * (*iBeam)->GetLength()/2;
 
 	  G4double angle=(*iBeam)->GetAngle();
@@ -433,7 +439,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
   G4cout<<"box size="<<BDSGlobals->GetComponentBoxSize()/m<<" m"<<G4endl;
   G4cout<<"s_tot="<<s_tot/m<<" m"<<G4endl;
-
+  bdsOutput.zMax=s_tot;
   solidWorld = new G4Box("World",WorldSizeX,WorldSizeY,
 			   WorldSizeZ);
     
@@ -472,12 +478,13 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
-
+  /* Removed by JCC 15-10-05 for beamloss in extraction line
+     // this was causing too many hits!
   BDSEnergyCounterSD* ECounter=new BDSEnergyCounterSD("World");
   logicWorld->SetSensitiveDetector(ECounter);
   SDman->AddNewDetector(ECounter);
   theECList->push_back(ECounter);
-
+  */
   G4bool use_graphics=true;
   G4double s_local=-s_tot/2.;
   G4ThreeVector TargetPos;
@@ -563,17 +570,17 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       zHalfAngle.rotateZ(tilt);
       zHalfAngle.rotateY(-angle/2);
       //zHalfAngle.transform(globalRotation);
-
+      if(DEBUG){
       G4cout<<"zHalfNAgle="<<zHalfAngle<<G4endl;
       G4cout<<"localZ="<<localZ<<G4endl;
       G4cout<<"localX="<<localX<<G4endl;
       G4cout<<"localY="<<localY<<G4endl;
       G4cout<<"rlast="<<rlast<<G4endl;
-
+      }
       // target position
       TargetPos = rlast + zHalfAngle *  ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 ) ;
 
-      G4cout<<"TargetPos="<<TargetPos<<G4endl;
+      if(DEBUG) G4cout<<"TargetPos="<<TargetPos<<G4endl;
 
       // advance the coordinates, but not for cylindrical samplers 
       if( ( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength )  )
@@ -616,7 +623,6 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	{
 	  // sbend trapezoids defined along z-axis
 	  rotateComponent->rotateY(pi/2+angle/2);
-
 	}
 
 
