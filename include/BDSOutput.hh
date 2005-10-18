@@ -21,6 +21,7 @@
 #ifdef USE_ROOT
 #include "TROOT.h"
 #include "TH1F.h"
+#include "TNtuple.h"
 #include "TFile.h"
 #include "TTree.h"
 #endif
@@ -38,7 +39,6 @@ public:
 
   void SetFormat(G4int format);
   void Init(G4int FileNum);
-
   ~BDSOutput();
 
   G4int WriteHits(BDSSamplerHitsCollection*);
@@ -56,10 +56,11 @@ public:
   TTree *theLWCalorimeterTree;
 
   TH1F *EnergyLossHisto;
+  TNtuple *EnergyLossNtuple;
 #endif
 
   G4int nSamplers;
-
+  G4double zMax;
 private:
   G4int format;
   ofstream of;

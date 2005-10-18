@@ -102,11 +102,10 @@ void BDSOutput::Init(G4int FileNum)
     }
 
   // build energy loss histogram
+  G4int nBins = G4int(zMax/m);
 
-  G4double zMax = BDSGlobals->GetWorldSizeZ();
-  G4int nBins = 1000;
-
-  EnergyLossHisto = new TH1F("ElossHisto", "Energy Loss",nBins,0.,zMax);
+  EnergyLossHisto = new TH1F("ElossHisto", "Energy Loss",nBins,0.,zMax/m);
+  EnergyLossNtuple= new TNtuple("ElossNtuple", "Energy Loss","z:E");
 
 #endif
 }
@@ -255,7 +254,10 @@ G4int BDSOutput::WriteEnergyLoss(BDSEnergyCounterHitsCollection* hc)
 	G4double EWeightZ=(*hc)[i]->
 	  GetEnergyWeightedPosition()/Energy;
 	
-	EnergyLossHisto->Fill((EWeightZ+BDSGlobals->GetWorldSizeZ())/m,Energy/GeV);
+	EnergyLossHisto->Fill(EWeightZ/m,Energy/GeV);
+
+	EnergyLossNtuple->Fill(EWeightZ/m,Energy/GeV);
+
       }
 #endif
   }
@@ -273,6 +275,16 @@ void BDSOutput::Echo(G4String str)
 
 G4int BDSOutput::Commit(G4int FileNum)
 {
+#ifdef USE_ROOT
+  if(format==_ROOT)
+    if(theRootOutputFile->IsOpen())
+      {
+	theRootOutputFile->Write();
+	theRootOutputFile->Close();
+	delete theRootOutputFile;
+      }
+#endif
+
   Init(FileNum);
   return 0;
 }
