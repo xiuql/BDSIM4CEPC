@@ -8,11 +8,11 @@ ROOTSYS       = /sw/
 endif
 CXX           = g++
 LD            = g++
-CXXFLAGS      = $(shell $(ROOTSYS)/bin/root-config --cflags) -I../
+CXXFLAGS      = $(shell $(ROOTSYS)/bin/root-config --cflags) -I../../..
 LDFLAGS       = 
 
 ROOTLIBS      = $(shell $(ROOTSYS)/bin/root-config --libs)
-LIBS          = $(ROOTLIBS) -L../parser -lgmad
+LIBS          = $(ROOTLIBS) -L../../parser -lgmad
 
 HDRS          = BDSCanvas.h BDSPad.h BDSAxis.h BDSParser.h BDSBox.h BDSPopUp.h
 

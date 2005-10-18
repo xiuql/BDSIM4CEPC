@@ -9,7 +9,7 @@ Last modified 30.09.2005
 #ifndef ROOT_TPad
 #include "TPad.h"
 #endif
-#include "parser/gmad.h"
+#include "../../parser/gmad.h"
 
 #ifndef ROOT_TClassMenuItem
 #include "TClassMenuItem.h"

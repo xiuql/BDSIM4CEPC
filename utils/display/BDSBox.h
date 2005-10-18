@@ -12,7 +12,7 @@ Last modified 30.09.2005
 
 #include "BDSParser.h"
 
-#include "parser/gmad.h"
+#include "../../parser/gmad.h"
 
 class BDSBox : public TBox
 {
