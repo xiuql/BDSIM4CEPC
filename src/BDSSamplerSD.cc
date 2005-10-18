@@ -85,12 +85,12 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
       // Changed z output by Samplers to be the position of the sampler
       // not time of flight of the particle JCC 15/10/05
       //G4double z=-(time*c_light-(pos.z()+BDSGlobals->GetWorldSizeZ()));
-      z=(pos.z()+BDSGlobals->GetWorldSizeZ());
+      G4double z=(pos.z()+BDSGlobals->GetWorldSizeZ());
       if(zPrime<0) energy*=-1;
       // apply a correction that takes ac... gab to do later!
 
       G4int nEvent= 
-	G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+	  G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
       G4int nSampler=theTrack->GetVolume()->GetCopyNo()+1;
       G4int PDGtype=theTrack->GetDefinition()->GetPDGEncoding();
 
