@@ -26,6 +26,7 @@
 #include<string>
 
 extern G4int event_number;
+extern G4bool verbose;
 
 BDSEnergyCounterSD::BDSEnergyCounterSD(G4String name)
 :G4VSensitiveDetector(name)
@@ -51,13 +52,12 @@ G4bool BDSEnergyCounterSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 
   G4double enrg;
 
- 
   if(BDSGlobals->GetStopTracks())
     enrg = aStep->GetTrack()->GetTotalEnergy() - aStep->GetDeltaEnergy();
   else
     enrg = edep;
 
-  if (edep==0.) return false;      
+  if (enrg==0.) return false;      
   
 
   G4int nCopy=aStep->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo();
@@ -72,22 +72,25 @@ G4bool BDSEnergyCounterSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
   G4double zpos=0.5*(aStep->GetPreStepPoint()->GetPosition().z()
 		     + aStep->GetPostStepPoint()->GetPosition().z());
 
+  
+  if(verbose && BDSGlobals->GetStopTracks()) G4cout << "BDSEnergyCounterSD: Current Volume: " << aStep->GetTrack()->GetVolume()->GetName() <<"\tEvent: " << event_number << "\tEnergy: " << enrg/GeV << "GeV\tPosition: " << zpos/m <<"m"<< G4endl;
+
   if (HitID[nCopy]==-1)
     { 
-      BDSEnergyCounterHit* ECHit= new BDSEnergyCounterHit(nCopy,enrg,zpos*edep);
+      BDSEnergyCounterHit* ECHit= new BDSEnergyCounterHit(nCopy,enrg,zpos*enrg);
       HitID[nCopy]= BDSEnergyCounterCollection->insert(ECHit)-1;
     }
   else
     {
       (*BDSEnergyCounterCollection)[HitID[nCopy]]-> AddEnergy(enrg);
       (*BDSEnergyCounterCollection)[HitID[nCopy]]-> 
-	AddEnergyWeightedPosition(edep*zpos);
+	AddEnergyWeightedPosition(enrg*zpos);
     }
-
   
+    
   if(BDSGlobals->GetStopTracks())
-    aStep->GetTrack()->SetTrackStatus(fStopAndKill);
-
+    aStep->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
+  
   return true;
 }
 
