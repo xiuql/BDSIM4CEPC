@@ -2,7 +2,7 @@
 
 ! some beamline parameters
                                                                                                                
-option, beampipeRadius = 20 * cm,
+option, beampipeRadius = 2 * cm,
         boxSize = 2.3 * m,
         tunnelRadius= 3.0 * m,
         beampipeThickness = 0.1 * cm,
@@ -62,10 +62,10 @@ dskew:drift,l=1*m, tilt=pi/4;
 tt : transform3d,x=0,y=0,z=0,phi=0,theta=0,psi=pi/2;
 tti : transform3d,x=0,y=0,z=0,phi=pi/4,theta=0,psi=0;
 
-d2:d,aper=40*cm;
-d3:d,aper=1*cm;
+d2:drift,l=1*m,aper=50*cm;
+d3:drift,l=1*m,aper=1*cm;
 
-test1:line=(d,d,d);
+test1:line=(d,d,d,d,qd,qd,qf,d,d,d);
 
 !use, period=test_e;
 use,period=test1;
@@ -84,8 +84,8 @@ beam,  particle="e-",
        Rmax=2*mm,
        sigmaX=0.0*cm,
        sigmaY=0.0*cm,
-       sigmaXp=0.0 ,
-       sigmaYp=0.0 ;
+       sigmaXp=0.01 ,
+       sigmaYp=0.02 ;
 
 option, ngenerate=100, turnInteractions=1, stopTracks=1,
 useEMHadronic=0;
