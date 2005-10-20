@@ -60,7 +60,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       SetSigmaXp(opt.sigmaXp);
       SetSigmaYp(opt.sigmaYp);
       SetSigmaT(opt.sigmaT);
-      energySpread = opt.beamEnergySpread;
+      energySpread = opt.sigmaE;
     }
   if(opt.distribType == "ring")
     {
@@ -69,7 +69,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       Y0 = opt.Y0;
       rMin = opt.Rmin;
       rMax = opt.Rmax;
-      energySpread = opt.beamEnergySpread;
+      energySpread = opt.sigmaE;
     }
   if(opt.distribType == "guineapig_bunch")
     {
@@ -171,8 +171,7 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
       yp = sigmaYp * GaussGen->shoot();
       zp=sqrt(1.-xp*xp -yp*yp);  
       t = - sigmaT* (1.-2.*GaussGen->shoot());
-      E = BDSGlobals->GetBeamKineticEnergy()
-	* (1 + energySpread * GaussGen->shoot());
+      E = BDSGlobals->GetBeamKineticEnergy() * (1 + energySpread * GaussGen->shoot());
     }
   if(distribType == _RING)
     {
