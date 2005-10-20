@@ -505,20 +505,19 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       }
   }
   
-   if(DEBUG) G4cout<<"staring placement procedure "<<G4endl;
+  if(DEBUG) G4cout<<"staring placement procedure "<<G4endl;
   
   rtot = G4ThreeVector(0.,0.,0.);
   localX = G4ThreeVector(1.,0.,0.); 
   localY = G4ThreeVector(0.,1.,0.);
   localZ = G4ThreeVector(0.,0.,1.);
-
+  
   G4RotationMatrix globalRotation;
-
+  
   for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
     { 
       //(*iBeam)->SetZLower(rtot.z());
-     
-      
+       
       G4double angle=(*iBeam)->GetAngle();
       G4double theta=(*iBeam)->GetTheta();
       G4double psi = (*iBeam)->GetPsi();
@@ -527,6 +526,10 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
     
       if( (*iBeam)->GetType() == "transform3d")
 	{
+
+	  if(DEBUG) G4cout<<"transform3d : "<<phi<<" "<<theta<<" "<<psi<<G4endl;
+
+
 	  rtot(0) += (*iBeam)->GetXOffset(); 
 	  rtot(1) += (*iBeam)->GetYOffset(); 
 	  rtot(2) += (*iBeam)->GetZOffset(); 
@@ -536,22 +539,16 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	  rlast(2) += (*iBeam)->GetZOffset(); 
 
 	  globalRotation.rotate(psi,localZ);
-	  //localX.rotateZ(psi);
-	  //localY.rotateZ(psi);
 	  localX.rotate(psi,localZ);
 	  localY.rotate(psi,localZ);
 
 
 	  globalRotation.rotate(phi,localY);
-	  //localX.rotateY(-phi);
-	  //localZ.rotateY(-phi);
-	  localX.rotate(-phi,localY);
-	  localZ.rotate(-phi,localY);
+	  localX.rotate(phi,localY);
+	  localZ.rotate(phi,localY);
 	  
 
 	  globalRotation.rotate(theta,localX);
-	  //localY.rotateX(theta);
-	  //localZ.rotateX(theta);
 	  localY.rotate(theta,localX);
 	  localZ.rotate(theta,localX);
 	  	  	  
@@ -561,22 +558,32 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
                    
       G4RotationMatrix *rotateComponent = new G4RotationMatrix; // for component placement
 
-      rotateComponent->rotateZ(tilt);
 
+      //tilted bends influence reference frame, otherwise just local tilt
+      if((*iBeam)->GetType() == "sbend")
+	{
+	  globalRotation.rotate(tilt,localZ);
+	  localX.rotate(tilt,localZ);
+	  localY.rotate(tilt,localZ);
+	}
+      else 
+	rotateComponent->rotateZ(tilt);
     
       // define center of bended elements from the previos coordinate frame	  
          
       G4ThreeVector zHalfAngle = localZ; 
-      zHalfAngle.rotateZ(tilt);
-      zHalfAngle.rotateY(-angle/2);
-      //zHalfAngle.transform(globalRotation);
-      if(DEBUG){
-      G4cout<<"zHalfNAgle="<<zHalfAngle<<G4endl;
-      G4cout<<"localZ="<<localZ<<G4endl;
-      G4cout<<"localX="<<localX<<G4endl;
-      G4cout<<"localY="<<localY<<G4endl;
-      G4cout<<"rlast="<<rlast<<G4endl;
-      }
+   
+      zHalfAngle.rotate(angle/2,localY);
+
+      if(DEBUG)
+	{
+	  G4cout<<"zHalfNAgle="<<zHalfAngle<<G4endl;
+	  G4cout<<"localZ="<<localZ<<G4endl;
+	  G4cout<<"localX="<<localX<<G4endl;
+	  G4cout<<"localY="<<localY<<G4endl;
+	  G4cout<<"rlast="<<rlast<<G4endl;
+	}
+      
       // target position
       TargetPos = rlast + zHalfAngle *  ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 ) ;
 
@@ -593,26 +600,18 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       // rotate to the previous reference frame
       rotateComponent->transform(globalRotation);
 
+      rotateComponent->invert();
+
       // recompute global rotation
       // define new coordinate system local frame	  
  
-      globalRotation.rotate(tilt,localZ);
-      //localX.rotateZ(psi);
-      //localY.rotateZ(psi);
-      localX.rotate(tilt,localZ);
-      localY.rotate(tilt,localZ);
-      
-      
+        
       globalRotation.rotate(angle,localY);
-      //localX.rotateY(-phi);
-      //localZ.rotateY(-phi);
-      localX.rotate(-angle,localY);
-      localZ.rotate(-angle,localY);
+      localX.rotate(angle,localY);
+      localZ.rotate(angle,localY);
       
       
       globalRotation.rotate(theta,localX);
-      //localY.rotateX(theta);
-      //localZ.rotateX(theta);
       localY.rotate(theta,localX);
       localZ.rotate(theta,localX);
 
@@ -622,7 +621,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       if((*iBeam)->GetType() == "sbend")
 	{
 	  // sbend trapezoids defined along z-axis
-	  rotateComponent->rotateY(pi/2+angle/2);
+	  rotateComponent->rotateY(-pi/2-angle/2);
+
 	}
 
 
@@ -680,6 +680,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   
   
   return physiWorld;
+  
   
 }
 
