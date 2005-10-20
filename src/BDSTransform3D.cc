@@ -34,13 +34,14 @@ BDSTransform3D::BDSTransform3D(G4String aName, G4double x,G4double y,G4double z,
 			  0,
 			  0,
 			  itsVisAttributes,
-			  phi, // angle
+			  0, // angle
 			  x, // x offset
 			  y, // y offset
 			  z) // z offset
 {
   SetTheta(theta);
   SetPsi(psi);
+  SetPhi(phi);
   SetType("transform3d");
 
   if (!(*LogVolCount)[itsName])

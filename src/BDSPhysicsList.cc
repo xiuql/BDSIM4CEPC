@@ -36,6 +36,8 @@
 
 #include "G4Electron.hh"
 
+extern G4bool verbose;
+
 BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
 {
   defaultCutValue = 0.7*mm;  
@@ -100,40 +102,15 @@ BDSPhysicsList::~BDSPhysicsList()
 
 void BDSPhysicsList::SetCuts()
 {
-  if (verboseLevel >1){
-    G4cout << "BDSPhysicsList::SetCuts:";
-  }  
-  //  " G4VUserPhysicsList::SetCutsWithDefault" method sets 
-  //   the default cut value for all particle types 
-
-  G4cout<<" setting cuts" <<G4endl;
+  if (verbose){
+    G4cout << "BDSPhysicsList:: setting cuts";
+ 
+  }
 
   SetCutsWithDefault();   
 
-  /*
-
-  // gab new:
-  SetCutValue(defaultCutValue, "gamma");
-  SetCutValue(defaultCutValue, "e-");
-  SetCutValue(defaultCutValue, "e+");
-  // end of gab new
-
-  
-  SetCutValue(kNuCut,"nu_e");
-  SetCutValue(kNuCut,"nu_tau");
-  SetCutValue(kNuCut,"nu_mu");
-  SetCutValue(kNuCut,"anti_nu_e");
-  SetCutValue(kNuCut,"anti_nu_tau");
-  SetCutValue(kNuCut,"anti_nu_mu");
-
-  //gab new:
-  SetParticleCuts(defaultCutValue,G4Gamma::Gamma());
-  SetParticleCuts(defaultCutValue,G4Electron::Electron());
-  SetParticleCuts(defaultCutValue,G4Positron::Positron());
-
-  */
-
-  DumpCutValuesTable(); 
+  if(verbose)
+    DumpCutValuesTable(); 
   
 }
 // 2002 by J.P. Wellisch

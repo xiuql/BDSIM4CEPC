@@ -39,9 +39,9 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   itsEnergyOffset=0.;
   itsTrackWeightFactor=1.0;
 
-
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   itsBeamParticleDefinition= particleTable->FindParticle(G4String(opt.particleName));
+  
   
   if(!itsBeamParticleDefinition) 
     {
@@ -49,6 +49,7 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
       exit(1);
     }
 
+     
   itsBeamTotalEnergy = opt.beamEnergy * GeV;
 
   itsBeamMomentum =sqrt(pow(itsBeamTotalEnergy,2)-
