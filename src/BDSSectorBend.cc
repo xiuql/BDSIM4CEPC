@@ -52,8 +52,8 @@ BDSSectorBend::BDSSectorBend(G4String aName,G4double aLength,
 
       BuildBPFieldMgr(itsStepper,itsMagField);
 
-      SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
-      //SetSensitiveVolume(itsOuterLogicalVolume);// otherwise
+      //SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
+      SetSensitiveVolume(itsOuterLogicalVolume);// otherwise
 
       if(BDSGlobals->GetIncludeIronMagFields())
 	{
@@ -112,8 +112,8 @@ void BDSSectorBend::BuildBPFieldAndStepper()
   
   
   //itsStepper=new BDSHelixStepper(itsEqRhs);
-  itsStepper = new myQuadStepper(itsEqRhs);
-  itsStepper->SetBField(itsBField);
+  itsStepper = new myQuadStepper(itsEqRhs); // note the - sign...
+  itsStepper->SetBField(-itsBField);
  
   itsStepper->SetBGrad(itsBGrad);
 
