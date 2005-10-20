@@ -54,6 +54,7 @@
 %type <ival> extension;
 %type <symp> sample_options
 %type <symp> csample_options
+%type <symp> gas_options
 %%
 
 input : 
@@ -982,6 +983,16 @@ command : STOP             { if(execute) quit(); }
 		params.flush();
 	      }
           }
+        | GAS ',' gas_options // beampipe gas
+          {
+	    if(execute)
+	      {  
+		if(ECHO_GRAMMAR) printf("command -> GAS\n");
+		add_gas("gas",$3->name, element_count, params.material);
+		element_count = 1;
+		params.flush();
+	      }
+          }
 
 //| PRINTF '(' fmt ')' { if(execute) printf($3,$5); }
 ;
@@ -1043,7 +1054,9 @@ csample_options : VARIABLE '=' aexpr
                   {
 		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",$1->name,$3);
 		    if(execute)
-		      ;//set_value($1->name,string($3));
+		      {
+			;//set_value($1->name,string($3));
+		      }
 		  }   
                 | csample_options ',' VARIABLE '=' aexpr
                   {
@@ -1052,6 +1065,7 @@ csample_options : VARIABLE '=' aexpr
 		    if(execute)
 		      {
 			if( !strcmp($3->name,"r") ) params.r = $5;
+			else if (!strcmp($3->name,"l") ) params.l = $5;
 			else if (!strcmp($3->name,"l") ) params.l = $5;
 			else if(VERBOSE) 
 			  printf("Warning : CSAMPLER: unknown parameter %s at line\n",$3->name);
@@ -1076,6 +1090,77 @@ csample_options : VARIABLE '=' aexpr
                   }
 ;
 
+gas_options : VARIABLE '=' aexpr
+                  {
+		    if(ECHO_GRAMMAR) printf("gas_opt -> , %s =  %.10g \n",$1->name,$3);
+		    
+		    if(execute)
+		      {
+			if( !strcmp($1->name,"r") ) params.r = $3;
+			else if (!strcmp($1->name,"l") ) params.l = $3;
+			else if(VERBOSE) 
+			  printf("Warning : GAS: unknown parameter %s \n",$1->name);
+		      }
+		  }   
+                | VARIABLE '=' STR
+                  {
+		    if(ECHO_GRAMMAR) printf("gas_opt -> %s =  %s \n",$1->name,$3);
+		    if(execute)
+		      {
+			if( !strcmp($1->name,"material") ) 
+			  {
+			    strcpy(params.material ,$3);
+			    params.materialset = 1;
+			  }
+			//set_value($1->name,string($3));
+		      }
+		  }   
+                | gas_options ',' VARIABLE '=' aexpr
+                  {
+		    if(ECHO_GRAMMAR) printf("gas_opt -> , %s =  %.10g \n",$3->name,$5);
+		    
+		    if(execute)
+		      {
+			if( !strcmp($3->name,"r") ) params.r = $5;
+			else if (!strcmp($3->name,"l") ) params.l = $5;
+			else if(VERBOSE) 
+			  printf("Warning : GAS: unknown parameter %s at line\n",$3->name);
+		      }
+
+		  }   
+                | gas_options ',' VARIABLE '=' STR
+                  {
+		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",$3->name,$5);
+		    if(execute)
+		      {
+			  if( !strcmp($3->name,"material") ) 
+			    {
+			      strcpy(params.material ,$5);
+			      params.materialset = 1;
+			    }
+		      }
+		  }   
+                | gas_options ',' RANGE '='  VARIABLE '/' VARIABLE
+                  {
+		    if(ECHO_GRAMMAR) printf("gas_opt -> range, csopt\n");
+
+		  }
+                | RANGE '='  VARIABLE '/' VARIABLE
+                  {
+		    if(ECHO_GRAMMAR) printf("gas_opt -> range\n");
+
+                  }
+                | gas_options ',' RANGE '='  VARIABLE
+                  {
+		    if(ECHO_GRAMMAR) printf("gas_opt -> range\n");
+		    $$ = $5;
+		  }
+                | RANGE '='  VARIABLE
+                  {
+		    if(ECHO_GRAMMAR) printf("gas_opt -> range\n");
+		    $$ = $3;
+                  }
+;
 
 option_parameters : 
                   | option_parameters ',' VARIABLE '=' aexpr

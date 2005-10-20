@@ -1,7 +1,8 @@
 
 /* parser.h
  *
- *
+ *    GMAD parser functions
+ *    Ilya Agapov
  */
 
 #ifndef __PARSER_H
@@ -69,6 +70,8 @@ const char *typestr(int type) {
     return "sampler";
   case _CSAMPLER:
     return "csampler";
+  case _GAS:
+    return "gas";
   case _LASER:
     return "laser";
   case _ELEMENT :
@@ -658,6 +661,19 @@ void add_csampler(char *name, char *before, int before_count, double length, dou
 
 }
 
+// insert 
+void add_gas(char *name, const char *before, int before_count, const char *material)
+{
+  printf("gas %s will be inserted into %s number %d\n",material,before,before_count);
+  struct Element e;
+  e.type = _GAS;
+  e.name = name;
+  e.lst = NULL;
+  element_list.insert(beamline_list.end(),e);
+ 
+}
+
+
 void print(list<struct Element> l, int ident)
 {
 
@@ -737,7 +753,6 @@ void print(struct Options opt)
 void set_value(string name, double value )
 {
   if(name == "energy" ) options.beamEnergy = value;
-  if(name == "energySpread" ) options.beamEnergySpread = value;
   if(name == "nparticles" ) options.numberOfParticles = (int)value;
   if(name == "ngenerate" ) options.numberToGenerate = (int)value;
   if(name == "nperfile" ) options.numberOfEventsPerNtuple = (int)value;
@@ -752,6 +767,9 @@ void set_value(string name, double value )
   if(name == "sigmaXp" ) options.sigmaXp = value;
   if(name == "sigmaYp" ) options.sigmaYp = value;
   if(name == "sigmaT" ) options.sigmaT = value;
+  if(name == "sigmaE" ) options.sigmaE = value;
+
+
 
   if(name == "X0" ) options.X0 = value;
   if(name == "Y0" ) options.X0 = value;

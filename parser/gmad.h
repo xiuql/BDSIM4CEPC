@@ -35,6 +35,7 @@ const int _LASER=14;
 
 const int _SAMPLER = 16;
 const int _CSAMPLER = 17;
+const int _GAS = 18;
 
 const int _TRANSFORM3D = 29;
 
@@ -55,8 +56,6 @@ const int _GUINEAPIG_PAIRS = 5;
 const int _GUINEAPIG_SLAC = 6;
 
 struct Options {
-  double beamEnergy;
-  double beamEnergySpread;
 
   string particleName;
   string distribType;
@@ -69,6 +68,8 @@ struct Options {
   double sigmaT;
   double sigmaXp;
   double sigmaYp;
+  double beamEnergy;
+  double sigmaE;
 
   // for element specification
   double X0;
