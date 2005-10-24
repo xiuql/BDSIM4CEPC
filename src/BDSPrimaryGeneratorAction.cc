@@ -104,9 +104,9 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if(DEBUG )
     {
       G4cout<<" BDSPrimaryGeneratorAction: mom="<<PartMomDir
-	    <<" Energy="<<E<<G4endl;
+	    <<" Energy="<<E/GeV<<"GeV"<<G4endl;
       G4cout<<" BDSPrimaryGeneratorAction: Pos="<<
-	particleGun->GetParticlePosition()<<G4endl;
+	particleGun->GetParticlePosition()/m<<"m"<<G4endl;
     }
 
   // save initial values outside scope for entry into the samplers:
