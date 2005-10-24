@@ -90,7 +90,7 @@ BDSEventAction::BDSEventAction()
   if(isBatch) printModulo=1000;
   else printModulo=1;
   
-  itsOutputFileNumber=0;
+  itsOutputFileNumber=1;
   
   itsRecordSize=1024;
     
