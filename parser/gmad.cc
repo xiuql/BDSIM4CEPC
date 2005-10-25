@@ -51,6 +51,10 @@ void init()
   add_var("s",1.0,_RESERVED);
   add_var("ns",1.e-9,_RESERVED);
 
+  add_var("rad",1.0,_RESERVED);
+  add_var("mrad",1.e-3,_RESERVED);
+
+
   add_var("clight",2.99792458e+8,_RESERVED);
 
   params.flush();
