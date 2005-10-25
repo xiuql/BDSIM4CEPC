@@ -7,7 +7,7 @@ G4INSTALL=@G4INSTALL
 ROOTSYS=@ROOTSYS
 
 .PHONY: all
-all: lib bin
+all: lib bin parser
 
 ROOTLIBS=`$(ROOTSYS)/bin/root-config --libs`
 ROOTCFLAGS=`$(ROOTSYS)/bin/root-config --cflags`
@@ -37,3 +37,7 @@ distrib:
 
 docs:
 	$(MAKE) -C docs
+
+parser: parser/parser.h parser/parser.y parser/parser.l parser/gmad.h \
+        parser/gmad.cc parser/sym_table.h
+	$(MAKE) -C parser
