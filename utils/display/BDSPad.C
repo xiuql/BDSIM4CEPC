@@ -175,7 +175,7 @@ void BDSPad::UnZoom()
 		browser->GetPlot()->Modified(kTRUE);
 	}
 	
-	TH2F   *ax2 = (TH2F*)((BDSPad*)gPad->GetPrimitive("temp"));
+	TH2F   *ax2 = (TH2F*)browser->GetPlot()->GetPrimitive("temp");
 	if(ax2)
 	{
 		ax2->SetAxisRange(BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis());
