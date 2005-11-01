@@ -5,6 +5,7 @@
 #include "G4Cons.hh"
 #include "G4Torus.hh"
 #include "G4Trd.hh"
+#include "G4Trap.hh"
 #include "G4VisAttributes.hh"
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
@@ -33,6 +34,8 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 
   G4double x0=0, y0=0, z0=0, x=0, y=0, z=0; // box parameters
   G4double rmin, rmax,rmin2, rmax2, phi0, dphi; // cylindrical parameters
+  G4double x1=0, x2=0, y1=0, y2=0;
+  G4double phi=0, theta=0, psi=0; // Euler angles - for rotation of components
   G4String material;
 
   G4Material *theMaterial = theMaterials->LCVacuum;
@@ -40,6 +43,8 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
   G4Box *aBox;
   G4Tubs *aTubs;
   G4Cons *aCons;
+  G4Trap *aTrap;
+  G4Trd *aTrd;
 
   G4LogicalVolume *lvol;
   G4VPhysicalVolume* PhysiComp;
@@ -227,7 +232,65 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 	    
 	  } else error();
       }
+      if(token=="Trd") {   // trapezoid
+	if(getWord() == "{")
+	  {
+	    
+	    while(token = getWord())
+	      {
+		if (token == "}") break;
+		
+		getParameter(x0,"x0",token); // origin
+		getParameter(y0,"y0",token);
+		getParameter(z0,"z0",token);
+		getParameter(x1,"x1",token); //half length at wider side
+		getParameter(x2,"x2",token); // half length at narrow side
+		getParameter(y1,"y1",token); //half lengthes
+		getParameter(y2,"y2",token); //half lengthes
+		getParameter(z,"z",token);
+		getParameter(phi,"phi",token);
+		getParameter(theta,"theta",token);
+		getParameter(psi,"psi",token);
+		getParameter(material,"material",token);
+	      }
+	    
+	    //create Box
+	    
+	    GetMaterial(theMaterial,material);
+	    
+	    
+	    G4cout<<"creating trd : "<<x0<<"  "<<y0<<" "<<z0<<
+		  z<<" "<<y<<" "<<x1<<" "<<x2<<endl;
+	    
+	    
+	    aTrd = new G4Trd("aTrd" + G4String(count),
+			     x1,x2,   // inner R
+			     y1,y2,
+			     z);
+	    
+	    lvol = new G4LogicalVolume(aTrd,
+				       theMaterial,
+				       "_bmp_logical");
 
+	    G4RotationMatrix *rot = new G4RotationMatrix(phi,theta,psi);
+	    
+	    
+	    // place into mother volume
+	    
+	    PhysiComp = 
+	      new G4PVPlacement(
+				rot,			     // rotation
+				G4ThreeVector(x0,y0,z0),     // at (0,0,0)
+				lvol,  // its logical volume
+				"vol_"+G4String(count),	     // its name
+				marker,     // its mother  volume
+				false,		     // no boolean operation
+				0);		   
+	    
+	    count++;
+	    
+	  } else error();
+      }
     }
 
 
