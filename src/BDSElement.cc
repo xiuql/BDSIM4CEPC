@@ -98,14 +98,23 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
 
   G4int pos = geometry.find(":");
 
-  if(pos<0) { G4cerr<<"ERROR: invalid geometry reference format : "<<geometry<<endl; exit(1);}
-  G4String gFormat = geometry.substr(0,pos);
-  G4String gFile = geometry.substr(pos+1,geometry.length() - pos); 
+  G4String gFormat="", bFormat="";
+  G4String gFile="", bFile="";
+
+  if(pos<0) { G4cerr<<"ERROR: invalid geometry reference format : "<<geometry<<endl; gFormat="none";}
+  else
+    {
+      gFormat = geometry.substr(0,pos);
+      gFile = geometry.substr(pos+1,geometry.length() - pos); 
+    }
 
   pos = bmap.find(":");
-  if(pos<0) { G4cerr<<"ERROR: invalid B map reference format : "<<geometry<<endl; exit(1);}
-  G4String bFormat = bmap.substr(0,pos);
-  G4String bFile = bmap.substr(pos+1,bmap.length() - pos); 
+  if(pos<0) { G4cerr<<"ERROR: invalid B map reference format : "<<bmap<<endl; bFormat="none";}
+  else
+    {
+      bFormat = bmap.substr(0,pos);
+      bFile = bmap.substr(pos+1,bmap.length() - pos); 
+    }
 
   G4cout<<"placing components\n: geometry format - "<<gFormat<<G4endl<<
     "file - "<<gFile<<G4endl;
@@ -157,6 +166,30 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
     bmapif.close();
 
     BuildMagField();  // build magnetic field
+
+
+    // test - dump field values
+    G4cout<<"dumping field values..."<<G4endl;
+    G4double Point[4];
+    G4double BField[6];
+    ofstream testf("fields.dat");
+
+    for(G4double x=-1*m;x<1*m;x+=1*cm)
+       for(G4double y=-1*m;y<1*m;y+=1*cm)
+	 for(G4double z=-1*m;z<1*m;z+=1*cm)
+      {
+	Point[0] = x;
+	Point[1] = y;
+	Point[2] = z;
+	Point[3] = 0;
+	itsField->GetFieldValue(Point,BField);
+	testf<<Point[0]<<" "<<Point[1]<<" "<<Point[2]<<" "<<
+	  BField[0]<<" "<<BField[1]<<" "<<BField[2]<<G4endl;
+      }
+
+    testf.close();
+    G4cout<<"done"<<G4endl;
+
 
   } else {
     G4cerr<<"field map format "<<bFormat<<"not supported"<<G4endl;
