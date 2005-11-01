@@ -132,7 +132,7 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
   if(nSegments==1)
     {
       G4RotationMatrix* Rot=NULL;
-      if(itsAngle!=0)Rot=RotY90;
+      //if(itsAngle!=0)Rot=RotY90;  // doesn't apply to rbends 
       
       G4VPhysicalVolume* PhysiComp = 
 	new G4PVPlacement(

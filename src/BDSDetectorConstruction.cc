@@ -1,16 +1,16 @@
-/* BDSIM code.    Version 1.0
-   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.7.2002
-   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+/* BDSIM  v 0.1
 
-   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
-   Added GAB include for BDSBeamPipe.hh
-   Added GAB Gas Plug Code
-   Added X Y Offset code
 */
 
 
-const int DEBUG = 0;
+
+/*
+  geometry construction.
+
+*/
+
+
+const int DEBUG = 1;
 
 //=================================================================
 //=================================================================
@@ -49,23 +49,24 @@ const int DEBUG = 0;
 // elements
 #include "BDSBeamPipe.hh"
 #include "BDSSectorBend.hh"
+#include "BDSRBend.hh"
 #include "BDSQuadrupole.hh"
 #include "BDSDrift.hh"
 #include "BDSSkewSextupole.hh"
 #include "BDSSextupole.hh"
 #include "BDSOctupole.hh"
 #include "BDSDecapole.hh"
-#include "BDSKiller.hh"
+//#include "BDSKiller.hh"
 #include "BDSSampler.hh"
-#include "BDSSpoiler.hh"
-#include "BDSAbsorber.hh"
+//#include "BDSSpoiler.hh"
+//#include "BDSAbsorber.hh"
 
 #include "BDSLaserWire.hh"
 #include "BDSLWCalorimeter.hh"
 
 #include "BDSMuSpoiler.hh"
-#include "BDSBlock.hh"
-#include "BDSWedge.hh"
+//#include "BDSBlock.hh"
+//#include "BDSWedge.hh"
 #include "BDSTransform3D.hh"
 #include "BDSElement.hh"
 #include "BDSSamplerCylinder.hh"
@@ -193,7 +194,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   // quadrupole field gradient
   G4double bPrime;
   // sectupole field coef.
-  G4double bDoublePrime;
+  G4double bDoublePrime;  // for sextupole field
+  G4double bTriplePrime;  // for octupole field
   
   // stuff for rescaling due to synchrotron radiation, IGNORING
   G4double synch_factor = 1;
@@ -247,6 +249,40 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	}
       }
 
+
+      if((*it).type==_HKICK ) {
+	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
+	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
+	
+	if(DEBUG) G4cout<<"---->adding hkick "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
+		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
+	
+	if( fabs((*it).angle) < 1.e-7 * rad ) {
+	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
+	} 
+	else {
+	  theBeamline.push_back(new BDSRBend( (*it).name,(*it).l * m,bpRad,FeRad,bField,
+					      (*it).angle,(*it).tilt,bPrime));
+	}
+      }
+
+      if((*it).type==_VKICK ) {
+	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
+	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
+	
+	if(DEBUG) G4cout<<"---->adding vkick "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
+		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
+	
+	if( fabs((*it).angle) < 1.e-7 * rad ) {
+	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
+	} 
+	else {
+	  theBeamline.push_back(new BDSRBend( (*it).name,(*it).l * m,bpRad,FeRad,bField,
+					      (*it).angle,pi/2,bPrime));
+	}
+      }
+
+
       if((*it).type==_QUAD ) {
 	
 	//bPrime = brho * (*it).k1 / (*it).l * tesla  * synch_factor;
@@ -268,6 +304,17 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	    " k1 ="<<(*it).k2<<" b'' ="<<bDoublePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
 	theBeamline.push_back(new BDSSextupole(G4String((*it).name),(*it).l * m,aper,FeRad,bDoublePrime));
       }
+
+      if((*it).type==_OCTUPOLE ) {
+	bDoublePrime = brho * (*it).k2 / (*it).l * tesla / (m*m) * synch_factor;
+	bTriplePrime = brho * (*it).k3 / (*it).l * tesla / (m*m*m) * synch_factor;
+	G4double aper = bpRad;
+	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+	if(DEBUG) { G4cout<<"---->adding octupole, "<<G4String( (*it).name )<<
+		      " k3 ="<<(*it).k3<<" b''' ="<<bTriplePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
+	theBeamline.push_back(new BDSOctupole(G4String((*it).name),(*it).l * m,aper,FeRad,bTriplePrime));
+      }
+
       
       if((*it).type==_ELEMENT ) {
 	
@@ -572,8 +619,9 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       // define center of bended elements from the previos coordinate frame	  
          
       G4ThreeVector zHalfAngle = localZ; 
-   
-      zHalfAngle.rotate(angle/2,localY);
+
+      if((*iBeam)->GetType() == "sbend")
+	zHalfAngle.rotate(angle/2,localY);
 
       if(DEBUG)
 	{
@@ -605,21 +653,18 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       // recompute global rotation
       // define new coordinate system local frame	  
  
-        
-      globalRotation.rotate(angle,localY);
-      localX.rotate(angle,localY);
-      localZ.rotate(angle,localY);
-      
-      
-      globalRotation.rotate(theta,localX);
-      localY.rotate(theta,localX);
-      localZ.rotate(theta,localX);
-
-      //rotateComponent->transform(globalRotation);
-
-      // special placement for sbends
+      // sbends transform the coordinate system, but not rbends
       if((*iBeam)->GetType() == "sbend")
 	{
+	  globalRotation.rotate(angle,localY);
+	  localX.rotate(angle,localY);
+	  localZ.rotate(angle,localY);
+	  
+	  
+	  globalRotation.rotate(theta,localX);
+	  localY.rotate(theta,localX);
+	  localZ.rotate(theta,localX);
+	  
 	  // sbend trapezoids defined along z-axis
 	  rotateComponent->rotateY(-pi/2-angle/2);
 
