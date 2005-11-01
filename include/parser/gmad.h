@@ -32,6 +32,10 @@ const int _COLLIMATOR = 11;
 const int _ECOL = 12;
 const int _RCOL = 13;
 const int _LASER=14;
+const int _MATERIAL=15;
+
+const int _VKICK=31;
+const int _HKICK=32;
 
 const int _SAMPLER = 16;
 const int _CSAMPLER = 17;
@@ -136,6 +140,13 @@ struct Element {
   list<double> knl;
   list<double> ksl;
 
+   // material properties
+
+  double A; 
+  double Z; 
+  double density; 
+  double temper; 
+
   string geometryFile;
   string bmapFile;
   string material;
@@ -148,11 +159,22 @@ struct Element {
 
 
 struct Parameters {
+
+  // length, multipole coefficients
+
   double l;  int lset;    // length
   double k0; int k0set;   // dipole 
   double k1; int k1set;   // quadrupole
   double k2; int k2set;   // sextupole
   double k3; int k3set;   // octupole
+
+  list<double> knl;           // multipole expansion coefficients
+  list<double> ksl;           // skew multipole expansion
+  
+  int knlset; int kslset;
+
+  
+  // placement, geometrical sizes etc.
 
   double r; int rset; //radius, i.e cylindrical sampler
   
@@ -166,20 +188,29 @@ struct Parameters {
 
   double tilt; int tiltset;   // tilt
   
-  list<double> knl;           // multipole expansion coefficients
-  list<double> ksl;           // skew multipole expansion
-  
-  int knlset; int kslset;
 
   // for external geometry and field definition files
   char geometry[32]; int geomset;
   char bmap[32]; int bmapset;
   char emap[32];
   char material[32]; int materialset;
+
+  // material properties
+
+  double A; int Aset;
+  double Z; int Zset;
+  double density; int densityset;
+  double temper; int temperset;
   
+  // reset the parameters to defaults
   void flush() {
     l=0; lset = 0;
     r = 0; rset = 0;
+
+    A = 0; Aset = 0;
+    Z = 0; Zset = 0;
+    density = 0; densityset = 0;
+    temper = 0; temperset = 0;
 
     angle = 0; angleset = 0;
     xsize = 0; xsizeset = 0;
