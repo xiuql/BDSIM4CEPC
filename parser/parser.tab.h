@@ -58,28 +58,32 @@
      ABSORBER = 284,
      LASER = 285,
      TRANSFORM3D = 286,
-     PERIOD = 287,
-     APERTURE = 288,
-     FILENAME = 289,
-     GAS = 290,
-     PIPE = 291,
-     BEAM = 292,
-     OPTION = 293,
-     PRINT = 294,
-     RANGE = 295,
-     STOP = 296,
-     USE = 297,
-     VALUE = 298,
-     ECHO = 299,
-     PRINTF = 300,
-     SAMPLE = 301,
-     CSAMPLE = 302,
-     IF = 303,
-     ELSE = 304,
-     BEGN = 305,
-     END = 306,
-     FOR = 307,
-     CUT = 308
+     VKICK = 287,
+     HKICK = 288,
+     KICK = 289,
+     PERIOD = 290,
+     APERTURE = 291,
+     FILENAME = 292,
+     GAS = 293,
+     PIPE = 294,
+     MATERIAL = 295,
+     BEAM = 296,
+     OPTION = 297,
+     PRINT = 298,
+     RANGE = 299,
+     STOP = 300,
+     USE = 301,
+     VALUE = 302,
+     ECHO = 303,
+     PRINTF = 304,
+     SAMPLE = 305,
+     CSAMPLE = 306,
+     IF = 307,
+     ELSE = 308,
+     BEGN = 309,
+     END = 310,
+     FOR = 311,
+     CUT = 312
    };
 #endif
 #define GE 258
@@ -111,34 +115,38 @@
 #define ABSORBER 284
 #define LASER 285
 #define TRANSFORM3D 286
-#define PERIOD 287
-#define APERTURE 288
-#define FILENAME 289
-#define GAS 290
-#define PIPE 291
-#define BEAM 292
-#define OPTION 293
-#define PRINT 294
-#define RANGE 295
-#define STOP 296
-#define USE 297
-#define VALUE 298
-#define ECHO 299
-#define PRINTF 300
-#define SAMPLE 301
-#define CSAMPLE 302
-#define IF 303
-#define ELSE 304
-#define BEGN 305
-#define END 306
-#define FOR 307
-#define CUT 308
+#define VKICK 287
+#define HKICK 288
+#define KICK 289
+#define PERIOD 290
+#define APERTURE 291
+#define FILENAME 292
+#define GAS 293
+#define PIPE 294
+#define MATERIAL 295
+#define BEAM 296
+#define OPTION 297
+#define PRINT 298
+#define RANGE 299
+#define STOP 300
+#define USE 301
+#define VALUE 302
+#define ECHO 303
+#define PRINTF 304
+#define SAMPLE 305
+#define CSAMPLE 306
+#define IF 307
+#define ELSE 308
+#define BEGN 309
+#define END 310
+#define FOR 311
+#define CUT 312
 
 
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 23 "parser.y"
+#line 25 "parser.y"
 typedef union YYSTYPE {
   double dval;
   int ival;
@@ -147,7 +155,7 @@ typedef union YYSTYPE {
   struct Array *array;
 } YYSTYPE;
 /* Line 1275 of yacc.c.  */
-#line 151 "parser.tab.h"
+#line 159 "parser.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

@@ -62,6 +62,10 @@ const char *typestr(int type) {
     return "solenoid";
   case _ECOL : 
     return "ecol";
+  case _VKICK :
+    return "vkick";
+  case _HKICK :
+    return "hkick";
   case _RCOL : 
     return "rcol";
   case _LINE :
@@ -72,6 +76,8 @@ const char *typestr(int type) {
     return "csampler";
   case _GAS:
     return "gas";
+  case _MATERIAL:
+    return "material";
   case _LASER:
     return "laser";
   case _ELEMENT :
@@ -117,6 +123,11 @@ void flush(struct Element& e )
   e.name = NULL;
   e.type = _NONE;
 
+  e.A = 0;
+  e.Z = 0;
+  e.density = 0;
+  e.temper = 300;
+
   /*  
       e.knl = list<double>(0);
       e.ksl = list<double>(0);
@@ -157,6 +168,11 @@ void copy_properties(list<struct Element>::iterator dest, list<struct Element>::
   (*dest).knl = (*src).knl;
   (*dest).ksl = (*src).ksl;
 
+  (*dest).A = (*src).A;
+  (*dest).Z = (*src).Z;
+  (*dest).density = (*src).density;
+  (*dest).temper = (*src).temper; 
+
   (*dest).geometryFile = (*src).geometryFile;
 
   (*dest).bmapFile = (*src).bmapFile;
@@ -188,6 +204,12 @@ void inherit_properties(struct Element e)
   if(!params.phiset) { params.phi = e.phi; params.phiset = 1; }
   if(!params.psiset) { params.psi = e.psi; params.psiset = 1; }
   if(!params.thetaset) { params.theta = e.theta; params.thetaset = 1; }
+
+  if(!params.A) { params.A = e.A; params.A = 1; }
+  if(!params.Z) { params.Z = e.Z; params.Z = 1; }
+  if(!params.density) { params.density = e.density; params.density = 1; }
+  if(!params.temper) { params.temper = e.temper; params.temper = 1; }
+
 
   if(!params.aperset) { params.aper = e.aper; params.aperset = 1; }
 
@@ -271,6 +293,19 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     e.angle = params.angle;
     if(params.tiltset) e.tilt = params.tilt;
     break;
+  case _VKICK:
+    e.type = _VKICK;
+    e.l = params.l;
+    e.angle = params.angle;
+    if(params.tiltset) e.tilt = params.tilt;
+    break;
+  case _HKICK:
+    e.type = _HKICK;
+    e.l = params.l;
+    e.angle = params.angle;
+    if(params.tiltset) e.tilt = params.tilt;
+    break;
+
 
   case _QUAD:
 
@@ -408,6 +443,13 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     e.psi = params.psi;
     break;
 
+  case _MATERIAL:
+    e.type = _MATERIAL;
+    e.A = params.A;
+    e.Z = params.Z;
+    e.density = params.density;
+    e.temper = params.temper;
+    break;
 
   default:
     break;  
@@ -445,6 +487,7 @@ int expand_line(char *name, char *start, char* end)
       if(VERBOSE) printf("expanding line %s, range = %s/%s\n",name,start,end);
       
       if(!(*it).lst) return 0; //list empty
+
       
       // first expand the whole range 
       list<struct Element>::iterator sit = (*it).lst->begin();
@@ -457,6 +500,10 @@ int expand_line(char *name, char *start, char* end)
       
       bool is_expanded = false;
       
+      // insert material entries.
+      // TODO:::
+
+
       // parse starting from the second element until the list is expanded
       int iteration = 0;
       while(!is_expanded)
@@ -723,7 +770,10 @@ void print(list<struct Element> l, int ident)
 	printf(" xdir=%.10g, ydir=%.10g, zdir=%.10g,  phi=%.10g, theta=%.10g,psi=%.10g",
 	       (*it).xdir, (*it).ydir, (*it).zdir, (*it).phi, (*it).theta, (*it).psi);
 	break;
-
+      case _MATERIAL:
+	printf(" A=%.10g, Z=%.10g, density=%.10g,  temper=%.10g",
+	       (*it).A, (*it).Z, (*it).density, (*it).temper);
+	break;
       default:
 	break;
       }
@@ -826,6 +876,11 @@ double property_lookup(char *element_name, char *property_name)
    if(!strcmp(property_name,"theta")) return (*it).theta;
    if(!strcmp(property_name,"waveLength")) return (*it).waveLength;
    if(!strcmp(property_name,"tilt")) return (*it).tilt;
+
+   if(!strcmp(property_name,"A")) return (*it).A;
+   if(!strcmp(property_name,"Z")) return (*it).Z;
+   if(!strcmp(property_name,"density")) return (*it).density;
+   if(!strcmp(property_name,"temper")) return (*it).temper;
 
    return 0;
 }

@@ -1,13 +1,18 @@
-col:marker;
+col:ecol, l=0.2*m, xsize=1*cm, ysize=1*cm;
 d:drift,l=1*m;
 
 
 beamline : line = (col,d);
 
-gas, range=col,material="zhopa";
+Ar: material, z=1, A=2, density=12;
+
+
+!gas, range=col,components={Ar,Xe};
+
+
 
 use,period=beamline;
 print;
-print,line;
+!print,line;
 stop;
 

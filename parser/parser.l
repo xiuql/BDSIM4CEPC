@@ -55,6 +55,9 @@ marker { return MARKER; } // reserved elements
 drift { return DRIFT; }
 dipole { return DIPOLE; }
 sbend { return SBEND; } 
+hkicker { return HKICK; }
+vkicker { return VKICK; }
+kicker { return KICK; } 
 quadrupole { return QUADRUPOLE; }
 sextupole { return SEXTUPOLE; }
 octupole { return OCTUPOLE; }
@@ -69,6 +72,7 @@ transform3d { return TRANSFORM3D ; }
 collimator { return COLLIMATOR; }
 pipe { return PIPE; }
 gas { return GAS; }
+material { return MATERIAL; }
 laser { return LASER; }
 
 line       { return LINE; } 

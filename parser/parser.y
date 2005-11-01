@@ -3,6 +3,8 @@
    Ilya Agapov, 2005
 */
 
+//TODO : implement loops!
+
 
 %{
 
@@ -40,7 +42,8 @@
 %token <str> STR
 %token MARKER ELEMENT DRIFT DIPOLE SBEND QUADRUPOLE SEXTUPOLE OCTUPOLE MULTIPOLE 
 %token SOLENOID COLLIMATOR RCOL ECOL LINE SEQUENCE SPOILER ABSORBER LASER TRANSFORM3D
-%token PERIOD APERTURE FILENAME GAS PIPE
+%token VKICK HKICK KICK
+%token PERIOD APERTURE FILENAME GAS PIPE MATERIAL
 %token BEAM OPTION PRINT RANGE STOP USE VALUE ECHO PRINTF SAMPLE CSAMPLE
 %token IF ELSE BEGN END LE GE NE FOR
 %token CUT
@@ -107,6 +110,24 @@ decl : VARIABLE ':' marker
 	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : sbend\n",$1->name);
 	   // check parameters and write into element table
 	   write_table(params,$1->name,_SBEND);
+	   params.flush();
+	 }
+       }
+    | VARIABLE ':' vkick
+       {  
+	 if(execute) {
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : vkick\n",$1->name);
+	   // check parameters and write into element table
+	   write_table(params,$1->name,_VKICK);
+	   params.flush();
+	 }
+       }
+    | VARIABLE ':' hkick
+       {  
+	 if(execute) {
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : hkick\n",$1->name);
+	   // check parameters and write into element table
+	   write_table(params,$1->name,_HKICK);
 	   params.flush();
 	 }
        }
@@ -228,6 +249,15 @@ decl : VARIABLE ':' marker
 	     params.flush();
 	   }
        }
+     | VARIABLE ':' material
+       {
+	 if(execute)
+	   {
+	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : Material, %s \n",$1->name);
+	     write_table(params,$1->name,_MATERIAL);
+	     params.flush();
+	   }
+       }
 ;
 
 marker : MARKER ;
@@ -236,6 +266,12 @@ drift : DRIFT parameters
 ;
 
 sbend : SBEND parameters
+;
+
+vkick : VKICK parameters
+;
+
+hkick : HKICK parameters
 ;
 
 quad : QUADRUPOLE parameters
@@ -266,6 +302,9 @@ transform3d : TRANSFORM3D parameters
 ;
 
 element : ELEMENT parameters
+;
+
+material : MATERIAL parameters
 ;
 
 extension : VARIABLE parameters
@@ -325,7 +364,8 @@ parameters:
 		    else
 		  if(!strcmp($3->name,"phi")) {params.phi = $5; params.phiset = 1;}  // polar angle
 		    else
-		  if(!strcmp($3->name,"theta"))  {params.theta = $5; params.thetaset = 1;} // azimuthal angle
+		  if(!strcmp($3->name,"theta"))  {params.theta = $5; params.thetaset = 1;} 
+		  // azimuthal angle
 		    else
 		  if(!strcmp($3->name,"psi"))  {params.psi = $5; params.psiset = 1;} // 3rd  angle
 		    else
@@ -338,6 +378,16 @@ parameters:
 		  if(!strcmp($3->name,"e2")) {;}  //
                     else
 		  if(!strcmp($3->name,"hgap")) {;}  //
+		    else
+		  if(!strcmp($3->name,"density")) {;}  //
+		    else
+		  if(!strcmp($3->name,"A")) {params.A = $5; params.Aset = 1;}  //
+		    else
+		  if(!strcmp($3->name,"Z")) {params.Z = $5; params.Zset = 1;}  //
+		    else
+		  if(!strcmp($3->name,"density")) {params.density = $5; params.densityset = 1;}  //
+                    else
+		  if(!strcmp($3->name,"T")) {params.temper = $5; params.temperset = 1;}  //
 		    else
 		  if(VERBOSE) printf("Warning : unknown parameter %s\n",$3->name);
 		  
