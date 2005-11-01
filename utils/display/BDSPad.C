@@ -71,7 +71,6 @@ void BDSPad::BoxClicked()
 	Float_t k2=element->GetBDSK2();
 	Float_t k3=element->GetBDSK3();
 	Float_t angle=element->GetBDSAngle();
-	
 
 	BDSPopUp *echo = new BDSPopUp(name,type,len,s,k0,k1,k2,k3,angle);
 }
@@ -133,6 +132,12 @@ void BDSPad::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 					ax->SetAxisRange(xmin,xmax);				
 					browser->GetPlot()->Modified(kTRUE);
 				}
+				TH2F   *ax2 = (TH2F*)browser->GetPlot()->GetPrimitive("temp");
+            if(ax2)
+			   {
+			    	ax2->SetAxisRange(xmin,xmax);
+				   browser->GetPlot()->Modified(kTRUE);
+				}
 			}
 		}	
 	}
@@ -148,6 +153,14 @@ void BDSPad::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 			gPad->Modified(kTRUE);
 			browser->GetPlot()->Modified(kTRUE);
 		}
+		
+		TH2F   *ax2 = (TH2F*)((BDSPad*)gPad->GetPrimitive("temp"));
+	   if(ax2)
+		{
+		 ax2->SetAxisRange(BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis());
+       gPad->Modified(kTRUE);
+       browser->GetPlot()->Modified(kTRUE);
+		}
 	}
 }
 
@@ -159,6 +172,13 @@ void BDSPad::UnZoom()
 	if(ax)
 	{
 		ax->SetAxisRange(BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis());
+		browser->GetPlot()->Modified(kTRUE);
+	}
+	
+	TH2F   *ax2 = (TH2F*)((BDSPad*)gPad->GetPrimitive("temp"));
+	if(ax2)
+	{
+		ax2->SetAxisRange(BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis());
 		browser->GetPlot()->Modified(kTRUE);
 	}
 }

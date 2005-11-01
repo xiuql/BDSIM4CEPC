@@ -22,7 +22,6 @@ ClassImp(BDSCanvas)
 
 BDSCanvas::BDSCanvas(char* opticfile):TCanvas("BDSIMBrowser","BDSIM ROOT Framework",10,10,800,600)
 {		
-	
 	this->cd();	
 	TPad *info = new TPad("info", "this info pad", 0., 0.,1.,1,0);
 	info->Draw();
@@ -31,13 +30,11 @@ BDSCanvas::BDSCanvas(char* opticfile):TCanvas("BDSIMBrowser","BDSIM ROOT Framewo
 	
 	this->cd();
 	line = new BDSPad(this,"line","this a line", 0.,0.75,1.,1,0);
-    this->cd();	
+   this->cd();	
 	plot = new TPad("plot", "this a plot", 0., 0.05,1.,0.75,0);
 	plot->SetLeftMargin(xmin_axis_position);
  	plot->SetRightMargin(1-xmax_axis_position);
 	plot->Draw();
-	
-
 	
 	BDSParser parser;
 	parser.LoadFile(line,opticfile);
@@ -98,12 +95,19 @@ void BDSCanvas::AxisClicked()
 	if(event == 61 || event == 62 || event == 63 )
 	{
 		TH1F *ax = ((BDSCanvas*)gPad->GetCanvas())->GetHisto();
-		//TH2F   *ax = (TH2F*)(BDSPad*)gPad->GetPrimitive("temp");
 		if(ax)
 		{
 			ax->SetAxisRange(BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis());
 			gPad->Modified(kTRUE);
 		}
+		
+		TH2F   *ax2 = (TH2F*)((BDSPad*)gPad->GetPrimitive("temp"));
+		if(ax2)
+		{
+			ax2->SetAxisRange(BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis());
+			gPad->Modified(kTRUE);
+		}
+		
 		BDSCanvas *bro =(BDSCanvas*)gPad->GetCanvas();
 		bro->GetLine()->UpdateLine(BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis());
 		bro->GetLine()->Modified(kTRUE);

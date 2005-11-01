@@ -8,7 +8,7 @@ ROOTSYS       = /sw/
 endif
 CXX           = g++
 LD            = g++
-CXXFLAGS      = $(shell $(ROOTSYS)/bin/root-config --cflags) -I../../..
+CXXFLAGS      = $(shell $(ROOTSYS)/bin/root-config --cflags) -I../..
 LDFLAGS       = 
 
 ROOTLIBS      = $(shell $(ROOTSYS)/bin/root-config --libs)
@@ -42,7 +42,7 @@ BDSParser.o: BDSParser.h
 BDSBox.o: BDSBox.h
 BDSPopUp.o: BDSPopUp.h
 
-mydict.C: BDSCanvas.h BDSPad.h BDSAxis.h BDSBox.h BDSPopUp.h
+mydict.C: BDSCanvas.h BDSPad.h BDSAxis.h BDSParser.h BDSBox.h BDSPopUp.h
 	@echo "Generating dictionary ..."
-	@rootcint mydict.C -c -I../ BDSCanvas.h BDSPad.h BDSAxis.h BDSParser.h BDSBox.h BDSPopUp.h
+	@rootcint mydict.C -c -I../.. BDSCanvas.h BDSPad.h BDSAxis.h BDSParser.h BDSBox.h BDSPopUp.h
 #---------------------------------------------------

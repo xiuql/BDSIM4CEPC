@@ -14,6 +14,10 @@ Last modified 30.09.2005
 #include "TH1F.h"
 #endif
 
+#ifndef ROOT_TH2F
+#include "TH2F.h"
+#endif
+
 #ifndef ROOT_TPad
 #include "TPad.h"
 #endif
@@ -37,16 +41,19 @@ public:
 	void AxisClicked(); 
 	static void AxisClickedCB(); 
 	
-	BDSPad * GetLine(){return line;}
-	TPad * GetPlot(){return plot;}
+	BDSPad *GetLine(){return line;}
+	TPad *GetPlot(){return plot;}
 
-	TH1F * GetHisto(){return h2;}
+	TH1F *GetHisto(){return h2;}
 	TH1F *SetHisto(TH1F* temp) {h2=temp;}
+	
 	void UserInfo(char* _path);
+
 private:		
 	BDSPad *line;
 	TPad *plot;
 	TH1F *h2;
+	
 	Double_t xmin,xmax;
 	Double_t xcut;
 
