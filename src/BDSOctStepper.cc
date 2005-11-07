@@ -10,7 +10,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSOctStepper.cc,v 1.1.1.1 2004/12/14 18:57:39 agapov Exp $
+// $Id: BDSOctStepper.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSOctStepper.hh"
@@ -94,13 +94,16 @@ void BDSOctStepper::AdvanceHelix( const G4double  yIn[],
       
       // local r'' (for curvature)
       G4ThreeVector LocalRpp;
-      // extra minus signs because x,y_machine = - x_,-y_geant_world
+      // extra minus signs were because x,y_machine = - x_,-y_geant_world
+      // New CVS version of BDSIM uses +x, +y in geant world
+      /*
       LocalRpp.setX(zp*x3fac);
       LocalRpp.setY(zp*y3fac);
       LocalRpp.setZ(- xp*x3fac - yp*y3fac);
-      //LocalRpp.setX(-zp*x3fac);
-      //LocalRpp.setY(-zp*y3fac);
-      //LocalRpp.setZ( xp*x3fac + yp*y3fac);
+      */
+      LocalRpp.setX(-zp*x3fac);
+      LocalRpp.setY(-zp*y3fac);
+      LocalRpp.setZ( xp*x3fac + yp*y3fac);
 
       LocalRpp*=kappa/6; // 6 is actually a 3! factor.;
 
