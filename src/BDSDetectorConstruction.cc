@@ -10,7 +10,7 @@
 */
 
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 //=================================================================
 //=================================================================
@@ -234,18 +234,18 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       }
       
       if((*it).type==_SBEND ) {
-	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
+	bField = brho * -(*it).angle / (*it).l * tesla * synch_factor;
 	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
 	
 	if(DEBUG) G4cout<<"---->adding Sbend "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
-		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
+		    " angle="<<-(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
 	
 	if( fabs((*it).angle) < 1.e-7 * rad ) {
 	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
 	} 
 	else {
 	  theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,
-						 (*it).angle,(*it).tilt,bPrime));
+						 -(*it).angle,(*it).tilt,bPrime));
 	}
       }
 
@@ -297,7 +297,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       }
       
       if((*it).type==_SEXTUPOLE ) {
-	bDoublePrime = brho * (*it).k2 / (*it).l * tesla / (m*m) * synch_factor;
+	//bDoublePrime = brho * (*it).k2 / (*it).l * tesla / (m*m) * synch_factor;
+	bDoublePrime = brho * (*it).k2 * tesla / (m*m) * synch_factor;
 	G4double aper = bpRad;
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding Sextupole, "<<G4String( (*it).name )<<
@@ -306,8 +307,10 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       }
 
       if((*it).type==_OCTUPOLE ) {
-	bDoublePrime = brho * (*it).k2 / (*it).l * tesla / (m*m) * synch_factor;
-	bTriplePrime = brho * (*it).k3 / (*it).l * tesla / (m*m*m) * synch_factor;
+	//bDoublePrime = brho * (*it).k2 / (*it).l * tesla / (m*m) * synch_factor;
+	//bTriplePrime = brho * (*it).k3 / (*it).l * tesla / (m*m*m) * synch_factor;
+	bDoublePrime = brho * (*it).k2 * tesla / (m*m) * synch_factor;
+	bTriplePrime = brho * (*it).k3 * tesla / (m*m*m) * synch_factor;
 	G4double aper = bpRad;
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding octupole, "<<G4String( (*it).name )<<
@@ -381,7 +384,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       if((*it).type==_TRANSFORM3D ) {
 	
 	if(DEBUG) { G4cout<<"---->adding Transform3d, "<<G4String( (*it).name )<<G4endl<<
-		      "m, xdir="<<(*it).xdir/m<<" ydir="<<(*it).ydir<<"m, zdir="<<(*it).zdir/m<<
+		      " xdir="<<(*it).xdir/m<<"m ydir="<<(*it).ydir<<"m, zdir="<<(*it).zdir/m<<
 		      "m, phi="<<(*it).phi/rad<<" theta="<<(*it).theta/rad<<" psi="<<(*it).psi/rad<<
 		      G4endl; }
 	
