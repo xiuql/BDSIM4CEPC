@@ -10,7 +10,6 @@
 #include "G4UserLimits.hh"
 #include "BDSMySQLWrapper.hh"
 
-#include "BDSRootObjects.hh"
 #include "BDSSamplerSD.hh"
 #include "G4SDManager.hh"
 
