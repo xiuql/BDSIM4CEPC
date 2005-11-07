@@ -52,8 +52,9 @@ BDSSectorBend::BDSSectorBend(G4String aName,G4double aLength,
 
       BuildBPFieldMgr(itsStepper,itsMagField);
 
-      //SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
-      SetSensitiveVolume(itsOuterLogicalVolume);// otherwise
+      //BuildDefaultOuterLogicalVolume(itsLength);
+      SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
+      //SetSensitiveVolume(itsOuterLogicalVolume);// otherwise
 
       if(BDSGlobals->GetIncludeIronMagFields())
 	{
