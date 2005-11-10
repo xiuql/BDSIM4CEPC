@@ -234,18 +234,19 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       }
       
       if((*it).type==_SBEND ) {
-	bField = brho * -(*it).angle / (*it).l * tesla * synch_factor;
+	(*it).angle*=-1;
+	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
 	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
 	
 	if(DEBUG) G4cout<<"---->adding Sbend "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
-		    " angle="<<-(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
+		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
 	
 	if( fabs((*it).angle) < 1.e-7 * rad ) {
 	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
 	} 
 	else {
 	  theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,
-						 -(*it).angle,(*it).tilt,bPrime));
+						 (*it).angle,(*it).tilt,bPrime));
 	}
       }
 
@@ -447,9 +448,9 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	  G4double theta=(*iBeam)->GetTheta();
 
 	  // define new coordinate system local frame	  
-	  localX.rotate(-angle,localY);
-	  localY.rotate(-angle,localY);
-	  localZ.rotate(-angle,localY);
+	  localX.rotate(angle,localY);
+	  localY.rotate(angle,localY);
+	  localZ.rotate(angle,localY);
 
 	  localX.rotate(theta,localX);
 	  localY.rotate(theta,localX);
