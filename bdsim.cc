@@ -268,19 +268,12 @@ int main(int argc,char** argv) {
 
   G4UIsession* session=0;
 
- //  char **tmp = new char*[2];
-//   tmp[0] = new char[32];
-//   tmp[1] = new char[32];
-
-//   strcpy(tmp[0],"hui");
-//   strcpy(tmp[1],"vam");
-  
-  if(!isBatch)
+   if(!isBatch)
     {
 #ifdef G4UI_USE_XM
-      if(DEBUG) G4cout<<"New Xm session"<<G4endl;
-      session = new G4UIXm(0,tmp);
-      if(DEBUG) G4cout<<"done"<<G4endl;
+      //      if(DEBUG) G4cout<<"New Xm session"<<G4endl;
+      //session = new G4UIXm(0,tmp);
+      //if(DEBUG) G4cout<<"done"<<G4endl;
 #else
 #ifdef G4UI_USE_TCSH
       session = new G4UIterminal(new G4UItcsh);
