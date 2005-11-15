@@ -846,6 +846,9 @@ void set_value(string name, double value )
   
   if(name == "stopTracks") options.stopTracks = (int) value; 
 
+  if(name == "randomSeed") options.randomSeed = (int) value;
+
+
 }
 
 
