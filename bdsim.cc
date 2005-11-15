@@ -242,7 +242,20 @@ int main(int argc,char** argv) {
 
   // choose the Random engine
   HepRandom::setTheEngine(new RanecuEngine);
-  HepRandom::setTheSeed(BDSGlobals->GetRandomSeed());
+
+  long seed;
+
+  // get the seed from options if positive, else
+  // user time as a seed
+
+#include <time.h>
+
+  if(BDSGlobals->GetRandomSeed()>=0)
+    seed = BDSGlobals->GetRandomSeed();
+  else
+    seed = time(NULL);
+
+  HepRandom::setTheSeed(seed);
 
   G4cout<<" seed from bdsglobals="<<BDSGlobals->GetRandomSeed()<<G4endl;
   G4cout<<"Random Number SEED ="<<HepRandom::getTheSeed()<<G4endl;
