@@ -1,47 +1,59 @@
 /*
 *                         README 
 *                    bdsim beta version
-*                   I.Agapov, 21.01.2005
+*                   I.Agapov, last modified : 15.11.2005
 *
 *
 */
 
 0)==========History=============================
 
-Updated: 05.05.05
-Current:
-  - Problem with Sector bend accuracy
-  - Problem with Magnetic field in BDSElement
+Beta Release: 05.05.05
 
+v0.1 : 15.11.05 
 
 
 
 1)==========Installation instructions============
 
-You will need Geant4 and Root installed before compiling
+System requirements:
+
+tested on:
+    os: Linux Fedora 3, MacOS,
+    compiler: gcc 3.3.3
+
+mandatory:
+    Geant4.6 or higher
+
+optional: 
+    OpenGL (Mesa), ROOT 4.x 
 
 to compile:
 
-    ./configure
-    make
+   %  ./configure
+   %  make
+
+
+2)==========Getting Started============
 
 to run:
 
     bdsim [options]
 
-to run without Geant4 interactive propmt:
+f.e. 
+    bdsim --file=line.gmad --output=root
 
-    bdsim --batch 
+to see the full list of options:
 
-Quit Geant4 session with  'exit' to save the Root file
+    bdsim --help
 
-2)==========Other files========================
 
-BDS_vis.mac      : sample G4 visualization script
-test.gmad
+Some input examples are available in ./examples/ directory. 
+For more details documentation
 
 3)==========Directories===================
 
 parser/          : gmad parser
 examples/        : sample lettices
-utils/           : various useful scripts
+docs/		 : documentation
+utils/           : various "useful" scripts

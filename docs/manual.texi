@@ -18,7 +18,7 @@ Copyright @copyright{} 2005 Royal Holloway.
 
 @titlepage
 @title BDSIM User's Manual v0.1
-@author bdsim development group
+@author Ilya Agapov
 @author last updated @value{lastupdate}
 @end titlepage
 @setcontentsaftertitlepage
@@ -59,9 +59,10 @@ last updated on @value{lastupdate}.
 @node Intro, Installation, Top, Top
 @chapter About BDSIM
 
-BDSIM is a particle tracking code designed for simulation of particle
-transport in accelerator beam lines. It is intended for use in such problems as collimation
-design, background studies, laser beam diagnostics etc, @xref{Blair}.
+BDSIM is a Geant4 extension toolkit for simulation of particle
+transport in accelerator beamlines.It provides a collection of classes representing typical
+accelerator components, a collection of physics processes for fast tracking, procedure of ``on the fly'' geometry 
+construction,  and interface to ROOT analysis. 
  
 
 @c cccccccccccccccccccccccccccccccccccccccccc
@@ -74,8 +75,20 @@ design, background studies, laser beam diagnostics etc, @xref{Blair}.
 
 @code{BDSIM} can be downloaded at http://flc.pp.rhul.ac.uk/bdsim.html.
 Alternatively, a development version is accessible under cvs.pp.rhul.ac.uk. 
+Download the tarball and extract the source code. Make sure Geant4 is installed and appropriate environment
+variables defined. Then go through the configuration procedure 
+by running the @code{./configure} script.
+
+@code{./configure}
 
 
+It will create a Makefile from template defined in Makefile.in. Then start the compilation by typing
+
+@code{./make}
+
+If the compilation is successful @code{bdsim} executable should be created in the current directory of in the
+@code{$G4WORKDIR} directory in case this variable is defined. Next, set up the LD_LIBRARY_PATH variable to
+point to the ./parser directory and to the directory where libbdsim.so is.
 
 
 @code{BDSIM} is invoked by the command
@@ -83,29 +96,28 @@ Alternatively, a development version is accessible under cvs.pp.rhul.ac.uk.
 
 where the options are
 
-@table @code
-@item --batch
-run in batch mode
-@item --verbose
-verbose
-@item --file = @var{file}
-use @var{file} for GMAD input
-@end table
+@example
+--file=<filename>   : specify the lattice file
+--output=<fmt>      : output format (root|ascii), default ascii
+--outfile=<file>    : output file name. Will be appended with _N
+                      where N = 0, 1, 2, 3... etc.
+--vis_mac=<file>    : file with the visualization macro script, default vis.mac
+--help              : display this message
+--verbose           : display general parameters before run
+--verbose_event     : display information for every event
+--verbose_step=N    : display tracking information after each step
+--verbose_event_num : display tracking information for event number N
+--batch             : batch mode - no graphics
+@end example
+
+
 
 @code{BDSIM} can be also invoked by the @code{bdsimrun} shell script which handles batch job
  support and opther features.
 
-@code{bdsimrun} @option{options}
 
-@table @code
-@item -b
-run in batch mode
-@item -v
-verbose
-@item -f file
-use @var{file} for GMAD input
-@end table
-
+To run bdsim one has to define the beamline geometry first in a file which is then 
+passes to bdsim via the @code{--file} command line option. The next section describes how to do it. 
 
 @c cccccccccccccccccccccccccccccccccccccccccc
 @c
@@ -121,8 +133,7 @@ use @var{file} for GMAD input
 @end menu
 
 The beamline, beam properties and physics processes are specified in the input file written in the 
-GMAD language. @footnote{Note: To increase flexibility, application spectrum and compatibility GMAD will probably 
-be replaced by an XML-based lattice description. This however needs more investigation.}
+GMAD language. @footnote{Note: In the next releases an xml-based description will be also available}
 This language is a variation of the MAD language and is described in this section.
 
 @node program-structure
@@ -559,27 +570,40 @@ and has different syntax (Geant4 syntax).
 
 @code{option, <name>=value,...};
 
-the baseic options are
+the available options are options are
 
-@table @code
+@example
 
-@item use_low_em_physics
-use low em physics
-@item turn_on_synhrotron
-turn on synchrotron
-@item
+nperfile
+beampipeRadius
+boxSize
+tunnelRadius
+beampipeThickness
+deltaChord
+deltaIntersection
+chordStepMinimum
+lengthSafety
+turnInteractions
+thresholdCutCharged
+thresholdCutPhotons
+useEMHadronic
+storeTrajectory
+stopTracks
 
-@end table
+@end example
 
+For a more detailed description of how the option influence the tracking see @ref{Physics}
 
-Other options (more advanced) can be used to control the tracking procedure.
-For a full list if options and their effects see @ref{Physics}
 
 Example : 
 
-@code{beam, particle=electron,energy=100, momentum=1,1,1;}
+
+
+
 
 @subsection @code{beam}
+
+@code{beam, particle=electron,energy=100, momentum=1,1,1;}
 
 @subsection @code{sample}
 
@@ -659,7 +683,7 @@ For more details see @ref{Geant}.
 
 not implemented yet
 
-@section Showers
+@section Shower parametrization
 
 @section Synchrotron Radiation
 
@@ -688,33 +712,71 @@ BDSIM uses Geant4 libraries and execution control mechanism.
 @node Geometry,Fields,Architecture,Top
 @appendix Geometry description formats
 
-The element with user-defined physical geometry is defined by command 
+The element with user-defined physical geometry is defined by
 
 @code{<element_name> : element, geometry=format:filename, attributes}
 
 for example,
 
-@code{colli : element, geometry=plain:colli.geom}
+@code{colli : element, geometry="gmad:colli.geo"}
 
 
 @section @code{gmad} format
 
-@code{gmad} is the format which can basically describe elements with axial simmetry and
-should work for most accelerator components like collimators, RF cavities etc.
+@code{gmad} is a simple format used as G4geometry wrapper. It can be used for specifying more or less
+simple geometries like collimators. Available shapes are:
 
-The idea is to represent the elements as sequence of simpler elements which 
-have axial simmetry and ... ( @xref{geometry_image}. )
+@example 
+Box @{
+x0=x_origin,
+y0=y_origin,
+z0=z_origin,
+x=xsize,
+y=ysize,
+z=zsize,
+material=MaterialName,
+temperature=T
+@}
+@end example
 
 
+@example 
+Tubs @{
+x0=x_origin,
+y0=y_origin,
+z0=z_origin,
+x=xsize,
+y=ysize,
+z=zsize,
+material=MaterialName,
+temperature=T
+@}
+@end example
 
-@anchor{geometry_image}
-@c @image{geometry}
+For example
 
-Example :
+@example
 
-For example, an absorber of NLC type can be represented by the following code
+Cons @{
+x0=0,
+y0=0,
+z0=0,
+rmin1=5
+rmax1=500
+rmin2=5
+rmax2=500
+z=250
+material="Graphite",
+phi0=0,
+dphi=360,
+temperature=1
+@}
 
-@code{}
+@end example
+
+
+A file can contain several objects which will be placed consequently into the volume, A user has to make
+sure that there is no overlap between them.
 
 
 @section @code{mokka}
@@ -722,6 +784,8 @@ For example, an absorber of NLC type can be represented by the following code
 @include mokka.texi
 
 @section @code{gdml}
+GDML is a XML schema for dtector description.
+GDML will be supported as an external format starting from next release.
 
 
 @c cccccccccccccccccccccccccccccccccccccccccc
@@ -761,9 +825,9 @@ for example,
 @tab @email{blair@@pp.rhul.ac.uk}
 @item John Carter 
 @tab @email{carter@@pp.rhul.ac.uk}
-@c@item Olivier Dadoun
-@c@tab @email{dadoun@@lal.in2p3.fr}
-@c@tab Visualization
+@c @item Olivier Dadoun
+@c @tab @email{dadoun@@lal.in2p3.fr}
+@c @tab Visualization
 @end multitable
 
 

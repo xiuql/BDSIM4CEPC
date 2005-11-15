@@ -147,32 +147,35 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
   // for electrons (and positrons) store the last point where they
   // were not in vacuum - ie, the last point of scatter
 
-  G4String LocMatName=ThisTrack->GetMaterial()->GetName();
+
+  // IA: commented for debug
+
+ //  G4String LocMatName=ThisTrack->GetMaterial()->GetName();
   
-  if( (BDSGlobals->GetUseLastMaterialPoint()&& LocMatName!="LCVacuum")||
-      (LocMatName=="LCReset"))
-    {
-      const G4RotationMatrix* Rot=
-	ThisTrack->GetVolume()->GetFrameRotation();
-      const G4ThreeVector Trans=
-	ThisTrack->GetVolume()->GetFrameTranslation();
+//   if( (BDSGlobals->GetUseLastMaterialPoint()&& LocMatName!="LCVacuum")||
+//       (LocMatName=="LCReset"))
+//     {
+//       const G4RotationMatrix* Rot=
+// 	ThisTrack->GetVolume()->GetFrameRotation();
+//       const G4ThreeVector Trans=
+// 	ThisTrack->GetVolume()->GetFrameTranslation();
       
-      G4ThreeVector momDir=ThisTrack->GetMomentumDirection();
-      G4ThreeVector LocalPosition=ThisTrack->GetPosition()+Trans; 
+//       G4ThreeVector momDir=ThisTrack->GetMomentumDirection();
+//       G4ThreeVector LocalPosition=ThisTrack->GetPosition()+Trans; 
       
-      G4ThreeVector LocalDirection;
-      if(Rot)
-	LocalDirection=(*Rot)*momDir; 
-      else
-	LocalDirection=momDir; 
+//       G4ThreeVector LocalDirection;
+//       if(Rot)
+// 	LocalDirection=(*Rot)*momDir; 
+//       else
+// 	LocalDirection=momDir; 
       
-      initial_x =LocalPosition.x();
-      initial_xp=LocalDirection.x() ;
-      initial_y =LocalPosition.y();
-      initial_yp=LocalDirection.y();
-      initial_z = ThisTrack->GetPosition().z();
-      initial_E=ThisTrack->GetTotalEnergy() ;
-    }
+//       initial_x =LocalPosition.x();
+//       initial_xp=LocalDirection.x() ;
+//       initial_y =LocalPosition.y();
+//       initial_yp=LocalDirection.y();
+//       initial_z = ThisTrack->GetPosition().z();
+//       initial_E=ThisTrack->GetTotalEnergy() ;
+//     }
   
   
 
