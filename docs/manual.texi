@@ -72,8 +72,11 @@ design, background studies, laser beam diagnostics etc, @xref{Blair}.
 @chapter Obtaining, Installing and Running
 
 
-To run @code{BDSIM} you will need a file with accelerator geometry definition (optics) 
-and  various run-time parameters (input cards).
+@code{BDSIM} can be downloaded at http://flc.pp.rhul.ac.uk/bdsim.html.
+Alternatively, a development version is accessible under cvs.pp.rhul.ac.uk. 
+
+
+
 
 @code{BDSIM} is invoked by the command
 @code{bdsim} @option{options}
@@ -89,7 +92,8 @@ verbose
 use @var{file} for GMAD input
 @end table
 
-@code{BDSIM} can be also invoked by the @code{bdsimrun} shell script which handles batch job support and opther features.
+@code{BDSIM} can be also invoked by the @code{bdsimrun} shell script which handles batch job
+ support and opther features.
 
 @code{bdsimrun} @option{options}
 
@@ -353,7 +357,24 @@ Example :
 
 @subsection solenoid
  
-@subsection coordinate transformation
+@subsection transform3d
+
+An arbitrary 3-dimensional transformation of the coordinate system is done by
+placing a @code{transform3d} element in the beamline. The syntax is
+
+@itemize
+@item @code{x} = @code{<x offset>}
+@item @code{y} = @code{<y offset>}
+@item @code{z} = @code{<z offset>}
+@item @code{phi} = @code{<phi Euler angle>}
+@item @code{theta} = @code{<theta Euler angle>}
+@item @code{psi} = @code{<psi Euler angle>}
+@end itemize
+
+Example: 
+
+@code{<name> : transform3d, psi=pi/2}
+
 
 @subsection element
 
@@ -700,6 +721,9 @@ For example, an absorber of NLC type can be represented by the following code
 
 @include mokka.texi
 
+@section @code{gdml}
+
+
 @c cccccccccccccccccccccccccccccccccccccccccc
 @c
 @c cccccccccccccccccccccccccccccccccccccccccc
@@ -718,6 +742,8 @@ for example,
 @node Bunches, Authors, Fields, Top
 @appendix Bunch description formats
 
+@code{GUINEAPIG_BUNCH}
+
 
 @c cccccccccccccccccccccccccccccccccccccccccc
 @c
@@ -728,19 +754,16 @@ for example,
 
 
 @multitable @columnfractions .25 .35 .4
-@item Name @tab Email @tab Module Responsibilities
+@item Name @tab Email 
 @item Ilya Agapov
 @tab @email{agapov@@pp.rhul.ac.uk}
-@tab Project Management, Parser, Physics 
 @item Grahame Blair
 @tab @email{blair@@pp.rhul.ac.uk}
-@tab Physics, 
 @item John Carter 
 @tab @email{carter@@pp.rhul.ac.uk}
-@tab Physics, Mokka detector Interface
-@item Olivier Dadoun
-@tab @email{dadoun@@lal.in2p3.fr}
-@tab Visualization
+@c@item Olivier Dadoun
+@c@tab @email{dadoun@@lal.in2p3.fr}
+@c@tab Visualization
 @end multitable
 
 

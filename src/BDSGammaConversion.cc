@@ -1,66 +1,8 @@
-/* BDSIM code.    Version 1.0
-   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 25.12.2003
-   Copyright (c) 2003 by G.A.Blair.  ALL RIGHTS RESERVED. 
-*/ 
-//
-// ********************************************************************
-// * DISCLAIMER                                                       *
-// *                                                                  *
-// * The following disclaimer summarizes all the specific disclaimers *
-// * of contributors to this software. The specific disclaimers,which *
-// * govern, are listed with their locations in:                      *
-// *   http://cern.ch/geant4/license                                  *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.                                                             *
-// *                                                                  *
-// * This  code  implementation is the  intellectual property  of the *
-// * GEANT4 collaboration.                                            *
-// * By copying,  distributing  or modifying the Program (or any work *
-// * based  on  the Program)  you indicate  your  acceptance of  this *
-// * statement, and all its terms.                                    *
-// ********************************************************************
-//
-//
-// $Id: BDSGammaConversion.cc,v 1.3 2005/03/24 14:26:04 carter Exp $
-// GEANT4 tag $Name:  $
-//
-//------------------ BDSGammaConversion physics process -------------------------
-//                   by Michel Maire, 24 May 1996
-// 
-// 11-06-96 Added SelectRandomAtom() method, M.Maire
-// 21-06-96 SetCuts implementation, M.Maire
-// 24-06-96 simplification in ComputeCrossSectionPerAtom, M.Maire
-// 24-06-96 in DoIt : change the particleType stuff, M.Maire
-// 25-06-96 modification in the generation of the teta angle, M.Maire
-// 16-09-96 minors optimisations in DoIt. Thanks to P.Urban
-//          dynamical array PartialSumSigma
-// 13-12-96 fast sampling of epsil below 2 MeV, L.Urban
-// 14-01-97 crossection table + meanfreepath table.
-//          PartialSumSigma removed, M.Maire
-// 14-01-97 in DoIt the positron is always created, even with Ekine=0,
-//          for further annihilation, M.Maire
-// 14-03-97 new Physics scheme for geant4alpha, M.Maire
-// 28-03-97 protection in BuildPhysicsTable, M.Maire
-// 19-06-97 correction in ComputeCrossSectionPerAtom, L.Urban
-// 04-06-98 in DoIt, secondary production condition:
-//            range>G4std::min(threshold,safety)
-// 13-08-98 new methods SetBining() PrintInfo()
-// 28-05-01 V.Ivanchenko minor changes to provide ANSI -wall compilation
-// 11-07-01 PostStepDoIt - sampling epsil: power(rndm,0.333333)
-// 13-07-01 DoIt: suppression of production cut for the (e-,e+) (mma)
-// 06-08-01 new methods Store/Retrieve PhysicsTable (mma)
-// 06-08-01 BuildThePhysicsTable() called from constructor (mma)
-// 17-09-01 migration of Materials to pure STL (mma)
-// 20-09-01 DoIt: fminimalEnergy = 1*eV (mma)
-// 01-10-01 come back to BuildPhysicsTable(const G4ParticleDefinition&)
-// 11-01-02 ComputeCrossSection: correction of extrapolation below EnergyLimit
-// 21-03-02 DoIt: correction of the e+e- angular distribution (bug 363) mma        
-// -----------------------------------------------------------------------------
+/** BDSIM, v0.1   
+
+Last modified 15.11.2005 by Ilya Agapov
+
+**/
 
 #include "BDSGammaConversion.hh"
 #include "G4UnitsTable.hh"
@@ -565,13 +507,16 @@ G4VParticleChange* BDSGammaConversion::PostStepDoIt(const G4Track& aTrack,
    //
    // Kill the incident photon 
    //
-#if G4VERSION > 6   
-   fParticleChange.ProposeMomentumChange( 0., 0., 0. );
-   fParticleChange.ProposeEnergyChange( 0. ); 
-   fParticleChange.ProposeTrackStatus( fStopAndKill );
-#else
    fParticleChange.SetMomentumChange( 0., 0., 0. );
    fParticleChange.SetEnergyChange( 0. ); 
+
+#if G4VERSION > 6   
+   //fParticleChange.ProposeMomentumChange( 0., 0., 0. );
+   //fParticleChange.ProposeEnergyChange( 0. ); 
+   fParticleChange.ProposeTrackStatus( fStopAndKill );
+#else
+   //fParticleChange.SetMomentumChange( 0., 0., 0. );
+   //fParticleChange.SetEnergyChange( 0. ); 
    fParticleChange.SetStatusChange( fStopAndKill );
 #endif
 

@@ -249,14 +249,6 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
     }
 
 
-//   if (LWCalHC)
-//     {
-//       G4int nLWCal_hit = LWCalHC->entries();
-//       for (G4int i=0;i<nLWCal_hit;i++){ 
-// 	BDSRoot->LoadLWCalorimeterTree((*LWCalHC)[i]);
-//       }
-//     }	
-
   // f 0 events per ntuples - set max allowed events per ntuples  
 
   int evntsPerNtuple = BDSGlobals->GetNumberOfEventsPerNtuple();

@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSQuadStepper.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
+// $Id: BDSQuadStepper.cc,v 1.2 2005/08/18 16:49:41 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSQuadStepper.hh"
@@ -124,9 +124,9 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
 	  itsDist= h2/(8*R);
 
 	  // check for paraxial approximation:
-	  if((abs(zp)>0.99)&&(abs(kappa)<1.e-6))
+	  if((fabs(zp)>0.99)&&(fabs(kappa)<1.e-6))
 	    {
-	      G4double rootK=sqrt(abs(kappa*zp));
+	      G4double rootK=sqrt(fabs(kappa*zp));
 	      G4double rootKh=rootK*h*zp;
 	      G4double X11,X12,X21,X22;
 	      G4double Y11,Y12,Y21,Y22;
@@ -135,24 +135,24 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
 		{
 		  X11= cos(rootKh);
 		  X12= sin(rootKh)/rootK;
-		  X21=-abs(kappa)*X12;
+		  X21=-fabs(kappa)*X12;
 		  X22= X11;
 		  
 		  Y11= cosh(rootKh);
 		  Y12= sinh(rootKh)/rootK;
-		  Y21= abs(kappa)*Y12;
+		  Y21= fabs(kappa)*Y12;
 		  Y22= Y11;
 		}
 	      else //if (kappa<0)
 		{
 		  X11= cosh(rootKh);
 		  X12= sinh(rootKh)/rootK;
-		  X21= abs(kappa)*X12;
+		  X21= fabs(kappa)*X12;
 		  X22= X11;
 		  
 		  Y11= cos(rootKh);
 		  Y12= sin(rootKh)/rootK;
-		  Y21= -abs(kappa)*Y12;
+		  Y21= -fabs(kappa)*Y12;
 		  Y22= Y11;
 		}
 
@@ -192,8 +192,8 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
 	      G4double quadZ=   kappa*(x0*xp - y0*yp);
 	      
 	      // determine maximum curvature:
-	      G4double maxCurv=max(abs(quadX),abs(quadY));
-	      maxCurv=max(maxCurv,abs(quadZ));
+	      G4double maxCurv=max(fabs(quadX),fabs(quadY));
+	      maxCurv=max(maxCurv,fabs(quadZ));
 	      
 	      x1=x0 + h*xp + quadX*h2/2;
 	      y1=y0 + h*yp + quadY*h2/2; 
@@ -209,9 +209,9 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
 	      G4double quadZ_end=   kappa*(x1*x1p - y1*y1p);
 	      
 	      // determine maximum curvature:
-	      maxCurv=max(maxCurv,abs(quadX_end));
-	      maxCurv=max(maxCurv,abs(quadY_end));
-	      maxCurv=max(maxCurv,abs(quadZ_end));
+	      maxCurv=max(maxCurv,fabs(quadX_end));
+	      maxCurv=max(maxCurv,fabs(quadY_end));
+	      maxCurv=max(maxCurv,fabs(quadZ_end));
 
 	      itsDist=maxCurv*h2/4;
 	      

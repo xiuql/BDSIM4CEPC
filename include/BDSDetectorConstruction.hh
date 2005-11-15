@@ -1,11 +1,9 @@
-/* BDSIM code.    Version 1.0
-   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.7.2002
-   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
-*/
+/** BDSIM, v0.1   
 
+Last modified 15.11.2005 by Ilya Agapov
 
-//==============================================================
+**/
+
 //==============================================================
 
 #ifndef BDSDetectorConstruction_h
@@ -30,6 +28,7 @@ class G4UserLimits;
 class G4VSensitiveDetector;
 
 class G4Navigator;
+
 //==============================================================
 
 class BDSDetectorConstruction : public G4VUserDetectorConstruction

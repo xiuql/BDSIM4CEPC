@@ -1,11 +1,8 @@
-/** BDSIM code.   
-*   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-*   @Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
-*   Update 6.04.2005 Agapov
-*/
+/** BDSIM, v0.1   
 
-//  bdsim code 
+Last modified 15.11.2005 by Ilya Agapov
 
+**/
 
 const int DEBUG = 1;
 

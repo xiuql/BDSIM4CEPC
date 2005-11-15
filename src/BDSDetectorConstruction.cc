@@ -1,19 +1,19 @@
-/* BDSIM  v 0.1
+/** BDSIM, v0.1   
 
-*/
+Last modified 15.11.2005 by Ilya Agapov
+
+**/
 
 
-
-/*
-  geometry construction.
-
-*/
+//
+//  geometry construction.
+//
 
 
 const int DEBUG = 0;
 
 //=================================================================
-//=================================================================
+
 #include "BDSGlobalConstants.hh"
 
 #include "BDSDetectorConstruction.hh"
@@ -529,14 +529,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
-  /* Removed by JCC 15-10-05 for beamloss in extraction line
-     // this was causing too many hits!
-  BDSEnergyCounterSD* ECounter=new BDSEnergyCounterSD("World");
-  logicWorld->SetSensitiveDetector(ECounter);
-  SDman->AddNewDetector(ECounter);
-  theECList->push_back(ECounter);
-  */
-  G4bool use_graphics=true;
+   G4bool use_graphics=true;
   G4double s_local=-s_tot/2.;
   G4ThreeVector TargetPos;
 
@@ -735,7 +728,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
   
   
-  //=================================================================
+//=================================================================
 
 void BDSDetectorConstruction::SetMagField(const G4double fieldValue)
 {
