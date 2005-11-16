@@ -26,20 +26,22 @@ Last modified 15.11.2005 by Ilya Agapov
 #include "G4ios.hh"
 #include <iomanip>   
 
-#include "GeneralPhysics.hh"
-#include "EM_GNPhysics.hh"
+//#include "GeneralPhysics.hh"
+//#include "EM_GNPhysics.hh"
 #include "EMPhysics.hh"
-#include "MuonPhysics.hh"
-#include "HadronPhysicsQGSP_HP.hh"
-#include "IonPhysics.hh"
-#include "BDSTransportation.hh"
+//#include "MuonPhysics.hh"
+//#include "HadronPhysicsQGSP_HP.hh"
+//#include "IonPhysics.hh"
+//#include "BDSTransportation.hh"
 
-#include "BDSLaserWirePhysics.hh"
-#include "BDSPlanckScatterPhysics.hh"
-#include "BDSSynchRadPhysics.hh"
-#include "BDSeBremPhysics.hh"
-#include "BDSGammaConversionPhysics.hh"
-#include "BDSLowEMPhysics.hh"
+#include "G4Transportation.hh"
+
+//#include "BDSLaserWirePhysics.hh"
+//#include "BDSPlanckScatterPhysics.hh"
+//#include "BDSSynchRadPhysics.hh"
+//#include "BDSeBremPhysics.hh"
+//#include "BDSGammaConversionPhysics.hh"
+//#include "BDSLowEMPhysics.hh"
 
 #include "G4Electron.hh"
 
@@ -55,8 +57,10 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
   //RegisterPhysics( new GeneralPhysics("general") );
 
   // BDS Transportation
-  RegisterPhysics( new BDSTransportation("BDS Transportation") );
+  // RegisterPhysics( new BDSTransportation("BDS Transportation") );
  
+  //RegisterPhysics( new G4Transportation(0) );
+
   if(BDSGlobals->GetTurnOnInteractions())
     {
       
@@ -79,7 +83,7 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
 	RegisterPhysics( new EMPhysics("standard EM"));
       
       // Muon Physics
-      RegisterPhysics(  new MuonPhysics("muon"));
+      //RegisterPhysics(  new MuonPhysics("muon"));
       
       
       // Special process

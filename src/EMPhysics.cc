@@ -11,6 +11,8 @@
 #include "G4NeutrinoE.hh"
 #include "G4AntiNeutrinoE.hh"
 
+// 16.11.05 - initialize processes explicitly instead of calling a builder
+
 
 EMPhysics::
 EMPhysics(const G4String& name) : G4VPhysicsConstructor(name) {}
@@ -31,9 +33,34 @@ ConstructParticle()
 void EMPhysics::
 ConstructProcess()
 {
-  theEMPhysics.Build();
+  
+  //theEMPhysics.Build();
+
+  G4ProcessManager * pManager = 0;
+
+  // Gamma Physics
+  pManager = G4Gamma::Gamma()->GetProcessManager();
+  pManager->AddDiscreteProcess(&thePhotoEffect);
+  pManager->AddDiscreteProcess(&theComptonEffect);
+  pManager->AddDiscreteProcess(&thePairProduction);
+  
+  // Electron Physics
+  pManager = G4Electron::Electron()->GetProcessManager();
+  pManager->AddDiscreteProcess(&theElectronBremsStrahlung);  
+  pManager->AddProcess(&theElectronIonisation, ordInActive,2, 2);
+  pManager->AddProcess(&theElectronMultipleScattering);
+  pManager->SetProcessOrdering(&theElectronMultipleScattering, idxAlongStep,  1);
+  pManager->SetProcessOrdering(&theElectronMultipleScattering, idxPostStep,  1);
+
+
+  // Positron Physics
+  pManager = G4Positron::Positron()->GetProcessManager();
+  pManager->AddDiscreteProcess(&thePositronBremsStrahlung);
+  pManager->AddDiscreteProcess(&theAnnihilation);
+  pManager->AddRestProcess(&theAnnihilation);
+  pManager->AddProcess(&thePositronIonisation, ordInActive,2, 2);
+  pManager->AddProcess(&thePositronMultipleScattering);
+  pManager->SetProcessOrdering(&thePositronMultipleScattering, idxAlongStep,  1);
+  pManager->SetProcessOrdering(&thePositronMultipleScattering, idxPostStep,  1);
+
 }
-
-
-
-// 2002 by J.P. Wellisch

@@ -41,6 +41,3 @@ void GeneralPhysics::ConstructProcess()
     }
   }
 }
-
-
-// 2002 by J.P. Wellisch

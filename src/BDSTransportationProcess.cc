@@ -697,36 +697,42 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
 #endif
   }         // endif ( fGeometryLimitedStep ) 
 
-  const G4VPhysicalVolume* pNewVol = retCurrentTouchable->GetVolume() ;
-  const G4Material* pNewMaterial   = 0 ;
+
+  // material change deprecated, doesn't work with 4.7.1
+  
+ //  const G4VPhysicalVolume* pNewVol = retCurrentTouchable->GetVolume() ;
+  
+
+//   const G4Material* pNewMaterial   = 0 ;
  
-  if( pNewVol != 0 ) pNewMaterial= pNewVol->GetLogicalVolume()->GetMaterial() ; 
 
-  // ( <const_cast> pNewMaterial ) ;
+//   if( pNewVol != 0 ) pNewMaterial= pNewVol->GetLogicalVolume()->GetMaterial() ; 
 
-#if G4VERSION < 7
-  fParticleChange.SetMaterialChange( (G4Material *) pNewMaterial ) ;
-#endif
+//   // ( <const_cast> pNewMaterial ) ;
 
-  const G4MaterialCutsCouple* pNewMaterialCutsCouple = 0;
-  if( pNewVol != 0 )
-  {
-    pNewMaterialCutsCouple=pNewVol->GetLogicalVolume()->GetMaterialCutsCouple();
-  }
+// #if G4VERSION < 7
+//   fParticleChange.SetMaterialChange( (G4Material *) pNewMaterial ) ;
+// #endif
 
-  if( pNewVol!=0 && pNewMaterialCutsCouple->GetMaterial()!=pNewMaterial )
-  {
-    // for parametrized volume
-    //
-    pNewMaterialCutsCouple =
-      G4ProductionCutsTable::GetProductionCutsTable()
-                             ->GetMaterialCutsCouple(pNewMaterial,
-                               pNewMaterialCutsCouple->GetProductionCuts());
-  }
+//   const G4MaterialCutsCouple* pNewMaterialCutsCouple = 0;
+//   if( pNewVol != 0 )
+//   {
+//     pNewMaterialCutsCouple=pNewVol->GetLogicalVolume()->GetMaterialCutsCouple();
+//   }
 
-#if G4VERSION < 7
-  fParticleChange.SetMaterialCutsCoupleChange( pNewMaterialCutsCouple );
-#endif 
+//   if( pNewVol!=0 && pNewMaterialCutsCouple->GetMaterial()!=pNewMaterial )
+//   {
+//     // for parametrized volume
+//     //
+//     pNewMaterialCutsCouple =
+//       G4ProductionCutsTable::GetProductionCutsTable()
+//                              ->GetMaterialCutsCouple(pNewMaterial,
+//                                pNewMaterialCutsCouple->GetProductionCuts());
+//   }
+
+// #if G4VERSION < 7
+//   fParticleChange.SetMaterialCutsCoupleChange( pNewMaterialCutsCouple );
+// #endif 
 
   // temporarily until Get/Set Material of ParticleChange, 
   // and StepPoint can be made const. 
