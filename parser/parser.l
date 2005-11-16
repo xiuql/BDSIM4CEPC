@@ -72,7 +72,7 @@ transform3d { return TRANSFORM3D ; }
 collimator { return COLLIMATOR; }
 pipe { return PIPE; }
 gas { return GAS; }
-material { return MATERIAL; }
+matdef { return MATERIAL; }
 laser { return LASER; }
 
 line       { return LINE; } 
