@@ -46,7 +46,9 @@ BDSQuadrupole::BDSQuadrupole(G4String aName,G4double aLength,
       BuildBeampipe(itsLength);
       BuildDefaultOuterLogicalVolume(itsLength);
 
-      SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
+      SetMultipleSensitiveVolumes(itsBeampipeLogicalVolume);
+      SetMultipleSensitiveVolumes(itsOuterLogicalVolume);
+      //SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
       //SetSensitiveVolume(itsOuterLogicalVolume);// for laserwire
 
       if(BDSGlobals->GetIncludeIronMagFields())

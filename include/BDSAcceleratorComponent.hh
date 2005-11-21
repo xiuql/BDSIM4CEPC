@@ -24,7 +24,9 @@
 #include "G4MagIntegratorStepper.hh"
 #include "G4FieldManager.hh"
 #include "G4UserLimits.hh"
- 
+
+#include <vector> 
+
 class BDSAcceleratorComponent 
 {
 public:
@@ -93,6 +95,10 @@ public:
   void SetSensitiveVolume(G4LogicalVolume* aLogVol);
   
   G4LogicalVolume* GetSensitiveVolume();
+
+  void SetMultipleSensitiveVolumes(G4LogicalVolume* aLogVol);
+
+  vector<G4LogicalVolume*> GetMultipleSensitiveVolumes();
 
   void SetInnerMostLogicalVolume(G4LogicalVolume* aLogVol);
   
@@ -168,6 +174,7 @@ private:
   BDSEnergyCounterSD* itsBDSEnergyCounter;
   G4int itsCollectionID;
   G4LogicalVolume* itsSensitiveVolume;
+  vector<G4LogicalVolume*> itsMultipleSensitiveVolumes;
   G4double itsZLower;
   G4double itsZUpper;
   G4double itsSynchEnergyLoss;
@@ -276,6 +283,12 @@ void BDSAcceleratorComponent::SetSensitiveVolume(G4LogicalVolume* aLogVol)
 
 inline  G4LogicalVolume* BDSAcceleratorComponent::GetSensitiveVolume()
 {return itsSensitiveVolume;}
+
+inline void BDSAcceleratorComponent::SetMultipleSensitiveVolumes(G4LogicalVolume* aLogVol)
+{ itsMultipleSensitiveVolumes.push_back(aLogVol);}
+
+inline  vector<G4LogicalVolume*> BDSAcceleratorComponent::GetMultipleSensitiveVolumes()
+{return itsMultipleSensitiveVolumes;}
 
 inline  G4double BDSAcceleratorComponent::GetZLower()
 {return itsZLower;}
