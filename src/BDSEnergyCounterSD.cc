@@ -89,7 +89,8 @@ G4bool BDSEnergyCounterSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
   
     
   if(BDSGlobals->GetStopTracks())
-    aStep->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
+    aStep->GetTrack()->SetTrackStatus(fStopAndKill);
+
   
   return true;
 }
