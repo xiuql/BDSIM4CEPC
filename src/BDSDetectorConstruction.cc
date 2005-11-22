@@ -199,7 +199,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   
   // stuff for rescaling due to synchrotron radiation, IGNORING
   G4double synch_factor = 1;
-  G4double samplerLength = 1.E-8 * m;
+  G4double samplerLength = 1.E-11 * m;
 
   if(DEBUG) G4cout<<"bpRad , m : "<<bpRad / m <<G4endl;
 
@@ -234,18 +234,21 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       }
       
       if((*it).type==_SBEND ) {
+	G4double aper = bpRad;
+	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+	FeRad = aper;
 	(*it).angle*=-1;
 	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
 	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
 	
 	if(DEBUG) G4cout<<"---->adding Sbend "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
-		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
+	  " angle="<<(*it).angle<<" tilt="<<(*it).tilt<< " bpRad="<<aper << " FeRad="<<FeRad<<G4endl;
 	
 	if( fabs((*it).angle) < 1.e-7 * rad ) {
-	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,bpRad));
+	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,aper));
 	} 
 	else {
-	  theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,bpRad,FeRad,bField,
+	  theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,aper,FeRad,bField,
 						 (*it).angle,(*it).tilt,bPrime));
 	}
       }
@@ -479,9 +482,9 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   
   G4String LocalName="World";
   
-  G4double WorldSizeX = 1 * ( (fabs(rmin(0)) + fabs(rmax(0)) ) + 2*BDSGlobals->GetComponentBoxSize());
-  G4double WorldSizeY = 1 * ( (fabs(rmin(1)) + fabs(rmax(1)) ) + 2*BDSGlobals->GetComponentBoxSize());
-  G4double WorldSizeZ = 1 * ( (fabs(rmin(2)) + fabs(rmax(2)) ) + 2*BDSGlobals->GetComponentBoxSize());
+  G4double WorldSizeX = 1 * ( (fabs(rmin(0)) + fabs(rmax(0)) ) + 5*BDSGlobals->GetComponentBoxSize());
+  G4double WorldSizeY = 1 * ( (fabs(rmin(1)) + fabs(rmax(1)) ) + 5*BDSGlobals->GetComponentBoxSize());
+  G4double WorldSizeZ = 1 * ( (fabs(rmin(2)) + fabs(rmax(2)) ) + 5*BDSGlobals->GetComponentBoxSize());
   
   //G4cout<<"world radius="<<WorldRadius/m<<" m"<<G4endl;
   G4cout<<"minX="<<rmin(0)/m<<"m"<<" maxX="<<rmax(0)/m<<" m"<<G4endl;
@@ -691,7 +694,20 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	    SDman->AddNewDetector(ECounter);
 	    theECList->push_back(ECounter);
 	  }
-	
+
+	vector<G4LogicalVolume*> MultipleSensVols = (*iBeam)->GetMultipleSensitiveVolumes();
+	if(LogVolName!="sampler"&&MultipleSensVols.size()>0)
+	   {
+	for(G4int i=0; i<MultipleSensVols.size(); i++)
+	       {
+		 BDSEnergyCounterSD* ECounter=
+		   new BDSEnergyCounterSD(LogVolName+BDSGlobals->StringFromInt(i));
+		 (*iBeam)->SetBDSEnergyCounter(ECounter);
+		 MultipleSensVols.at(i)->SetSensitiveDetector(ECounter);
+		 SDman->AddNewDetector(ECounter);
+		 theECList->push_back(ECounter);	     
+	       }
+	   }
 	
 	LocalName=(*iBeam)->GetName()+"_phys";
 	
