@@ -21,7 +21,7 @@ public:
 
 	void Update(BDSPad* pad, Double_t xmin, Double_t xmax);
 	Double_t GetBDSX1() {return s-item.l;}
-    Double_t GetBDSX2() {return s;}
+   Double_t GetBDSX2() {return s;}
 	TString  GetBDSBoxName(){return Form(item.name);}
 	short GetBDSType(){return item.type;}
 	Double_t GetBDSLen(){return item.l;}

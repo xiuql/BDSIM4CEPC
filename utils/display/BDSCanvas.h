@@ -29,13 +29,13 @@ Last modified 30.09.2005
 #ifndef ROOT_TTEXT
 #include "TText.h"
 #endif
-
+#define MAX 1000
 class BDSPad;
 
 class BDSCanvas : public TCanvas  
 {
 public:
-	BDSCanvas(char* opticfile);
+	 BDSCanvas(char* opticfile);
 	~BDSCanvas();
 	
 	void AxisClicked(); 
@@ -48,6 +48,14 @@ public:
 	TH1F *SetHisto(TH1F* temp) {h2=temp;}
 	
 	void UserInfo(char* _path);
+
+	Double_t TableElement[MAX];	
+	Double_t* GetTableElement() {return TableElement;}
+	
+	TString NameElement[MAX];
+	TString* GetNameElement() {return NameElement;}
+	Int_t NumberElement;
+	Int_t GetNumberElement() {return NumberElement;}	
 
 private:		
 	BDSPad *line;

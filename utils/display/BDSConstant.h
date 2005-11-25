@@ -11,7 +11,7 @@ Last modified 30.09.2005
 #define xmin_axis_position 0.075
 #define y_axis_position  0.5
 #define xmax_axis_position 0.95
-#define bin_axis 0
+#define bin_axis 10// 0 if you don't want scale on the axis
 #define zoom_min 0.1
 
 #define xmin_box 10

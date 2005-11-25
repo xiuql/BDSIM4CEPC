@@ -11,6 +11,7 @@ Last modified 30.09.2005
 #endif
 
 #include "parser/gmad.h"
+
 class BDSPad;
 
 class BDSParser 
@@ -19,7 +20,7 @@ public:
 	BDSParser();
 
 	void LoadFile(BDSPad* _pad, char* _path);
-
+	
 	ClassDef(BDSParser,1)	
 };
 #endif

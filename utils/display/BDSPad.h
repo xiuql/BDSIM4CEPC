@@ -14,10 +14,9 @@ Last modified 30.09.2005
 #ifndef ROOT_TClassMenuItem
 #include "TClassMenuItem.h"
 #endif
-
+#define MAX 1000
 class BDSCanvas;
 class BDSAxis;
-
 class BDSPad : public TPad
 {
 public:
