@@ -8,7 +8,7 @@ Last modified 30.09.2005
 
 ClassImp(BDSAxis)
 
-BDSAxis::BDSAxis(Double_t xmin, Double_t ymin, Double_t xmax, Double_t ymax, Double_t wmin, Double_t wmax, Int_t ndiv)
+BDSAxis::BDSAxis(Double_t xmin, Double_t ymin, Double_t xmax, Double_t ymax, Double_t wmin, Double_t wmax, Int_t ndiv = 50510)
 :TGaxis(xmin, ymin,  xmax,  ymax, wmin,  wmax, ndiv)
 {
 //*-*-*-*-*-*-*-*-*-*-*Line default constructor*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

@@ -1,11 +1,16 @@
 histoPOWER(char *gmadFile, char *rootFile)
 {
-	FILE *fp = gSystem->OpenPipe("export _HISTO=1", "r");
+	gStyle->SetOptTitle(0);
 	BDSCanvas *b = new BDSCanvas(gmadFile);
 	TFile *f = TFile::Open(rootFile);
 	TH1F *histo;
+	TAxis *axis;
 	histo = (TH1F*)f->Get("ElossHisto;1"); 
-	histo->GetXaxis()->SetLimits(BDSPad::xmin_axis,BDSPad::xmax_axis);
+	axis = histo->GetXaxis();
+//	histo->GetXaxis()->SetLimits(BDSPad::xmin_axis,BDSPad::xmax_axis);
+	axis->SetRange(BDSPad::xmin_axis,BDSPad::xmax_axis);
+	//axis->SetRange(axis->FindBin(BDSPad::xmin_axis),axis->FindBin(BDSPad::xmax_axis));
+	histo->Scale(18.1e6/2.95e+08);
 	histo->Draw();
 	b->SetHisto(histo); 
 	b->cd();

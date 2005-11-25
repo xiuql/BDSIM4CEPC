@@ -1,7 +1,7 @@
 /* Display for BDSIM code     
 Author: Olivier Dadoun, Laboratoire de l'Accelerateur Lineaire (LAL-IN2P3), Orsay (France)
 <mailto:> dadoun@lal.in2p3.fr, 2005
-Last modified 30.09.2005
+Last modified 23.11.2005
 */
 #include <iostream.h>
 
@@ -17,9 +17,9 @@ Last modified 30.09.2005
 #include "BDSCanvas.h"
 #include "BDSPad.h"
 #include "BDSParser.h"
-
 ClassImp(BDSCanvas) 
 
+Int_t px1old,py1old,px2old,py2old;	
 BDSCanvas::BDSCanvas(char* opticfile):TCanvas("BDSIMBrowser","BDSIM ROOT Framework",10,10,800,600)
 {		
 	this->cd();	
@@ -33,15 +33,15 @@ BDSCanvas::BDSCanvas(char* opticfile):TCanvas("BDSIMBrowser","BDSIM ROOT Framewo
    this->cd();	
 	plot = new TPad("plot", "this a plot", 0., 0.05,1.,0.75,0);
 	plot->SetLeftMargin(xmin_axis_position);
- 	plot->SetRightMargin(1-xmax_axis_position);
+	plot->SetRightMargin(1.-xmax_axis_position);
 	plot->Draw();
-	
+
+
 	BDSParser parser;
 	parser.LoadFile(line,opticfile);
 	plot->cd();
 	plot->AddExec("ex","BDSCanvas::AxisClickedCB()");
 }
-
 BDSCanvas::~BDSCanvas()
 {
 	if(line != NULL) delete line;	
@@ -56,41 +56,42 @@ void BDSCanvas::AxisClickedCB()
 
 void BDSCanvas::AxisClicked()
 {
-
 	int event = plot->GetEvent();
 	//else Box don't disappear
-	
-	TObject *select = plot->GetSelected();
-	if (!select || !select->InheritsFrom("TAxis")) return;
-	
 	TGaxis *plot_axis;
 	plot_axis = (TGaxis*)line->GetAxis();
+	TObject *select = plot->GetSelected();
 	
-	if(event == kButton1Down) 
+	if (!select || !select->InheritsFrom("TAxis")) return;
+	
+	if (event == kButton1Down)
 	{
-		xmin = gPad->AbsPixeltoX(gPad->GetEventX());
-		xcut = gPad->GetEventX();
+	//Draw the virtual box (always this in ROOT when you ZOOM )
+		px1old = GetEventX();
+		py1old = 116;
+		px2old = px1old;
+		py2old = 16;
+		gVirtualX->DrawBox(px1old,py1old,px2old,py2old,TVirtualX::kHollow);
+		gVirtualX->SetLineColor(-1);
 	}
 	
-	if(event == kButton1Up) 
+	if(event == kButton1Motion)
 	{
-		xmax = gPad->AbsPixeltoX(gPad->GetEventX());
-		if (xmin > xmax) 
-		{
-			Double_t temp = xmin;
-			xmin   = xmax;
-			xmax   = temp;
-		}
-		
-		if(xmax != xmin && gPad->GetEventX() > 59 && xcut > 59) //(800-10)*0.75
-		{
-			plot_axis->SetWmax(xmax);
-			plot_axis->SetWmin(xmin);
-			line->UpdateLine(xmin,xmax);				
-			line->Modified(kTRUE);
-		}
+	gVirtualX->DrawBox(px1old,py1old,px2old,py2old,TVirtualX::kHollow);
+	px2old = GetEventX();
+	gVirtualX->DrawBox(px1old,py1old,px2old,py2old,TVirtualX::kHollow);
 	}
+										
+	//Need this: update plot before line 
+	if(event == kButton1Up)gPad->Update();
+	xmin=gPad->GetUxmin();
+	xmax=gPad->GetUxmax();
 
+	plot_axis->SetWmax(xmax);
+	plot_axis->SetWmin(xmin);
+	line->UpdateLine(xmin,xmax);				
+	line->Modified(kTRUE);
+	
 	//Double Click = Unzoom
 	if(event == 61 || event == 62 || event == 63 )
 	{

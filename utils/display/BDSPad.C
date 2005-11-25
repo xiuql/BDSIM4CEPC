@@ -1,7 +1,7 @@
 /* Display for BDSIM code     
 Author: Olivier Dadoun, Laboratoire de l'Accelerateur Lineaire (LAL-IN2P3), Orsay (France)
 <mailto:> dadoun@lal.in2p3.fr, 2005
-Last modified 30.09.2005
+Last modified 24.11.2005
 */
 #include <iostream.h>
 #include "BDSPad.h"
@@ -34,12 +34,12 @@ BDSPad::BDSPad(BDSCanvas *_browser,const char* name, const char* title, Double_t
 :TPad(name, title, xlow, ylow, xup, yup, color), browser(_browser)
 {
 	axis = new BDSAxis(xmin_axis_position,y_axis_position,xmax_axis_position,y_axis_position,
-					   BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis(),bin_axis);
+						BDSPad::get_xmin_axis(),BDSPad::get_xmax_axis(),bin_axis);
 	
-//	axis->SetLabelSize(0.1);
-//	axis->SetTitle("m");
-//	axis->SetTitleSize(0.1);
-//	axis->SetTitleOffset(0.3);
+	axis->SetLabelSize(0.1);
+	//axis->SetTitle("m");
+	//axis->SetTitleSize(0.1);
+	//axis->SetTitleOffset(0.3);
 	this->Draw();
 	this->cd();
 	axis->Draw();
@@ -50,6 +50,7 @@ BDSPad::BDSPad(BDSCanvas *_browser,const char* name, const char* title, Double_t
 	li_line->Clear();
 	n_line = new TClassMenuItem(TClassMenuItem::kPopupUserFunction,cl_line,"BDSPad UnZoom","UnZoom",this,"");
 	li_line->AddFirst(n_line);
+	
 }
 
 void BDSPad::BoxClicked()
@@ -84,21 +85,25 @@ void BDSPad::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 	{
 		// Sets first value
 		xmin = AbsPixeltoX(px);
-		
+
 		//Draw the virtual box (always this in ROOT when you ZOOM )
 		px1old = px;
 		py1old = this->YtoAbsPixel(gPad->GetUymin());
 		px2old = px1old;
 		py2old = this->YtoAbsPixel(gPad->GetUymax());
 		gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);
+		gVirtualX->DrawBox(px1old, 169, px2old, 471, TVirtualX::kHollow);
 		gVirtualX->SetLineColor(-1);
+		
 	}
 	
 	if(event == kButton1Motion)
 	{
 		gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);
+		gVirtualX->DrawBox(px1old, 169, px2old, 471, TVirtualX::kHollow);
 		px2old = px;
 		gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);	
+		gVirtualX->DrawBox(px1old, 169, px2old, 471, TVirtualX::kHollow);
 	}
 	
 	if(event == kButton1Up)
@@ -124,20 +129,26 @@ void BDSPad::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 				xmin = Bdsaxis2Bdspad(xmin, dmin, dmax);
 				
 				UpdateLine(xmin,xmax);
-				Modified(kTRUE);
+				//Modified(kTRUE);
 				
 				TH1F *ax = browser->GetHisto();
 				if(ax)
 				{
 					ax->SetAxisRange(xmin,xmax);				
 					browser->GetPlot()->Modified(kTRUE);
+					cout << "histo " << ax->GetBinLowEdge(ax->GetMinimumBin()) << " " << ax->GetMaximumBin() << endl;
 				}
 				TH2F   *ax2 = (TH2F*)browser->GetPlot()->GetPrimitive("temp");
             if(ax2)
 			   {
-			    	ax2->SetAxisRange(xmin,xmax);
+					cout << "ntuple " << endl;
+					ax2->SetAxisRange(xmin,xmax);
 				   browser->GetPlot()->Modified(kTRUE);
 				}
+			browser->GetPlot()->Update();	
+			// change the min max value of the line for precision pb
+			UpdateLine(browser->GetPlot()->GetUxmin(),browser->GetPlot()->GetUxmax());
+			Modified(kTRUE);
 			}
 		}	
 	}
@@ -192,7 +203,8 @@ void BDSPad::AddBDSBox(Element _item, Double_t s)
 {
 	Double_t y1=0.3;
 	Double_t y2=0.7;
-	Int_t color=17;
+	Int_t fillcolor=17;
+	Int_t linecolor=1;
 	if(_item.type==_QUAD)
 	{
 	if((_item.k1)>0)
@@ -206,10 +218,18 @@ void BDSPad::AddBDSBox(Element _item, Double_t s)
 			y2=0.8;
 		}
 	}
+	
+	if(_item.type==_ECOL)
+	{
+	y1=0.2;
+	y2=0.8;
+	fillcolor=2;
+	}
+	
 	BDSBox* box = new BDSBox(_item,y1,y2);
 	box->SetBDSX2(s);
-	box->SetFillColor(color);
-	
+	box->SetFillColor(fillcolor);
+	box->SetLineColor(linecolor);
 	box->Update(this,axis->GetWmin(),axis->GetWmax());
 	box->SetUniqueID(i);
 	box_list.Add(box);
