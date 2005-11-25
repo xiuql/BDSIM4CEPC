@@ -7,4 +7,5 @@ Run histo power
 ./display 'histoPOWER.C("20mrad.gmad","20mrad.root")'
 Run chain tracking
 ./display 'chainTRACKING.C("20mrad.gmad","20mrad.root")'
-
+Run histo power per Element
+./display 'powerELEMENT.C("20mrad.gmad","20mrad.root")'
