@@ -81,7 +81,7 @@ void BDSRBend::BuildBPFieldAndStepper()
 {
   // set up the magnetic field and stepper
   G4ThreeVector Bfield(0.,-itsBField,0.);
-  itsMagField=new BDS_SbendField(Bfield,itsLength,itsAngle);
+  itsMagField=new BDSSbendMagField(Bfield,itsLength,itsAngle);
   
   
   itsEqRhs=new G4Mag_UsualEqRhs(itsMagField);  

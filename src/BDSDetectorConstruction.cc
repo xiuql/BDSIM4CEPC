@@ -721,7 +721,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 			    false,	      // no boolean operation
 			    nCopy);	      // copy number
 	
-	(*iBeam)->CreateFieldMesh(PhysiComponentPlace);
+	(*iBeam)->PrepareField(PhysiComponentPlace);
 	
 	if(use_graphics)
 	  {

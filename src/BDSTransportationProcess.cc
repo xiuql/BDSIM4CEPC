@@ -1,25 +1,73 @@
-/* BDSIM code.    Version 1.1
-   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 4.1.2004
-   Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
-*/
-
+//
+// ********************************************************************
+// * DISCLAIMER                                                       *
+// *                                                                  *
+// * The following disclaimer summarizes all the specific disclaimers *
+// * of contributors to this software. The specific disclaimers,which *
+// * govern, are listed with their locations in:                      *
+// *   http://cern.ch/geant4/license                                  *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.                                                             *
+// *                                                                  *
+// * This  code  implementation is the  intellectual property  of the *
+// * GEANT4 collaboration.                                            *
+// * By copying,  distributing  or modifying the Program (or any work *
+// * based  on  the Program)  you indicate  your  acceptance of  this *
+// * statement, and all its terms.                                    *
+// ********************************************************************
+//
+//
+// $Id: G4Transportation.cc,v 1.52 2005/05/10 15:20:13 japost Exp $
+// GEANT4 tag $Name: geant4-07-01 $
+// 
+// ------------------------------------------------------------
+//  GEANT 4  include file implementation
+//
+// ------------------------------------------------------------
+//
+// This class is a process responsible for the transportation of 
+// a particle, ie the geometrical propagation that encounters the 
+// geometrical sub-volumes of the detectors.
+//
+// It is also tasked with part of updating the "safety".
+//
+// =======================================================================
+// Modified:   
+//            11 Aug  2004, M.Asai: Add G4VSensitiveDetector* for updating stepPoint.
+//            21 June 2003, J.Apostolakis: Calling field manager with 
+//                            track, to enable it to configure its accuracy
+//            13 May  2003, J.Apostolakis: Zero field areas now taken into
+//                            account correclty in all cases (thanks to W Pokorski).
+//            29 June 2001, J.Apostolakis, D.Cote-Ahern, P.Gumplinger: 
+//                          correction for spin tracking   
+//            20 Febr 2001, J.Apostolakis:  update for new FieldTrack
+//            22 Sept 2000, V.Grichine:     update of Kinetic Energy
+//             9 June 1999, J.Apostolakis & S.Giani: protect full relocation
+//                          in DEBUG for track  starting on surface that
+//                          goes step < tolerance.
+// Created:  19 March 1997, J. Apostolakis
+// =======================================================================
 
 #include "BDSTransportationProcess.hh"
 #include "G4ProductionCutsTable.hh"
 #include "G4ParticleTable.hh"
 #include "G4ChordFinder.hh"
-
+ 
 // gab>>>>
 #include "BDSGlobalConstants.hh"
-
+ 
+class G4VSensitiveDetector;
 
 //////////////////////////////////////////////////////////////////////////
 //
 // Constructor
 
 BDSTransportationProcess::BDSTransportationProcess( G4int verboseLevel )
-  : G4VProcess( G4String("BDSTransportationProcess") ),
+  : G4VProcess( G4String("BDS Transportation"), fTransportation ),
     fParticleIsLooping( false ),
     fPreviousSftOrigin (0.,0.,0.),
     fPreviousSafety    ( 0.0 ),
@@ -51,6 +99,7 @@ BDSTransportationProcess::BDSTransportationProcess( G4int verboseLevel )
 
 BDSTransportationProcess::~BDSTransportationProcess()
 {
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -67,9 +116,6 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
                                              G4double& currentSafety,
                                              G4GPILSelection* selection )
 {
-
-  // G4cout<<"AlongStepGetPhysicalInteractionLength"<<G4endl;
-
   G4double geometryStepLength, newSafety ; 
   fParticleIsLooping = false ;
 
@@ -79,6 +125,7 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
      //
      fPreviousSafety    = 0.0 ; 
      fPreviousSftOrigin = G4ThreeVector(0.,0.,0.) ;
+ 
 
      // ChordFinder reset internal state
      //
@@ -88,15 +135,12 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
         if( chordF ) chordF->ResetStepEstimate();
      }
 
- 
-
      // We need to update the current transportation's touchable handle
      // to the track's one
      //
      fCurrentTouchableHandle = track.GetTouchableHandle();
   }
 
- 
   // GPILSelection is set to defaule value of CandidateForSelection
   // It is a return value
   //
@@ -110,20 +154,19 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
 
   // G4double   theTime        = track.GetGlobalTime() ;
 
-  // The Step Point safety is now generalised to mean the limit of assumption
-  // of all processes, so it is not the previous Step's geometrical safety.
-  // We calculate the starting point's safety here.
+  // The Step Point safety can be limited by other geometries and/or the 
+  // assumptions of any process - it's not always the geometrical safety.
+  // We calculate the starting point's isotropic safety here.
   //
   G4ThreeVector OriginShift = startPosition - fPreviousSftOrigin ;
   G4double      MagSqShift  = OriginShift.mag2() ;
-
   if( MagSqShift >= sqr(fPreviousSafety) )
   {
      currentSafety = 0.0 ;
   }
   else
   {
-     currentSafety = fPreviousSafety - sqrt(MagSqShift) ;
+     currentSafety = fPreviousSafety - std::sqrt(MagSqShift) ;
   }
 
   // Is the particle charged ?
@@ -144,14 +187,11 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
   G4bool          fieldExertsForce = false ;
   if( (particleCharge != 0.0) )
   {
-
-    fieldMgr= fFieldPropagator->FindAndSetFieldManager( track.GetVolume() ); 
-
-
-    // If the field manager has no field, there is no field !
-    if (fieldMgr != 0) {
-      fieldExertsForce = (fieldMgr->GetDetectorField() != 0);
-    } 
+     fieldMgr= fFieldPropagator->FindAndSetFieldManager( track.GetVolume() ); 
+     if (fieldMgr != 0) {
+        // If the field manager has no field, there is no field !
+        fieldExertsForce = (fieldMgr->GetDetectorField() != 0);
+     } 
   }
 
   // Choose the calculation of the transportation: Field or not 
@@ -168,7 +208,6 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
      }
      else
      {
-
        //  Find whether the straight path intersects a volume
        //
        linearStepLength = fLinearNavigator->ComputeStep( startPosition, 
@@ -220,8 +259,6 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
      G4ThreeVector  EndUnitMomentum ;
      G4double       lengthAlongCurve ;
      G4double       restMass = pParticleDef->GetPDGMass() ;
-
-
  
      fFieldPropagator->SetChargeMomentumMass( particleCharge,    // in e+ units
                                               momentumMagnitude, // in Mev/c 
@@ -231,7 +268,6 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
      fieldMgr->ConfigureForTrack( &track );
 
      G4ThreeVector spin        = track.GetPolarization() ;
-
      G4FieldTrack  aFieldTrack = G4FieldTrack( startPosition, 
                                                track.GetMomentumDirection(),
                                                0.0, 
@@ -241,12 +277,10 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
                                                track.GetGlobalTime(), // Lab.
                                                track.GetProperTime(), // Part.
                                                &spin                  ) ;
-
      if( currentMinimumStep > 0 ) 
      {
         // Do the Transport in the field (non recti-linear)
         //
-
         lengthAlongCurve = fFieldPropagator->ComputeStep( aFieldTrack,
                                                           currentMinimumStep, 
                                                           currentSafety,
@@ -308,7 +342,7 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
         G4double  endEnergy= fTransportEndKineticEnergy; 
 
         static G4int no_inexact_steps=0, no_large_ediff;
-        G4double absEdiff = fabs(startEnergy- endEnergy);
+        G4double absEdiff = std::fabs(startEnergy- endEnergy);
         if( absEdiff > perMillion * endEnergy )
         {
           no_inexact_steps++;
@@ -316,31 +350,24 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
         }
         if( fVerboseLevel > 1 )
         {
-          if( fabs(startEnergy- endEnergy) > perThousand * endEnergy )
+          if( std::fabs(startEnergy- endEnergy) > perThousand * endEnergy )
           {
             static G4int no_warnings= 0, warnModulo=1,  moduloFactor= 10; 
             no_large_ediff ++;
             if( (no_large_ediff% warnModulo) == 0 )
             {
                no_warnings++;
-               G4cout << "WARNING - BDSTransportationProcess::AlongStepGetPIL()"
-                      << G4endl
-	              << "          Energy changed in Step, more than 1/1000: "
-                      << G4endl
-                      << "          Start= " << startEnergy
-                      << G4endl
-                      << "          End= "   << endEnergy
-                      << G4endl
+               G4cout << "WARNING - BDSTransportationProcess::AlongStepGetPIL()" << G4endl
+	              << "   Energy changed in Step, more than 1/1000: " << G4endl
+                      << "          Start= " << startEnergy   << G4endl
+                      << "          End= "   << endEnergy     << G4endl
                       << "          Relative change= "
                       << (startEnergy-endEnergy)/startEnergy << G4endl;
                G4cout << " Energy has been corrected -- however, review"
-                      << " field propagation parameters for accuracy."
-                      << G4endl;
-               G4cerr << "ERROR - BDSTransportationProcess::AlongStepGetPIL()"
-                      << G4endl
+                      << " field propagation parameters for accuracy." << G4endl;
+               G4cerr << "ERROR - BDSTransportationProcess::AlongStepGetPIL()" << G4endl
 	              << "        Bad 'endpoint'. Energy change detected"
-                      << " and corrected,"
-                      << G4endl
+                      << " and corrected,"                      << G4endl
                       << "        occurred already "
                       << no_large_ediff << " times." << G4endl;
                if( no_large_ediff == warnModulo * moduloFactor )
@@ -358,7 +385,7 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
      }
 
      fTransportEndSpin = aFieldTrack.GetSpin();
-     fParticleIsLooping = fFieldPropagator->IsParticleLooping();
+     fParticleIsLooping = fFieldPropagator->IsParticleLooping() ;
      endpointDistance   = (fTransportEndPosition - startPosition).mag() ;
   }
 
@@ -395,13 +422,10 @@ AlongStepGetPhysicalInteractionLength( const G4Track&  track,
       G4cout << "  Adding endpoint distance " << endpointDistance 
              << "   we obtain pseudo-safety= " << currentSafety << G4endl ; 
 #endif
-  }    
-        
-#if G4VERSION > 6
+  }            
+
   fParticleChange.ProposeTrueStepLength(geometryStepLength) ;
-#else
-  fParticleChange.SetTrueStepLength(geometryStepLength) ;
-#endif
+
   return geometryStepLength ;
 }
 
@@ -417,24 +441,12 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
 
   //  Code for specific process 
   //
-
-#if G4VERSION > 6
   fParticleChange.ProposePosition(fTransportEndPosition) ;
   fParticleChange.ProposeMomentumDirection(fTransportEndMomentumDir) ;
   fParticleChange.ProposeEnergy(fTransportEndKineticEnergy) ;
   fParticleChange.SetMomentumChanged(fMomentumChanged) ;
 
   fParticleChange.ProposePolarization(fTransportEndSpin);
-  
-#else
-  fParticleChange.SetPositionChange(fTransportEndPosition) ;
-  fParticleChange.SetMomentumChange(fTransportEndMomentumDir) ;
-  fParticleChange.SetEnergyChange(fTransportEndKineticEnergy) ;
-  fParticleChange.SetMomentumChanged(fMomentumChanged) ;
-
-  fParticleChange.SetPolarizationChange(fTransportEndSpin);
-
-#endif
   
   G4double deltaTime = 0.0 ;
 
@@ -480,48 +492,37 @@ G4VParticleChange* BDSTransportationProcess::AlongStepDoIt( const G4Track& track
      deltaTime = fCandidateEndGlobalTime - startTime ;
   }
 
-#if G4VERSION > 6
-  fParticleChange.ProposeProperTime( fCandidateEndGlobalTime ) ;
-#else
-  fParticleChange.SetTimeChange( fCandidateEndGlobalTime ) ;
-#endif
+  fParticleChange.ProposeGlobalTime( fCandidateEndGlobalTime ) ;
 
   // Now Correct by Lorentz factor to get "proper" deltaTime
   
   G4double  restMass       = track.GetDynamicParticle()->GetMass() ;
   G4double deltaProperTime = deltaTime*( restMass/track.GetTotalEnergy() ) ;
 
-#if G4VERSION > 6
   fParticleChange.ProposeProperTime(track.GetProperTime() + deltaProperTime) ;
-#else
-  fParticleChange.SetProperTimeChange(track.GetProperTime() + deltaProperTime) ;
-#endif
-  //fParticleChange. SetTrueStepLength( track.GetStepLength() ) ;
+  //fParticleChange. ProposeTrueStepLength( track.GetStepLength() ) ;
 
   // If the particle is caught looping or is stuck (in very difficult
   // boundaries) in a magnetic field (doing many steps) 
   //   THEN this kills it ...
   //
- 
- if ( fParticleIsLooping )
+  if ( fParticleIsLooping )
   {
-      // Kill the looping particle 
-      //
-#if G4VERSION > 6
+      G4double endEnergy= fTransportEndKineticEnergy;
+      
       fParticleChange.ProposeTrackStatus( fStopAndKill )  ;
-#else
-      fParticleChange.SetStatusChange( fStopAndKill )  ;
-#endif
-
+      
+      
 #ifdef G4VERBOSE
-      G4cout << " BDSTransportationProcess is killing track that is looping or stuck "
-             << G4endl
-             << "   This track has " << track.GetKineticEnergy()
-             << " MeV energy." << G4endl;
+      if( fVerboseLevel > 1) { 
+	G4cout << " BDSTransportationProcess is killing track that is looping or stuck "
+	       << G4endl
+	       << "   This track has " << track.GetKineticEnergy() / MeV
+	       << " MeV energy." << G4endl;
+	G4cout<<" Volume="<<track.GetVolume()->GetName()<<G4endl;
+      }
 #endif
-      // ClearNumberOfInteractionLengthLeft() ;
-
-      G4cout<<" Volume="<<track.GetVolume()->GetName()<<G4endl;
+      
   }
 
   // Another (sometimes better way) is to use a user-limit maximum Step size
@@ -562,11 +563,8 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
   //                             to corresponding members in G4Track)
   // fParticleChange.Initialize(track) ;  // To initialise TouchableChange
 
-#if G4VERSION > 6
   fParticleChange.ProposeTrackStatus(track.GetTrackStatus()) ;
-#else
-  fParticleChange.SetStatusChange(track.GetTrackStatus()) ;
-#endif
+
   // If the Step was determined by the volume boundary,
   // logically relocate the particle
   
@@ -587,12 +585,7 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
     //
     if( fCurrentTouchableHandle->GetVolume() == 0 )
     {
-#if G4VERSION > 6
        fParticleChange.ProposeTrackStatus( fStopAndKill ) ;
-#else
-       fParticleChange.SetStatusChange( fStopAndKill ) ;
-#endif
-
     }
     retCurrentTouchable = fCurrentTouchableHandle ;
     fParticleChange.SetTouchableHandle( fCurrentTouchableHandle ) ;
@@ -697,42 +690,38 @@ G4VParticleChange* BDSTransportationProcess::PostStepDoIt( const G4Track& track,
 #endif
   }         // endif ( fGeometryLimitedStep ) 
 
+  const G4VPhysicalVolume* pNewVol = retCurrentTouchable->GetVolume() ;
+  const G4Material* pNewMaterial   = 0 ;
+  const G4VSensitiveDetector* pNewSensitiveDetector   = 0 ;
+                                                                                       
+  if( pNewVol != 0 )
+  {
+    pNewMaterial= pNewVol->GetLogicalVolume()->GetMaterial();
+    pNewSensitiveDetector= pNewVol->GetLogicalVolume()->GetSensitiveDetector();
+  }
 
-  // material change deprecated, doesn't work with 4.7.1
-  
- //  const G4VPhysicalVolume* pNewVol = retCurrentTouchable->GetVolume() ;
-  
+  // ( <const_cast> pNewMaterial ) ;
+  // ( <const_cast> pNewSensitiveDetector) ;
 
-//   const G4Material* pNewMaterial   = 0 ;
- 
+  fParticleChange.SetMaterialInTouchable( (G4Material *) pNewMaterial ) ;
+  fParticleChange.SetSensitiveDetectorInTouchable( (G4VSensitiveDetector *) pNewSensitiveDetector ) ;
 
-//   if( pNewVol != 0 ) pNewMaterial= pNewVol->GetLogicalVolume()->GetMaterial() ; 
+  const G4MaterialCutsCouple* pNewMaterialCutsCouple = 0;
+  if( pNewVol != 0 )
+  {
+    pNewMaterialCutsCouple=pNewVol->GetLogicalVolume()->GetMaterialCutsCouple();
+  }
 
-//   // ( <const_cast> pNewMaterial ) ;
-
-// #if G4VERSION < 7
-//   fParticleChange.SetMaterialChange( (G4Material *) pNewMaterial ) ;
-// #endif
-
-//   const G4MaterialCutsCouple* pNewMaterialCutsCouple = 0;
-//   if( pNewVol != 0 )
-//   {
-//     pNewMaterialCutsCouple=pNewVol->GetLogicalVolume()->GetMaterialCutsCouple();
-//   }
-
-//   if( pNewVol!=0 && pNewMaterialCutsCouple->GetMaterial()!=pNewMaterial )
-//   {
-//     // for parametrized volume
-//     //
-//     pNewMaterialCutsCouple =
-//       G4ProductionCutsTable::GetProductionCutsTable()
-//                              ->GetMaterialCutsCouple(pNewMaterial,
-//                                pNewMaterialCutsCouple->GetProductionCuts());
-//   }
-
-// #if G4VERSION < 7
-//   fParticleChange.SetMaterialCutsCoupleChange( pNewMaterialCutsCouple );
-// #endif 
+  if( pNewVol!=0 && pNewMaterialCutsCouple!=0 && pNewMaterialCutsCouple->GetMaterial()!=pNewMaterial )
+  {
+    // for parametrized volume
+    //
+    pNewMaterialCutsCouple =
+      G4ProductionCutsTable::GetProductionCutsTable()
+                             ->GetMaterialCutsCouple(pNewMaterial,
+                               pNewMaterialCutsCouple->GetProductionCuts());
+  }
+  fParticleChange.SetMaterialCutsCoupleInTouchable( pNewMaterialCutsCouple );
 
   // temporarily until Get/Set Material of ParticleChange, 
   // and StepPoint can be made const. 

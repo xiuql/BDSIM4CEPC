@@ -42,10 +42,10 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
  
   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
-  if(BDSGlobals->GetUseTimer())
-    {
-      BDSGlobals->GetTimer()->Start();
-    }
+ //  if(BDSGlobals->GetUseTimer())
+//     {
+//       //BDSGlobals->GetTimer()->Start();
+//     }
 
   if (G4VVisManager::GetConcreteInstance())
     {
@@ -64,11 +64,11 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
   //  if (G4VVisManager::GetConcreteInstance()) {
   //   G4UImanager::GetUIpointer()->ApplyCommand("/vis/viewer/update");
 
-  if(BDSGlobals->GetUseTimer())
-    {
-      BDSGlobals->GetTimer()->Stop();
-      G4cout<<"RUN Elapsed time="<<*BDSGlobals->GetTimer()<<G4endl;
-    }
+ //  if(BDSGlobals->GetUseTimer())
+//     {
+//       BDSGlobals->GetTimer()->Stop();
+//       G4cout<<"RUN Elapsed time="<<*BDSGlobals->GetTimer()<<G4endl;
+//     }
 
 
   /*  

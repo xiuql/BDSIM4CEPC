@@ -32,7 +32,7 @@ Last modified 15.11.2005 by Ilya Agapov
 //#include "MuonPhysics.hh"
 //#include "HadronPhysicsQGSP_HP.hh"
 //#include "IonPhysics.hh"
-//#include "BDSTransportation.hh"
+#include "BDSTransportation.hh"
 
 #include "G4Transportation.hh"
 
@@ -57,7 +57,7 @@ BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
   //RegisterPhysics( new GeneralPhysics("general") );
 
   // BDS Transportation
-  // RegisterPhysics( new BDSTransportation("BDS Transportation") );
+  //RegisterPhysics( new BDSTransportation("BDS Transportation") );
  
   //RegisterPhysics( new G4Transportation(0) );
 

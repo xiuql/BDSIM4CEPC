@@ -9,7 +9,7 @@
 //
 // Class BDSAcceleratorComponent 
 
-void BDSAcceleratorComponent::CreateFieldMesh(G4VPhysicalVolume *referenceVolume)
+void BDSAcceleratorComponent::PrepareField(G4VPhysicalVolume *referenceVolume)
 {//do nothing by default
   return;
 }

@@ -9,7 +9,7 @@
 
 // Constructor Implementation
 //
-BDS_EqRhs::BDS_EqRhs( BDS_SbendField *magField ) 
+BDS_EqRhs::BDS_EqRhs( BDSSbendMagField *magField ) 
    : G4Mag_EqRhs(magField),itsField(magField)
 {}
 

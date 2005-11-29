@@ -3,13 +3,14 @@
    Last modified 24.7.2002
    Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
 */
+
 #include "BDSGlobalConstants.hh"
 #include "G4UniformMagField.hh"
 #include "globals.hh"
 #include "geomdefs.hh"
-#include "BDS_SbendField.hh"
+#include "BDSSbendMagField.hh"
 
-BDS_SbendField::BDS_SbendField(const G4ThreeVector& aField,
+BDSSbendMagField::BDSSbendMagField(const G4ThreeVector& aField,
 			       const G4double length,
 			       const G4double angle) 
   :G4UniformMagField(aField)
@@ -27,10 +28,10 @@ BDS_SbendField::BDS_SbendField(const G4ThreeVector& aField,
 	" aField="<<aField/tesla<<G4endl;
     }
   else
-    G4Exception("BDS_SbendField: zero angle not allowed");
+    G4Exception("BDSSbendMagField: zero angle not allowed");
 }
 
 
-BDS_SbendField::~BDS_SbendField()
+BDSSbendMagField::~BDSSbendMagField()
 {}
 
