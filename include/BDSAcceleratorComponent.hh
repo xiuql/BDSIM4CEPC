@@ -118,7 +118,8 @@ public:
   BDSAcceleratorComponent();
   void BuildOuterFieldManager();
 
-  virtual void CreateFieldMesh(G4VPhysicalVolume *referenceVolume); // creates a field mesh in global coordinates 
+  // in case a mapped field is provided creates a field mesh in global coordinates
+  virtual void PrepareField(G4VPhysicalVolume *referenceVolume); 
 
   BDSAcceleratorComponent (
 			  G4String& aName, 
