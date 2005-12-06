@@ -19,7 +19,7 @@ powerELEMENT(char *gmadFile, char *rootFile)
 	for(Int_t i=1;i<b->GetNumberElement();i++)
 	{
 	myhisto->SetBinContent(i,myhisto->GetBinContent(i)/(b->GetEndPositionElement()[i]-b->GetEndPositionElement()[i-1]));
-	//cout << b->GetNameElement()[i]  << " " 
+	cout << b->GetNameElement()[i]  << " " << b->GetTypeElement()[i] << endl;
 	//++<< (b->GetEndPositionElement()[i]-b->GetEndPositionElement()[i-1]) << " " 
 	//<< myhisto->GetBinContent(i)   << " "  
 	//<<myhisto->GetBinContent(i)/(b->GetEndPositionElement()[i]-b->GetEndPositionElement()[i-1]) << endl;

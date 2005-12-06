@@ -1,12 +1,12 @@
 /* Display for BDSIM code     
 Author: Olivier Dadoun, Laboratoire de l'Accelerateur Lineaire (LAL-IN2P3), Orsay (France)
 <mailto:> dadoun@lal.in2p3.fr, 2005
-Last modified 30.09.2005
+Last modified 06.12.2005
 */
 #ifndef ROOT_TText
 #include "TText.h"
 #endif
-
+#include "BDSConstant.h"
 #include "BDSPopUp.h"
 ClassImp(BDSPopUp) 
 
@@ -20,14 +20,7 @@ BDSPopUp::BDSPopUp(TString name, short type,Float_t len, Float_t s,
 	TText *t0 = new TText(0.02,0.9,"Opticals Elements specs.");
 	temp= "Name: " + name;
 
-	switch (type) {
-		case 4 : string_type = "Quadrupole";
-			break;
-		case 3 : string_type = "Sbend";
-			break;
-		default :  string_type = "Other type ...";
-	}
-	
+	string_type=Form(typestr(type));
 	temp = temp + " Type :" + string_type;
 	TText *t1 = new TText(0.02,0.7,temp);
 	temp=Form("@ %f m with a length of %f m",s,len);

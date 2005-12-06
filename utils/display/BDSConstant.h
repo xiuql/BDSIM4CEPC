@@ -7,6 +7,7 @@ Last modified 30.09.2005
 #define BDSCONSTANT_H 
 
 #include "TMath.h"
+#include "parser/gmad.h"
 
 #define xmin_axis_position 0.075
 #define y_axis_position  0.5
@@ -18,5 +19,4 @@ Last modified 30.09.2005
 #define xmax_box 30
 #define ymin_box 0.52
 #define ymax_box 0.7
-
 #endif

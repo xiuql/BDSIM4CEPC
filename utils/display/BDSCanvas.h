@@ -1,7 +1,7 @@
 /* Display for BDSIM code     
 Author: Olivier Dadoun, Laboratoire de l'Accelerateur Lineaire (LAL-IN2P3), Orsay (France)
 <mailto:> dadoun@lal.in2p3.fr, 2005
-Last modified 30.09.2005
+Last modified 12.06.2005
 */
 #ifndef __BDSCanvas__
 #define __BDSCanvas__
@@ -52,6 +52,8 @@ public:
 	Double_t EndPositionElement[MAX_ELEMENTS];	
 	Double_t* GetEndPositionElement() {return EndPositionElement;}
 	
+	TString TypeElement[MAX_ELEMENTS];
+	TString* GetTypeElement() {return TypeElement;}
 	TString NameElement[MAX_ELEMENTS];
 	TString* GetNameElement() {return NameElement;}
 	Int_t NumberElement;

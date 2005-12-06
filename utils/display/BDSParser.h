@@ -20,7 +20,6 @@ public:
 	BDSParser();
 
 	void LoadFile(BDSPad* _pad, char* _path);
-	
 	ClassDef(BDSParser,1)	
 };
 #endif
