@@ -29,7 +29,7 @@ Last modified 30.09.2005
 #ifndef ROOT_TTEXT
 #include "TText.h"
 #endif
-#define MAX 1000
+#define MAX_ELEMENTS 1000
 class BDSPad;
 
 class BDSCanvas : public TCanvas  
@@ -49,10 +49,10 @@ public:
 	
 	void UserInfo(char* _path);
 
-	Double_t TableElement[MAX];	
-	Double_t* GetTableElement() {return TableElement;}
+	Double_t EndPositionElement[MAX_ELEMENTS];	
+	Double_t* GetEndPositionElement() {return EndPositionElement;}
 	
-	TString NameElement[MAX];
+	TString NameElement[MAX_ELEMENTS];
 	TString* GetNameElement() {return NameElement;}
 	Int_t NumberElement;
 	Int_t GetNumberElement() {return NumberElement;}	

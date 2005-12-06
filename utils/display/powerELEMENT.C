@@ -8,24 +8,25 @@ powerELEMENT(char *gmadFile, char *rootFile)
 	Double_t coeff = 0.061;
 	char temp[256];
 	TH1F *myhisto= new TH1F("myhisto","Histo from the ntuple projection",
-	b->GetNumberElement(),b->GetTableElement());
+	b->GetNumberElement(),b->GetEndPositionElement());
 	sprintf(temp,"E*%lf",coeff);
 	ntuple->Project("myhisto","z",temp);
-	for(Int_t i=1;i<b->GetNumberElement();i++) 
-	 cout << b->GetNameElement()[i] << " " << i << " " << b->GetTableElement()[i] <<"  " << 
+	for(Int_t i=1;i<=b->GetNumberElement();i++) 
+//	cout << "sample,range="<< b->GetNameElement()[i] << ";" << endl;
+	 cout << b->GetNameElement()[i] << " " << i << " " << b->GetEndPositionElement()[i] <<"  " << 
 	 myhisto->GetBinContent(i)<< endl;   
 	
 	for(Int_t i=1;i<b->GetNumberElement();i++)
 	{
-	myhisto->SetBinContent(i,myhisto->GetBinContent(i)/(b->GetTableElement()[i]-b->GetTableElement()[i-1]));
+	myhisto->SetBinContent(i,myhisto->GetBinContent(i)/(b->GetEndPositionElement()[i]-b->GetEndPositionElement()[i-1]));
 	//cout << b->GetNameElement()[i]  << " " 
-	//++<< (b->GetTableElement()[i]-b->GetTableElement()[i-1]) << " " 
+	//++<< (b->GetEndPositionElement()[i]-b->GetEndPositionElement()[i-1]) << " " 
 	//<< myhisto->GetBinContent(i)   << " "  
-	//<<myhisto->GetBinContent(i)/(b->GetTableElement()[i]-b->GetTableElement()[i-1]) << endl;
+	//<<myhisto->GetBinContent(i)/(b->GetEndPositionElement()[i]-b->GetEndPositionElement()[i-1]) << endl;
 	}
 	
 //for(Int_t i=1;i<b->GetNumberElement();i++) 
-//	cout << b->GetNameElement()[i] << " " << i << " " << b->GetTableElement()[i] <<"  " << 
+//	cout << b->GetNameElement()[i] << " " << i << " " << b->GetEndPositionElement()[i] <<"  " << 
 //	myhisto->GetBinContent(i)<< endl;	
 	//myhisto->GetXaxis()->SetLimits(BDSPad::xmin_axis,BDSPad::xmax_axis);
 	myhisto->Draw();
