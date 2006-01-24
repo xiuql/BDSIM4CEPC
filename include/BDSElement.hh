@@ -19,21 +19,11 @@
 #include "G4VisAttributes.hh"
 
 #include "BDSField.hh"
+#include "BDSXYMagField.hh"
+
 #include "G4EqMagElectricField.hh"
 #include "G4ClassicalRK4.hh"
 
-
-struct FieldRecord {
-  G4double x;
-  G4double y;
-  G4double z;
-  G4double Bx;
-  G4double By;
-  G4double Bz;
-  G4double Ex;
-  G4double Ey;
-  G4double Ez;
-};
 
 class BDSElement :public BDSAcceleratorComponent
 {
@@ -45,9 +35,9 @@ public:
   void PlaceComponents(G4String geometry, G4String bmap);
   void BuildMagField();
 
-  void CreateFieldMesh(G4VPhysicalVolume *referenceVolume); // creates a field mesh in global coordinates
-  void AddFieldValue(G4double x, G4double y, G4double z, G4double Bx, G4double By, G4double Bz );
-  
+  // creates a field mesh in global coordinates in case it is given by map
+  void PrepareField(G4VPhysicalVolume *referenceVolume);
+   
 protected:
   
   G4VisAttributes* SetVisAttributes();  
@@ -55,8 +45,6 @@ protected:
 private:
 
   BDSField *itsField;
-
-  vector<struct FieldRecord> itsFieldValues;
 
 };
 

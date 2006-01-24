@@ -12,13 +12,13 @@
 #include "G4EquationOfMotion.hh"
 #include "G4MagneticField.hh"   
 #include "G4Mag_EqRhs.hh"
-#include "BDS_SbendField.hh"
+#include "BDSSbendMagField.hh"
 
 class BDS_EqRhs: public G4Mag_EqRhs
 {
 public: // with description
 
-  BDS_EqRhs( BDS_SbendField *magField );
+  BDS_EqRhs( BDSSbendMagField *magField );
   virtual ~BDS_EqRhs();
 
   G4double GetKappa();
@@ -28,7 +28,7 @@ public: // with description
 			  G4double dydx[] ) const;
  
 protected:
-  BDS_SbendField* itsField;
+  BDSSbendMagField* itsField;
 
 private:
   G4double LocalRadius;

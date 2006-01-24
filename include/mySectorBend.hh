@@ -7,7 +7,7 @@
 #ifndef mySectorBend_h
 #define mySectorBend_h 
 
-#include"globals.hh"
+#include "globals.hh"
 #include "BDSMaterials.hh"
 #include "G4LogicalVolume.hh"
 #include "BDSHelixStepper.hh"
@@ -23,7 +23,7 @@
 #include "G4PVPlacement.hh"               
 
 #include "BDSMultipole.hh"
-#include "BDS_SbendField.hh"
+#include "BDSSbendMagField.hh"
 #include "G4Mag_EqRhs.hh"
 
 class mySectorBend :public BDSMultipole
@@ -52,7 +52,7 @@ class mySectorBend :public BDSMultipole
   // field related objects:
   //BDSHelixStepper* itsStepper;
   myQuadStepper* itsStepper;
-  BDS_SbendField* itsMagField;
+  BDSSbendMagField* itsMagField;
   G4Mag_EqRhs* itsEqRhs;
 
 };

@@ -18,8 +18,8 @@
 #include "globals.hh"
 #include "G4MagIntegratorStepper.hh"
 //#include "G4MagHelicalStepper.hh"
-//#include "G4Mag_EqRhs.hh"
-#include "BDS_EqRhs.hh"
+#include "G4Mag_EqRhs.hh"
+//#include "BDS_EqRhs.hh"
 #include "G4ThreeVector.hh"
 #include "G4Navigator.hh"
 
