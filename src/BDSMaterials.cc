@@ -61,6 +61,14 @@ BDSMaterials::BDSMaterials()
   a = 207.2*g/mole;
   LCLead=new G4Material(name="LCLead",z=82., a, density);
 
+  density = 2.33*g/cm3;
+  a = 28.0855*g/mole;
+  LCSilicon=new G4Material(name="LCSilicon",z=14., a, density);
+
+  density = 1.848*g/cm3;
+  a = 9.0122*g/mole;
+  LCBeryllium=new G4Material(name="LCBeryllium",z=4., a, density);
+
   a = 14.01*g/mole;
   G4Element* N  = new G4Element(name="Nitrogen",symbol="N" , z= 7., a);
   
