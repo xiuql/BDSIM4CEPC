@@ -36,6 +36,8 @@ public:
   G4Material*  LCLeadTungstate;
   G4Material*  LCLead;
   G4Material*  LCBeamGasPlugMat;
+  G4Material*  LCSilicon;
+  G4Material*  LCBeryllium;
 
 
 private:
@@ -45,22 +47,23 @@ private:
 
 inline G4Material* BDSMaterials::GetMaterial(G4String aMaterial)
 {
-  
-  if(aMaterial=="Titanium") return LCTitanium;
-  else if(aMaterial=="Tungsten") return LCTungsten;
-  else if(aMaterial=="Graphite") return LCGraphite;
-  else if(aMaterial=="Air") return LCAir;
-  else if(aMaterial=="Vacuum") return LCVacuum;
-  else if(aMaterial=="Aluminium") return LCAluminium;
-  else if(aMaterial=="Iron") return LCIron;
-  else if(aMaterial=="WeightIron") return LCWeightIron;
-  else if(aMaterial=="LaserVac") return LaserVac;
-  else if(aMaterial=="Copper") return LCCopper;
-  else if(aMaterial=="Concrete") return LCConcrete;
-  else if(aMaterial=="Water") return LCWater;
-  else if(aMaterial=="LeadTungstate") return LCLeadTungstate;
-  else if(aMaterial=="Lead") return LCLead;
-  
+  G4String::caseCompare cmpmode = 1;
+  if(aMaterial.compareTo("Titanium",cmpmode)==0) return LCTitanium;
+  else if(aMaterial.compareTo("Tungsten",cmpmode)==0) return LCTungsten;
+  else if(aMaterial.compareTo("Graphite",cmpmode)==0) return LCGraphite;
+  else if(aMaterial.compareTo("Air",cmpmode)==0) return LCAir;
+  else if(aMaterial.compareTo("Vacuum",cmpmode)==0) return LCVacuum;
+  else if(aMaterial.compareTo("Aluminium",cmpmode)==0) return LCAluminium;
+  else if(aMaterial.compareTo("Iron",cmpmode)==0) return LCIron;
+  else if(aMaterial.compareTo("WeightIron",cmpmode)==0) return LCWeightIron;
+  else if(aMaterial.compareTo("LaserVac",cmpmode)==0) return LaserVac;
+  else if(aMaterial.compareTo("Copper",cmpmode)==0) return LCCopper;
+  else if(aMaterial.compareTo("Concrete",cmpmode)==0) return LCConcrete;
+  else if(aMaterial.compareTo("Water",cmpmode)==0) return LCWater;
+  else if(aMaterial.compareTo("LeadTungstate",cmpmode)==0) return LCLeadTungstate;
+  else if(aMaterial.compareTo("Lead",cmpmode)==0) return LCLead;
+  else if(aMaterial.compareTo("Beryllium",cmpmode)==0) return LCBeryllium;
+	  else if(aMaterial.compareTo("Silicon",cmpmode)==0) return LCSilicon;  
   else
     {
       G4cout <<aMaterial<<" not known. Using Vacuum instead!!" <<G4endl;
