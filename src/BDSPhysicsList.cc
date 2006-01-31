@@ -32,7 +32,7 @@ Last modified 15.11.2005 by Ilya Agapov
 //#include "MuonPhysics.hh"
 //#include "HadronPhysicsQGSP_HP.hh"
 //#include "IonPhysics.hh"
-#include "BDSTransportation.hh"
+//#include "BDSTransportation.hh"
 
 #include "G4Transportation.hh"
 
