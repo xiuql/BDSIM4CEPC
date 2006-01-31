@@ -121,6 +121,16 @@ public:
   // in case a mapped field is provided creates a field mesh in global coordinates
   virtual void PrepareField(G4VPhysicalVolume *referenceVolume); 
 
+  // in case a component requires specific alignment (e.g. SQL/BDSElement)
+  virtual void AlignComponent(G4ThreeVector& TargetPos, 
+			      G4RotationMatrix *TargetRot,
+			      G4RotationMatrix& globalRotation,
+			      G4ThreeVector& rtot,
+			      G4ThreeVector& rlast,
+			      G4ThreeVector& localX,
+			      G4ThreeVector& localY,
+			      G4ThreeVector& localZ); 
+
   BDSAcceleratorComponent (
 			  G4String& aName, 
 			  G4double aLength,
