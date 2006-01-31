@@ -70,11 +70,18 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
       G4ThreeVector pos=theTrack->GetPosition();
       G4ThreeVector momDir=theTrack->GetMomentumDirection();
 
-      const G4RotationMatrix* Rot=theTrack->GetVolume()->GetFrameRotation();
-      const G4ThreeVector Trans=theTrack->GetVolume()->GetFrameTranslation();
+      // Get Translation and Rotation of Sampler Volume w.r.t the World Volume
+      G4AffineTransform tf(aStep->GetPreStepPoint()->GetTouchable()->GetHistory()->GetTopTransform().Inverse());
+      const G4RotationMatrix Rot=tf.NetRotation();
+      const G4ThreeVector Trans=-tf.NetTranslation();
+
+      //Old method - works for standard Samplers, but not samplers within a deeper
+      //hierarchy of volumes (e.g. Mokka built samplers)
+      //const G4RotationMatrix* Rot=theTrack->GetVolume()->GetFrameRotation();
+      //const G4ThreeVector Trans=theTrack->GetVolume()->GetFrameTranslation();
 
       G4ThreeVector LocalPosition=pos+Trans; 
-      G4ThreeVector LocalDirection=(*Rot)*momDir; 
+      G4ThreeVector LocalDirection=Rot*momDir; 
 
       G4double x=LocalPosition.x();
       G4double y=LocalPosition.y();
@@ -92,6 +99,7 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
       G4int nEvent= 
 	  G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
       G4int nSampler=theTrack->GetVolume()->GetCopyNo()+1;
+      G4String SampName = theTrack->GetVolume()->GetName()+"_"+BDSGlobals->StringFromInt(nSampler);
       G4int PDGtype=theTrack->GetDefinition()->GetPDGEncoding();
 
 
@@ -145,7 +153,7 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 
       BDSSamplerHit* smpHit
 	= new BDSSamplerHit(
-			 nSampler,
+			 SampName,
 			 start_z,start_E,start_x,start_xp,
 			 start_y,start_yp,
 			 z,energy,x,xPrime,y,yPrime,weight,

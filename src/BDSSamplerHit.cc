@@ -19,13 +19,13 @@ G4Allocator<BDSSamplerHit> BDSSamplerHitAllocator;
 BDSSamplerHit::BDSSamplerHit()
 {;}
 
-BDSSamplerHit::BDSSamplerHit(G4int nSampler,
+BDSSamplerHit::BDSSamplerHit(G4String aName,
 G4double init_z,G4double init_mom,
 G4double init_x, G4double init_xPrime, G4double init_y, G4double init_yPrime,
 G4double z,G4double mom,
 G4double x, G4double xPrime, G4double y, G4double yPrime, G4double weight,
 G4int PDGtype,G4int nEvent)
-  :itsNumber(nSampler),
+  :itsName(aName),
    itsInit_Z(init_z),itsInit_Mom(init_mom),itsInit_X(init_x),
    itsInit_XPrime(init_xPrime),
    itsInit_Y(init_y),itsInit_YPrime(init_yPrime),
@@ -39,7 +39,7 @@ BDSSamplerHit::~BDSSamplerHit()
 
 BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right)
 {
-  itsNumber=right.itsNumber;
+  itsName=right.itsName;
 
   itsInit_Z = right.itsInit_Z;
   itsInit_Mom = right.itsInit_Mom;
@@ -65,7 +65,7 @@ BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right)
 
 const BDSSamplerHit& BDSSamplerHit::operator=(const BDSSamplerHit &right)
 {
-  itsNumber= right.itsNumber;
+  itsName= right.itsName;
 
   itsInit_Z = right.itsInit_Z;
   itsInit_Mom = right.itsInit_Mom;

@@ -1,8 +1,8 @@
 #include "BDSOutput.hh"
+#include "BDSSamplerSD.hh"
 #include <time.h>
 
 extern G4String outputFilename;
-
 BDSOutput::BDSOutput()
 {
   //time_t tm = time(NULL);
@@ -16,7 +16,6 @@ BDSOutput::BDSOutput()
 BDSOutput::BDSOutput(int fmt)
 {
   format = fmt;
-
   nSamplers = 0;
 }
 
@@ -72,7 +71,8 @@ void BDSOutput::Init(G4int FileNum)
   //build sampler tree
   for(G4int i=0;i<nSamplers;i++)
     {
-      G4String name="samp"+BDSGlobals->StringFromInt(i+1);
+      //G4String name="samp"+BDSGlobals->StringFromInt(i+1);
+      G4String name=SampName[i];
       TTree* SamplerTree = new TTree(name, "Sampler output");
       
       SamplerTree->Branch("x0",&x0,"x0/F");
@@ -152,11 +152,9 @@ G4int BDSOutput::WriteHits(BDSSamplerHitsCollection *hc)
        //name="samp";
        //else if ((*hc)[i]->GetType()=="cylinder")
        //name ="cyln";
-       
-       name="samp" + BDSGlobals->StringFromInt((*hc)[i]->GetNumber());
+       //name="samp" + BDSGlobals->StringFromInt((*hc)[i]->GetNumber());
 
-
-       TTree* sTree=(TTree*)gDirectory->Get(name);
+       TTree* sTree=(TTree*)gDirectory->Get((*hc)[i]->GetName());
        
        x0=(*hc)[i]->GetInitX() / micrometer; 
        xp0=(*hc)[i]->GetInitXPrime(); 

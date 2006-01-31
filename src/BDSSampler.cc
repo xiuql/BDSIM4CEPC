@@ -16,7 +16,7 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4PVPlacement.hh"               
 #include "G4UserLimits.hh"
-
+#include "BDSOutput.hh"
 #include "BDSSamplerSD.hh"
 #include "G4SDManager.hh"
 
@@ -30,7 +30,8 @@ extern LogVolCountMap* LogVolCount;
 
 typedef std::map<G4String,G4LogicalVolume*> LogVolMap;
 extern LogVolMap* LogVol;
-
+extern BDSOutput bdsOutput;
+extern BDSSamplerSD* BDSSamplerSensDet;
 extern BDSMaterials* theMaterials;
 //============================================================
 
@@ -75,15 +76,20 @@ void BDSSampler::SamplerLogicalVolume()
       itsMarkerLogicalVolume->SetUserLimits(itsOuterUserLimits);
 
      // Sensitive Detector:
-      G4SDManager* SDMan = G4SDManager::GetSDMpointer();
-      BDSSamplerSD* SensDet=new BDSSamplerSD(itsName,"plane");
-      SDMan->AddNewDetector(SensDet);
-      itsMarkerLogicalVolume->SetSensitiveDetector(SensDet);
+      G4cout << "Sampler.cc Nsamplers " << bdsOutput.nSamplers << G4endl;
+      if(bdsOutput.nSamplers==0)
+	{
+	  G4SDManager* SDMan = G4SDManager::GetSDMpointer();
+	  BDSSamplerSensDet=new BDSSamplerSD(itsName,"plane");
+	  SDMan->AddNewDetector(BDSSamplerSensDet);
+	  itsMarkerLogicalVolume->SetSensitiveDetector(BDSSamplerSensDet);
+	}
     }
   else
     {
       (*LogVolCount)[itsName]++;
       itsMarkerLogicalVolume=(*LogVol)[itsName];
+      itsMarkerLogicalVolume->SetSensitiveDetector(BDSSamplerSensDet);
     }
 }
 

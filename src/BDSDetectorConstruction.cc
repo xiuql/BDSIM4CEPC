@@ -638,8 +638,9 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       if(DEBUG) G4cout<<"TargetPos="<<TargetPos<<G4endl;
 
       // advance the coordinates, but not for cylindrical samplers 
-      if( ( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength )  )
+      if( ( ( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength ) )  && ( (*iBeam)->GetType()!=_ELEMENT ))
 	{
+	  G4cout << (*iBeam)->GetType() << " " << (*iBeam)->GetName() << G4endl;
 	  rtot = rlast + zHalfAngle * ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 );
 	  rlast = rtot + zHalfAngle * ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 );
 	      
@@ -710,7 +711,22 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	   }
 	
 	LocalName=(*iBeam)->GetName()+"_phys";
-	
+	if(LogVolName=="sampler") 
+	  bdsOutput.SampName.push_back(LocalName + "_" + BDSGlobals->StringFromInt(nCopy+1));
+
+
+	// Align Component - most cases does nothing. 
+	// Currently only used for BDSElement	
+
+	(*iBeam)->AlignComponent(TargetPos,
+				 rotateComponent,
+				 globalRotation,
+				 rtot,
+				 rlast,
+				 localX,
+				 localY,
+				 localZ);
+
 	G4PVPlacement* PhysiComponentPlace = 
 	  new G4PVPlacement(
 			    rotateComponent,   //  rotation

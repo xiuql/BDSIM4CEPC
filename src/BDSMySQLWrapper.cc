@@ -44,10 +44,27 @@ inline G4String StripQuotes(const G4String& text)
   return text.substr(1,text.length()-2);
 }
 
-inline G4String StripComma(const G4String& text)
+inline vector<G4String> StripComma(const G4String& text)
 {
-  if(text=="") return text;
-  return text.substr(0,text.length()-1);
+  vector<G4String> strippedtext;
+  if(text=="")
+    {
+      strippedtext.push_back(text);
+      return strippedtext;
+    }
+  //  G4int pos = text.find(",");
+  //  text.substr(0,text.length()-1);
+  
+  char* pch;
+  pch = strtok(text.c_str(),",");
+  G4String atext;
+  while(pch != NULL)
+    {
+      atext = pch;
+      strippedtext.push_back(atext);
+      pch = strtok(NULL,",");
+    }
+  return strippedtext;
 }
 inline G4String StripFirst(const G4String& text)
 {
@@ -79,6 +96,7 @@ vector<BDSMySQLTable*> BDSMySQLWrapper::ConstructTable ()
   ifs.close();
   return table;
 }
+
 
 BDSMySQLWrapper::~BDSMySQLWrapper()
 {
@@ -136,6 +154,7 @@ G4int BDSMySQLWrapper::ReadComponent()
 		  _READ(vartype);
 		  if(vartype.contains("DOUBLE")) vartype="DOUBLE";
 		  else if(vartype.contains("VARCHAR")) vartype="STRING";
+		  else if(vartype.contains("INTEGER")) vartype="INTEGER";
 		  
 		  table[tableN]->AddVariable(varname,vartype);
 		  ifs.getline(buffer,255); // dumping rest of line
@@ -166,13 +185,33 @@ G4int BDSMySQLWrapper::ReadComponent()
 			  _READ(input);
 			  if(input=="(") _READ(input);
 			  if(input.contains("(")) input = StripFirst(input);
-			  if(input.contains(",")) input = StripComma(input);
 			  if(input.contains(");")) input = StripEnd(input);
+
+			  if(input.contains(","))
+			    {
+			      vector<G4String> vctInput = StripComma(input);
+			      for(int i=0; i<vctInput.size(); i++)
+				{
+				  if(table[j]->GetVariable(k)->GetVarType()=="DOUBLE")
+				    table[j]->GetVariable(k)->AddValue(atof(vctInput[i])*mm);
+				  else if(table[j]->GetVariable(k)->GetVarType()=="STRING")
+				    table[j]->GetVariable(k)->AddValue(StripQuotes(vctInput[i]));
+				  else if(table[j]->GetVariable(k)->GetVarType()=="INTEGER")
+				    table[j]->GetVariable(k)->AddValue(atoi(vctInput[i]));
+				  if(i!=vctInput.size()-1) k++;
+				}
+			    }
+			  else
+			    {
+			      if(table[j]->GetVariable(k)->GetVarType()=="DOUBLE")
+				table[j]->GetVariable(k)->AddValue(atof(input)*mm);
+			      else if(table[j]->GetVariable(k)->GetVarType()=="STRING")
+				table[j]->GetVariable(k)->AddValue(StripQuotes(input));
+			      else if(table[j]->GetVariable(k)->GetVarType()=="INTEGER")
+				table[j]->GetVariable(k)->AddValue(atoi(input));
+
+			    }
 			  
-			  if(table[j]->GetVariable(k)->GetVarType()=="DOUBLE")
-			    table[j]->GetVariable(k)->AddValue(atof(input)*mm);
-			  else if(table[j]->GetVariable(k)->GetVarType()=="STRING")
-			    table[j]->GetVariable(k)->AddValue(StripQuotes(input));
 			}
 		    }
 
