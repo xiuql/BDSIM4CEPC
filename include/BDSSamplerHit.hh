@@ -19,7 +19,7 @@ class BDSSamplerHit :public G4VHit
 {
   public:
    BDSSamplerHit();
-   BDSSamplerHit(G4int nSampler,
+   BDSSamplerHit(G4String aName,
 		 G4double init_z,G4double init_mom,
 		 G4double init_x, G4double init_xPrime, 
 		 G4double init_y, G4double init_yPrime,
@@ -38,7 +38,7 @@ class BDSSamplerHit :public G4VHit
   inline void operator delete(void *aHit);
   
 private:
-  G4int itsNumber;
+  G4String itsName;
   G4double itsInit_Z;
   G4double itsInit_Mom;
   G4double itsInit_X;
@@ -105,14 +105,14 @@ public:
   inline G4double GetZ() const
     {return itsZ;}
   
-  inline void SetNumber(G4int nSampler)
-    {itsNumber=nSampler;}
+  inline void SetName(G4String aName)
+    {itsName=aName;}
   inline void SetType(G4String aSampType)
     {itsSampType=aSampType;}
   inline G4String GetType()
     {return itsSampType;}
-  inline G4int GetNumber() const
-    {return itsNumber;}
+  inline G4String GetName() const
+    {return itsName;}
   inline G4int GetPDGtype() const
     {return itsPDGtype;}
   inline void SetEventNo(G4int nEvent)

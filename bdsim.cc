@@ -52,6 +52,7 @@ const int DEBUG = 1;
 
 
 #include "BDSOutput.hh"  // interface to result output
+#include "BDSSamplerSD.hh"
 #include "BDSBunch.hh"
 
 #include "parser/gmad.h"  // GMAD parser
@@ -95,6 +96,7 @@ G4bool verboseStep = false;
 G4bool verboseEvent = false;
 G4int verboseEventNumber = -1;
 G4bool isBatch = false;
+BDSSamplerSD* BDSSamplerSensDet;
 
 
 

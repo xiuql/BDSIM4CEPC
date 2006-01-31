@@ -7,6 +7,7 @@
 #include "BDSGlobalConstants.hh"
 #include "BDSSampler.hh"
 #include "BDSSamplerHit.hh"
+#include "BDSSamplerSD.hh"
 #include "BDSEnergyCounterHit.hh"
 
 #include "BDSLWCalorimeter.hh"
@@ -16,7 +17,7 @@
 #include "G4Trajectory.hh"
 
 #include <fstream>
-
+#include <vector>
 // is the root output supported?
 #ifdef USE_ROOT
 #include "TROOT.h"
@@ -61,6 +62,8 @@ public:
 
   G4int nSamplers;
   G4double zMax;
+  BDSSamplerSD* BDSSamplerSensDet;
+  vector <G4String> SampName;
 private:
   G4int format;
   ofstream of;

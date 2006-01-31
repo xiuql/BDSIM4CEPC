@@ -24,9 +24,15 @@ public:
 
   void AddValue(G4double aVarValue);
   void AddValue(G4String aVarValue);
+  void AddValue(G4int aVarValue);
 
   G4String GetStrValue(G4int itemN);
   G4double GetDblValue(G4int itemN);
+  G4int GetIntValue(G4int itemN);
+
+  void SetStrValue(G4int itemN, G4String newValue);
+  void SetDblValue(G4int itemN, G4double newValue);
+  void SetIntValue(G4int itemN, G4int newValue);
 
   G4int GetNVariables();
 
@@ -44,6 +50,7 @@ private:
   G4String itsVarType;
   vector<G4double> itsDblVar;
   vector<G4String> itsStrVar;
+  vector<G4int> itsIntVar;
 
 };
 
@@ -66,7 +73,17 @@ inline G4String BDSMySQLVariable::GetVarType()
 inline void BDSMySQLVariable::AddValue(G4double aVarValue)
 {
   itsNVariables++;
-  itsDblVar.push_back(aVarValue);
+  // Check is to avoid unecessary confusion
+  if(itsVarType=="DOUBLE")
+    itsDblVar.push_back(aVarValue);
+}
+
+inline void BDSMySQLVariable::AddValue(G4int aVarValue)
+{
+  itsNVariables++;
+  // Check is to avoid unecessary confusion
+  if(itsVarType=="INTEGER")
+    itsIntVar.push_back(aVarValue);
 }
 
 inline void BDSMySQLVariable::AddValue(G4String aVarValue)
@@ -80,6 +97,18 @@ inline  G4String BDSMySQLVariable::GetStrValue(G4int itemN)
 
 inline  G4double BDSMySQLVariable::GetDblValue(G4int itemN)
 {return itsDblVar[itemN];}
+
+inline  G4int BDSMySQLVariable::GetIntValue(G4int itemN)
+{return itsIntVar[itemN];}
+
+inline  void BDSMySQLVariable::SetStrValue(G4int itemN, G4String newValue)
+{itsStrVar[itemN] = newValue;}
+
+inline  void BDSMySQLVariable::SetDblValue(G4int itemN, G4double newValue)
+{itsDblVar[itemN] = newValue;}
+
+inline  void BDSMySQLVariable::SetIntValue(G4int itemN, G4int newValue)
+{itsIntVar[itemN] = newValue;}
 
 class BDSMySQLTable 
 {

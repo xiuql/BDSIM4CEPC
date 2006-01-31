@@ -20,7 +20,7 @@
 #include "G4UserLimits.hh"
 #include "G4VisAttributes.hh"
 #include "BDSMySQLTable.hh"
-
+#include "G4VPhysicalVolume.hh"
 #include "G4MagIntegratorStepper.hh"
 #include "G4Mag_UsualEqRhs.hh"
 #include "G4ChordFinder.hh"
@@ -28,6 +28,7 @@
 #include "BDSSamplerSD.hh"
 #include <fstream>
 #include <vector>
+#include "BDSMagFieldSQL.hh"
 
 using namespace std;
 
@@ -36,20 +37,36 @@ class BDSClassicalRK4;
 class BDSGeometrySQL
 {
 public:
-  BDSGeometrySQL(G4String DBfile);
+  BDSGeometrySQL(G4String DBfile, G4double markerlength);
   ~BDSGeometrySQL();
 
   void Construct(G4LogicalVolume *marker);
+  
+  // For List of Quad/Sext Fields
+  vector<G4double> QuadBgrad;
+  vector<G4String> Quadvol; 
+  vector<G4double> SextBgrad;
+  vector<G4String> Sextvol;
+  G4VPhysicalVolume* align_in_volume;
+  G4VPhysicalVolume* align_out_volume;
 
 private:
 
-  ifstream ifs;
   void BuildSQLObjects(G4String file);
-  G4LogicalVolume* itsMarkerVol;
   void BuildCone(BDSMySQLTable* aSQLTable);
   void BuildBox(BDSMySQLTable* aSQLTable);
-  G4VisAttributes* SetVisAttributes();
+  void BuildSampler(BDSMySQLTable* aSQLTable);
+  G4RotationMatrix* RotateComponent(G4double psi,
+				    G4double phi,
+				    G4double theta);
+  void PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume** VOL_LIST);
+
+  G4double itsMarkerLength;
+  ifstream ifs;
+  G4LogicalVolume* itsMarkerVol;
   vector<BDSMySQLTable*> itsSQLTable;
+  BDSMagFieldSQL* itsMagField;
+  BDSSamplerSD* SensDet;
 
 protected:
 };

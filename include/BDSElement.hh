@@ -33,10 +33,19 @@ public:
 
   void BuildGeometry();
   void PlaceComponents(G4String geometry, G4String bmap);
-  void BuildMagField();
+  void BuildMagField(G4int nvar=8, G4bool foreToAllDaughters=false);
 
   // creates a field mesh in global coordinates in case it is given by map
   void PrepareField(G4VPhysicalVolume *referenceVolume);
+
+  void AlignComponent(G4ThreeVector& TargetPos, 
+		      G4RotationMatrix *TargetRot,
+		      G4RotationMatrix& globalRotation,
+		      G4ThreeVector& rtot,
+		      G4ThreeVector& rlast,
+		      G4ThreeVector& localX,
+		      G4ThreeVector& localY,
+		      G4ThreeVector& localZ); 
    
 protected:
   
@@ -45,6 +54,14 @@ protected:
 private:
 
   BDSField *itsField;
+
+  // Volume to align incoming beamline on inside the marker volume
+  // (set during Geometery construction)
+  G4VPhysicalVolume* align_in_volume;
+  // Volume to align outgoing beamline on inside the marker volume
+  // (set during Geometery construction)
+  G4VPhysicalVolume* align_out_volume;
+
 
 };
 
