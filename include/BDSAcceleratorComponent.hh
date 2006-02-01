@@ -203,7 +203,7 @@ BDSAcceleratorComponent (
   itsTheta = 0;
   itsPsi = 0;
   itsTilt = 0;
-};
+}
 
 
 inline const G4double BDSAcceleratorComponent::GetLength () const
