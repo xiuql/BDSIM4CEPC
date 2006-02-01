@@ -299,7 +299,7 @@ G4double GetNearestValue(vector<struct XYFieldRecord> fieldValues, G4double x, G
 
   return dist;
   
-};
+}
 
 
 

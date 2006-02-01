@@ -37,13 +37,13 @@ BDSBunch::BDSBunch()
   GaussGen=new RandGauss(*HepRandom::getTheEngine());
   FlatGen=new RandFlat(*HepRandom::getTheEngine());
   
-};
+}
 
 BDSBunch::~BDSBunch()
 {
   delete GaussGen;
   delete FlatGen;
-};
+}
 
 // set options from gmad
 

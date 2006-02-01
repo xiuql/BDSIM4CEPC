@@ -54,9 +54,11 @@ inline vector<G4String> StripComma(const G4String& text)
     }
   //  G4int pos = text.find(",");
   //  text.substr(0,text.length()-1);
-  
   char* pch;
-  pch = strtok(text.c_str(),",");
+  G4int len = strlen(text.c_str());
+  char* tmp = new char[len];
+  strcpy(tmp,text.c_str());
+  pch = strtok(tmp,",");
   G4String atext;
   while(pch != NULL)
     {

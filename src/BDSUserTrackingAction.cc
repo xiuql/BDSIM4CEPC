@@ -47,6 +47,6 @@ void BDSUserTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 }
 
 BDSUserTrackingAction::~BDSUserTrackingAction()
-{};
+{;}
 
 

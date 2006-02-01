@@ -67,7 +67,7 @@ void BDSGeometrySQL::BuildSQLObjects(G4String file)
       G4String TableName = itsSQLTable[i]->GetName();
       G4int pos = TableName.find("_");
       G4String ObjectType = TableName.substr(pos+1,TableName.length() - pos);
-      G4String::caseCompare cmpmode = 1;
+      G4String::caseCompare cmpmode = G4String::ignoreCase;
       if(ObjectType.compareTo("CONE",cmpmode)==0) BuildCone(itsSQLTable[i]);
       else if(ObjectType.compareTo("BOX",cmpmode)==0) BuildBox(itsSQLTable[i]);
       else if(ObjectType.compareTo("SAMPLER",cmpmode)==0) BuildSampler(itsSQLTable[i]);
@@ -514,7 +514,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
 	    align_out_volume=PhysiComp;
 	}
 
-      G4String::caseCompare cmpmode = 1;
+      G4String::caseCompare cmpmode = G4String::ignoreCase;
       G4double P0 = BDSGlobals->GetBeamTotalEnergy();
       G4double brho=
 	sqrt(pow(P0,2)- pow(electron_mass_c2,2))/(0.299792458 * (GeV/(tesla*m)));
