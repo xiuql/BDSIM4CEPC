@@ -10,7 +10,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSOctStepper.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
+// $Id: BDSOctStepper.cc,v 1.2 2005/11/07 12:09:26 carter Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSOctStepper.hh"
@@ -89,8 +89,8 @@ void BDSOctStepper::AdvanceHelix( const G4double  yIn[],
       G4double yp=LocalRp.y();
       G4double zp=LocalRp.z();
 
-      G4double y3fac=pow(y0,3)-3*y0*x0*x0;
-      G4double x3fac=pow(x0,3)-3*x0*y0*y0;
+      G4double y3fac=y0*(y0*y0-3*x0*x0);
+      G4double x3fac=x0*(x0*x0-3*y0*y0);
       
       // local r'' (for curvature)
       G4ThreeVector LocalRpp;
