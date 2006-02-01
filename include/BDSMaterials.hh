@@ -47,7 +47,7 @@ private:
 
 inline G4Material* BDSMaterials::GetMaterial(G4String aMaterial)
 {
-  G4String::caseCompare cmpmode = 1;
+  G4String::caseCompare cmpmode = G4String::ignoreCase;
   if(aMaterial.compareTo("Titanium",cmpmode)==0) return LCTitanium;
   else if(aMaterial.compareTo("Tungsten",cmpmode)==0) return LCTungsten;
   else if(aMaterial.compareTo("Graphite",cmpmode)==0) return LCGraphite;
