@@ -156,6 +156,9 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
 
     Mokka = new BDSGeometrySQL(gFile,itsLength);
     Mokka->Construct(itsMarkerLogicalVolume);
+    vector<G4LogicalVolume*> SensComps = Mokka->SensitiveComponents;
+    for(G4int id=0; id<SensComps.size(); id++)
+      SetMultipleSensitiveVolumes(SensComps[id]);
     align_in_volume = Mokka->align_in_volume;
     align_out_volume = Mokka->align_out_volume;
     // attach magnetic field if present

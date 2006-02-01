@@ -426,6 +426,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
   G4int NVariables = aSQLTable->GetVariable("POSX")->GetNVariables();
   G4int align_in;
   G4int align_out;
+  G4int SetSensitive;
 
   for(G4int k=0; k<NVariables; k++) // Now run through and place according to
     { 
@@ -437,6 +438,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
       PARENTID = 0;
       align_in=0;
       align_out=0;
+      SetSensitive=0;
       MagType = "";
       if(aSQLTable->GetVariable("ID")!=NULL)
 	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
@@ -468,12 +470,16 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
 	align_in = aSQLTable->GetVariable("ALIGNIN")->GetIntValue(k);
       if(aSQLTable->GetVariable("ALIGNOUT")!=NULL)
 	align_out = aSQLTable->GetVariable("ALIGNOUT")->GetIntValue(k);
+      if(aSQLTable->GetVariable("SETSENSITIVE")!=NULL)
+	SetSensitive = aSQLTable->GetVariable("SETSENSITIVE")->GetIntValue(k);
       if(aSQLTable->GetVariable("NAME")!=NULL)
 	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
       if(Name=="_SQL") Name = TableName+BDSGlobals->StringFromInt(k) + "_SQL";
       if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
 
       if(PARENTID==0) PosZ-=itsMarkerLength/2; //Move definition of PosZ to front of element
+
+      if(SetSensitive) SensitiveComponents.push_back(VOL_LIST[ID]);
 
       G4ThreeVector PlacementPoint(PosX,PosY,PosZ);
       

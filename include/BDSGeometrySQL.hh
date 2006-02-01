@@ -49,6 +49,7 @@ public:
   vector<G4String> Sextvol;
   G4VPhysicalVolume* align_in_volume;
   G4VPhysicalVolume* align_out_volume;
+  vector<G4LogicalVolume*> SensitiveComponents;
 
 private:
 
@@ -70,4 +71,5 @@ private:
 
 protected:
 };
+
 #endif
