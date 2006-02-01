@@ -190,10 +190,10 @@ struct Parameters {
   
 
   // for external geometry and field definition files
-  char geometry[32]; int geomset;
-  char bmap[32]; int bmapset;
-  char emap[32];
-  char material[32]; int materialset;
+  char geometry[64]; int geomset;
+  char bmap[64]; int bmapset;
+  char emap[64];
+  char material[64]; int materialset;
 
   // material properties
 
