@@ -80,8 +80,7 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
   G4LogicalVolume** VOL_LIST = NULL;
   
   G4int NVariables = aSQLTable->GetVariable("LENGTH")->GetNVariables();
-
-  VOL_LIST = new G4LogicalVolume*[NVariables];
+  VOL_LIST = new G4LogicalVolume*[NVariables+1];
   VOL_LIST[0] = itsMarkerVol;
   for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
   G4double length;
@@ -169,6 +168,7 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildCone " << G4endl;
       }
       else VOL_LIST[ID] = aConeVol;
+
     }
 
   PlaceComponents(aSQLTable, VOL_LIST);
@@ -482,7 +482,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
       if(SetSensitive) SensitiveComponents.push_back(VOL_LIST[ID]);
 
       G4ThreeVector PlacementPoint(PosX,PosY,PosZ);
-      
+
       G4VPhysicalVolume* PhysiComp = 
 	new G4PVPlacement(RotateComponent(RotPsi,RotPhi,RotTheta),
 			  PlacementPoint,
