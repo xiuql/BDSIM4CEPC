@@ -23,7 +23,7 @@ const int DEBUG = 0;
 #include "G4ParticleDefinition.hh"
 #include "Randomize.hh"
 
-#include "BDSExtract.hh"
+//#include "BDSExtract.hh"
 #include "BDSBunch.hh"
 
 #include<iostream>
