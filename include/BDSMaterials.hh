@@ -38,6 +38,7 @@ public:
   G4Material*  LCBeamGasPlugMat;
   G4Material*  LCSilicon;
   G4Material*  LCBeryllium;
+  G4Material*  LCNiobium;
 
 
 private:
@@ -63,7 +64,8 @@ inline G4Material* BDSMaterials::GetMaterial(G4String aMaterial)
   else if(aMaterial.compareTo("LeadTungstate",cmpmode)==0) return LCLeadTungstate;
   else if(aMaterial.compareTo("Lead",cmpmode)==0) return LCLead;
   else if(aMaterial.compareTo("Beryllium",cmpmode)==0) return LCBeryllium;
-	  else if(aMaterial.compareTo("Silicon",cmpmode)==0) return LCSilicon;  
+  else if(aMaterial.compareTo("Silicon",cmpmode)==0) return LCSilicon;  
+  else if(aMaterial.compareTo("Niobium",cmpmode)==0) return LCNiobium;  
   else
     {
       G4cout <<aMaterial<<" not known. Using Vacuum instead!!" <<G4endl;

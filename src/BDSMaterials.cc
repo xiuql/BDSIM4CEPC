@@ -87,8 +87,17 @@ BDSMaterials::BDSMaterials()
   a = 207.2*g/mole;
   G4Element* Pb  = new G4Element(name="Lead"  ,symbol="Pb" , z= 82., a);
 
+  a = 92.906*g/mole;
+  G4Element* Nb = new G4Element(name="Niobium", symbol="Nb", z=41., a);
 
-
+  density = 8.57*g/cm3;
+  LCNiobium=new G4Material(name="LCNiobium",
+			   density,
+			   1,
+			   kStateSolid,
+			   2*kelvin,
+			   1*atmosphere);
+  LCNiobium->AddElement(Nb,1);
 
 
   pressure    = 1.e-9*(1.e-3*bar);
