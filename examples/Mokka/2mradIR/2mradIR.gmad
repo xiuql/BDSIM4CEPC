@@ -18,10 +18,10 @@ option, beampipeRadius = 10 * cm,
 ! Note that each interaction region include Solenoid field, QD0 and SD0
 
 ir:element,l=11.995*m,geometry="mokka:examples/Mokka/2mradIR/geomlist.sql",
-	bmap="mokka:FieldMaps/SiD_fields.txt";
+	bmap="mokka:examples/Mokka/FieldMaps/SiD_fields.txt";
 
 invir:element,l=11.995*m,geometry="mokka:examples/Mokka/2mradIR/igeomlist.sql",
-	bmap="mokka:FieldMaps/inverse_SiD_fields.txt";
+	bmap="mokka:examples/Mokka/FieldMaps/inverse_SiD_fields.txt";
 
 IntRegion:line=(invir, ir);
 
