@@ -168,6 +168,7 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
       if(ID<1 || ID>k+1){
 	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
 	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildCone " << G4endl;
+	G4Exception("Aborting Program");
       }
       else VOL_LIST[ID] = aConeVol;
 
@@ -180,7 +181,6 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 
 void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
 {
-  G4cout << "Got Here A" << G4endl;
   G4LogicalVolume** VOL_LIST = NULL;
   
   G4int NVariables = aSQLTable->GetVariable("NZPLANES")->GetNVariables();
@@ -191,7 +191,6 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
   G4double* rInner = NULL;
   G4double* rOuter = NULL;
   G4double* zPos = NULL;
-  G4cout << "Got Here B" << G4endl;
   G4double VisRed; 
   G4double VisGreen;
   G4double VisBlue;
@@ -215,7 +214,6 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
       rInner = new G4double[numZplanes];
       rOuter = new G4double[numZplanes];
       zPos = new G4double[numZplanes];
-      G4cout << "Got Here B" << G4endl;
       
       for(G4int planenum=0; planenum<numZplanes; planenum++)
 	{
@@ -280,6 +278,7 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
       if(ID<1 || ID>k+1){
 	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
 	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildPolyCone " << G4endl;
+	G4Exception("Aborting Program");
       }
       else VOL_LIST[ID] = aPolyConeVol;
 
@@ -378,6 +377,7 @@ void BDSGeometrySQL::BuildBox(BDSMySQLTable* aSQLTable)
       if(ID<1 || ID>k+1){
 	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
 	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildBox " << G4endl;
+	G4Exception("Aborting Program");
       }
       else VOL_LIST[ID] = aBoxVol;
     }
@@ -491,6 +491,7 @@ void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
       if(ID<1 || ID>k+1){
 	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
 	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildSampler " << G4endl;
+	G4Exception("Aborting Program");
       }
       else VOL_LIST[ID] = aSamplerVol;
     }

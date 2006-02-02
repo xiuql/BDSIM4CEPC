@@ -154,9 +154,15 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
 
 void BDSMagFieldSQL::Prepare(G4VPhysicalVolume *referenceVolume)
 {
-  G4cout<<"BDSElement:: creat SQL field map"<<G4endl;
+  G4cout<<"BDSElement:: creating SQL field map"<<G4endl;
 
-  G4cout << "Loading SQL Field Map file: " << FieldFile << G4endl;
+  if(!ifs)
+    {
+      G4cerr<<"\nBDSMagFieldSQL.cc: Unable to open Field Map File: " << FieldFile << G4endl;
+      G4Exception("Aborting Program");
+    }
+  else
+    G4cout << "Loading SQL Field Map file: " << FieldFile << G4endl;
 
   if(FieldFile.contains("inverse")) itsMarkerLength*=-1;
   double temp_z;
