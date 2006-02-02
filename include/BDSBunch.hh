@@ -8,7 +8,7 @@
 #include "parser/gmad.h"
 #include "Randomize.hh"
 #include "globals.hh"
-#include <fstream.h>
+#include <fstream>
 
 #if CLHEP_VERSION > 9
 using namespace CLHEP;
