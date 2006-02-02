@@ -3,6 +3,7 @@
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4Cons.hh"
+#include "G4Polycone.hh"
 #include "G4VisAttributes.hh"
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
@@ -69,6 +70,7 @@ void BDSGeometrySQL::BuildSQLObjects(G4String file)
       G4String ObjectType = TableName.substr(pos+1,TableName.length() - pos);
       G4String::caseCompare cmpmode = G4String::ignoreCase;
       if(ObjectType.compareTo("CONE",cmpmode)==0) BuildCone(itsSQLTable[i]);
+      if(ObjectType.compareTo("POLYCONE",cmpmode)==0) BuildPolyCone(itsSQLTable[i]);
       else if(ObjectType.compareTo("BOX",cmpmode)==0) BuildBox(itsSQLTable[i]);
       else if(ObjectType.compareTo("SAMPLER",cmpmode)==0) BuildSampler(itsSQLTable[i]);
     }
@@ -168,6 +170,125 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildCone " << G4endl;
       }
       else VOL_LIST[ID] = aConeVol;
+
+    }
+
+  PlaceComponents(aSQLTable, VOL_LIST);
+  delete [] VOL_LIST;
+  VOL_LIST = NULL;
+}
+
+void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
+{
+  G4cout << "Got Here A" << G4endl;
+  G4LogicalVolume** VOL_LIST = NULL;
+  
+  G4int NVariables = aSQLTable->GetVariable("NZPLANES")->GetNVariables();
+  VOL_LIST = new G4LogicalVolume*[NVariables+1];
+  VOL_LIST[0] = itsMarkerVol;
+  for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
+  G4int numZplanes;
+  G4double* rInner = NULL;
+  G4double* rOuter = NULL;
+  G4double* zPos = NULL;
+  G4cout << "Got Here B" << G4endl;
+  G4double VisRed; 
+  G4double VisGreen;
+  G4double VisBlue;
+  G4int ID;
+  G4String VisType;
+  G4String Material;
+  G4String TableName = aSQLTable->GetName();
+  G4String Name;
+
+  for(G4int k=0; k<NVariables; k++)
+    {
+      //Defaults
+      numZplanes = 0;
+      VisRed = VisGreen = VisBlue = 0.;
+      ID = k+1;
+      VisType = "W";
+      Material = "VACUUM";
+
+      if(aSQLTable->GetVariable("NZPLANES")!=NULL)
+	numZplanes = aSQLTable->GetVariable("NZPLANES")->GetIntValue(k);
+      rInner = new G4double[numZplanes];
+      rOuter = new G4double[numZplanes];
+      zPos = new G4double[numZplanes];
+      G4cout << "Got Here B" << G4endl;
+      
+      for(G4int planenum=0; planenum<numZplanes; planenum++)
+	{
+	  G4String rInner_ID = "RINNER" + BDSGlobals->StringFromInt(planenum+1);
+	  G4String rOuter_ID = "ROUTER" + BDSGlobals->StringFromInt(planenum+1);
+	  G4String zPos_ID = "PLANEPOS" + BDSGlobals->StringFromInt(planenum+1);
+
+	  if(aSQLTable->GetVariable(rInner_ID)!=NULL)
+	    rInner[planenum] = aSQLTable->GetVariable(rInner_ID)->GetDblValue(k);
+	  if(aSQLTable->GetVariable(rOuter_ID)!=NULL)
+	    rOuter[planenum] = aSQLTable->GetVariable(rOuter_ID)->GetDblValue(k);
+
+	  if(aSQLTable->GetVariable(zPos_ID)!=NULL)
+	    zPos[planenum] = aSQLTable->GetVariable(zPos_ID)->GetDblValue(k);
+	}
+
+      if(aSQLTable->GetVariable("ID")!=NULL)
+	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
+      if(aSQLTable->GetVariable("RED")!=NULL)
+	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
+      if(aSQLTable->GetVariable("BLUE")!=NULL)
+	VisBlue = aSQLTable->GetVariable("BLUE")->GetDblValue(k);
+      if(aSQLTable->GetVariable("GREEN")!=NULL)
+	VisGreen = aSQLTable->GetVariable("GREEN")->GetDblValue(k);
+      if(aSQLTable->GetVariable("VISATT")!=NULL)
+	VisType = aSQLTable->GetVariable("VISATT")->GetStrValue(k);
+      if(aSQLTable->GetVariable("MATERIAL")!=NULL)
+	Material = aSQLTable->GetVariable("MATERIAL")->GetStrValue(k);
+      if(aSQLTable->GetVariable("NAME")!=NULL)
+	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
+
+      if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+
+      G4Polycone* aPolyCone = new G4Polycone(Name+"_PolyCone",
+					     0,
+					     twopi*radian,
+					     numZplanes,
+					     zPos,
+					     rInner,
+					     rOuter);
+
+      G4LogicalVolume* aPolyConeVol = 
+	new G4LogicalVolume(aPolyCone,
+			    theMaterials->GetMaterial(Material),
+			    Name+"_LogVol");
+      
+      G4UserLimits* ConeUserLimits = new G4UserLimits();
+      ConeUserLimits->SetMaxAllowedStep(fabs(zPos[0]-zPos[numZplanes-1]));
+      aPolyConeVol->SetUserLimits(ConeUserLimits);
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(VisRed, VisGreen, VisBlue));
+      switch (VisType(0))
+	{
+	case 'W': VisAtt->SetForceWireframe(true); break;
+	case 'I': VisAtt->SetVisibility(false); break;
+	case 'S': VisAtt->SetForceSolid(true); break;
+	case 'w': VisAtt->SetForceWireframe(true); break;
+	case 'i': VisAtt->SetVisibility(false); break;
+	case 's': VisAtt->SetForceSolid(true); break;
+	}
+      aPolyConeVol->SetVisAttributes(VisAtt);
+      if(ID<1 || ID>k+1){
+	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
+	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildPolyCone " << G4endl;
+      }
+      else VOL_LIST[ID] = aPolyConeVol;
+
+      delete [] rInner;
+      rInner = NULL;
+      delete [] rOuter;
+      rOuter = NULL;
+      delete [] zPos;
+      zPos = NULL;
 
     }
 
