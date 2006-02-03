@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875c.  */
+/* A Bison parser, made by GNU Bison 2.0.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ typedef union YYSTYPE {
   char *str;
   struct Array *array;
 } YYSTYPE;
-/* Line 191 of yacc.c.  */
+/* Line 190 of yacc.c.  */
 #line 213 "parser.tab.c"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -220,7 +220,7 @@ typedef union YYSTYPE {
 /* Copy the second part of user declarations.  */
 
 
-/* Line 214 of yacc.c.  */
+/* Line 213 of yacc.c.  */
 #line 225 "parser.tab.c"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
@@ -236,14 +236,10 @@ typedef union YYSTYPE {
 
 # ifdef YYSTACK_USE_ALLOCA
 #  if YYSTACK_USE_ALLOCA
-#   define YYSTACK_ALLOC alloca
-#  endif
-# else
-#  if defined (alloca) || defined (_ALLOCA_H)
-#   define YYSTACK_ALLOC alloca
-#  else
 #   ifdef __GNUC__
 #    define YYSTACK_ALLOC __builtin_alloca
+#   else
+#    define YYSTACK_ALLOC alloca
 #   endif
 #  endif
 # endif
@@ -269,7 +265,7 @@ typedef union YYSTYPE {
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  short yyss;
+  short int yyss;
   YYSTYPE yyvs;
   };
 
@@ -279,7 +275,7 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (short) + sizeof (YYSTYPE))				\
+     ((N) * (sizeof (short int) + sizeof (YYSTYPE))			\
       + YYSTACK_GAP_MAXIMUM)
 
 /* Copy COUNT objects from FROM to TO.  The source and destination do
@@ -321,22 +317,22 @@ union yyalloc
 #if defined (__STDC__) || defined (__cplusplus)
    typedef signed char yysigned_char;
 #else
-   typedef short yysigned_char;
+   typedef short int yysigned_char;
 #endif
 
 /* YYFINAL -- State number of the termination state. */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   470
+#define YYLAST   505
 
 /* YYNTOKENS -- Number of terminals. */
 #define YYNTOKENS  75
 /* YYNNTS -- Number of nonterminals. */
 #define YYNNTS  39
 /* YYNRULES -- Number of rules. */
-#define YYNRULES  139
+#define YYNRULES  141
 /* YYNRULES -- Number of states. */
-#define YYNSTATES  267
+#define YYNSTATES  269
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -385,7 +381,7 @@ static const unsigned char yytranslate[] =
 #if YYDEBUG
 /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
    YYRHS.  */
-static const unsigned short yyprhs[] =
+static const unsigned short int yyprhs[] =
 {
        0,     0,     3,     4,     8,    11,    16,    18,    22,    27,
       28,    30,    32,    34,    38,    42,    46,    50,    54,    58,
@@ -400,7 +396,8 @@ static const unsigned short yyprhs[] =
      352,   354,   356,   360,   362,   366,   370,   374,   378,   382,
      386,   389,   393,   397,   401,   405,   415,   419,   426,   430,
      434,   440,   446,   450,   452,   456,   460,   466,   472,   480,
-     486,   492,   496,   497,   503,   507,   508,   514,   518,   524
+     486,   492,   496,   497,   503,   507,   513,   517,   518,   524,
+     528,   534
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS. */
@@ -456,13 +453,14 @@ static const yysigned_char yyrhs[] =
       19,    -1,   111,    69,    51,    70,    16,     6,    16,    -1,
       51,    70,    16,     6,    16,    -1,   111,    69,    51,    70,
       16,    -1,    51,    70,    16,    -1,    -1,   112,    69,    16,
-      70,   102,    -1,    16,    70,   102,    -1,    -1,   113,    69,
+      70,   102,    -1,    16,    70,   102,    -1,   112,    69,    16,
+      70,    19,    -1,    16,    70,    19,    -1,    -1,   113,    69,
       16,    70,   102,    -1,    16,    70,   102,    -1,   113,    69,
       16,    70,    19,    -1,    16,    70,    19,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const unsigned short yyrline[] =
+static const unsigned short int yyrline[] =
 {
        0,    63,    63,    64,    71,    72,    74,    75,    78,    81,
       82,    83,    84,    89,    98,   107,   116,   125,   134,   144,
@@ -477,7 +475,8 @@ static const unsigned short yyrline[] =
      978,   985,   986,   987,   988,   989,   990,   998,  1013,  1014,
     1015,  1016,  1026,  1036,  1050,  1060,  1074,  1080,  1091,  1103,
     1111,  1125,  1131,  1136,  1143,  1155,  1168,  1181,  1193,  1198,
-    1203,  1208,  1215,  1216,  1221,  1228,  1229,  1234,  1239,  1244
+    1203,  1208,  1215,  1216,  1221,  1226,  1231,  1238,  1239,  1244,
+    1249,  1254
 };
 #endif
 
@@ -509,7 +508,7 @@ static const char *const yytname[] =
 # ifdef YYPRINT
 /* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
    token YYLEX-NUM.  */
-static const unsigned short yytoknum[] =
+static const unsigned short int yytoknum[] =
 {
        0,   256,   257,    43,    45,    42,    47,    94,    60,    62,
      258,   259,   260,   261,   262,   263,   264,   265,   266,   267,
@@ -538,7 +537,8 @@ static const unsigned char yyr1[] =
      106,   107,   107,   107,   107,   107,   107,   107,   107,   107,
      107,   107,   107,   107,   108,   108,   109,   109,   110,   110,
      110,   110,   110,   110,   111,   111,   111,   111,   111,   111,
-     111,   111,   112,   112,   112,   113,   113,   113,   113,   113
+     111,   111,   112,   112,   112,   112,   112,   113,   113,   113,
+     113,   113
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -557,7 +557,8 @@ static const unsigned char yyr2[] =
        1,     1,     3,     1,     3,     3,     3,     3,     3,     3,
        2,     3,     3,     3,     3,     9,     3,     6,     3,     3,
        5,     5,     3,     1,     3,     3,     5,     5,     7,     5,
-       5,     3,     0,     5,     3,     0,     5,     3,     5,     3
+       5,     3,     0,     5,     3,     5,     3,     0,     5,     3,
+       5,     3
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -569,7 +570,7 @@ static const unsigned char yydefact[] =
        0,     0,     0,   103,   101,     0,     0,     0,     0,     0,
        2,     0,    98,     0,     9,     6,    12,    10,    63,    65,
       64,    88,    11,    67,    75,    74,    87,     0,     0,     0,
-       0,     0,     0,     0,     0,   135,   132,     0,     0,   110,
+       0,     0,     0,     0,     0,   137,   132,     0,     0,   110,
        0,     0,     0,     9,     0,   100,     0,     3,     4,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,    47,    31,    47,
@@ -585,65 +586,65 @@ static const unsigned char yydefact[] =
       37,    38,    39,    41,    40,     0,    42,    43,    34,    35,
       45,    83,    68,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     8,    99,     5,    77,     0,
-       0,    56,   125,   124,   131,     0,     0,   139,   137,     0,
-     134,     0,   114,   116,   119,   118,   122,     0,    53,    51,
-      50,     0,     0,    60,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,    54,     0,   129,   127,
-     126,   130,   138,   136,   133,     0,     0,   121,   120,    52,
-      48,    49,    62,    61,     0,    57,     0,     0,   117,     0,
-       0,   128,     0,    59,    58,     0,   115
+       0,    56,   125,   124,   131,     0,     0,   141,   139,     0,
+     136,   134,     0,   114,   116,   119,   118,   122,     0,    53,
+      51,    50,     0,     0,    60,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    54,     0,   129,
+     127,   126,   130,   140,   138,   135,   133,     0,     0,   121,
+     120,    52,    48,    49,    62,    61,     0,    57,     0,     0,
+     117,     0,     0,   128,     0,    59,    58,     0,   115
 };
 
 /* YYDEFGOTO[NTERM-NUM]. */
-static const short yydefgoto[] =
+static const short int yydefgoto[] =
 {
       -1,     1,    23,    24,    25,    26,    95,    96,    97,    98,
       99,   100,   101,   102,   103,   104,   105,   106,   107,   108,
-     109,   110,   165,   111,   112,   224,    27,    28,    29,    30,
+     109,   110,   165,   111,   112,   225,    27,    28,    29,    30,
       31,    56,    32,   130,   134,   135,   120,   124,   122
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
 #define YYPACT_NINF -67
-static const short yypact[] =
+static const short int yypact[] =
 {
-     -67,    85,   -67,   360,   360,   249,   -67,   -18,   -66,   -49,
+     -67,    85,   -67,   387,   387,   243,   -67,   -18,   -66,   -49,
      -33,     6,    11,    13,   -67,    14,    65,    17,    18,    24,
-     -67,   360,   360,    26,   189,   -67,   -67,   -67,   440,   -67,
-      29,   -67,   -67,    21,   -67,   -67,   -67,   440,    25,   378,
-     249,    82,   249,   360,    -9,    83,    88,   -11,    66,   -67,
-      56,    -8,   360,   111,   205,   450,   -59,   -67,    49,   249,
-     249,   249,   360,   360,   360,   360,   360,   360,   360,   249,
-     249,   360,   360,   360,   360,   360,   249,    94,   -67,    94,
+     -67,   387,   387,    26,   184,   -67,   -67,   -67,   467,   -67,
+      29,   -67,   -67,    21,   -67,   -67,   -67,   467,    25,   394,
+     243,    82,   243,   387,    -9,    83,    88,   -11,    66,   -67,
+      56,    -8,   387,   111,   207,   477,   -59,   -67,    49,   243,
+     243,   243,   387,   387,   387,   387,   387,   387,   387,   243,
+     243,   387,   387,   387,   387,   387,   243,    94,   -67,    94,
       94,    94,    94,    94,    94,    94,    94,    94,    41,   -67,
       94,    94,    94,    94,    94,   -67,   -67,   -67,   -67,   -67,
      -67,   -67,   -67,   -67,   -67,   -67,   -67,   -67,   -67,   -67,
-     -67,   -67,   -67,   440,    29,    44,    29,   270,    43,    47,
+     -67,   -67,   -67,   467,    29,    44,    29,   272,    43,    47,
       52,    48,    53,    54,    62,   -67,   -67,   -67,   -67,    55,
-     -67,    69,   -67,    71,    63,    76,   280,   -67,   -67,   360,
-     -67,   189,   379,    15,   379,    15,   292,   -67,   292,   -67,
-     -67,   -67,   -67,   -67,   -67,   379,    15,    15,   292,   292,
-     458,   458,   292,    42,    77,    79,    79,    79,    79,    79,
+     -67,    69,   -67,    71,    63,    76,   282,   -67,   -67,   387,
+     -67,   184,   485,    15,   485,    15,   257,   -67,   257,   -67,
+     -67,   -67,   -67,   -67,   -67,   485,    15,    15,   257,   257,
+     493,   493,   257,    42,    77,    79,    79,    79,    79,    79,
       79,    79,    79,    79,    79,    57,    79,    79,    79,    79,
-      79,   -67,   -67,   290,   133,    -7,   308,   134,   360,   136,
-     137,   138,   317,    -8,   139,   -67,   450,   -67,   -67,     8,
-     141,    -2,   -67,   450,   156,    95,    97,   -67,   450,   101,
-     450,   104,   106,   105,   -67,   450,    76,   108,   -67,   440,
-      29,   109,   176,   177,    10,   172,   326,   174,   335,   360,
-     143,   180,   354,   183,   187,   203,   -67,    39,   -67,   -67,
-     450,   213,   -67,   450,   450,   150,   149,   -67,   450,   -67,
-     440,    29,   -67,   -67,   217,   219,   211,   212,   -67,   215,
-     218,   -67,   226,   -67,   -67,   220,   -67
+      79,   -67,   -67,   292,   133,    -7,   309,   134,   315,   136,
+     137,   138,   332,    -8,   139,   -67,   477,   -67,   -67,     8,
+     141,    -2,   -67,   477,   156,    95,    97,   -67,   477,   101,
+     -67,   477,   104,   106,   105,   -67,   477,    76,   108,   -67,
+     467,    29,   109,   176,   177,    10,   170,   338,   174,   358,
+     364,   140,   180,   381,   190,   181,   188,   -67,    39,   -67,
+     -67,   477,   198,   -67,   477,   -67,   477,   150,   149,   -67,
+     477,   -67,   467,    29,   -67,   -67,   217,   218,   209,   212,
+     -67,   222,   225,   -67,   238,   -67,   -67,   232,   -67
 };
 
 /* YYPGOTO[NTERM-NUM].  */
-static const short yypgoto[] =
+static const short int yypgoto[] =
 {
-     -67,   223,   -21,   -67,   -67,   -67,   -67,   -67,   -67,   -67,
+     -67,   229,   -21,   -67,   -67,   -67,   -67,   -67,   -67,   -67,
      -67,   -67,   -67,   -67,   -67,   -67,   -67,   -67,   -67,   -67,
-     -67,   -67,   348,   -67,   -67,   -67,   -67,    -3,   -67,    36,
-     -67,   -67,   -67,   -67,   190,    58,   -67,   -67,   -67
+     -67,   -67,   375,   -67,   -67,   -67,   -67,    -3,   -67,    36,
+     -67,   -67,   -67,   -67,   202,    60,   -67,   -67,   -67
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -651,16 +652,16 @@ static const short yypgoto[] =
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -1
-static const unsigned short yytable[] =
+static const unsigned short int yytable[] =
 {
       34,    35,    37,    58,    42,   125,   126,   118,   133,   205,
-     139,     3,     4,   222,   223,   140,     5,    43,    54,    55,
-      71,    72,   127,     6,    33,    36,     9,   218,    69,    70,
+     139,     3,     4,   223,   224,   140,     5,    43,    54,    55,
+      71,    72,   127,     6,    33,    36,     9,   219,    69,    70,
       71,    72,    69,    70,    71,    72,    44,   113,   128,    37,
      117,    38,   119,   131,   206,    69,    70,    71,    72,   136,
-      39,   198,    40,    41,   254,   255,   142,   144,   146,   148,
+      39,   198,    40,    41,   256,   257,   142,   144,   146,   148,
      149,   150,   151,   152,   153,   154,   155,    37,   158,   159,
-     160,   161,   162,    37,    21,    45,   114,   236,   116,   237,
+     160,   161,   162,    37,    21,    45,   114,   237,   116,   238,
       46,    22,    47,    48,    49,     2,    50,    51,     3,     4,
       52,    57,    41,     5,    76,   143,   145,   147,   115,   121,
        6,     7,     8,     9,   123,   156,   157,   131,   129,   141,
@@ -668,42 +669,45 @@ static const unsigned short yytable[] =
      197,   185,   187,   201,   188,   190,     6,     7,     8,     9,
       10,   189,   193,    11,    12,    13,   196,    14,    15,   191,
       16,   192,    17,    18,    19,   194,    20,   199,   200,   204,
-     209,    21,   211,   212,   213,   217,    10,   221,    22,    11,
-      12,    13,   225,    14,    15,   226,    16,   227,    17,    18,
-      19,   228,    20,   137,   229,   230,   231,    21,   232,   233,
-     203,   234,   235,   208,    22,   210,     3,     4,   238,   215,
-     241,     5,     3,     4,   245,   246,   219,     5,     6,    33,
-      36,     9,   249,   252,     6,     7,     8,     9,    73,    74,
-      75,    62,    63,    64,    65,    66,    67,    68,   253,   256,
-     257,   258,   259,   240,   260,   243,   244,   261,   262,   248,
-     250,   263,   265,   264,    10,   220,   266,    11,    12,    13,
-     132,    14,    15,    53,    16,     0,    17,    18,    19,    21,
-      20,   216,     3,     4,     0,    21,    22,     5,     0,     0,
-       0,     0,    22,     0,     6,    33,    36,     9,     0,   251,
-       0,     0,   138,    73,    74,    75,    62,    63,    64,    65,
-      66,    67,    68,    73,    74,    75,    62,    63,    64,    65,
-      66,    67,    68,     3,     4,     0,     0,     0,     5,    63,
-      64,    65,    66,    67,    68,     6,    33,     0,     9,   202,
-       0,     3,     4,     0,     0,    21,     5,     0,     0,     0,
-       3,     4,    22,     6,    33,     5,     9,   207,     0,     3,
-       4,     0,     6,    33,     5,     9,   214,   182,     3,     4,
-       0,     6,    33,     5,     9,   239,     0,   195,     0,     0,
-       6,    33,     0,     9,   242,     0,    21,     3,     4,     0,
-       0,     0,     5,     3,     4,     0,     0,     0,     5,     6,
-      33,     0,     9,   247,    21,     6,    33,     0,     9,     0,
-       0,     0,     0,    21,    61,    62,    63,    64,    65,    66,
-      67,    68,    21,     0,    77,     0,     0,     0,    78,    79,
-      80,    21,    81,    82,    83,    84,    85,     0,     0,    86,
-      87,    88,    89,     0,     0,    90,    91,    92,    93,     0,
-      21,     0,     0,     0,     0,    94,    21,   166,   167,   168,
-     169,   170,   171,   172,   173,   174,     0,     0,   176,   177,
-     178,   179,   180,    59,    60,    61,    62,    63,    64,    65,
-      66,    67,    68,    73,    74,    75,    62,    63,    64,    65,
-      66,    67,    68,    75,    62,    63,    64,    65,    66,    67,
-      68
+     209,    21,   212,   213,   214,   218,    10,   222,    22,    11,
+      12,    13,   226,    14,    15,   227,    16,   228,    17,    18,
+      19,   229,    20,   137,   230,   231,   232,    21,   233,   234,
+     203,   235,   236,   208,    22,   211,   239,     3,     4,   216,
+     242,   247,     5,     3,     4,   248,   220,   254,     5,     6,
+       7,     8,     9,   255,   258,     6,    33,    36,     9,   251,
+      73,    74,    75,    62,    63,    64,    65,    66,    67,    68,
+     259,   260,   261,   262,   241,   263,   244,   246,   264,    10,
+     250,   252,    11,    12,    13,   221,    14,    15,   265,    16,
+     266,    17,    18,    19,   267,    20,     3,     4,   268,    53,
+      21,     5,   132,   217,     0,     0,    21,    22,     6,    33,
+      36,     9,     0,    22,    63,    64,    65,    66,    67,    68,
+     253,     0,     0,     0,   138,    73,    74,    75,    62,    63,
+      64,    65,    66,    67,    68,    73,    74,    75,    62,    63,
+      64,    65,    66,    67,    68,     3,     4,     0,     0,     0,
+       5,     0,     0,     0,     0,     0,     0,     6,    33,    21,
+       9,   202,     3,     4,     0,     0,    22,     5,     3,     4,
+       0,     0,     0,     5,     6,    33,     0,     9,   207,     0,
+       6,    33,     0,     9,   210,     3,     4,     0,     0,   182,
+       5,     3,     4,     0,     0,     0,     5,     6,    33,   195,
+       9,   215,     0,     6,    33,     0,     9,   240,    21,     0,
+       0,     3,     4,     0,     0,     0,     5,     3,     4,     0,
+       0,     0,     5,     6,    33,    21,     9,   243,     0,     6,
+      33,    21,     9,   245,     3,     4,     0,     0,     0,     5,
+       3,     4,     0,     0,     0,     5,     6,    33,    21,     9,
+     249,     0,     6,    33,    21,     9,     0,     0,     0,     0,
+      77,     0,     0,     0,    78,    79,    80,     0,    81,    82,
+      83,    84,    85,     0,    21,    86,    87,    88,    89,     0,
+      21,    90,    91,    92,    93,     0,     0,     0,     0,     0,
+       0,    94,     0,     0,     0,     0,     0,    21,     0,     0,
+       0,     0,     0,    21,   166,   167,   168,   169,   170,   171,
+     172,   173,   174,     0,     0,   176,   177,   178,   179,   180,
+      59,    60,    61,    62,    63,    64,    65,    66,    67,    68,
+      73,    74,    75,    62,    63,    64,    65,    66,    67,    68,
+      61,    62,    63,    64,    65,    66,    67,    68,    75,    62,
+      63,    64,    65,    66,    67,    68
 };
 
-static const short yycheck[] =
+static const short int yycheck[] =
 {
        3,     4,     5,    24,    70,    16,    17,    16,    16,    16,
       69,     3,     4,    15,    16,    74,     8,    66,    21,    22,
@@ -723,36 +727,39 @@ static const short yycheck[] =
       16,    66,    16,    16,    16,    16,    45,    16,    73,    48,
       49,    50,     6,    52,    53,    70,    55,    70,    57,    58,
       59,    70,    61,    62,    70,    69,    71,    66,    70,    70,
-     183,     5,     5,   186,    73,   188,     3,     4,    16,   192,
-      16,     8,     3,     4,    51,    15,   199,     8,    15,    16,
-      17,    18,    19,    16,    15,    16,    17,    18,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12,    15,     6,
-      70,    72,     5,   226,     5,   228,   229,    16,    16,   232,
-     233,    16,     6,    15,    45,   199,    16,    48,    49,    50,
-      50,    52,    53,    20,    55,    -1,    57,    58,    59,    66,
-      61,   193,     3,     4,    -1,    66,    73,     8,    -1,    -1,
-      -1,    -1,    73,    -1,    15,    16,    17,    18,    -1,   233,
-      -1,    -1,    67,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,     3,     4,    -1,    -1,    -1,     8,     7,
-       8,     9,    10,    11,    12,    15,    16,    -1,    18,    19,
-      -1,     3,     4,    -1,    -1,    66,     8,    -1,    -1,    -1,
-       3,     4,    73,    15,    16,     8,    18,    19,    -1,     3,
-       4,    -1,    15,    16,     8,    18,    19,    67,     3,     4,
-      -1,    15,    16,     8,    18,    19,    -1,    67,    -1,    -1,
-      15,    16,    -1,    18,    19,    -1,    66,     3,     4,    -1,
-      -1,    -1,     8,     3,     4,    -1,    -1,    -1,     8,    15,
-      16,    -1,    18,    19,    66,    15,    16,    -1,    18,    -1,
-      -1,    -1,    -1,    66,     5,     6,     7,     8,     9,    10,
-      11,    12,    66,    -1,    16,    -1,    -1,    -1,    20,    21,
-      22,    66,    24,    25,    26,    27,    28,    -1,    -1,    31,
-      32,    33,    34,    -1,    -1,    37,    38,    39,    40,    -1,
-      66,    -1,    -1,    -1,    -1,    47,    66,    79,    80,    81,
-      82,    83,    84,    85,    86,    87,    -1,    -1,    90,    91,
-      92,    93,    94,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,     5,     6,     7,     8,     9,    10,    11,
-      12
+     183,     5,     5,   186,    73,   188,    16,     3,     4,   192,
+      16,    51,     8,     3,     4,    15,   199,    16,     8,    15,
+      16,    17,    18,    15,     6,    15,    16,    17,    18,    19,
+       3,     4,     5,     6,     7,     8,     9,    10,    11,    12,
+      70,    72,     5,     5,   227,    16,   229,   230,    16,    45,
+     233,   234,    48,    49,    50,   199,    52,    53,    16,    55,
+      15,    57,    58,    59,     6,    61,     3,     4,    16,    20,
+      66,     8,    50,   193,    -1,    -1,    66,    73,    15,    16,
+      17,    18,    -1,    73,     7,     8,     9,    10,    11,    12,
+     234,    -1,    -1,    -1,    67,     3,     4,     5,     6,     7,
+       8,     9,    10,    11,    12,     3,     4,     5,     6,     7,
+       8,     9,    10,    11,    12,     3,     4,    -1,    -1,    -1,
+       8,    -1,    -1,    -1,    -1,    -1,    -1,    15,    16,    66,
+      18,    19,     3,     4,    -1,    -1,    73,     8,     3,     4,
+      -1,    -1,    -1,     8,    15,    16,    -1,    18,    19,    -1,
+      15,    16,    -1,    18,    19,     3,     4,    -1,    -1,    67,
+       8,     3,     4,    -1,    -1,    -1,     8,    15,    16,    67,
+      18,    19,    -1,    15,    16,    -1,    18,    19,    66,    -1,
+      -1,     3,     4,    -1,    -1,    -1,     8,     3,     4,    -1,
+      -1,    -1,     8,    15,    16,    66,    18,    19,    -1,    15,
+      16,    66,    18,    19,     3,     4,    -1,    -1,    -1,     8,
+       3,     4,    -1,    -1,    -1,     8,    15,    16,    66,    18,
+      19,    -1,    15,    16,    66,    18,    -1,    -1,    -1,    -1,
+      16,    -1,    -1,    -1,    20,    21,    22,    -1,    24,    25,
+      26,    27,    28,    -1,    66,    31,    32,    33,    34,    -1,
+      66,    37,    38,    39,    40,    -1,    -1,    -1,    -1,    -1,
+      -1,    47,    -1,    -1,    -1,    -1,    -1,    66,    -1,    -1,
+      -1,    -1,    -1,    66,    79,    80,    81,    82,    83,    84,
+      85,    86,    87,    -1,    -1,    90,    91,    92,    93,    94,
+       3,     4,     5,     6,     7,     8,     9,    10,    11,    12,
+       3,     4,     5,     6,     7,     8,     9,    10,    11,    12,
+       5,     6,     7,     8,     9,    10,    11,    12,     5,     6,
+       7,     8,     9,    10,    11,    12
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -780,12 +787,12 @@ static const unsigned char yystos[] =
       97,    72,    67,    70,    70,    69,    70,    69,    70,    69,
       70,    70,    70,    69,    69,    67,   102,    77,     9,    70,
       69,    66,    19,   102,    16,    16,    51,    19,   102,    16,
-     102,    16,    16,    16,    19,   102,   110,    16,    19,   102,
-     104,    16,    15,    16,   100,     6,    70,    70,    70,    70,
-      69,    71,    70,    70,     5,     5,    67,    69,    16,    19,
-     102,    16,    19,   102,   102,    51,    15,    19,   102,    19,
-     102,   104,    16,    15,    15,    16,     6,    70,    72,     5,
-       5,    16,    16,    16,    15,     6,    16
+      19,   102,    16,    16,    16,    19,   102,   110,    16,    19,
+     102,   104,    16,    15,    16,   100,     6,    70,    70,    70,
+      70,    69,    71,    70,    70,     5,     5,    67,    69,    16,
+      19,   102,    16,    19,   102,    19,   102,    51,    15,    19,
+     102,    19,   102,   104,    16,    15,    15,    16,     6,    70,
+      72,     5,     5,    16,    16,    16,    15,     6,    16
 };
 
 #if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
@@ -839,19 +846,52 @@ do								\
     }								\
 while (0)
 
+
 #define YYTERROR	1
 #define YYERRCODE	256
 
-/* YYLLOC_DEFAULT -- Compute the default location (before the actions
-   are run).  */
 
+/* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
+   If N is 0, then set CURRENT to the empty location which ends
+   the previous symbol: RHS[0] (always defined).  */
+
+#define YYRHSLOC(Rhs, K) ((Rhs)[K])
 #ifndef YYLLOC_DEFAULT
-# define YYLLOC_DEFAULT(Current, Rhs, N)		\
-   ((Current).first_line   = (Rhs)[1].first_line,	\
-    (Current).first_column = (Rhs)[1].first_column,	\
-    (Current).last_line    = (Rhs)[N].last_line,	\
-    (Current).last_column  = (Rhs)[N].last_column)
+# define YYLLOC_DEFAULT(Current, Rhs, N)				\
+    do									\
+      if (N)								\
+	{								\
+	  (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;	\
+	  (Current).first_column = YYRHSLOC (Rhs, 1).first_column;	\
+	  (Current).last_line    = YYRHSLOC (Rhs, N).last_line;		\
+	  (Current).last_column  = YYRHSLOC (Rhs, N).last_column;	\
+	}								\
+      else								\
+	{								\
+	  (Current).first_line   = (Current).last_line   =		\
+	    YYRHSLOC (Rhs, 0).last_line;				\
+	  (Current).first_column = (Current).last_column =		\
+	    YYRHSLOC (Rhs, 0).last_column;				\
+	}								\
+    while (0)
 #endif
+
+
+/* YY_LOCATION_PRINT -- Print the location on the stream.
+   This macro was not mandated originally: define only if we know
+   we won't break user code: when these are the locations we know.  */
+
+#ifndef YY_LOCATION_PRINT
+# if YYLTYPE_IS_TRIVIAL
+#  define YY_LOCATION_PRINT(File, Loc)			\
+     fprintf (File, "%d.%d-%d.%d",			\
+              (Loc).first_line, (Loc).first_column,	\
+              (Loc).last_line,  (Loc).last_column)
+# else
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
+#endif
+
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
 
@@ -875,19 +915,13 @@ do {						\
     YYFPRINTF Args;				\
 } while (0)
 
-# define YYDSYMPRINT(Args)			\
-do {						\
-  if (yydebug)					\
-    yysymprint Args;				\
-} while (0)
-
-# define YYDSYMPRINTF(Title, Token, Value, Location)		\
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)		\
 do {								\
   if (yydebug)							\
     {								\
       YYFPRINTF (stderr, "%s ", Title);				\
       yysymprint (stderr, 					\
-                  Token, Value);	\
+                  Type, Value);	\
       YYFPRINTF (stderr, "\n");					\
     }								\
 } while (0)
@@ -899,12 +933,12 @@ do {								\
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yy_stack_print (short *bottom, short *top)
+yy_stack_print (short int *bottom, short int *top)
 #else
 static void
 yy_stack_print (bottom, top)
-    short *bottom;
-    short *top;
+    short int *bottom;
+    short int *top;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
@@ -954,8 +988,7 @@ do {					\
 int yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
-# define YYDSYMPRINT(Args)
-# define YYDSYMPRINTF(Title, Token, Value, Location)
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
@@ -972,10 +1005,6 @@ int yydebug;
    Do not make this value too large; the results are undefined if
    SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
-
-#if defined (YYMAXDEPTH) && YYMAXDEPTH == 0
-# undef YYMAXDEPTH
-#endif
 
 #ifndef YYMAXDEPTH
 # define YYMAXDEPTH 10000
@@ -1058,15 +1087,15 @@ yysymprint (yyoutput, yytype, yyvaluep)
   (void) yyvaluep;
 
   if (yytype < YYNTOKENS)
-    {
-      YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
-# ifdef YYPRINT
-      YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# endif
-    }
+    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
+
+# ifdef YYPRINT
+  if (yytype < YYNTOKENS)
+    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
+# endif
   switch (yytype)
     {
       default:
@@ -1082,16 +1111,21 @@ yysymprint (yyoutput, yytype, yyvaluep)
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yydestruct (int yytype, YYSTYPE *yyvaluep)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
 #else
 static void
-yydestruct (yytype, yyvaluep)
+yydestruct (yymsg, yytype, yyvaluep)
+    const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
 #endif
 {
   /* Pacify ``unused variable'' warnings.  */
   (void) yyvaluep;
+
+  if (!yymsg)
+    yymsg = "Deleting";
+  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   switch (yytype)
     {
@@ -1120,10 +1154,10 @@ int yyparse ();
 
 
 
-/* The lookahead symbol.  */
+/* The look-ahead symbol.  */
 int yychar;
 
-/* The semantic value of the lookahead symbol.  */
+/* The semantic value of the look-ahead symbol.  */
 YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
@@ -1159,7 +1193,7 @@ yyparse ()
   int yyresult;
   /* Number of tokens to shift before error messages enabled.  */
   int yyerrstatus;
-  /* Lookahead token as an internal (translated) token number.  */
+  /* Look-ahead token as an internal (translated) token number.  */
   int yytoken = 0;
 
   /* Three stacks and their tools:
@@ -1171,9 +1205,9 @@ yyparse ()
      to reallocate them elsewhere.  */
 
   /* The state stack.  */
-  short	yyssa[YYINITDEPTH];
-  short *yyss = yyssa;
-  register short *yyssp;
+  short int yyssa[YYINITDEPTH];
+  short int *yyss = yyssa;
+  register short int *yyssp;
 
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
@@ -1210,6 +1244,9 @@ yyparse ()
   yyssp = yyss;
   yyvsp = yyvs;
 
+
+  yyvsp[0] = yylval;
+
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -1235,7 +1272,7 @@ yyparse ()
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 
 
 	/* Each stack pointer address is followed by the size of the
@@ -1263,7 +1300,7 @@ yyparse ()
 	yystacksize = YYMAXDEPTH;
 
       {
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
@@ -1299,18 +1336,18 @@ yyparse ()
 yybackup:
 
 /* Do appropriate processing given the current state.  */
-/* Read a lookahead token if we need one and don't already have one.  */
+/* Read a look-ahead token if we need one and don't already have one.  */
 /* yyresume: */
 
-  /* First try to decide what to do without reference to lookahead token.  */
+  /* First try to decide what to do without reference to look-ahead token.  */
 
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a lookahead token if don't already have one.  */
+  /* Not known => get a look-ahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -1325,7 +1362,7 @@ yybackup:
   else
     {
       yytoken = YYTRANSLATE (yychar);
-      YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
+      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
     }
 
   /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -1345,8 +1382,8 @@ yybackup:
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  /* Shift the lookahead token.  */
-  YYDPRINTF ((stderr, "Shifting token %s, ", yytname[yytoken]));
+  /* Shift the look-ahead token.  */
+  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
   /* Discard the token being shifted unless it is eof.  */
   if (yychar != YYEOF)
@@ -1424,7 +1461,7 @@ yyreduce:
 
   case 8:
 #line 78 "parser.y"
-    {if( (yyvsp[-1].dval > 0) && (execute > 0) ) execute = 1; else execute = 0;;}
+    {if( ((yyvsp[-1].dval) > 0) && (execute > 0) ) execute = 1; else execute = 0;;}
     break;
 
   case 10:
@@ -1446,9 +1483,9 @@ yyreduce:
 #line 90 "parser.y"
     {
 	 if(execute)  {
-	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : marker\n",yyvsp[-2].symp->name);
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : marker\n",(yyvsp[-2].symp)->name);
 	   // check parameters and write into element table
-	   write_table(params,yyvsp[-2].symp->name,_MARKER);
+	   write_table(params,(yyvsp[-2].symp)->name,_MARKER);
 	   params.flush();
 	 }
        ;}
@@ -1458,9 +1495,9 @@ yyreduce:
 #line 99 "parser.y"
     {
 	 if(execute) {
-	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : drift\n",yyvsp[-2].symp->name);
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : drift\n",(yyvsp[-2].symp)->name);
 	   // check parameters and write into element table
-	   write_table(params,yyvsp[-2].symp->name,_DRIFT);
+	   write_table(params,(yyvsp[-2].symp)->name,_DRIFT);
 	   params.flush();
 	 }
        ;}
@@ -1470,9 +1507,9 @@ yyreduce:
 #line 108 "parser.y"
     {  
 	 if(execute) {
-	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : sbend\n",yyvsp[-2].symp->name);
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : sbend\n",(yyvsp[-2].symp)->name);
 	   // check parameters and write into element table
-	   write_table(params,yyvsp[-2].symp->name,_SBEND);
+	   write_table(params,(yyvsp[-2].symp)->name,_SBEND);
 	   params.flush();
 	 }
        ;}
@@ -1482,9 +1519,9 @@ yyreduce:
 #line 117 "parser.y"
     {  
 	 if(execute) {
-	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : vkick\n",yyvsp[-2].symp->name);
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : vkick\n",(yyvsp[-2].symp)->name);
 	   // check parameters and write into element table
-	   write_table(params,yyvsp[-2].symp->name,_VKICK);
+	   write_table(params,(yyvsp[-2].symp)->name,_VKICK);
 	   params.flush();
 	 }
        ;}
@@ -1494,9 +1531,9 @@ yyreduce:
 #line 126 "parser.y"
     {  
 	 if(execute) {
-	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : hkick\n",yyvsp[-2].symp->name);
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : hkick\n",(yyvsp[-2].symp)->name);
 	   // check parameters and write into element table
-	   write_table(params,yyvsp[-2].symp->name,_HKICK);
+	   write_table(params,(yyvsp[-2].symp)->name,_HKICK);
 	   params.flush();
 	 }
        ;}
@@ -1507,9 +1544,9 @@ yyreduce:
     {
 	 if(execute)       
 	   {
-	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : quad %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : quad %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_QUAD);
+	     write_table(params,(yyvsp[-2].symp)->name,_QUAD);
 	     params.flush();
 	   }
        ;}
@@ -1520,9 +1557,9 @@ yyreduce:
     {
 	 if(execute)
 	   {
-	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : sext %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : sext %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_SEXTUPOLE);
+	     write_table(params,(yyvsp[-2].symp)->name,_SEXTUPOLE);
 	     params.flush();
 	   }
        ;}
@@ -1533,9 +1570,9 @@ yyreduce:
     {
 	 if(execute)
 	   {
-	     if(ECHO_GRAMMAR) printf("VARIABLE : octupole %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("VARIABLE : octupole %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_OCTUPOLE);
+	     write_table(params,(yyvsp[-2].symp)->name,_OCTUPOLE);
 	     params.flush();
 	   }
        ;}
@@ -1546,9 +1583,9 @@ yyreduce:
     {
 	 if(execute)
 	   {
-	     if(ECHO_GRAMMAR) printf("VARIABLE : rcol %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("VARIABLE : rcol %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_RCOL);
+	     write_table(params,(yyvsp[-2].symp)->name,_RCOL);
 	     params.flush();
 	   }
        ;}
@@ -1559,9 +1596,9 @@ yyreduce:
     {
 	 if(execute)
 	   {
-	     if(ECHO_GRAMMAR) printf("VARIABLE : ecol %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("VARIABLE : ecol %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_ECOL);
+	     write_table(params,(yyvsp[-2].symp)->name,_ECOL);
 	     params.flush();
 	   }
        ;}
@@ -1572,9 +1609,9 @@ yyreduce:
     {
 	 if(execute)
 	   {	 
-	     if(ECHO_GRAMMAR) printf("VARIABLE : multipole %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("VARIABLE : multipole %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_MULT);
+	     write_table(params,(yyvsp[-2].symp)->name,_MULT);
 	     params.flush();	 
 	   }
        ;}
@@ -1585,9 +1622,9 @@ yyreduce:
     {
 	 if(execute)
 	   {	 
-	     if(ECHO_GRAMMAR) printf("VARIABLE : element %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("VARIABLE : element %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_ELEMENT);
+	     write_table(params,(yyvsp[-2].symp)->name,_ELEMENT);
 	     params.flush();	 
 	   }
        ;}
@@ -1598,9 +1635,9 @@ yyreduce:
     {
 	 if(execute)
 	   {	 
-	     if(ECHO_GRAMMAR) printf("VARIABLE : laser %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("VARIABLE : laser %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_LASER);
+	     write_table(params,(yyvsp[-2].symp)->name,_LASER);
 	     params.flush();	 
 	   }
        ;}
@@ -1611,9 +1648,9 @@ yyreduce:
     {
 	 if(execute)
 	   {	 
-	     if(ECHO_GRAMMAR) printf("VARIABLE : transform3d %s \n",yyvsp[-2].symp->name);
+	     if(ECHO_GRAMMAR) printf("VARIABLE : transform3d %s \n",(yyvsp[-2].symp)->name);
 	     // check parameters and write into element table
-	     write_table(params,yyvsp[-2].symp->name,_TRANSFORM3D);
+	     write_table(params,(yyvsp[-2].symp)->name,_TRANSFORM3D);
 	     params.flush();	 
 	   }
        ;}
@@ -1625,8 +1662,8 @@ yyreduce:
 	 if(execute)
 	   {
 	     // create entry in the main table and add pointer to the parsed sequence
-	     if(ECHO_GRAMMAR) printf("VARIABLE : LINE %s\n",yyvsp[-2].symp->name);
-	     write_table(params,yyvsp[-2].symp->name,_LINE,new list<struct Element>(tmp_list));
+	     if(ECHO_GRAMMAR) printf("VARIABLE : LINE %s\n",(yyvsp[-2].symp)->name);
+	     write_table(params,(yyvsp[-2].symp)->name,_LINE,new list<struct Element>(tmp_list));
 	     tmp_list.erase(tmp_list.begin(), tmp_list.end());
 	   }
        ;}
@@ -1646,10 +1683,10 @@ yyreduce:
     {
 	 if(execute)
 	   {
-	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : VARIABLE, %s  :  %s\n",yyvsp[-2].symp->name, typestr(yyvsp[0].ival));
-	     if(yyvsp[0].ival != _NONE)
+	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : VARIABLE, %s  :  %s\n",(yyvsp[-2].symp)->name, typestr((yyvsp[0].ival)));
+	     if((yyvsp[0].ival) != _NONE)
 	       {
-		 write_table(params,yyvsp[-2].symp->name,yyvsp[0].ival);
+		 write_table(params,(yyvsp[-2].symp)->name,(yyvsp[0].ival));
 	       }
 	     params.flush();
 	   }
@@ -1661,8 +1698,8 @@ yyreduce:
     {
 	 if(execute)
 	   {
-	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : Material, %s \n",yyvsp[-2].symp->name);
-	     write_table(params,yyvsp[-2].symp->name,_MATERIAL);
+	     if(ECHO_GRAMMAR) printf("decl -> VARIABLE : Material, %s \n",(yyvsp[-2].symp)->name);
+	     write_table(params,(yyvsp[-2].symp)->name,_MATERIAL);
 	     params.flush();
 	   }
        ;}
@@ -1680,17 +1717,17 @@ yyreduce:
     {
 	      if(execute)
 		{	 
-		  if(ECHO_GRAMMAR) printf("extension : VARIABLE parameters   -- %s \n",yyvsp[-1].symp->name);
-		  list<struct Element>::iterator it = element_lookup(yyvsp[-1].symp->name);
+		  if(ECHO_GRAMMAR) printf("extension : VARIABLE parameters   -- %s \n",(yyvsp[-1].symp)->name);
+		  list<struct Element>::iterator it = element_lookup((yyvsp[-1].symp)->name);
 		  if(it == NULL)
 		    {
-		      if(VERBOSE) printf("type %s has not been defined\n",yyvsp[-1].symp->name);
-		      yyval.ival = _NONE;
+		      if(VERBOSE) printf("type %s has not been defined\n",(yyvsp[-1].symp)->name);
+		      (yyval.ival) = _NONE;
 		    }
 		  else
 		    {
 		      // inherit properties from the base type
-		      yyval.ival = (*it).type;
+		      (yyval.ival) = (*it).type;
 		      inherit_properties(*it);
 		    }
 		  
@@ -1703,62 +1740,62 @@ yyreduce:
     {
 	      if(execute)
 		{
-		  if(DEBUG) printf("parameters, VARIABLE(%s) = aexpr(%.10g)\n",yyvsp[-2].symp->name,yyvsp[0].dval);
-		  if(!strcmp(yyvsp[-2].symp->name,"l")) { params.l = yyvsp[0].dval; params.lset = 1;} 
+		  if(DEBUG) printf("parameters, VARIABLE(%s) = aexpr(%.10g)\n",(yyvsp[-2].symp)->name,(yyvsp[0].dval));
+		  if(!strcmp((yyvsp[-2].symp)->name,"l")) { params.l = (yyvsp[0].dval); params.lset = 1;} 
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"k0")) { params.k0 = yyvsp[0].dval; params.k0set = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"k0")) { params.k0 = (yyvsp[0].dval); params.k0set = 1;}
 		    else 
-		  if(!strcmp(yyvsp[-2].symp->name,"k1")) { params.k1 = yyvsp[0].dval; params.k1set = 1;} 
+		  if(!strcmp((yyvsp[-2].symp)->name,"k1")) { params.k1 = (yyvsp[0].dval); params.k1set = 1;} 
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"k2")) { params.k2 = yyvsp[0].dval; params.k2set = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"k2")) { params.k2 = (yyvsp[0].dval); params.k2set = 1;}
 		    else 
-		  if(!strcmp(yyvsp[-2].symp->name,"k3")) { params.k3 = yyvsp[0].dval; params.k3set = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"k3")) { params.k3 = (yyvsp[0].dval); params.k3set = 1;}
 		    else 
-		  if(!strcmp(yyvsp[-2].symp->name,"angle")) { params.angle = yyvsp[0].dval; params.angleset = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"angle")) { params.angle = (yyvsp[0].dval); params.angleset = 1;}
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"aper") ||!strcmp(yyvsp[-2].symp->name,"aperture") ) 
-			      { params.aper = yyvsp[0].dval; params.aperset = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"aper") ||!strcmp((yyvsp[-2].symp)->name,"aperture") ) 
+			      { params.aper = (yyvsp[0].dval); params.aperset = 1;}
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"xsize") ) { params.xsize = yyvsp[0].dval; params.xsizeset = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"xsize") ) { params.xsize = (yyvsp[0].dval); params.xsizeset = 1;}
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"ysize") ) { params.ysize = yyvsp[0].dval; params.ysizeset = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"ysize") ) { params.ysize = (yyvsp[0].dval); params.ysizeset = 1;}
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"tilt")) { params.tilt = yyvsp[0].dval; params.tiltset = 1;}
+		  if(!strcmp((yyvsp[-2].symp)->name,"tilt")) { params.tilt = (yyvsp[0].dval); params.tiltset = 1;}
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"x")) {params.xdir = yyvsp[0].dval; params.xdirset = 1;} // x direction
+		  if(!strcmp((yyvsp[-2].symp)->name,"x")) {params.xdir = (yyvsp[0].dval); params.xdirset = 1;} // x direction
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"y")) {params.ydir = yyvsp[0].dval; params.ydirset = 1;} // y direction 
+		  if(!strcmp((yyvsp[-2].symp)->name,"y")) {params.ydir = (yyvsp[0].dval); params.ydirset = 1;} // y direction 
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"z")) {params.zdir = yyvsp[0].dval; params.zdirset = 1;} // z direction 
+		  if(!strcmp((yyvsp[-2].symp)->name,"z")) {params.zdir = (yyvsp[0].dval); params.zdirset = 1;} // z direction 
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"phi")) {params.phi = yyvsp[0].dval; params.phiset = 1;}  // polar angle
+		  if(!strcmp((yyvsp[-2].symp)->name,"phi")) {params.phi = (yyvsp[0].dval); params.phiset = 1;}  // polar angle
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"theta"))  {params.theta = yyvsp[0].dval; params.thetaset = 1;} 
+		  if(!strcmp((yyvsp[-2].symp)->name,"theta"))  {params.theta = (yyvsp[0].dval); params.thetaset = 1;} 
 		  // azimuthal angle
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"psi"))  {params.psi = yyvsp[0].dval; params.psiset = 1;} // 3rd  angle
+		  if(!strcmp((yyvsp[-2].symp)->name,"psi"))  {params.psi = (yyvsp[0].dval); params.psiset = 1;} // 3rd  angle
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"fint")) {;} // fringe field parameters
+		  if(!strcmp((yyvsp[-2].symp)->name,"fint")) {;} // fringe field parameters
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"fintx")) {;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"fintx")) {;}  //
                     else
-		  if(!strcmp(yyvsp[-2].symp->name,"e1")) {;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"e1")) {;}  //
                     else
-		  if(!strcmp(yyvsp[-2].symp->name,"e2")) {;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"e2")) {;}  //
                     else
-		  if(!strcmp(yyvsp[-2].symp->name,"hgap")) {;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"hgap")) {;}  //
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"density")) {;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"density")) {;}  //
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"A")) {params.A = yyvsp[0].dval; params.Aset = 1;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"A")) {params.A = (yyvsp[0].dval); params.Aset = 1;}  //
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"Z")) {params.Z = yyvsp[0].dval; params.Zset = 1;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"Z")) {params.Z = (yyvsp[0].dval); params.Zset = 1;}  //
 		    else
-		  if(!strcmp(yyvsp[-2].symp->name,"density")) {params.density = yyvsp[0].dval; params.densityset = 1;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"density")) {params.density = (yyvsp[0].dval); params.densityset = 1;}  //
                     else
-		  if(!strcmp(yyvsp[-2].symp->name,"T")) {params.temper = yyvsp[0].dval; params.temperset = 1;}  //
+		  if(!strcmp((yyvsp[-2].symp)->name,"T")) {params.temper = (yyvsp[0].dval); params.temperset = 1;}  //
 		    else
-		  if(VERBOSE) printf("Warning : unknown parameter %s\n",yyvsp[-2].symp->name);
+		  if(VERBOSE) printf("Warning : unknown parameter %s\n",(yyvsp[-2].symp)->name);
 		  
 		}
 	    ;}
@@ -1769,22 +1806,22 @@ yyreduce:
     {
 	       if(execute) 
 		 {
-		   if(DEBUG) printf("params,VARIABLE (%s) = vecexpr (%d)\n",yyvsp[-2].symp->name,yyvsp[0].array->size);
-		   if(!strcmp(yyvsp[-2].symp->name,"knl")) 
+		   if(DEBUG) printf("params,VARIABLE (%s) = vecexpr (%d)\n",(yyvsp[-2].symp)->name,(yyvsp[0].array)->size);
+		   if(!strcmp((yyvsp[-2].symp)->name,"knl")) 
 		     {
 		       params.knlset = 1;
-		       set_vector(params.knl,yyvsp[0].array);
-		       delete[] yyvsp[0].array->data;
+		       set_vector(params.knl,(yyvsp[0].array));
+		       delete[] (yyvsp[0].array)->data;
 		     } 
 		   else
-		     if(!strcmp(yyvsp[-2].symp->name,"ksl")) 
+		     if(!strcmp((yyvsp[-2].symp)->name,"ksl")) 
 		       {
 			 params.kslset = 1;
-			 set_vector(params.ksl,yyvsp[0].array);
-			 delete[] yyvsp[0].array->data;
+			 set_vector(params.ksl,(yyvsp[0].array));
+			 delete[] (yyvsp[0].array)->data;
 		       }
 		     else 	  
-		       if(VERBOSE) printf("unknown parameter %s\n",yyvsp[-2].symp->name);
+		       if(VERBOSE) printf("unknown parameter %s\n",(yyvsp[-2].symp)->name);
 		 }
 	     ;}
     break;
@@ -1794,22 +1831,22 @@ yyreduce:
     {
 	       if(execute) 
 		 {
-		   if(DEBUG) printf("VARIABLE (%s) = vecexpr\n",yyvsp[-2].symp->name);
-		   if(!strcmp(yyvsp[-2].symp->name,"knl")) 
+		   if(DEBUG) printf("VARIABLE (%s) = vecexpr\n",(yyvsp[-2].symp)->name);
+		   if(!strcmp((yyvsp[-2].symp)->name,"knl")) 
 		     {
 		       params.knlset = 1;
-		       set_vector(params.knl,yyvsp[0].array);
-		       delete[] yyvsp[0].array->data;
+		       set_vector(params.knl,(yyvsp[0].array));
+		       delete[] (yyvsp[0].array)->data;
 		     } 
 		   else
-		     if(!strcmp(yyvsp[-2].symp->name,"ksl")) 
+		     if(!strcmp((yyvsp[-2].symp)->name,"ksl")) 
 		       {
 			 params.kslset = 1;
-			 set_vector(params.ksl,yyvsp[0].array);
-			 delete[] yyvsp[0].array->data;
+			 set_vector(params.ksl,(yyvsp[0].array));
+			 delete[] (yyvsp[0].array)->data;
 		       }
 		     else 	  
-		       if(VERBOSE) printf("unknown parameter %s\n",yyvsp[-2].symp->name);
+		       if(VERBOSE) printf("unknown parameter %s\n",(yyvsp[-2].symp)->name);
 		 }         
 	     ;}
     break;
@@ -1819,7 +1856,7 @@ yyreduce:
     {
 	      if(execute)
 		{
-		  if(DEBUG) printf("VARIABLE (%s) = aexpr(%.10g)\n",yyvsp[-2].symp->name,yyvsp[0].dval);
+		  if(DEBUG) printf("VARIABLE (%s) = aexpr(%.10g)\n",(yyvsp[-2].symp)->name,(yyvsp[0].dval));
 		}
 	    ;}
     break;
@@ -1829,33 +1866,33 @@ yyreduce:
     {
 	       if(execute) 
 		 {
-		   if(DEBUG) printf("params,VARIABLE (%s) = str (%s)\n",yyvsp[-2].symp->name,yyvsp[0].str);
-		   if(!strcmp(yyvsp[-2].symp->name,"geometry")) 
+		   if(DEBUG) printf("params,VARIABLE (%s) = str (%s)\n",(yyvsp[-2].symp)->name,(yyvsp[0].str));
+		   if(!strcmp((yyvsp[-2].symp)->name,"geometry")) 
 		     {
 		       params.geomset = 1;
-		       strcpy(params.geometry, yyvsp[0].str);
+		       strcpy(params.geometry, (yyvsp[0].str));
 
 		     } 
 		   else
-		     if(!strcmp(yyvsp[-2].symp->name,"bmap")) 
+		     if(!strcmp((yyvsp[-2].symp)->name,"bmap")) 
 		       {
 			 params.geomset = 1;
-			 strcpy(params.bmap, yyvsp[0].str);
+			 strcpy(params.bmap, (yyvsp[0].str));
 		       }
 		   else 
-		     if(!strcmp(yyvsp[-2].symp->name,"type")) 
+		     if(!strcmp((yyvsp[-2].symp)->name,"type")) 
 		       {
 			 //ignore the "type attribute for the moment"
 		       }
 		   else
-		   if(!strcmp(yyvsp[-2].symp->name,"material")) 
+		   if(!strcmp((yyvsp[-2].symp)->name,"material")) 
 		       {
 			 params.materialset = 1;
-			 strcpy(params.material, yyvsp[0].str);
+			 strcpy(params.material, (yyvsp[0].str));
 		       }
 		     else 
 		     	  
-		       if(VERBOSE) printf("unknown parameter %s\n",yyvsp[-2].symp->name);
+		       if(VERBOSE) printf("unknown parameter %s\n",(yyvsp[-2].symp)->name);
 		 }
 	     ;}
     break;
@@ -1865,32 +1902,32 @@ yyreduce:
     {
 	       if(execute) 
 		 {
-		   if(DEBUG) printf("VARIABLE (%s) = str\n",yyvsp[-2].symp->name);
-		   if(!strcmp(yyvsp[-2].symp->name,"geometry")) 
+		   if(DEBUG) printf("VARIABLE (%s) = str\n",(yyvsp[-2].symp)->name);
+		   if(!strcmp((yyvsp[-2].symp)->name,"geometry")) 
 		     {
 		       params.geomset = 1;
-		       strcpy(params.geometry, yyvsp[0].str);
+		       strcpy(params.geometry, (yyvsp[0].str));
 		       
 		     } 
 		   else
-		     if(!strcmp(yyvsp[-2].symp->name,"bmap")) 
+		     if(!strcmp((yyvsp[-2].symp)->name,"bmap")) 
 		       {
 			 params.geomset = 1;
-			 strcpy(params.bmap, yyvsp[0].str);
+			 strcpy(params.bmap, (yyvsp[0].str));
 		       }
 		     else 
-		     if(!strcmp(yyvsp[-2].symp->name,"type")) 
+		     if(!strcmp((yyvsp[-2].symp)->name,"type")) 
 		       {
 			 //ignore the "type attribute for the moment"
 		       }
 		   else
-		     if(!strcmp(yyvsp[-2].symp->name,"material")) 
+		     if(!strcmp((yyvsp[-2].symp)->name,"material")) 
 		       {	 
 			 params.materialset = 1;
-			 strcpy(params.material, yyvsp[0].str);
+			 strcpy(params.material, (yyvsp[0].str));
 		       }
 		     else 
-		       if(VERBOSE) printf("unknown parameter %s\n",yyvsp[-2].symp->name);
+		       if(VERBOSE) printf("unknown parameter %s\n",(yyvsp[-2].symp)->name);
 		 }         
 	     ;}
     break;
@@ -1900,11 +1937,11 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched sequence element, %s\n",yyvsp[0].symp->name);
+		    if(DEBUG) printf("matched sequence element, %s\n",(yyvsp[0].symp)->name);
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
-		      e.name = yyvsp[0].symp->name;
+		      e.name = (yyvsp[0].symp)->name;
 		      e.type = _LINE;
 		      e.lst = NULL;
 		      tmp_list.push_back(e);
@@ -1918,14 +1955,14 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched sequence element, %s * %d \n",yyvsp[-2].symp->name,(int)yyvsp[0].dval);
+		    if(DEBUG) printf("matched sequence element, %s * %d \n",(yyvsp[-2].symp)->name,(int)(yyvsp[0].dval));
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
-		      e.name = yyvsp[-2].symp->name;
+		      e.name = (yyvsp[-2].symp)->name;
 		      e.type = _LINE;
 		      e.lst = NULL;
-		      for(int i=0;i<(int)yyvsp[0].dval;i++)
+		      for(int i=0;i<(int)(yyvsp[0].dval);i++)
 			tmp_list.push_back(e);
 		    }
 		  }
@@ -1937,14 +1974,14 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched sequence element, %s * %d \n",yyvsp[0].symp->name,(int)yyvsp[-2].dval);
+		    if(DEBUG) printf("matched sequence element, %s * %d \n",(yyvsp[0].symp)->name,(int)(yyvsp[-2].dval));
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
-		      e.name = yyvsp[0].symp->name;
+		      e.name = (yyvsp[0].symp)->name;
 		      e.type = _LINE;
 		      e.lst = NULL;
-		      for(int i=0;i<(int)yyvsp[-2].dval;i++)
+		      for(int i=0;i<(int)(yyvsp[-2].dval);i++)
 			tmp_list.push_back(e);
 		    }
 		  }
@@ -1956,11 +1993,11 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched last sequence element, %s\n",yyvsp[0].symp->name);
+		    if(DEBUG) printf("matched last sequence element, %s\n",(yyvsp[0].symp)->name);
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
-		      e.name = yyvsp[0].symp->name;
+		      e.name = (yyvsp[0].symp)->name;
 		      e.type = _LINE;
 		      e.lst = NULL;
 		      tmp_list.push_back(e);
@@ -1974,14 +2011,14 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched last sequence element, %s * %d\n",yyvsp[-2].symp->name,(int)yyvsp[0].dval);
+		    if(DEBUG) printf("matched last sequence element, %s * %d\n",(yyvsp[-2].symp)->name,(int)(yyvsp[0].dval));
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
-		      e.name = yyvsp[-2].symp->name;
+		      e.name = (yyvsp[-2].symp)->name;
 		      e.type = _LINE;
 		      e.lst = NULL;
-		      for(int i=0;i<(int)yyvsp[0].dval;i++)
+		      for(int i=0;i<(int)(yyvsp[0].dval);i++)
 			tmp_list.push_back(e);
 		    }
 		  }
@@ -1993,14 +2030,14 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    if(DEBUG) printf("matched last sequence element, %s * %d\n",yyvsp[0].symp->name,(int)yyvsp[-2].dval);
+		    if(DEBUG) printf("matched last sequence element, %s * %d\n",(yyvsp[0].symp)->name,(int)(yyvsp[-2].dval));
 		    // add to temporary element sequence
 		    {
 		      struct Element e;
-		      e.name = yyvsp[0].symp->name;
+		      e.name = (yyvsp[0].symp)->name;
 		      e.type = _LINE;
 		      e.lst = NULL;
-		      for(int i=0;i<(int)yyvsp[-2].dval;i++)
+		      for(int i=0;i<(int)(yyvsp[-2].dval);i++)
 			tmp_list.push_back(e);
 		    }
 		  }
@@ -2013,7 +2050,7 @@ yyreduce:
 	 if(ECHO_GRAMMAR) printf("expr -> aexpr\n");
 	 if(execute) 
 	   {
-	     if(INTERACTIVE) printf ("\t%.10g\n", yyvsp[0].dval); yyval.dval=yyvsp[0].dval;
+	     if(INTERACTIVE) printf ("\t%.10g\n", (yyvsp[0].dval)); (yyval.dval)=(yyvsp[0].dval);
 	   }
        ;}
     break;
@@ -2025,11 +2062,11 @@ yyreduce:
 	 if(execute)
 	   {
 	     if(INTERACTIVE)
-	       for(int i=0;i<yyvsp[0].array->size;i++)
+	       for(int i=0;i<(yyvsp[0].array)->size;i++)
 		 {
-		   printf(" %.10g ",yyvsp[0].array->data[i]);
+		   printf(" %.10g ",(yyvsp[0].array)->data[i]);
 		 }
-	     yyval.dval = 0;
+	     (yyval.dval) = 0;
 	   } 
        ;}
     break;
@@ -2041,140 +2078,140 @@ yyreduce:
 	 if(execute)
 	   {
 	     if(INTERACTIVE) {
-	       if(yyvsp[0].symp->type == _ARRAY)
+	       if((yyvsp[0].symp)->type == _ARRAY)
 		 {
-		   for(list<double>::iterator it = yyvsp[0].symp->array.begin();
-		       it!=yyvsp[0].symp->array.end();it++)
+		   for(list<double>::iterator it = (yyvsp[0].symp)->array.begin();
+		       it!=(yyvsp[0].symp)->array.end();it++)
 		     printf ("\t%.10g", (*it));
 		   printf("\n");
 		 }
 	       else
-		 printf ("\t%.10g\n", yyvsp[0].symp->value);
+		 printf ("\t%.10g\n", (yyvsp[0].symp)->value);
 	     } 
-	     yyval.dval=0;
+	     (yyval.dval)=0;
 	   }
        ;}
     break;
 
   case 66:
 #line 659 "parser.y"
-    { yyval.dval = yyvsp[0].dval;                         ;}
+    { (yyval.dval) = (yyvsp[0].dval);                         ;}
     break;
 
   case 67:
 #line 661 "parser.y"
     { 
 	   //check type ??
-	   yyval.dval = yyvsp[0].symp->value;        
+	   (yyval.dval) = (yyvsp[0].symp)->value;        
           ;}
     break;
 
   case 68:
 #line 665 "parser.y"
-    { yyval.dval = (*(yyvsp[-3].symp->funcptr))(yyvsp[-1].dval);       ;}
+    { (yyval.dval) = (*((yyvsp[-3].symp)->funcptr))((yyvsp[-1].dval));       ;}
     break;
 
   case 69:
 #line 666 "parser.y"
-    { yyval.dval = yyvsp[-2].dval + yyvsp[0].dval;                    ;}
+    { (yyval.dval) = (yyvsp[-2].dval) + (yyvsp[0].dval);                    ;}
     break;
 
   case 70:
 #line 667 "parser.y"
-    { yyval.dval = yyvsp[-2].dval - yyvsp[0].dval;                    ;}
+    { (yyval.dval) = (yyvsp[-2].dval) - (yyvsp[0].dval);                    ;}
     break;
 
   case 71:
 #line 668 "parser.y"
-    { yyval.dval = yyvsp[-2].dval * yyvsp[0].dval;                    ;}
+    { (yyval.dval) = (yyvsp[-2].dval) * (yyvsp[0].dval);                    ;}
     break;
 
   case 72:
 #line 669 "parser.y"
-    { yyval.dval = yyvsp[-2].dval / yyvsp[0].dval;                    ;}
+    { (yyval.dval) = (yyvsp[-2].dval) / (yyvsp[0].dval);                    ;}
     break;
 
   case 73:
 #line 670 "parser.y"
-    { yyval.dval = pow(yyvsp[-2].dval,yyvsp[0].dval);                 ;}
+    { (yyval.dval) = pow((yyvsp[-2].dval),(yyvsp[0].dval));                 ;}
     break;
 
   case 74:
 #line 671 "parser.y"
-    { yyval.dval = -yyvsp[0].dval; ;}
+    { (yyval.dval) = -(yyvsp[0].dval); ;}
     break;
 
   case 75:
 #line 672 "parser.y"
-    { yyval.dval = yyvsp[0].dval; ;}
+    { (yyval.dval) = (yyvsp[0].dval); ;}
     break;
 
   case 76:
 #line 673 "parser.y"
-    { yyval.dval = yyvsp[-1].dval;                         ;}
+    { (yyval.dval) = (yyvsp[-1].dval);                         ;}
     break;
 
   case 77:
 #line 675 "parser.y"
     {
-	   if(yyvsp[-3].array->size == yyvsp[-1].array->size)
+	   if((yyvsp[-3].array)->size == (yyvsp[-1].array)->size)
 	     {
-	       yyval.dval = 0;
-	       for(int i=0;i<yyvsp[-3].array->size;i++)
-		 yyval.dval += yyvsp[-3].array->data[i] * yyvsp[-1].array->data[i];
+	       (yyval.dval) = 0;
+	       for(int i=0;i<(yyvsp[-3].array)->size;i++)
+		 (yyval.dval) += (yyvsp[-3].array)->data[i] * (yyvsp[-1].array)->data[i];
 	     }
 	   else
 	     {
 	       if(VERBOSE) printf("vector dimensions do not match");
-	       yyval.dval = _undefined;
+	       (yyval.dval) = _undefined;
 	     }
          ;}
     break;
 
   case 78:
 #line 689 "parser.y"
-    { yyval.dval = (yyvsp[-2].dval < yyvsp[0].dval )? 1 : 0; ;}
+    { (yyval.dval) = ((yyvsp[-2].dval) < (yyvsp[0].dval) )? 1 : 0; ;}
     break;
 
   case 79:
 #line 690 "parser.y"
-    { yyval.dval = (yyvsp[-2].dval <= yyvsp[0].dval )? 1 : 0; ;}
+    { (yyval.dval) = ((yyvsp[-2].dval) <= (yyvsp[0].dval) )? 1 : 0; ;}
     break;
 
   case 80:
 #line 691 "parser.y"
-    { yyval.dval = (yyvsp[-2].dval > yyvsp[0].dval )? 1 : 0; ;}
+    { (yyval.dval) = ((yyvsp[-2].dval) > (yyvsp[0].dval) )? 1 : 0; ;}
     break;
 
   case 81:
 #line 692 "parser.y"
-    { yyval.dval = (yyvsp[-2].dval >= yyvsp[0].dval )? 1 : 0; ;}
+    { (yyval.dval) = ((yyvsp[-2].dval) >= (yyvsp[0].dval) )? 1 : 0; ;}
     break;
 
   case 82:
 #line 693 "parser.y"
-    { yyval.dval = (yyvsp[-2].dval != yyvsp[0].dval )? 1 : 0; ;}
+    { (yyval.dval) = ((yyvsp[-2].dval) != (yyvsp[0].dval) )? 1 : 0; ;}
     break;
 
   case 83:
 #line 695 "parser.y"
     { 
-	    if(ECHO_GRAMMAR) printf("aexpr-> %s [ %s ]\n ",yyvsp[-3].symp->name, yyvsp[-1].symp->name); 
-	    yyval.dval = property_lookup(yyvsp[-3].symp->name,yyvsp[-1].symp->name);
+	    if(ECHO_GRAMMAR) printf("aexpr-> %s [ %s ]\n ",(yyvsp[-3].symp)->name, (yyvsp[-1].symp)->name); 
+	    (yyval.dval) = property_lookup((yyvsp[-3].symp)->name,(yyvsp[-1].symp)->name);
 	  ;}
     break;
 
   case 84:
 #line 702 "parser.y"
     {
-		if(ECHO_GRAMMAR) printf("%s \n",yyvsp[-2].symp->name);
+		if(ECHO_GRAMMAR) printf("%s \n",(yyvsp[-2].symp)->name);
 		if(execute)
 		  {
-		    if(yyvsp[-2].symp->is_reserved)
-		      printf("%s is reserved",yyvsp[-2].symp->name);
+		    if((yyvsp[-2].symp)->is_reserved)
+		      printf("%s is reserved",(yyvsp[-2].symp)->name);
 		    else
 		      {
-			yyvsp[-2].symp->value = yyvsp[0].dval; yyval.symp=yyvsp[-2].symp;       
+			(yyvsp[-2].symp)->value = (yyvsp[0].dval); (yyval.symp)=(yyvsp[-2].symp);       
 		      }
 		  }
 	      ;}
@@ -2185,13 +2222,13 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    yyvsp[-2].symp->array.erase(yyvsp[-2].symp->array.begin(),yyvsp[-2].symp->array.end());
-		    for(int i=0;i<yyvsp[0].array->size;i++)
-		      yyvsp[-2].symp->array.push_back(yyvsp[0].array->data[i]);
-		    yyvsp[-2].symp->type = _ARRAY;
-		    yyval.symp = yyvsp[-2].symp;
-		    delete[] yyvsp[0].array->data;
-		    yyvsp[0].array->size = 0;
+		    (yyvsp[-2].symp)->array.erase((yyvsp[-2].symp)->array.begin(),(yyvsp[-2].symp)->array.end());
+		    for(int i=0;i<(yyvsp[0].array)->size;i++)
+		      (yyvsp[-2].symp)->array.push_back((yyvsp[0].array)->data[i]);
+		    (yyvsp[-2].symp)->type = _ARRAY;
+		    (yyval.symp) = (yyvsp[-2].symp);
+		    delete[] (yyvsp[0].array)->data;
+		    (yyvsp[0].array)->size = 0;
 		  }
               ;}
     break;
@@ -2201,12 +2238,12 @@ yyreduce:
     {
 		if(execute)
 		  {
-		    yyvsp[-2].symp->array.erase(yyvsp[-2].symp->array.begin(),yyvsp[-2].symp->array.end());
-		    for(int i=0;i<yyvsp[0].array->size;i++)
-		      yyvsp[-2].symp->array.push_back(yyvsp[0].array->data[i]);
-		    yyval.symp = yyvsp[-2].symp;
-		    delete[] yyvsp[0].array->data;
-		    yyvsp[0].array->size = 0;
+		    (yyvsp[-2].symp)->array.erase((yyvsp[-2].symp)->array.begin(),(yyvsp[-2].symp)->array.end());
+		    for(int i=0;i<(yyvsp[0].array)->size;i++)
+		      (yyvsp[-2].symp)->array.push_back((yyvsp[0].array)->data[i]);
+		    (yyval.symp) = (yyvsp[-2].symp);
+		    delete[] (yyvsp[0].array)->data;
+		    (yyvsp[0].array)->size = 0;
 		  }
               ;}
     break;
@@ -2216,15 +2253,15 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->data = new double[yyvsp[0].symp->array.size()];
-	      yyval.array->size = yyvsp[0].symp->array.size();
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->data = new double[(yyvsp[0].symp)->array.size()];
+	      (yyval.array)->size = (yyvsp[0].symp)->array.size();
 	      //array_list.push_back($$);
 	      list<double>::iterator it = 0;
 	      int i = 0;
-	      for(it=yyvsp[0].symp->array.begin();it!=yyvsp[0].symp->array.end();it++)
+	      for(it=(yyvsp[0].symp)->array.begin();it!=(yyvsp[0].symp)->array.end();it++)
 		{
-		  yyval.array->data[i++] = (*it);
+		  (yyval.array)->data[i++] = (*it);
 		}
 	    }
         ;}
@@ -2235,21 +2272,21 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->data = new double[yyvsp[0].array->size];
-	      yyval.array->size = yyvsp[0].array->size;
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->data = new double[(yyvsp[0].array)->size];
+	      (yyval.array)->size = (yyvsp[0].array)->size;
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyvsp[0].array->size;i++)
+	      for(int i=0;i<(yyvsp[0].array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[0].array->data[i];
+		  (yyval.array)->data[i] = (yyvsp[0].array)->data[i];
 		}
 	      
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[0].array->data;
-	      yyvsp[0].array->size = 0;
+	      delete[] (yyvsp[0].array)->data;
+	      (yyvsp[0].array)->size = 0;
 	    }
 	;}
     break;
@@ -2259,23 +2296,23 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = (yyvsp[-2].array->size < yyvsp[0].array->size )? yyvsp[-2].array->size : yyvsp[0].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = ((yyvsp[-2].array)->size < (yyvsp[0].array)->size )? (yyvsp[-2].array)->size : (yyvsp[0].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[-2].array->data[i] + yyvsp[0].array->data[i];
+		  (yyval.array)->data[i] = (yyvsp[-2].array)->data[i] + (yyvsp[0].array)->data[i];
 		}
 	      
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[-2].array->data;
-	      delete[] yyvsp[0].array->data;
-	      yyvsp[-2].array->size = 0;
-	      yyvsp[0].array->size = 0;
+	      delete[] (yyvsp[-2].array)->data;
+	      delete[] (yyvsp[0].array)->data;
+	      (yyvsp[-2].array)->size = 0;
+	      (yyvsp[0].array)->size = 0;
 	    }
         ;}
     break;
@@ -2285,23 +2322,23 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = (yyvsp[-2].array->size < yyvsp[0].array->size )? yyvsp[-2].array->size : yyvsp[0].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = ((yyvsp[-2].array)->size < (yyvsp[0].array)->size )? (yyvsp[-2].array)->size : (yyvsp[0].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[-2].array->data[i] - yyvsp[0].array->data[i];
+		  (yyval.array)->data[i] = (yyvsp[-2].array)->data[i] - (yyvsp[0].array)->data[i];
 		}
 	      
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[-2].array->data;
-	      delete[] yyvsp[0].array->data;
-	      yyvsp[-2].array->size = 0;
-	      yyvsp[0].array->size = 0;
+	      delete[] (yyvsp[-2].array)->data;
+	      delete[] (yyvsp[0].array)->data;
+	      (yyvsp[-2].array)->size = 0;
+	      (yyvsp[0].array)->size = 0;
 	    }
 	;}
     break;
@@ -2311,20 +2348,20 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = yyvsp[-2].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = (yyvsp[-2].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[-2].array->data[i] + yyvsp[0].dval;
+		  (yyval.array)->data[i] = (yyvsp[-2].array)->data[i] + (yyvsp[0].dval);
 		}
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[-2].array->data;
-	      yyvsp[-2].array->size = 0;
+	      delete[] (yyvsp[-2].array)->data;
+	      (yyvsp[-2].array)->size = 0;
 	    }
 	;}
     break;
@@ -2334,20 +2371,20 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = yyvsp[-2].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = (yyvsp[-2].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[-2].array->data[i] * yyvsp[0].dval;
+		  (yyval.array)->data[i] = (yyvsp[-2].array)->data[i] * (yyvsp[0].dval);
 		}
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[-2].array->data;
-	      yyvsp[-2].array->size = 0;
+	      delete[] (yyvsp[-2].array)->data;
+	      (yyvsp[-2].array)->size = 0;
 	    }
 	;}
     break;
@@ -2357,20 +2394,20 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = yyvsp[-2].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = (yyvsp[-2].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[-2].array->data[i] / yyvsp[0].dval;
+		  (yyval.array)->data[i] = (yyvsp[-2].array)->data[i] / (yyvsp[0].dval);
 		}
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[-2].array->data;
-	      yyvsp[-2].array->size = 0;
+	      delete[] (yyvsp[-2].array)->data;
+	      (yyvsp[-2].array)->size = 0;
 	    }
 	;}
     break;
@@ -2380,20 +2417,20 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = yyvsp[0].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = (yyvsp[0].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[0].array->data[i] + yyvsp[-2].dval;
+		  (yyval.array)->data[i] = (yyvsp[0].array)->data[i] + (yyvsp[-2].dval);
 		}
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[0].array->data;
-	      yyvsp[0].array->size = 0;
+	      delete[] (yyvsp[0].array)->data;
+	      (yyvsp[0].array)->size = 0;
 	    }
 	;}
     break;
@@ -2403,20 +2440,20 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = yyvsp[0].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = (yyvsp[0].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[-2].dval - yyvsp[0].array->data[i];
+		  (yyval.array)->data[i] = (yyvsp[-2].dval) - (yyvsp[0].array)->data[i];
 		}
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[0].array->data;
-	      yyvsp[0].array->size = 0;
+	      delete[] (yyvsp[0].array)->data;
+	      (yyvsp[0].array)->size = 0;
 	    }
 	;}
     break;
@@ -2426,20 +2463,20 @@ yyreduce:
     {
 	  if(execute)
 	    {
-	      yyval.array = new struct Array;
-	      yyval.array->size = yyvsp[0].array->size;
-	      yyval.array->data = new double[yyval.array->size];
+	      (yyval.array) = new struct Array;
+	      (yyval.array)->size = (yyvsp[0].array)->size;
+	      (yyval.array)->data = new double[(yyval.array)->size];
 	      //array_list.push_back($$);
 	      
-	      for(int i=0;i<yyval.array->size;i++)
+	      for(int i=0;i<(yyval.array)->size;i++)
 		{
-		  yyval.array->data[i] = yyvsp[-2].dval * yyvsp[0].array->data[i];
+		  (yyval.array)->data[i] = (yyvsp[-2].dval) * (yyvsp[0].array)->data[i];
 		}
 	      
 	      // erase data in vect
 	      
-	      delete[] yyvsp[0].array->data;
-	      yyvsp[0].array->size = 0;
+	      delete[] (yyvsp[0].array)->data;
+	      (yyvsp[0].array)->size = 0;
 	    }
 	;}
     break;
@@ -2450,9 +2487,9 @@ yyreduce:
   if(execute)
     {
       //printf("matched vector of size %d\n",_tmparray.size());
-      yyval.array = new struct Array;
-      yyval.array->data = new double[_tmparray.size()];
-      yyval.array->size = _tmparray.size();
+      (yyval.array) = new struct Array;
+      (yyval.array)->data = new double[_tmparray.size()];
+      (yyval.array)->size = _tmparray.size();
       
       //array_list.push_back(a);
       
@@ -2461,7 +2498,7 @@ yyreduce:
       int i=0;
       for(it=_tmparray.begin();it!=_tmparray.end();it++)
 	{
-	  yyval.array->data[i++] = (*it);
+	  (yyval.array)->data[i++] = (*it);
 	}
       
       _tmparray.erase(_tmparray.begin(),_tmparray.end());
@@ -2473,7 +2510,7 @@ yyreduce:
 #line 974 "parser.y"
     {
 	    if(execute)
-	      _tmparray.push_back(yyvsp[0].dval);
+	      _tmparray.push_back((yyvsp[0].dval));
           ;}
     break;
 
@@ -2481,7 +2518,7 @@ yyreduce:
 #line 979 "parser.y"
     {
 	   if(execute)
-	     _tmparray.push_back(yyvsp[0].dval);
+	     _tmparray.push_back((yyvsp[0].dval));
         ;}
     break;
 
@@ -2511,7 +2548,7 @@ yyreduce:
 	    if(execute)
 	      {
 		printf("\t");
-		printf("\t%.10g\n",yyvsp[0].symp->value);
+		printf("\t%.10g\n",(yyvsp[0].symp)->value);
 	      }
 	  ;}
     break;
@@ -2524,7 +2561,7 @@ yyreduce:
 		printf("\t");
 		
 		list<double>::iterator it;
-		for(it=yyvsp[0].symp->array.begin();it!=yyvsp[0].symp->array.end();it++)
+		for(it=(yyvsp[0].symp)->array.begin();it!=(yyvsp[0].symp)->array.end();it++)
 		  {
 		    printf("  %.10g ",(*it));
 		  }
@@ -2541,7 +2578,7 @@ yyreduce:
 
   case 110:
 #line 1015 "parser.y"
-    { if(execute) printf("%s\n",yyvsp[0].str); ;}
+    { if(execute) printf("%s\n",(yyvsp[0].str)); ;}
     break;
 
   case 111:
@@ -2550,7 +2587,7 @@ yyreduce:
 	    if(execute)
 	      {  
 		if(ECHO_GRAMMAR) printf("command -> SAMPLE\n");
-		add_sampler("sampler",yyvsp[0].symp->name, element_count);
+		add_sampler("sampler",(yyvsp[0].symp)->name, element_count);
 		element_count = 1;
 		params.flush();
 	      }
@@ -2563,7 +2600,7 @@ yyreduce:
 	    if(execute)
 	      {  
 		if(ECHO_GRAMMAR) printf("command -> CSAMPLE\n");
-		add_csampler("sampler",yyvsp[0].symp->name, element_count,params.l, params.r);
+		add_csampler("sampler",(yyvsp[0].symp)->name, element_count,params.l, params.r);
 		element_count = 1;
 		params.flush();
 	      }
@@ -2576,7 +2613,7 @@ yyreduce:
 	    if(execute)
 	      {  
 		if(ECHO_GRAMMAR) printf("command -> GAS\n");
-		add_gas("gas",yyvsp[0].symp->name, element_count, params.material);
+		add_gas("gas",(yyvsp[0].symp)->name, element_count, params.material);
 		element_count = 1;
 		params.flush();
 	      }
@@ -2588,8 +2625,8 @@ yyreduce:
     {
 		    if(execute)
 		      {
-			yyval.str = yyvsp[0].symp->name;
-			current_line = yyvsp[0].symp->name;
+			(yyval.str) = (yyvsp[0].symp)->name;
+			current_line = (yyvsp[0].symp)->name;
 			current_start = NULL;
 			current_end = NULL;
 		      }
@@ -2601,19 +2638,19 @@ yyreduce:
     {
 		    if(execute)
 		      {
-			yyval.str = yyvsp[-6].symp->name;
-			current_line = yyvsp[-6].symp->name;
-			current_start = yyvsp[-2].symp->name;
-			current_end = yyvsp[0].symp->name;
+			(yyval.str) = (yyvsp[-6].symp)->name;
+			current_line = (yyvsp[-6].symp)->name;
+			current_start = (yyvsp[-2].symp)->name;
+			current_end = (yyvsp[0].symp)->name;
 		      }
 		  ;}
     break;
 
   case 116:
 #line 1075 "parser.y"
-    { if(ECHO_GRAMMAR)  printf("sample_opt : RANGE =  %s \n",yyvsp[0].symp->name);
+    { if(ECHO_GRAMMAR)  printf("sample_opt : RANGE =  %s \n",(yyvsp[0].symp)->name);
 		  {
-		    if(execute) yyval.symp = yyvsp[0].symp;
+		    if(execute) (yyval.symp) = (yyvsp[0].symp);
 		  }
                 ;}
     break;
@@ -2621,9 +2658,9 @@ yyreduce:
   case 117:
 #line 1081 "parser.y"
     {
-                  if(ECHO_GRAMMAR) printf("sample_opt : RANGE =  %s [%.10g] \n",yyvsp[-3].symp->name,yyvsp[-1].dval);
+                  if(ECHO_GRAMMAR) printf("sample_opt : RANGE =  %s [%.10g] \n",(yyvsp[-3].symp)->name,(yyvsp[-1].dval));
 		    {
-		      if(execute) { yyval.symp = yyvsp[-3].symp; element_count = (int)yyvsp[-1].dval; }
+		      if(execute) { (yyval.symp) = (yyvsp[-3].symp); element_count = (int)(yyvsp[-1].dval); }
 		    }
                 ;}
     break;
@@ -2631,14 +2668,14 @@ yyreduce:
   case 118:
 #line 1092 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("csample_opt ->csopt , %s =  %.10g \n",yyvsp[-2].symp->name,yyvsp[0].dval);
+		    if(ECHO_GRAMMAR) printf("csample_opt ->csopt , %s =  %.10g \n",(yyvsp[-2].symp)->name,(yyvsp[0].dval));
 		    
 		    if(execute)
 		      {
-			if( !strcmp(yyvsp[-2].symp->name,"r") ) params.r = yyvsp[0].dval;
-			else if (!strcmp(yyvsp[-2].symp->name,"l") ) params.l = yyvsp[0].dval;
+			if( !strcmp((yyvsp[-2].symp)->name,"r") ) params.r = (yyvsp[0].dval);
+			else if (!strcmp((yyvsp[-2].symp)->name,"l") ) params.l = (yyvsp[0].dval);
 			else if(VERBOSE) 
-			  printf("Warning : CSAMPLER: unknown parameter %s \n",yyvsp[-2].symp->name);
+			  printf("Warning : CSAMPLER: unknown parameter %s \n",(yyvsp[-2].symp)->name);
 		      }
 		  ;}
     break;
@@ -2646,7 +2683,7 @@ yyreduce:
   case 119:
 #line 1104 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",yyvsp[-2].symp->name,yyvsp[0].str);
+		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",(yyvsp[-2].symp)->name,(yyvsp[0].str));
 		    if(execute)
 		      {
 			;//set_value($1->name,string($3));
@@ -2657,15 +2694,15 @@ yyreduce:
   case 120:
 #line 1112 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("csample_opt ->csopt , %s =  %.10g \n",yyvsp[-2].symp->name,yyvsp[0].dval);
+		    if(ECHO_GRAMMAR) printf("csample_opt ->csopt , %s =  %.10g \n",(yyvsp[-2].symp)->name,(yyvsp[0].dval));
 		    
 		    if(execute)
 		      {
-			if( !strcmp(yyvsp[-2].symp->name,"r") ) params.r = yyvsp[0].dval;
-			else if (!strcmp(yyvsp[-2].symp->name,"l") ) params.l = yyvsp[0].dval;
-			else if (!strcmp(yyvsp[-2].symp->name,"l") ) params.l = yyvsp[0].dval;
+			if( !strcmp((yyvsp[-2].symp)->name,"r") ) params.r = (yyvsp[0].dval);
+			else if (!strcmp((yyvsp[-2].symp)->name,"l") ) params.l = (yyvsp[0].dval);
+			else if (!strcmp((yyvsp[-2].symp)->name,"l") ) params.l = (yyvsp[0].dval);
 			else if(VERBOSE) 
-			  printf("Warning : CSAMPLER: unknown parameter %s at line\n",yyvsp[-2].symp->name);
+			  printf("Warning : CSAMPLER: unknown parameter %s at line\n",(yyvsp[-2].symp)->name);
 		      }
 
 		  ;}
@@ -2674,7 +2711,7 @@ yyreduce:
   case 121:
 #line 1126 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",yyvsp[-2].symp->name,yyvsp[0].str);
+		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",(yyvsp[-2].symp)->name,(yyvsp[0].str));
 		    if(execute)
 		      ;//set_value($1->name,string($3));
 		  ;}
@@ -2684,7 +2721,7 @@ yyreduce:
 #line 1132 "parser.y"
     {
 		    if(ECHO_GRAMMAR) printf("csample_opt -> sopt, csopt\n");
-		    yyval.symp = yyvsp[-2].symp;
+		    (yyval.symp) = (yyvsp[-2].symp);
 		  ;}
     break;
 
@@ -2692,21 +2729,21 @@ yyreduce:
 #line 1137 "parser.y"
     {
 		    if(ECHO_GRAMMAR) printf("csample_opt -> sopt\n");
-		    yyval.symp = yyvsp[0].symp;
+		    (yyval.symp) = (yyvsp[0].symp);
                   ;}
     break;
 
   case 124:
 #line 1144 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("gas_opt -> , %s =  %.10g \n",yyvsp[-2].symp->name,yyvsp[0].dval);
+		    if(ECHO_GRAMMAR) printf("gas_opt -> , %s =  %.10g \n",(yyvsp[-2].symp)->name,(yyvsp[0].dval));
 		    
 		    if(execute)
 		      {
-			if( !strcmp(yyvsp[-2].symp->name,"r") ) params.r = yyvsp[0].dval;
-			else if (!strcmp(yyvsp[-2].symp->name,"l") ) params.l = yyvsp[0].dval;
+			if( !strcmp((yyvsp[-2].symp)->name,"r") ) params.r = (yyvsp[0].dval);
+			else if (!strcmp((yyvsp[-2].symp)->name,"l") ) params.l = (yyvsp[0].dval);
 			else if(VERBOSE) 
-			  printf("Warning : GAS: unknown parameter %s \n",yyvsp[-2].symp->name);
+			  printf("Warning : GAS: unknown parameter %s \n",(yyvsp[-2].symp)->name);
 		      }
 		  ;}
     break;
@@ -2714,12 +2751,12 @@ yyreduce:
   case 125:
 #line 1156 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("gas_opt -> %s =  %s \n",yyvsp[-2].symp->name,yyvsp[0].str);
+		    if(ECHO_GRAMMAR) printf("gas_opt -> %s =  %s \n",(yyvsp[-2].symp)->name,(yyvsp[0].str));
 		    if(execute)
 		      {
-			if( !strcmp(yyvsp[-2].symp->name,"material") ) 
+			if( !strcmp((yyvsp[-2].symp)->name,"material") ) 
 			  {
-			    strcpy(params.material ,yyvsp[0].str);
+			    strcpy(params.material ,(yyvsp[0].str));
 			    params.materialset = 1;
 			  }
 			//set_value($1->name,string($3));
@@ -2730,14 +2767,14 @@ yyreduce:
   case 126:
 #line 1169 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("gas_opt -> , %s =  %.10g \n",yyvsp[-2].symp->name,yyvsp[0].dval);
+		    if(ECHO_GRAMMAR) printf("gas_opt -> , %s =  %.10g \n",(yyvsp[-2].symp)->name,(yyvsp[0].dval));
 		    
 		    if(execute)
 		      {
-			if( !strcmp(yyvsp[-2].symp->name,"r") ) params.r = yyvsp[0].dval;
-			else if (!strcmp(yyvsp[-2].symp->name,"l") ) params.l = yyvsp[0].dval;
+			if( !strcmp((yyvsp[-2].symp)->name,"r") ) params.r = (yyvsp[0].dval);
+			else if (!strcmp((yyvsp[-2].symp)->name,"l") ) params.l = (yyvsp[0].dval);
 			else if(VERBOSE) 
-			  printf("Warning : GAS: unknown parameter %s at line\n",yyvsp[-2].symp->name);
+			  printf("Warning : GAS: unknown parameter %s at line\n",(yyvsp[-2].symp)->name);
 		      }
 
 		  ;}
@@ -2746,12 +2783,12 @@ yyreduce:
   case 127:
 #line 1182 "parser.y"
     {
-		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",yyvsp[-2].symp->name,yyvsp[0].str);
+		    if(ECHO_GRAMMAR) printf("csample_opt -> %s =  %s \n",(yyvsp[-2].symp)->name,(yyvsp[0].str));
 		    if(execute)
 		      {
-			  if( !strcmp(yyvsp[-2].symp->name,"material") ) 
+			  if( !strcmp((yyvsp[-2].symp)->name,"material") ) 
 			    {
-			      strcpy(params.material ,yyvsp[0].str);
+			      strcpy(params.material ,(yyvsp[0].str));
 			      params.materialset = 1;
 			    }
 		      }
@@ -2778,7 +2815,7 @@ yyreduce:
 #line 1204 "parser.y"
     {
 		    if(ECHO_GRAMMAR) printf("gas_opt -> range\n");
-		    yyval.symp = yyvsp[0].symp;
+		    (yyval.symp) = (yyvsp[0].symp);
 		  ;}
     break;
 
@@ -2786,7 +2823,7 @@ yyreduce:
 #line 1209 "parser.y"
     {
 		    if(ECHO_GRAMMAR) printf("gas_opt -> range\n");
-		    yyval.symp = yyvsp[0].symp;
+		    (yyval.symp) = (yyvsp[0].symp);
                   ;}
     break;
 
@@ -2794,7 +2831,7 @@ yyreduce:
 #line 1217 "parser.y"
     {
 		      if(execute)
-			set_value(yyvsp[-2].symp->name,yyvsp[0].dval);
+			set_value((yyvsp[-2].symp)->name,(yyvsp[0].dval));
 		    ;}
     break;
 
@@ -2802,31 +2839,31 @@ yyreduce:
 #line 1222 "parser.y"
     {
 		      if(execute)
-			set_value(yyvsp[-2].symp->name,yyvsp[0].dval);
+			set_value((yyvsp[-2].symp)->name,(yyvsp[0].dval));
+		    ;}
+    break;
+
+  case 135:
+#line 1227 "parser.y"
+    {
+		      if(execute)
+			set_value((yyvsp[-2].symp)->name,string((yyvsp[0].str)));
 		    ;}
     break;
 
   case 136:
-#line 1230 "parser.y"
+#line 1232 "parser.y"
     {
-		    if(execute)
-		      set_value(yyvsp[-2].symp->name,yyvsp[0].dval);
-		  ;}
-    break;
-
-  case 137:
-#line 1235 "parser.y"
-    {
-		    if(execute)
-		      set_value(yyvsp[-2].symp->name,yyvsp[0].dval);
-		  ;}
+		      if(execute)
+			set_value((yyvsp[-2].symp)->name,string((yyvsp[0].str)));
+		    ;}
     break;
 
   case 138:
 #line 1240 "parser.y"
     {
 		    if(execute)
-		      set_value(yyvsp[-2].symp->name,string(yyvsp[0].str));
+		      set_value((yyvsp[-2].symp)->name,(yyvsp[0].dval));
 		  ;}
     break;
 
@@ -2834,15 +2871,31 @@ yyreduce:
 #line 1245 "parser.y"
     {
 		    if(execute)
-		      set_value(yyvsp[-2].symp->name,string(yyvsp[0].str));
+		      set_value((yyvsp[-2].symp)->name,(yyvsp[0].dval));
+		  ;}
+    break;
+
+  case 140:
+#line 1250 "parser.y"
+    {
+		    if(execute)
+		      set_value((yyvsp[-2].symp)->name,string((yyvsp[0].str)));
+		  ;}
+    break;
+
+  case 141:
+#line 1255 "parser.y"
+    {
+		    if(execute)
+		      set_value((yyvsp[-2].symp)->name,string((yyvsp[0].str)));
 		  ;}
     break;
 
 
     }
 
-/* Line 1000 of yacc.c.  */
-#line 2846 "parser.tab.c"
+/* Line 1037 of yacc.c.  */
+#line 2899 "parser.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2942,7 +2995,7 @@ yyerrlab:
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse lookahead token after an
+      /* If just tried and failed to reuse look-ahead token after an
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
@@ -2952,23 +3005,22 @@ yyerrlab:
 	  if (yychar == YYEOF)
 	     for (;;)
 	       {
+
 		 YYPOPSTACK;
 		 if (yyssp == yyss)
 		   YYABORT;
-		 YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-		 yydestruct (yystos[*yyssp], yyvsp);
+		 yydestruct ("Error: popping",
+                             yystos[*yyssp], yyvsp);
 	       }
         }
       else
 	{
-	  YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
-	  yydestruct (yytoken, &yylval);
+	  yydestruct ("Error: discarding", yytoken, &yylval);
 	  yychar = YYEMPTY;
-
 	}
     }
 
-  /* Else will try to reuse lookahead token after shifting the error
+  /* Else will try to reuse look-ahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
@@ -2985,7 +3037,7 @@ yyerrorlab:
      goto yyerrorlab;
 #endif
 
-  yyvsp -= yylen;
+yyvsp -= yylen;
   yyssp -= yylen;
   yystate = *yyssp;
   goto yyerrlab1;
@@ -3015,8 +3067,8 @@ yyerrlab1:
       if (yyssp == yyss)
 	YYABORT;
 
-      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-      yydestruct (yystos[yystate], yyvsp);
+
+      yydestruct ("Error: popping", yystos[yystate], yyvsp);
       YYPOPSTACK;
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -3025,10 +3077,11 @@ yyerrlab1:
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  YYDPRINTF ((stderr, "Shifting error token, "));
-
   *++yyvsp = yylval;
 
+
+  /* Shift the error token. */
+  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -3045,6 +3098,9 @@ yyacceptlab:
 | yyabortlab -- YYABORT comes here.  |
 `-----------------------------------*/
 yyabortlab:
+  yydestruct ("Error: discarding lookahead",
+              yytoken, &yylval);
+  yychar = YYEMPTY;
   yyresult = 1;
   goto yyreturn;
 
@@ -3067,7 +3123,7 @@ yyreturn:
 }
 
 
-#line 1251 "parser.y"
+#line 1261 "parser.y"
 
 
 

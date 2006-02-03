@@ -61,6 +61,8 @@ const int _GUINEAPIG_SLAC = 6;
 
 struct Options {
 
+  string physicsList;
+
   string particleName;
   string distribType;
   string distribFile;

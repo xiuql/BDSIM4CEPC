@@ -857,6 +857,7 @@ void set_value(string name, string value )
   if(name == "particle") options.particleName = value;
   if(name == "distrType" ) options.distribType = value;
   if(name == "distrFile" ) options.distribFile = value;  
+  if(name == "physicsList" ) options.physicsList = value; 
 }
 
 double property_lookup(char *element_name, char *property_name)

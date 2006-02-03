@@ -6,6 +6,8 @@
 #include "gmad.h"
 #include "sym_table.h"
 
+#include "math.h"
+
 extern struct Parameters params;
 extern struct symtab *symtab;
 extern int yyparse();

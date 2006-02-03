@@ -1223,6 +1223,16 @@ option_parameters :
 		      if(execute)
 			set_value($1->name,$3);
 		    } 
+                  | option_parameters ',' VARIABLE '=' STR
+                    {
+		      if(execute)
+			set_value($3->name,string($5));
+		    }   
+                  | VARIABLE '=' STR
+                    {
+		      if(execute)
+			set_value($1->name,string($3));
+		    }   
 ;
 
 beam_parameters :
