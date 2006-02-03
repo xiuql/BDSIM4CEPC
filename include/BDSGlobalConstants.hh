@@ -1,18 +1,10 @@
-/* BDSIM code.    Version 1.0
-   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.7.2002
-   Copyright (c) 2002 by G.A.Blair.  ALL RIGHTS RESERVED. 
+/** BDSIM, v0.1   
 
-   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
-   Added GABs StringFromInt function
-   Added GABs StringFromDigit function
-   Added GABs SynchPrimary code
-   Added GABs BeamGasPlug code
-   Added GABs GetUseLastMaterialPoint method
-   Added LWCal Get methods
-   Added Component Offset Set, Add, and Get methods
-   Added Wedge Set, Get methods
-*/
+Last modified 01.02.2006 by Ilya Agapov
+
+**/
+
+//==============================================================
 
 #ifndef BDSGlobalConstants_h
 #define BDSGlobalConstants_h 
@@ -59,9 +51,15 @@ public:
 
   G4ParticleDefinition* GetParticleDefinition();
   void SetParticleDefinition(G4ParticleDefinition* aBeamParticleDefinition);
+
   G4double GetBeamKineticEnergy();
+  void SetBeamKineticEnergy(G4double val);
+
   G4double GetBeamTotalEnergy();
+  void SetBeamTotalEnergy(G4double val);
+
   G4double GetBeamMomentum();
+  void SetBeamMomentum(G4double val);
   
   G4double GetBackgroundScaleFactor();
 
@@ -100,6 +98,12 @@ public:
   G4double GetThresholdCutPhotons();
   G4double GetTrackWeightFactor();
 
+
+  // physical processes etc.
+
+  G4String GetPhysListName();
+  void SetPhysListName(G4String val);
+
   G4bool GetUseLowEMPhysics();
 
   G4bool GetSynchRadOn();
@@ -134,7 +138,6 @@ public:
 
 
   G4bool GetStopTracks();
-
   G4bool stopTracks; // kill tracks after interactions
 
   // gab Dec04
@@ -186,6 +189,12 @@ public:
   G4bool GetPreviousWasWedge();
   void SetPreviousWasWedge(G4bool PreviousWasWedge);
 
+  
+  G4String tmpParticleName; // particle name as given in options
+                            // since the particle definition is looked up in 
+                            // PhysicsList we need to store the name first
+
+
 protected:
 private:
   // Data Members for Class Attributes
@@ -196,13 +205,12 @@ private:
   // initial bunch parameters
 
   G4ParticleDefinition* itsBeamParticleDefinition;
-  G4double itsBeamTotalEnergy;
 
-  //G4double itsSigmaT;
+  G4double itsBeamTotalEnergy;
 
   G4double itsNumberOfParticles;
 
-  G4double itsBeamMomentum, itsBeamGamma, itsBeamKineticEnergy;
+  G4double itsBeamMomentum, itsBeamKineticEnergy;
 
   G4double itsBackgroundScaleFactor;
 
@@ -229,6 +237,8 @@ private:
 
   G4double itsThresholdCutCharged;
   G4double itsThresholdCutPhotons;
+
+  G4String itsPhysListName;
 
   G4bool itsUseLowEMPhysics;
 
@@ -329,14 +339,30 @@ inline G4double BDSGlobalConstants::GetBeamKineticEnergy()
   return itsBeamKineticEnergy;
 }
 
+inline void BDSGlobalConstants::SetBeamKineticEnergy(G4double val)
+{
+  itsBeamKineticEnergy = val;
+}
+
 inline G4double BDSGlobalConstants::GetBeamTotalEnergy()
 {
   return itsBeamTotalEnergy;
 }
 
+inline void BDSGlobalConstants::SetBeamTotalEnergy(G4double val)
+{
+  itsBeamTotalEnergy = val;
+}
+
+
 inline G4double BDSGlobalConstants::GetBeamMomentum()
 {
   return itsBeamMomentum;
+}
+
+inline void BDSGlobalConstants::SetBeamMomentum(G4double val)
+{
+  itsBeamMomentum = val;
 }
 
 
@@ -421,6 +447,17 @@ inline G4double BDSGlobalConstants::GetVerticalComponentOffset()
 {return itsVerticalComponentOffset;}
 inline G4double BDSGlobalConstants::GetHorizontalComponentOffset()
 {return itsHorizontalComponentOffset;}
+
+
+inline G4String BDSGlobalConstants::GetPhysListName()
+{
+  return itsPhysListName;
+}
+
+inline void BDSGlobalConstants::SetPhysListName(G4String val)
+{
+  itsPhysListName = val;
+}
 
 inline G4bool BDSGlobalConstants::GetUseLowEMPhysics()
 {return itsUseLowEMPhysics;}
