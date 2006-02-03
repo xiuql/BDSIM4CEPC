@@ -352,7 +352,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 		      "m, material="<<(*it).material<<G4endl;}
 
 	
-	G4cout<<"retrieved material :"<<aMaterial->GetName()<<G4endl;
+	if(DEBUG) G4cout<<"retrieved material :"<<aMaterial->GetName()<<G4endl;
+
 	theBeamline.push_back(new BDSCollimator(G4String((*it).name),(*it).l * m,bpRad,
 						(*it).xsize * m,(*it).ysize * m,_ECOL,aMaterial) );
       }
@@ -364,7 +365,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 		      "xaper="<<(*it).xsize<<"m, yaper="<<(*it).ysize<<
 		      "m, material="<<(*it).material<<G4endl;}
 
-	G4cout<<"retrieved material :"<<aMaterial->GetName()<<G4endl;
+	if(DEBUG) G4cout<<"retrieved material :"<<aMaterial->GetName()<<G4endl;
 
 	theBeamline.push_back(new BDSCollimator(G4String((*it).name),(*it).l * m,bpRad,
 						(*it).xsize * m,(*it).ysize * m,_RCOL,aMaterial) );
@@ -401,7 +402,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   
   // free the parser list
   
-  G4cout<<"size of parser list: "<< beamline_list.size() << G4endl;;
+  if(DEBUG) G4cout<<"size of parser list: "<< beamline_list.size() << G4endl;;
   beamline_list.clear();
   
   
@@ -487,13 +488,18 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   G4double WorldSizeZ = 1 * ( (fabs(rmin(2)) + fabs(rmax(2)) ) + 5*BDSGlobals->GetComponentBoxSize());
   
   //G4cout<<"world radius="<<WorldRadius/m<<" m"<<G4endl;
-  G4cout<<"minX="<<rmin(0)/m<<"m"<<" maxX="<<rmax(0)/m<<" m"<<G4endl;
-  G4cout<<"minY="<<rmin(1)/m<<"m"<<" maxY="<<rmax(1)/m<<" m"<<G4endl;
-  G4cout<<"minZ="<<rmin(2)/m<<"m"<<" maxZ="<<rmax(2)/m<<" m"<<G4endl;
+  if(DEBUG)
+    {
+      G4cout<<"minX="<<rmin(0)/m<<"m"<<" maxX="<<rmax(0)/m<<" m"<<G4endl;
+      G4cout<<"minY="<<rmin(1)/m<<"m"<<" maxY="<<rmax(1)/m<<" m"<<G4endl;
+      G4cout<<"minZ="<<rmin(2)/m<<"m"<<" maxZ="<<rmax(2)/m<<" m"<<G4endl;
+      
+      G4cout<<"box size="<<BDSGlobals->GetComponentBoxSize()/m<<" m"<<G4endl;
+      G4cout<<"s_tot="<<s_tot/m<<" m"<<G4endl;
+    }
 
-  G4cout<<"box size="<<BDSGlobals->GetComponentBoxSize()/m<<" m"<<G4endl;
-  G4cout<<"s_tot="<<s_tot/m<<" m"<<G4endl;
   bdsOutput.zMax=s_tot;
+
   solidWorld = new G4Box("World",WorldSizeX,WorldSizeY,
 			   WorldSizeZ);
     
@@ -640,7 +646,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       // advance the coordinates, but not for cylindrical samplers 
       if( ( ( (*iBeam)->GetName() != "sampler") || ( (*iBeam)->GetLength() <= samplerLength ) )  && ( (*iBeam)->GetType()!=_ELEMENT ))
 	{
-	  G4cout << (*iBeam)->GetType() << " " << (*iBeam)->GetName() << G4endl;
+	  if(DEBUG) G4cout << (*iBeam)->GetType() << " " << (*iBeam)->GetName() << G4endl;
 	  rtot = rlast + zHalfAngle * ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 );
 	  rlast = rtot + zHalfAngle * ( (*iBeam)->GetLength()/2 + BDSGlobals->GetLengthSafety()/2 );
 	      

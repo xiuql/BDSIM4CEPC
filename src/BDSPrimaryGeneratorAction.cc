@@ -43,9 +43,13 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
  
   particleGun  = new G4ParticleGun(1); // 1-particle gun
 
-  particleGun->SetParticleDefinition(BDSGlobals->
-                                      GetParticleDefinition());
+ //  particleGun->SetParticleDefinition(BDSGlobals->
+//                                       GetParticleDefinition());
 
+  particleGun->SetParticleDefinition(G4ParticleTable::GetParticleTable()->
+				     FindParticle("e-"));
+
+  
   if(BDSGlobals->GetUseSynchPrimaryGen()) // synchrotron radiation generator
     {
       itsBDSSynchrotronRadiation=new BDSSynchrotronRadiation("tmpSynRad");

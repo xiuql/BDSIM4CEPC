@@ -1,16 +1,8 @@
-/* BDSIM code.    Version 1.0
-   Author: Grahame A. Blair, Royal Holloway, Univ. of London.
-   Last modified 24.12.2004
-   Copyright (c) 2004 by G.A.Blair.  ALL RIGHTS RESERVED. 
+/** BDSIM, v0.1   
 
-   Modified 22.03.05 by J.C.Carter, Royal Holloway, Univ. of London.
-   Added GABs StringFromInt function
-   Added GABs StringFromDigit function
-   Added GABs SynchPrimary code
-   Added GABs BeamGasPlug code
-   Added GABs GetUseLastMaterialPoint method
-   Added LWCal Code
-*/
+Last modified 01.02.2006 by Ilya Agapov
+
+**/
 
 const int DEBUG = 1;
 
@@ -39,29 +31,17 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   itsEnergyOffset=0.;
   itsTrackWeightFactor=1.0;
 
-  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  itsBeamParticleDefinition= particleTable->FindParticle(G4String(opt.particleName));
-  
-  
-  if(!itsBeamParticleDefinition) 
-    {
-      G4cerr<<"particle  "<<opt.particleName<<" not found, quitting!"<<G4endl;
-      exit(1);
-    }
+  if(opt.physicsList == "") 
+    itsPhysListName = "standard";
+  else
+    itsPhysListName = opt.physicsList;
 
-     
+  
+  tmpParticleName = G4String(opt.particleName);
+  
+      
   itsBeamTotalEnergy = opt.beamEnergy * GeV;
 
-  itsBeamMomentum =sqrt(pow(itsBeamTotalEnergy,2)-
-                        pow(itsBeamParticleDefinition->GetPDGMass(),2));
-
-  itsBeamKineticEnergy=itsBeamTotalEnergy - itsBeamParticleDefinition->GetPDGMass();
-  
-  itsBeamGamma = itsBeamTotalEnergy/(itsBeamParticleDefinition->GetPDGMass());
-  
-  		
-  if(DEBUG) G4cout<<"beam : "<<opt.particleName<<"  energy "<<itsBeamTotalEnergy<<
-	      " ganna "<<itsBeamGamma<<G4endl;
 	      
   itsBackgroundScaleFactor = opt.backgroundScaleFactor;
 
