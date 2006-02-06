@@ -30,12 +30,47 @@ const int DEBUG = 1;
 
 #include "GeneralPhysics.hh"
 //#include "EM_GNPhysics.hh"
-#include "EMPhysics.hh"
+//#include "EMPhysics.hh"
 #include "MuonPhysics.hh"
 //#include "HadronPhysicsQGSP_HP.hh"
 //#include "IonPhysics.hh"
 
-#include "G4Transportation.hh"
+
+// physics processes
+
+// EM
+
+#include "G4ComptonScattering.hh"
+#include "G4GammaConversion.hh"
+#include "G4PhotoElectricEffect.hh"
+
+#include "G4MultipleScattering.hh"
+
+#include "G4eIonisation.hh"
+#include "G4eBremsstrahlung.hh"
+#include "G4eplusAnnihilation.hh"
+
+#include "G4MuIonisation.hh"
+#include "G4MuBremsstrahlung.hh"
+#include "G4MuPairProduction.hh"
+
+#include "G4hIonisation.hh"
+#include "G4ionIonisation.hh"
+
+
+// Low EM
+
+#include "G4LowEnergyRayleigh.hh"
+#include "G4LowEnergyPhotoElectric.hh"
+#include "G4LowEnergyCompton.hh"
+#include "G4LowEnergyGammaConversion.hh"
+
+// e-
+#include "G4LowEnergyIonisation.hh"
+#include "G4LowEnergyBremsstrahlung.hh"
+
+#include "G4hLowEnergyIonisation.hh"
+
 
 //#include "BDSLaserWirePhysics.hh"
 //#include "BDSPlanckScatterPhysics.hh"
@@ -97,14 +132,14 @@ void BDSPhysicsList::ConstructProcess()
   // standard e+/e-/gamma electromagnetic interactions
   if(BDSGlobals->GetPhysListName() == "em_standard") 
     {
-      RegisterPhysics( new EMPhysics("standard EM"));
+      ConstructEM();
       return;
     }
 
   // low energy em processes
   if(BDSGlobals->GetPhysListName() == "em_low") 
     {
-      RegisterPhysics( new BDSLowEMPhysics("LowEM"));
+      ConstructEM_Low_Energy();
       return;
     }
 
@@ -236,4 +271,109 @@ void BDSPhysicsList::SetCuts()
   if(verbose)
     DumpCutValuesTable(); 
   
+}
+
+
+// particular physics process constructors
+
+void BDSPhysicsList::ConstructEM()
+{
+  theParticleIterator->reset();
+  while( (*theParticleIterator)() ){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+    
+    if (particleName == "gamma") {
+      // gamma         
+      pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
+      pmanager->AddDiscreteProcess(new G4ComptonScattering);
+      pmanager->AddDiscreteProcess(new G4GammaConversion);
+      
+    } else if (particleName == "e-") {
+      //electron
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4eIonisation,       -1, 2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 3,3);      
+      
+    } else if (particleName == "e+") {
+      //positron
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4eIonisation,       -1, 2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 3,3);
+      pmanager->AddProcess(new G4eplusAnnihilation,  0,-1,4);
+      
+    } else if( particleName == "mu+" || 
+               particleName == "mu-"    ) {
+      //muon  
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4MuIonisation,      -1, 2,2);
+      pmanager->AddProcess(new G4MuBremsstrahlung,  -1, 3,3);
+      pmanager->AddProcess(new G4MuPairProduction,  -1, 4,4);       
+      
+    } else if ((!particle->IsShortLived()) &&
+	       (particle->GetPDGCharge() != 0.0) && 
+	       (particle->GetParticleName() != "chargedgeantino")) {
+      //all others charged particles except geantino
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4hIonisation,       -1, 2,2);
+      //step limit
+      //pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);         
+      ///pmanager->AddProcess(new G4UserSpecialCuts,   -1,-1,4);  
+    }
+  }
+}
+
+
+void BDSPhysicsList::ConstructEM_Low_Energy()
+{
+
+  theParticleIterator->reset();
+  while( (*theParticleIterator)() ){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+     
+    if (particleName == "gamma") {
+     
+      pmanager->AddDiscreteProcess(new G4LowEnergyRayleigh());
+      pmanager->AddDiscreteProcess(new G4LowEnergyPhotoElectric);
+      pmanager->AddDiscreteProcess(new G4LowEnergyCompton);
+      pmanager->AddDiscreteProcess(new G4LowEnergyGammaConversion);
+      
+    } else if (particleName == "e-") {
+  
+      pmanager->AddProcess(new G4MultipleScattering, -1, 1,1);
+      pmanager->AddProcess(new G4LowEnergyIonisation,        -1, 2,2);
+      pmanager->AddProcess(new G4LowEnergyBremsstrahlung,    -1, 3,3);
+	    
+    } else if (particleName == "e+") {
+
+      pmanager->AddProcess(new G4MultipleScattering, -1, 1,1);
+      pmanager->AddProcess(new G4eIonisation,        -1, 2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,    -1, 3,3);
+      pmanager->AddProcess(new G4eplusAnnihilation,   0,-1,4);
+      
+    } else if( particleName == "mu+" || 
+               particleName == "mu-"    ) {
+
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4MuIonisation,      -1, 2,2);
+      pmanager->AddProcess(new G4MuBremsstrahlung,  -1, 3,3);
+      pmanager->AddProcess(new G4MuPairProduction,  -1, 4,4);       
+
+    } else if (particleName == "GenericIon") {
+
+      pmanager->AddProcess(new G4MultipleScattering, -1, 1,1);
+      pmanager->AddProcess(new G4hLowEnergyIonisation,       -1,2,2);
+      //      pmanager->AddProcess(new G4ionIonisation,      -1, 2,2);
+      // it dose not work here
+    } else if ((!particle->IsShortLived()) &&
+	       (particle->GetPDGCharge() != 0.0) && 
+	       (particle->GetParticleName() != "chargedgeantino")) {
+
+      pmanager->AddProcess(new G4MultipleScattering,-1,1,1);
+      pmanager->AddProcess(new G4hLowEnergyIonisation,       -1,2,2);
+    }
+  }
 }
