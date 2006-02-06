@@ -279,10 +279,18 @@ void BDSElement::AlignComponent(G4ThreeVector& TargetPos,
 				G4ThreeVector& localY,
 				G4ThreeVector& localZ)
 {
-  // do nothing if aligning volume is the markervoulume.
+  
+  
   if(align_in_volume == NULL)
     {
-      if(align_out_volume == NULL) return;
+      if(align_out_volume == NULL)
+	{
+	  // advance co-ords in usual way if no alignment volumes found
+	  
+	  rtot = rlast + localZ*(itsLength/2 + BDSGlobals->GetLengthSafety()/2);
+	  rlast = rtot + localZ*(itsLength/2 + BDSGlobals->GetLengthSafety()/2);
+	  return;
+	}
       else 
 	{
 	  G4cout << "BDSElement : Aligning outgoing to SQL element " 
