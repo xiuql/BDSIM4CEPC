@@ -27,6 +27,11 @@ public:
 
   void SetCuts();
 
+  // construct particular physics list processes
+
+  void ConstructEM();
+
+  void ConstructEM_Low_Energy();
   
 
 
