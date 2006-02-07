@@ -56,6 +56,7 @@ private:
   void BuildSQLObjects(G4String file);
   void BuildCone(BDSMySQLTable* aSQLTable);
   void BuildPolyCone(BDSMySQLTable* aSQLTable);
+  void BuildTorus(BDSMySQLTable* aSQLTable);
   void BuildBox(BDSMySQLTable* aSQLTable);
   void BuildSampler(BDSMySQLTable* aSQLTable);
   G4RotationMatrix* RotateComponent(G4double psi,

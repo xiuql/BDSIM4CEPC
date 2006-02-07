@@ -3,6 +3,7 @@
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4Cons.hh"
+#include "G4Torus.hh"
 #include "G4Polycone.hh"
 #include "G4VisAttributes.hh"
 #include "G4LogicalVolume.hh"
@@ -70,8 +71,9 @@ void BDSGeometrySQL::BuildSQLObjects(G4String file)
       G4String ObjectType = TableName.substr(pos+1,TableName.length() - pos);
       G4String::caseCompare cmpmode = G4String::ignoreCase;
       if(ObjectType.compareTo("CONE",cmpmode)==0) BuildCone(itsSQLTable[i]);
-      if(ObjectType.compareTo("POLYCONE",cmpmode)==0) BuildPolyCone(itsSQLTable[i]);
+      else if(ObjectType.compareTo("POLYCONE",cmpmode)==0) BuildPolyCone(itsSQLTable[i]);
       else if(ObjectType.compareTo("BOX",cmpmode)==0) BuildBox(itsSQLTable[i]);
+      else if(ObjectType.compareTo("TORUS",cmpmode)==0) BuildTorus(itsSQLTable[i]);
       else if(ObjectType.compareTo("SAMPLER",cmpmode)==0) BuildSampler(itsSQLTable[i]);
     }
 
@@ -387,6 +389,109 @@ void BDSGeometrySQL::BuildBox(BDSMySQLTable* aSQLTable)
   VOL_LIST = NULL;
 }
 
+void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
+{
+  G4LogicalVolume** VOL_LIST = NULL;
+  
+  G4int NVariables = aSQLTable->GetVariable("RINNER")->GetNVariables();
+  VOL_LIST = new G4LogicalVolume*[NVariables+1];
+  VOL_LIST[0] = itsMarkerVol;
+  for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
+  G4double rInner;
+  G4double rOuter;
+  G4double rSwept;
+  G4double startingPhi;
+  G4double deltaPhi;
+  G4double VisRed; 
+  G4double VisGreen;
+  G4double VisBlue;
+  G4int ID;
+  G4String VisType;
+  G4String Material;
+  G4String TableName = aSQLTable->GetName();
+  G4String Name;
+
+  for(G4int k=0; k<NVariables; k++)
+    {
+      //Defaults
+      rSwept = 20.*mm;
+      rOuter = 10.*mm;
+      rInner = 0.0;
+      startingPhi = 0.0;
+      deltaPhi=2*pi*radian;
+      VisRed = VisGreen = VisBlue = 0.;
+      ID = k+1;
+      VisType = "W";
+      Material = "VACUUM";
+
+      if(aSQLTable->GetVariable("ID")!=NULL)
+	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
+      if(aSQLTable->GetVariable("RED")!=NULL)
+	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
+      if(aSQLTable->GetVariable("BLUE")!=NULL)
+	VisBlue = aSQLTable->GetVariable("BLUE")->GetDblValue(k);
+      if(aSQLTable->GetVariable("GREEN")!=NULL)
+	VisGreen = aSQLTable->GetVariable("GREEN")->GetDblValue(k);
+      if(aSQLTable->GetVariable("VISATT")!=NULL)
+	VisType = aSQLTable->GetVariable("VISATT")->GetStrValue(k);
+      if(aSQLTable->GetVariable("RINNER")!=NULL)
+	rInner = aSQLTable->GetVariable("RINNER")->GetDblValue(k);
+      if(aSQLTable->GetVariable("ROUTER")!=NULL)
+	rOuter = aSQLTable->GetVariable("ROUTER")->GetDblValue(k);
+      if(aSQLTable->GetVariable("RSWEPT")!=NULL)
+	rSwept = aSQLTable->GetVariable("RSWEPT")->GetDblValue(k);
+      if(aSQLTable->GetVariable("STARTPHI")!=NULL)
+	startingPhi = aSQLTable->GetVariable("STARTPHI")->GetDblValue(k);
+      if(aSQLTable->GetVariable("DELTAPHI")!=NULL)
+	deltaPhi = aSQLTable->GetVariable("DELTAPHI")->GetDblValue(k);
+      if(aSQLTable->GetVariable("MATERIAL")!=NULL)
+	Material = aSQLTable->GetVariable("MATERIAL")->GetStrValue(k);
+      if(aSQLTable->GetVariable("NAME")!=NULL)
+	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
+
+      if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+
+      G4Torus* aTorus = new G4Torus(Name+"_Torus",
+				    rInner,
+				    rOuter,
+				    rSwept,
+				    startingPhi,
+				    deltaPhi);
+
+
+      G4LogicalVolume* aTorusVol = 
+	new G4LogicalVolume(aTorus,
+			    theMaterials->GetMaterial(Material),
+			    Name+"_LogVol");
+      
+      G4UserLimits* TorusUserLimits = new G4UserLimits();
+      TorusUserLimits->SetMaxAllowedStep(rInner);
+      aTorusVol->SetUserLimits(TorusUserLimits);
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(VisRed, VisGreen, VisBlue));
+      switch (VisType(0))
+	{
+	case 'W': VisAtt->SetForceWireframe(true); break;
+	case 'I': VisAtt->SetVisibility(false); break;
+	case 'S': VisAtt->SetForceSolid(true); break;
+	case 'w': VisAtt->SetForceWireframe(true); break;
+	case 'i': VisAtt->SetVisibility(false); break;
+	case 's': VisAtt->SetForceSolid(true); break;
+	}
+      aTorusVol->SetVisAttributes(VisAtt);
+      if(ID<1 || ID>k+1){
+	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
+	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildTorus " << G4endl;
+	G4Exception("Aborting Program");
+      }
+      else VOL_LIST[ID] = aTorusVol;
+
+    }
+
+  PlaceComponents(aSQLTable, VOL_LIST);
+  delete [] VOL_LIST;
+  VOL_LIST = NULL;
+}
 void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
 {
   G4LogicalVolume** VOL_LIST = NULL;
@@ -566,6 +671,13 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
 	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
       if(aSQLTable->GetVariable("PARENTID")!=NULL)
 	PARENTID = aSQLTable->GetVariable("PARENTID")->GetIntValue(k);
+
+      if(PARENTID<0 || PARENTID > NVariables){
+	G4cout << Name << " has invalid PARENTID assigned:  " << PARENTID << G4endl;
+	G4cerr << "Stopping BDSIM in BDSGeometrySQL::PlaceComponents " << G4endl;
+	G4Exception("Aborting Program");
+      }
+
       if(aSQLTable->GetVariable("POSX")!=NULL)
 	PosX = aSQLTable->GetVariable("POSX")->GetDblValue(k);
       if(aSQLTable->GetVariable("POSY")!=NULL)
