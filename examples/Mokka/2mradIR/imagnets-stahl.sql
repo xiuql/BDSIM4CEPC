@@ -6,8 +6,7 @@ CREATE DATABASE INVQD0;
 USE INVQD0;
 
 CREATE TABLE INVQD0_CONE (
-    ID            INTEGER(16),  #
-    PARENTID      INTEGER(16),  #
+    PARENTNAME    VARCHAR(32),  #
     POSX          DOUBLE(10,3), #
     POSY          DOUBLE(10,3), #
     POSZ          DOUBLE(10,3), #
@@ -30,11 +29,11 @@ CREATE TABLE INVQD0_CONE (
 );
 
 # Beampipe of INVQD0 - 2mrad
-INSERT INTO INVQD0_CONE VALUES (1, 0, 5.750, 0.0, 6245, 1.0, 0.0, 0.0, "S", 2500, 0, 0, 35, 35, 0.,  0.00, -1e-3, 0.0, "QUAD", "ALUMINIUM", ""); 
-INSERT INTO INVQD0_CONE VALUES (2, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "I", 2500, 0, 0, 34.0, 34.0, 0.,  0.00, 0., -0.095803008082, "QUAD", "VACUUM", "");
+INSERT INTO INVQD0_CONE VALUES ("", 5.750, 0.0, 6245, 1.0, 0.0, 0.0, "S", 2500, 0, 0, 35, 35, 0.,  0.00, -1e-3, 0.0, "QUAD", "ALUMINIUM", "QD0_BP"); 
+INSERT INTO INVQD0_CONE VALUES ("QD0_BP", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "I", 2500, 0, 0, 34.0, 34.0, 0.,  0.00, 0., -0.095803008082, "QUAD", "VACUUM", "QD0INNER");
 
 # Outer Iron of Magnet - 2mrad
-INSERT INTO INVQD0_CONE VALUES (3, 0, 5.750, 0.0, 6245, 1.0, 0.0, 0.0, "S", 2500, 35.0, 35.0, 250.0, 250.0, 0.,  0.00, -1e-3, 0.0, "QUAD", "Iron", ""); 
+INSERT INTO INVQD0_CONE VALUES ("", 5.750, 0.0, 6245, 1.0, 0.0, 0.0, "S", 2500, 35.0, 35.0, 250.0, 250.0, 0.,  0.00, -1e-3, 0.0, "QUAD", "Iron", "QD0_OUTER"); 
 
 ####################################################
 
@@ -64,8 +63,7 @@ INSERT INTO INVD1A0_CONE VALUES (7.6025, 0.0, 4397.5, 0.0, 1.0, 0.0, "S", 1195, 
 ####################################################
 
 CREATE TABLE INVSD0_CONE (
-    ID            INTEGER(16),  #
-    PARENTID      INTEGER(16),  #
+    PARENTNAME    VARCHAR(32),  #
     POSX          DOUBLE(10,3), #
     POSY          DOUBLE(10,3), #
     POSZ          DOUBLE(10,3), #
@@ -89,11 +87,11 @@ CREATE TABLE INVSD0_CONE (
 );
 
 # Beampipe of INVSD0 - 2mrad
-INSERT INTO INVSD0_CONE VALUES (1, 0, 10.099, 0.0, 1900, 1.0, 1.0, 0.0, "S", 3800, 0, 0, 88, 88, 0.,  0.00, -1e-3, 0.0, "SEXT", "ALUMINIUM", 1, ""); 
-INSERT INTO INVSD0_CONE VALUES (2, 1, 0.0,   0.0, 0.0,  0.0, 0.0, 0.0, "I", 3800, 0,  0,  87, 87, 0.,  0.00, 0.0,   0.625408483406, "SEXT", "VACUUM", 0, "");
+INSERT INTO INVSD0_CONE VALUES ("",  10.099, 0.0, 1900, 1.0, 1.0, 0.0, "S", 3800, 0, 0, 88, 88, 0.,  0.00, -1e-3, 0.0, "SEXT", "ALUMINIUM", 1, "SD0_BP"); 
+INSERT INTO INVSD0_CONE VALUES ("SD0_BP", 0.0,   0.0, 0.0,  0.0, 0.0, 0.0, "I", 3800, 0,  0,  87, 87, 0.,  0.00, 0.0,   0.625408483406, "SEXT", "VACUUM", 0, "SD0_INNER");
 
 # Outer Iron of Magnet - 2mrad
-INSERT INTO INVSD0_CONE VALUES (3, 0, 10.099, 0.0, 1900, 1.0, 1.0, 0.0, "S", 3800, 88, 88, 250.0, 250.0, 0.,  0.00, -1e-3, 0.0, "SEXT", "Iron", 0, ""); 
+INSERT INTO INVSD0_CONE VALUES ("", 10.099, 0.0, 1900, 1.0, 1.0, 0.0, "S", 3800, 88, 88, 250.0, 250.0, 0.,  0.00, -1e-3, 0.0, "SEXT", "Iron", 0, "SD0_OUTER"); 
 
 
 
