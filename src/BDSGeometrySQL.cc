@@ -45,6 +45,7 @@ BDSGeometrySQL::~BDSGeometrySQL()
 void BDSGeometrySQL::Construct(G4LogicalVolume *marker)
 {
   itsMarkerVol = marker;
+  VOL_LIST.push_back(itsMarkerVol);
   G4String file;
   char buffer[1000];
   while (ifs>>file)
@@ -81,12 +82,8 @@ void BDSGeometrySQL::BuildSQLObjects(G4String file)
 
 void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 {
-  G4LogicalVolume** VOL_LIST = NULL;
-  
   G4int NVariables = aSQLTable->GetVariable("LENGTH")->GetNVariables();
-  VOL_LIST = new G4LogicalVolume*[NVariables+1];
-  VOL_LIST[0] = itsMarkerVol;
-  for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
+
   G4double length;
   G4double rInnerStart;
   G4double rInnerEnd;
@@ -95,7 +92,6 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
   G4double VisRed; 
   G4double VisGreen;
   G4double VisBlue;
-  G4int ID;
   G4String VisType;
   G4String Material;
   G4String TableName = aSQLTable->GetName();
@@ -107,12 +103,9 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
       length = rOuterStart = rOuterEnd = 10.*mm;
       rInnerStart = rInnerEnd = 0.0;
       VisRed = VisGreen = VisBlue = 0.;
-      ID = k+1;
       VisType = "W";
       Material = "VACUUM";
 
-      if(aSQLTable->GetVariable("ID")!=NULL)
-	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
       if(aSQLTable->GetVariable("RED")!=NULL)
 	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
       if(aSQLTable->GetVariable("BLUE")!=NULL)
@@ -167,28 +160,18 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 	case 's': VisAtt->SetForceSolid(true); break;
 	}
       aConeVol->SetVisAttributes(VisAtt);
-      if(ID<1 || ID>k+1){
-	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
-	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildCone " << G4endl;
-	G4Exception("Aborting Program");
-      }
-      else VOL_LIST[ID] = aConeVol;
+
+      VOL_LIST.push_back(aConeVol);
 
     }
 
   PlaceComponents(aSQLTable, VOL_LIST);
-  delete [] VOL_LIST;
-  VOL_LIST = NULL;
 }
 
 void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
 {
-  G4LogicalVolume** VOL_LIST = NULL;
-  
   G4int NVariables = aSQLTable->GetVariable("NZPLANES")->GetNVariables();
-  VOL_LIST = new G4LogicalVolume*[NVariables+1];
-  VOL_LIST[0] = itsMarkerVol;
-  for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
+
   G4int numZplanes;
   G4double* rInner = NULL;
   G4double* rOuter = NULL;
@@ -196,7 +179,6 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
   G4double VisRed; 
   G4double VisGreen;
   G4double VisBlue;
-  G4int ID;
   G4String VisType;
   G4String Material;
   G4String TableName = aSQLTable->GetName();
@@ -207,7 +189,6 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
       //Defaults
       numZplanes = 0;
       VisRed = VisGreen = VisBlue = 0.;
-      ID = k+1;
       VisType = "W";
       Material = "VACUUM";
 
@@ -232,8 +213,6 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
 	    zPos[planenum] = aSQLTable->GetVariable(zPos_ID)->GetDblValue(k);
 	}
 
-      if(aSQLTable->GetVariable("ID")!=NULL)
-	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
       if(aSQLTable->GetVariable("RED")!=NULL)
 	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
       if(aSQLTable->GetVariable("BLUE")!=NULL)
@@ -277,12 +256,8 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
 	case 's': VisAtt->SetForceSolid(true); break;
 	}
       aPolyConeVol->SetVisAttributes(VisAtt);
-      if(ID<1 || ID>k+1){
-	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
-	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildPolyCone " << G4endl;
-	G4Exception("Aborting Program");
-      }
-      else VOL_LIST[ID] = aPolyConeVol;
+
+      VOL_LIST.push_back(aPolyConeVol);
 
       delete [] rInner;
       rInner = NULL;
@@ -294,20 +269,12 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
     }
 
   PlaceComponents(aSQLTable, VOL_LIST);
-  delete [] VOL_LIST;
-  VOL_LIST = NULL;
 }
 
 void BDSGeometrySQL::BuildBox(BDSMySQLTable* aSQLTable)
 {
-  G4LogicalVolume** VOL_LIST = NULL;
-  
   G4int NVariables = aSQLTable->GetVariable("LENGTHX")->GetNVariables();
 
-  VOL_LIST = new G4LogicalVolume*[NVariables];
-  VOL_LIST[0] = itsMarkerVol;
-  for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
-  G4int ID;
   G4double lengthX;
   G4double lengthY;
   G4double lengthZ;
@@ -326,10 +293,6 @@ void BDSGeometrySQL::BuildBox(BDSMySQLTable* aSQLTable)
       VisRed = VisGreen = VisBlue = 0.;
       VisType = "W";
       Material = "VACUUM";
-      ID = k+1;
-
-      if(aSQLTable->GetVariable("ID")!=NULL)
-	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
       if(aSQLTable->GetVariable("RED")!=NULL)
 	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
       if(aSQLTable->GetVariable("BLUE")!=NULL)
@@ -376,27 +339,17 @@ void BDSGeometrySQL::BuildBox(BDSMySQLTable* aSQLTable)
 	case 's': VisAtt->SetForceSolid(true); break;
 	}
       aBoxVol->SetVisAttributes(VisAtt);
-      if(ID<1 || ID>k+1){
-	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
-	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildBox " << G4endl;
-	G4Exception("Aborting Program");
-      }
-      else VOL_LIST[ID] = aBoxVol;
+
+      VOL_LIST.push_back(aBoxVol);
     }
 
   PlaceComponents(aSQLTable, VOL_LIST);
-  delete [] VOL_LIST;
-  VOL_LIST = NULL;
 }
 
 void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
 {
-  G4LogicalVolume** VOL_LIST = NULL;
-  
   G4int NVariables = aSQLTable->GetVariable("RINNER")->GetNVariables();
-  VOL_LIST = new G4LogicalVolume*[NVariables+1];
-  VOL_LIST[0] = itsMarkerVol;
-  for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
+
   G4double rInner;
   G4double rOuter;
   G4double rSwept;
@@ -405,7 +358,6 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
   G4double VisRed; 
   G4double VisGreen;
   G4double VisBlue;
-  G4int ID;
   G4String VisType;
   G4String Material;
   G4String TableName = aSQLTable->GetName();
@@ -420,12 +372,9 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
       startingPhi = 0.0;
       deltaPhi=2*pi*radian;
       VisRed = VisGreen = VisBlue = 0.;
-      ID = k+1;
       VisType = "W";
       Material = "VACUUM";
 
-      if(aSQLTable->GetVariable("ID")!=NULL)
-	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
       if(aSQLTable->GetVariable("RED")!=NULL)
 	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
       if(aSQLTable->GetVariable("BLUE")!=NULL)
@@ -479,28 +428,17 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
 	case 's': VisAtt->SetForceSolid(true); break;
 	}
       aTorusVol->SetVisAttributes(VisAtt);
-      if(ID<1 || ID>k+1){
-	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
-	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildTorus " << G4endl;
-	G4Exception("Aborting Program");
-      }
-      else VOL_LIST[ID] = aTorusVol;
+
+      VOL_LIST.push_back(aTorusVol);
 
     }
 
   PlaceComponents(aSQLTable, VOL_LIST);
-  delete [] VOL_LIST;
-  VOL_LIST = NULL;
 }
 void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
 {
-  G4LogicalVolume** VOL_LIST = NULL;
-  
   G4int NVariables = aSQLTable->GetVariable("LENGTH")->GetNVariables();
 
-  VOL_LIST = new G4LogicalVolume*[NVariables];
-  VOL_LIST[0] = itsMarkerVol;
-  for( int i=1; i<NVariables; i++) VOL_LIST[i] = NULL;
   G4double length;
   G4double rInnerStart;
   G4double rInnerEnd;
@@ -509,7 +447,6 @@ void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
   G4double VisRed; 
   G4double VisGreen;
   G4double VisBlue;
-  G4int ID;
   G4String VisType;
   G4String Material;
   G4String TableName = aSQLTable->GetName();
@@ -521,12 +458,9 @@ void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
       length = rOuterStart = rOuterEnd = 10.*mm;
       rInnerStart = rInnerEnd = 0.0;
       VisRed = VisGreen = VisBlue = 0.;
-      ID = k+1;
       VisType = "W";
       Material = "VACUUM";
 
-      if(aSQLTable->GetVariable("ID")!=NULL)
-	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
       if(aSQLTable->GetVariable("RED")!=NULL)
 	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
       if(aSQLTable->GetVariable("BLUE")!=NULL)
@@ -593,17 +527,11 @@ void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
       aSamplerVol->SetSensitiveDetector(BDSSamplerSensDet);
       bdsOutput.nSamplers++;
       bdsOutput.SampName.push_back(Name + "_PhysiComp_1");
-      if(ID<1 || ID>k+1){
-	G4cout << Name << " has invalid ID assigned:  " << ID << G4endl;
-	G4cerr << "Stopping BDSIM in BDSGeometrySQL::BuildSampler " << G4endl;
-	G4Exception("Aborting Program");
-      }
-      else VOL_LIST[ID] = aSamplerVol;
+
+      VOL_LIST.push_back(aSamplerVol);
     }
 
   PlaceComponents(aSQLTable, VOL_LIST);
-  delete [] VOL_LIST;
-  VOL_LIST = NULL;
 }
 
 G4RotationMatrix* BDSGeometrySQL::RotateComponent(G4double psi,G4double phi,G4double theta)
@@ -637,7 +565,7 @@ G4RotationMatrix* BDSGeometrySQL::RotateComponent(G4double psi,G4double phi,G4do
 }
 
 
-void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume** VOL_LIST)
+void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalVolume*> VOL_LIST)
 {
   G4double PosX;
   G4double PosY;
@@ -646,7 +574,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
   G4double RotTheta;
   G4double RotPhi;
   G4double K1,K2,K3,K4;
-  G4int ID, PARENTID;
+  G4String PARENTNAME;
   G4String Name;
   G4String MagType;
   G4String TableName = aSQLTable->GetName();
@@ -661,23 +589,13 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
       PosX = PosY = PosZ = 0.;
       RotPsi = RotTheta = RotPhi = 0.;
       K1 = K2 = K3 = K4 = 0.;
-      ID = k+1;
-      PARENTID = 0;
+      PARENTNAME = "";
       align_in=0;
       align_out=0;
       SetSensitive=0;
       MagType = "";
-      if(aSQLTable->GetVariable("ID")!=NULL)
-	ID = aSQLTable->GetVariable("ID")->GetIntValue(k);
-      if(aSQLTable->GetVariable("PARENTID")!=NULL)
-	PARENTID = aSQLTable->GetVariable("PARENTID")->GetIntValue(k);
-
-      if(PARENTID<0 || PARENTID > NVariables){
-	G4cout << Name << " has invalid PARENTID assigned:  " << PARENTID << G4endl;
-	G4cerr << "Stopping BDSIM in BDSGeometrySQL::PlaceComponents " << G4endl;
-	G4Exception("Aborting Program");
-      }
-
+      if(aSQLTable->GetVariable("PARENTNAME")!=NULL)
+	PARENTNAME = aSQLTable->GetVariable("PARENTNAME")->GetStrValue(k);
       if(aSQLTable->GetVariable("POSX")!=NULL)
 	PosX = aSQLTable->GetVariable("POSX")->GetDblValue(k);
       if(aSQLTable->GetVariable("POSY")!=NULL)
@@ -710,8 +628,34 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
 	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
       if(Name=="_SQL") Name = TableName+BDSGlobals->StringFromInt(k) + "_SQL";
       if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+      if(PARENTNAME=="") PosZ-=itsMarkerLength/2; //Move definition of PosZ to front of element
+            
+      G4String::caseCompare cmpmode = G4String::ignoreCase;
 
-      if(PARENTID==0) PosZ-=itsMarkerLength/2; //Move definition of PosZ to front of element
+      G4int PARENTID=0;
+      if(PARENTNAME!=""){
+	PARENTNAME+="_LogVol";
+	for(G4int i=0; i<VOL_LIST.size(); i++)
+	  {
+	    if(PARENTNAME.compareTo(VOL_LIST[i]->GetName(),cmpmode)==0)
+	      {
+		PARENTID = i;
+		continue;
+	      }
+	  }
+      }
+      
+      // to being in line with logvol names (needed for name checking loop
+      Name+="_LogVol";
+      G4int ID=0;
+      for(G4int i=0; i<VOL_LIST.size(); i++)
+	{
+	  if(Name.compareTo(VOL_LIST[i]->GetName(),cmpmode)==0)
+	    {
+	      ID = i;
+	      continue;
+	    }
+	}
 
       if(SetSensitive) SensitiveComponents.push_back(VOL_LIST[ID]);
 
@@ -754,7 +698,6 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume**
 	    align_out_volume=PhysiComp;
 	}
 
-      G4String::caseCompare cmpmode = G4String::ignoreCase;
       G4double P0 = BDSGlobals->GetBeamTotalEnergy();
       G4double brho=
 	sqrt(pow(P0,2)- pow(electron_mass_c2,2))/(0.299792458 * (GeV/(tesla*m)));

@@ -51,6 +51,8 @@ public:
   G4VPhysicalVolume* align_out_volume;
   vector<G4LogicalVolume*> SensitiveComponents;
 
+  vector<G4LogicalVolume*> VOL_LIST;
+
 private:
 
   void BuildSQLObjects(G4String file);
@@ -62,7 +64,7 @@ private:
   G4RotationMatrix* RotateComponent(G4double psi,
 				    G4double phi,
 				    G4double theta);
-  void PlaceComponents(BDSMySQLTable* aSQLTable, G4LogicalVolume** VOL_LIST);
+  void PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalVolume*> VOL_LIST);
 
   G4double itsMarkerLength;
   ifstream ifs;
