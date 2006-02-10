@@ -12,14 +12,18 @@ all: lib bin parser
 ROOTLIBS=`$(ROOTSYS)/bin/root-config --libs`
 ROOTCFLAGS=`$(ROOTSYS)/bin/root-config --cflags`
 
-LDLIBS3 += $(ROOTLIBS)
+XMLCFLAGS=`xml2-config --cflags`
+XMLLIBS=`xml2-config --libs`
+
+LDLIBS3 += $(ROOTLIBS) GDML_LIBFLAG
 
 # standard Geant4 make procedure
 include $(G4INSTALL)/config/binmake.gmk
 
-CPPFLAGS += -DG4VERSION=@G4VERSION -D@USE_ROOT -DCLHEP_VERSION=@CLHEP_VERSION
+
+CPPFLAGS += -DG4VERSION=@G4VERSION -D@USE_ROOT -D@USE_XML -DCLHEP_VERSION=@CLHEP_VERSION
 CPPFLAGS += -Df2cFortran
-CPPFLAGS += $(ROOTCFLAGS)  
+CPPFLAGS += $(ROOTCFLAGS) GDML_CPPFLAG
 CPPFLAGS += -g -Wall $(ROOTINCS) -I.
 
 LDFLAGS += -L$(G4LIBDIR) -L./parser -lgmad
