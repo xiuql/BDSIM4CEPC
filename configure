@@ -24,11 +24,11 @@ echo " Checking your system ..."
 xmltest=`which xml2-config`
 if [ ! -z "$xmltest" ]; then
 printf "You have libxml installed:\n"
-printf "Do you want BDSIM able to parse GDML file format ?\n"
+printf "Do you want to enable the GDML geometry description format ?\n"
 read -p "[y/n]" value
 if test "$value" == "y"; then
     USE_XML="USE_XML"
-	         echo "           BDSIM is able to read GDML file format...."
+	         echo "           BDSIM is able to read GDML format...."
 fi
 fi
 # Determine G4 installation directory
