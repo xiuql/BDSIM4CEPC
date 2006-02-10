@@ -25,6 +25,9 @@ const int DEBUG = 1;
 #include "ggmad.hh"
 #include "BDSGeometrySQL.hh"
 
+#ifdef USE_XML
+#include "BDSGeometryGDML.hh"
+#endif
 
 #include <map>
 
@@ -137,6 +140,10 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
   GGmadDriver *ggmad;
   BDSGeometrySQL *Mokka;
 
+#ifdef USE_XML
+  BDSGeometryGDML *LCDD;
+#endif
+
   if(gFormat=="gmad") {
 
     ggmad = new GGmadDriver(gFile);
@@ -151,6 +158,15 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
 	// build the magnetic field manager and transportation
 	BuildMagField();
       }
+  }
+  else if(gFormat=="lcdd") {
+#ifdef USE_XML
+    LCDD = new BDSGeometryGDML(gFile);
+    LCDD->Construct(itsMarkerLogicalVolume);
+#else
+    G4cout << "XML support not selected during BDSIM configuration" << G4endl;
+    G4Exception("Please re-compile BDSIM with USE_XML flag in Makefile");
+#endif
   }
   else if(gFormat=="mokka") {
 
