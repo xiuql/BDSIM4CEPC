@@ -165,7 +165,46 @@ void BDSGeometryGDML::parseGDML(xmlDocPtr doc, xmlNodePtr cur)
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"setup")))
 	 {
-	   //Not coded yet
+	   G4cout << "Importing GDML Setup" << G4endl;
+	   G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
+	   G4String version = parseStrChar(xmlGetProp(cur,(const xmlChar*)"version"));
+	   xmlNodePtr tempcur = cur->xmlChildrenNode;
+	   G4String worldref;
+
+	   while(tempcur!=NULL)
+	     {
+	       if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"world")))
+		 worldref = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"));
+	       tempcur = tempcur->next;
+	     }
+
+	   G4String::caseCompare cmpmode = G4String::ignoreCase;
+	   G4int WORLDID = -1;
+	   G4int i;
+	   for(i=0; i<(G4int)LOGVOL_LIST.size(); i++)
+	     {
+	       G4String tempname = LOGVOL_LIST[i]->GetName();
+	       if(tempname.compareTo(worldref,cmpmode)==0)
+		 {
+		   WORLDID=i;
+		   break;
+		 }
+	     }
+	   if(WORLDID==-1) // couldn't find it.
+	     {
+	       G4cout << "Couldn't find worldref: " << worldref<<G4endl;
+	       G4Exception("Quitting in BDSGeometryGDML  GDML->Setup");
+	     }
+	   
+	   new G4PVPlacement(NULL,
+			     G4ThreeVector(0.,0.,0.),
+			     LOGVOL_LIST[WORLDID],
+			     LOGVOL_LIST[WORLDID]->GetName()+"_PhysiComp",
+			     itsMarkerVol,
+			     false,
+			     0);
+
+
 	 }
        cur = cur->next;
      }
@@ -618,41 +657,39 @@ void BDSGeometryGDML::parseVOLUME(xmlDocPtr doc, xmlNodePtr cur)
 
   if(materialref!="" && solidref!="")
     {
-      if(volume_name!="MARKER")
+      G4String::caseCompare cmpmode = G4String::ignoreCase;
+      G4int ID = -1;
+      G4int i;
+      for(i=0; i<(G4int)SOLID_LIST.size(); i++)
 	{
-	  G4String::caseCompare cmpmode = G4String::ignoreCase;
-	  G4int ID = -1;
-	  G4int i;
-	  for(i=0; i<(G4int)SOLID_LIST.size(); i++)
+	  G4String tempname1 = SOLID_LIST[i]->GetName();
+	  if(tempname1.compareTo(solidref,cmpmode)==0)
 	    {
-	      G4String tempname1 = SOLID_LIST[i]->GetName();
-	      if(tempname1.compareTo(solidref,cmpmode)==0)
-		{
-		  ID=i;
-		  break;
-		}
+	      ID=i;
+	      break;
 	    }
-	  if(ID==-1) // couldn't find it.
-	    {
-	      G4cout << "Couldn't find solidref: " << solidref<<G4endl;
-	      G4Exception("Quitting in BDSGeometryGDML LogVol building");
-	    }
-	  // TEMP 
-	  materialref="iron";
-	  G4LogicalVolume* alogvol = new G4LogicalVolume(SOLID_LIST[ID],
-							 theMaterials->GetMaterial(materialref),
-							 volume_name);
-	  
-	  LOGVOL_LIST.push_back(alogvol);
-	  visRed+=1.0/SOLID_LIST.size();
-	  //visGreen+=1.0/SOLID_LIST.size();
-	  visGreen=0.5;
-	  visBlue+=1.0/SOLID_LIST.size();
-	  G4VisAttributes* VisAtt = 
-	    new G4VisAttributes(G4Colour(visRed, visGreen, visBlue));
-	  VisAtt->SetForceSolid(true);
-	  alogvol->SetVisAttributes(VisAtt);
 	}
+      if(ID==-1) // couldn't find it.
+	{
+	  G4cout << "Couldn't find solidref: " << solidref<<G4endl;
+	  G4Exception("Quitting in BDSGeometryGDML LogVol building");
+	}
+      // TEMP 
+      materialref="iron";
+      G4LogicalVolume* alogvol = new G4LogicalVolume(SOLID_LIST[ID],
+						     theMaterials->GetMaterial(materialref),
+						     volume_name);
+      
+      LOGVOL_LIST.push_back(alogvol);
+      visRed+=1.0/SOLID_LIST.size();
+      //visGreen+=1.0/SOLID_LIST.size();
+      visGreen=0.5;
+      visBlue+=1.0/SOLID_LIST.size();
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(visRed, visGreen, visBlue));
+      VisAtt->SetForceSolid(true);
+      alogvol->SetVisAttributes(VisAtt);
+      
       while(origcur!=NULL)
 	{
 	  if ((!xmlStrcmp(origcur->name, (const xmlChar *)"physvol")))
@@ -662,6 +699,7 @@ void BDSGeometryGDML::parseVOLUME(xmlDocPtr doc, xmlNodePtr cur)
 	  origcur = origcur->next;
 	}
     }
+  
   else
     {
       G4cout << "Can't build" << volume_name << " : " << solidref << G4endl;
@@ -681,15 +719,9 @@ void BDSGeometryGDML::parsePHYSVOL(xmlDocPtr doc, xmlNodePtr cur, G4String volum
   G4String positionref;
   G4String rotationref;
   G4String position_name;
-  G4double position_x;
-  G4double position_y;
-  G4double position_z;
   G4double position_unit;
   G4String position_type;
   G4String rotation_name;
-  G4double rotation_x;
-  G4double rotation_y;
-  G4double rotation_z;
   G4double rotation_unit;
   G4String rotation_type;
 
@@ -720,12 +752,11 @@ void BDSGeometryGDML::parsePHYSVOL(xmlDocPtr doc, xmlNodePtr cur, G4String volum
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"position")))
 	 {
 	   position_name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));	   
-	   position_x = parseDblChar(xmlGetProp(cur,(const xmlChar*)"x"));	   
-	   position_y = parseDblChar(xmlGetProp(cur,(const xmlChar*)"y"));	   
-	   position_z = parseDblChar(xmlGetProp(cur,(const xmlChar*)"z"));	
 	   position_unit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"unit"));	   
 	   position_type = parseStrChar(xmlGetProp(cur,(const xmlChar*)"type"));	   
-	   PlacementPoint = G4ThreeVector(position_x, position_y, position_z);
+	   PlacementPoint = G4ThreeVector(parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")),
+					  parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")),
+					  parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")));
 	   if(position_unit!=0) PlacementPoint*=position_unit;
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"rotationref")))
@@ -744,12 +775,11 @@ void BDSGeometryGDML::parsePHYSVOL(xmlDocPtr doc, xmlNodePtr cur, G4String volum
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"rotation")))
 	 {
 	   rotation_name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));	   
-	   rotation_x = parseDblChar(xmlGetProp(cur,(const xmlChar*)"x"));	   
-	   rotation_y = parseDblChar(xmlGetProp(cur,(const xmlChar*)"y"));	   
-	   rotation_z = parseDblChar(xmlGetProp(cur,(const xmlChar*)"z"));	   
 	   rotation_unit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"unit"));	   
 	   rotation_type = parseStrChar(xmlGetProp(cur,(const xmlChar*)"type"));	   
-	   G4ThreeVector rotvect = G4ThreeVector(rotation_x, rotation_y, rotation_z);
+	   G4ThreeVector rotvect = G4ThreeVector(parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")),
+						 parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")),
+						 parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")));
 	   if(rotation_unit!=0) rotvect*=rotation_unit;
 	   componentRotation = RotateComponent(rotvect);
 	 }
@@ -783,15 +813,18 @@ void BDSGeometryGDML::parsePHYSVOL(xmlDocPtr doc, xmlNodePtr cur, G4String volum
 	  break;
 	}
     }
-  G4LogicalVolume* parentVol = NULL;
-  if (PARENTID==-1) parentVol = itsMarkerVol;
-  else parentVol = LOGVOL_LIST[PARENTID];
+
+  if (PARENTID==-1)
+    {
+      G4cout << "Unable to locate volume: " << volume_name << G4endl;
+      G4Exception("Check volumes references");
+    }
 
   new G4PVPlacement(componentRotation,
 		    PlacementPoint,
 		    LOGVOL_LIST[ID],
 		    LOGVOL_LIST[ID]->GetName()+"_PhysiComp",
-		    parentVol,
+		    LOGVOL_LIST[PARENTID],
 		    false,
 		    0);
   
