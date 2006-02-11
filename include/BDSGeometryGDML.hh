@@ -177,8 +177,8 @@ inline G4bool BDSGeometryGDML::EvaluateExpression(const char* expr, G4double& re
   G4int end = length-1;
   double term;
   result = 0.0;
-
-  for(G4int i = length-1; i>=0; i--)
+  G4int i;
+  for(i = length-1; i>=0; i--)
     {
       if(expr[i]=='+')
 	{
@@ -213,8 +213,8 @@ inline G4bool BDSGeometryGDML::EvaluateTerm(const char* term, G4int termLength, 
   G4int end = termLength-1;
   result = 1.0;
   G4double number;
-
-  for (G4int i = end ; i>=0; i--)
+  G4int i;
+  for (i = end ; i>=0; i--)
     {
       if(term[i] == '*')
 	{
@@ -244,8 +244,8 @@ inline G4bool BDSGeometryGDML::VerifyExpression(const char* expr)
 {
   G4int length = strlen(expr);
   if(length==0) return false;
-
-  for (G4int i=0; i<length; i++)
+  G4int i;
+  for (i=0; i<length; i++)
     {
       if(expr[i] >='0' && expr[i] <= '9')
 	continue;
@@ -263,8 +263,8 @@ inline G4bool BDSGeometryGDML::VerifyNumber(const char* expr)
 {
   G4int length = strlen(expr);
   if(length==0) return false;
-
-  for (G4int i=0; i<length; i++)
+  G4int i;
+  for (i=0; i<length; i++)
     {
       if(expr[i] >='0' && expr[i] <= '9')
 	continue;
@@ -280,25 +280,25 @@ inline G4bool BDSGeometryGDML::StrToFloat(const char* str, G4int start, G4int en
   if(!str) return false;
   
   G4double factor=0.1;
-  
-  for(G4int i=start; i<end; i++)
+  G4int i,j;
+  for(i=start; i<end; i++)
     {
 
       if(str[i]=='.' && (str[i+1]=='e' || str[i]=='E' || str[i] =='^'))
 	{
-	  for(G4int j= i+2; j< end; j++)
+	  for(j= i+2; j< end; j++)
 	    if(str[j] <'0' || str[j] >'9') return false;
 	  break;
 	}
       else if(str[i]=='.')
 	{
-	  for(G4int j= i+1; j< end; j++)
+	  for(j= i+1; j< end; j++)
 	    if(str[j] <'0' || str[j] >'9') return false;
 	  break;
 	}
       else if(str[i] =='^')
 	{
-	  for(G4int j= i+1; j< end; j++)
+	  for(j= i+1; j< end; j++)
 	    {
 	      if(str[j] == '.') continue;
 	      if(str[j] <'0' || str[j] >'9') return false;
@@ -307,7 +307,7 @@ inline G4bool BDSGeometryGDML::StrToFloat(const char* str, G4int start, G4int en
 	}
       else if(str[i]=='e'  || str[i]=='E')
 	{
-	  for(G4int j= i+1; j< end; j++)
+	  for(j= i+1; j< end; j++)
 	    if(str[j] <'0' || str[j] >'9') return false;
 	  break;
 	}
@@ -316,7 +316,7 @@ inline G4bool BDSGeometryGDML::StrToFloat(const char* str, G4int start, G4int en
     }
   
   f=0.0;
-  for(G4int i=start; i<end; i++)
+  for(i=start; i<end; i++)
     {
       if(str[i]=='.') continue;
 

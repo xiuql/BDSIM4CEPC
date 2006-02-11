@@ -93,7 +93,7 @@ void BDSGeometryGDML::Construct(G4LogicalVolume *marker)
 
 void BDSGeometryGDML::parseDoc()
 {
-  char* docname = itsGDMLfile.c_str();
+  const char* docname = itsGDMLfile.c_str();
   xmlDocPtr doc;
   xmlNodePtr cur;
 
@@ -116,7 +116,7 @@ void BDSGeometryGDML::parseDoc()
    if (xmlStrcmp(cur->name, (const xmlChar *) "lcdd"))
    {
    xmlFreeDoc(doc);
-   G4Exception("XML document of the wrong type, root node != lcdd\nCheck your XML file ￼\n");
+   G4Exception("XML document of the wrong type, root node != lcdd\nCheck your XML file\n");
    }
 
    cur = cur->xmlChildrenNode;
