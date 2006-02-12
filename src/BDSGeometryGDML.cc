@@ -112,7 +112,7 @@ void BDSGeometryGDML::parseDoc()
    G4Exception("empty document");
   }
 
-//test the xml format, must be start by lccdd
+//test the xml format, must be start by lcdd
    if (xmlStrcmp(cur->name, (const xmlChar *) "lcdd"))
    {
    xmlFreeDoc(doc);
@@ -123,13 +123,37 @@ void BDSGeometryGDML::parseDoc()
    
    while (cur != NULL)
      {
-       if ((!xmlStrcmp(cur->name, (const xmlChar *)"lcdd")))
+       if ((!xmlStrcmp(cur->name, (const xmlChar *)"header")))
 	 {
-	   // Not coded yet - to be done soon as this section contains Vis/Color information
+	   //Note coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"iddict")))
+	 {
+	   //Note coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"sensitive_detectors")))
+	 {
+	   //Note coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"limits")))
+	 {
+	   //Note coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"regions")))
+	 {
+	   //Note coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"display")))
+	 {
+	   parseDISPLAY(cur);
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"gdml")))
 	 {
-	   parseGDML(doc,cur);
+	   parseGDML(cur);
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"fields")))
+	 {
+	   //Note coded yet
 	 }
        cur = cur->next;
      }
@@ -138,7 +162,78 @@ void BDSGeometryGDML::parseDoc()
    return;
 }
 
-void BDSGeometryGDML::parseGDML(xmlDocPtr doc, xmlNodePtr cur)
+void BDSGeometryGDML::parseDISPLAY(xmlNodePtr cur)
+{
+  cur = cur->xmlChildrenNode;
+
+  while (cur != NULL)
+     {
+       if ((!xmlStrcmp(cur->name, (const xmlChar *)"vis")))
+	 {
+	   parseVIS(cur);
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VisType")))
+	 {
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"DisplayType")))
+	 {
+	   //Note coded yet
+	 }
+       cur = cur->next;
+     }
+  return;
+}
+
+void BDSGeometryGDML::parseVIS(xmlNodePtr cur)
+{
+  G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
+  G4bool visible = parseBoolChar(xmlGetProp(cur,(const xmlChar*)"visible"));
+  G4bool show_daughters = parseBoolChar(xmlGetProp(cur,(const xmlChar*)"show_daughters"));
+  G4String line_style = parseStrChar(xmlGetProp(cur,(const xmlChar*)"line_style"));
+  G4String drawing_style = parseStrChar(xmlGetProp(cur,(const xmlChar*)"drawing_style"));
+
+  G4double R = 1.0, G = 1.0, B = 1.0, alpha = 1.0;
+
+  cur = cur->xmlChildrenNode;
+  
+  while(cur!=NULL)
+    {
+      if ((!xmlStrcmp(cur->name, (const xmlChar *)"color")))
+	{
+	  R = parseDblChar(xmlGetProp(cur,(const xmlChar*)"R"));
+	  G = parseDblChar(xmlGetProp(cur,(const xmlChar*)"G"));
+	  B = parseDblChar(xmlGetProp(cur,(const xmlChar*)"R"));
+	  alpha = parseDblChar(xmlGetProp(cur,(const xmlChar*)"alpha"));
+
+	}
+      else if ((!xmlStrcmp(cur->name, (const xmlChar *)"color")))
+	{
+	  
+	}
+      cur = cur->next;
+    }
+
+  G4VisAttributes* VisAtt = 
+    new G4VisAttributes(G4Colour(R,G,B,alpha));
+
+  if(drawing_style=="solid" )VisAtt->SetForceSolid(true);
+  else if(drawing_style=="wireframe") VisAtt->SetForceWireframe(true);
+
+  if(line_style=="unbroken" )VisAtt->SetLineStyle(G4VisAttributes::unbroken);
+  else if(line_style=="dashed") VisAtt->SetLineStyle(G4VisAttributes::dashed);
+  else if(line_style=="dotted") VisAtt->SetLineStyle(G4VisAttributes::dotted);
+
+  VisAtt->SetVisibility(visible);
+  if(show_daughters) VisAtt->SetDaughtersInvisible(false);
+  else VisAtt->SetDaughtersInvisible(true);
+
+  VIS_REF avis;
+  avis.name = name;
+  avis.value = VisAtt;
+  VIS_LIST.push_back(avis);
+  return;
+}
+void BDSGeometryGDML::parseGDML(xmlNodePtr cur)
 {
   cur = cur->xmlChildrenNode;
 
@@ -147,21 +242,22 @@ void BDSGeometryGDML::parseGDML(xmlDocPtr doc, xmlNodePtr cur)
        if ((!xmlStrcmp(cur->name, (const xmlChar *)"define")))
 	 {
 	   G4cout << "Importing GDML Definitions" << G4endl;
-	   parseDEFINE(doc,cur);
+	   parseDEFINE(cur);
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"materials")))
 	 {
-	   //Not coded yet
+	   G4cout << "Importing GDML Materials" << G4endl;
+	   parseMATERIALS(cur);
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"solids")))
 	 {
 	   G4cout << "Importing GDML Solids" << G4endl;
-	   parseSOLID(doc,cur);
+	   parseSOLID(cur);
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"structure")))
 	 {
 	   G4cout << "Importing GDML Structures" << G4endl;
-	   parseSTRUCTURE(doc,cur);
+	   parseSTRUCTURE(cur);
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"setup")))
 	 {
@@ -178,28 +274,11 @@ void BDSGeometryGDML::parseGDML(xmlDocPtr doc, xmlNodePtr cur)
 	       tempcur = tempcur->next;
 	     }
 
-	   G4String::caseCompare cmpmode = G4String::ignoreCase;
-	   G4int WORLDID = -1;
-	   G4int i;
-	   for(i=0; i<(G4int)LOGVOL_LIST.size(); i++)
-	     {
-	       G4String tempname = LOGVOL_LIST[i]->GetName();
-	       if(tempname.compareTo(worldref,cmpmode)==0)
-		 {
-		   WORLDID=i;
-		   break;
-		 }
-	     }
-	   if(WORLDID==-1) // couldn't find it.
-	     {
-	       G4cout << "Couldn't find worldref: " << worldref<<G4endl;
-	       G4Exception("Quitting in BDSGeometryGDML  GDML->Setup");
-	     }
-	   
+	   G4LogicalVolume* topvol = GetLogVolByName(worldref);
 	   new G4PVPlacement(NULL,
 			     G4ThreeVector(0.,0.,0.),
-			     LOGVOL_LIST[WORLDID],
-			     LOGVOL_LIST[WORLDID]->GetName()+"_PhysiComp",
+			     topvol,
+			     topvol->GetName()+"_PhysiComp",
 			     itsMarkerVol,
 			     false,
 			     0);
@@ -211,7 +290,7 @@ void BDSGeometryGDML::parseGDML(xmlDocPtr doc, xmlNodePtr cur)
   return;
 }
 
-void BDSGeometryGDML::parseSTRUCTURE(xmlDocPtr doc, xmlNodePtr cur)
+void BDSGeometryGDML::parseSTRUCTURE(xmlNodePtr cur)
 {
   cur = cur->xmlChildrenNode;
 
@@ -219,9 +298,7 @@ void BDSGeometryGDML::parseSTRUCTURE(xmlDocPtr doc, xmlNodePtr cur)
      {
        
        if ((!xmlStrcmp(cur->name, (const xmlChar *)"volume")))
-	 {
-	   parseVOLUME(doc,cur);
-	 }
+	 parseVOLUME(cur);
        cur = cur->next;
      }
   
@@ -229,7 +306,7 @@ void BDSGeometryGDML::parseSTRUCTURE(xmlDocPtr doc, xmlNodePtr cur)
 }
 
 
-void BDSGeometryGDML::parseDEFINE(xmlDocPtr doc, xmlNodePtr cur)
+void BDSGeometryGDML::parseDEFINE(xmlNodePtr cur)
 {
   cur = cur->xmlChildrenNode;
 
@@ -277,8 +354,37 @@ void BDSGeometryGDML::parseDEFINE(xmlDocPtr doc, xmlNodePtr cur)
   return;
 }
 
+void BDSGeometryGDML::parseMATERIALS(xmlNodePtr cur)
+{
+  cur = cur->xmlChildrenNode;
 
-void BDSGeometryGDML::parseSOLID(xmlDocPtr doc, xmlNodePtr cur)
+  while (cur != NULL)
+     {
+       
+       if ((!xmlStrcmp(cur->name, (const xmlChar *)"define")))
+	 {
+	   //Not coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"isotope")))
+	 {
+	   //Not coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"element")))
+	 {
+	   //Not coded yet
+	 }
+       else if ((!xmlStrcmp(cur->name, (const xmlChar *)"material")))
+	 {
+	   //Not coded yet
+	 }
+       cur = cur->next;
+     }
+  
+  return;
+
+}
+
+void BDSGeometryGDML::parseSOLID(xmlNodePtr cur)
 {
   cur = cur->xmlChildrenNode;
 
@@ -286,341 +392,61 @@ void BDSGeometryGDML::parseSOLID(xmlDocPtr doc, xmlNodePtr cur)
      {
        
        if ((!xmlStrcmp(cur->name, (const xmlChar *)"tube")))
-	 {
-	   G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
-	   G4double rmin = parseDblChar(xmlGetProp(cur,(const xmlChar*)"rmin"));
-	   G4double rmax = parseDblChar(xmlGetProp(cur,(const xmlChar*)"rmax"));
-	   G4double length = parseDblChar(xmlGetProp(cur,(const xmlChar*)"z"));
-	   G4double dphi = parseDblChar(xmlGetProp(cur,(const xmlChar*)"deltaphi"));
+	 BuildTube(cur);
 
-	   G4double lunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"lunit"));
-	   G4double aunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"launit"));
-	   
-	   if(aunit!=0) dphi*=aunit;
-	   if(lunit!=0) 
-	     {
-	       rmin*=lunit;
-	       rmax*=lunit;
-	       length*=lunit;
-	     }
-
-	   SOLID_LIST.push_back(new G4Tubs(name,
-					   rmin,
-					   rmax,
-					   length/2.0,
-					   0.0,
-					   dphi)
-				);
-	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"box")))
-	 {
-	   G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
-	   G4double x = parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")); 
-	   G4double y = parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")); 
-	   G4double z = parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")); 
+	 BuildBox(cur);
 
-	   G4double lunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"lunit"));
-	   G4double aunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"launit"));
-	   
-	   if(aunit!=0) {}
-	   if(lunit!=0) 
-	     {
-	       x*=lunit;
-	       y*=lunit;
-	       z*=lunit;
-	     }
-
-	   SOLID_LIST.push_back(new G4Box(name,
-					  x/2.0,
-					  y/2.0,
-					  z/2.0)
-				);
-	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"cone")))
 	 {
-	   G4Exception("Not coded cone yet");
+	   G4Exception("GDML cone not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"eltube")))
 	 {
-	   G4Exception("Not coded eltube yet");
+	   G4Exception("GDML eltube not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"hype")))
 	 {
-	   G4Exception("Not coded hype yet");
+	   G4Exception("GDML hype not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"intersection")))
 	 {
-	   G4Exception("Not coded intersection yet");
+	   G4Exception("GDML intersection not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"orb")))
 	 {
-	   G4Exception("Not coded orb yet");
+	   G4Exception("GDML orb not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"polyhedra")))
 	 {
-	   G4Exception("Not coded polyhedra yet");
+	   G4Exception("GDML polyhedra not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"sphere")))
 	 {
-	   G4Exception("Not coded sphere yet");
+	   G4Exception("GDML sphere not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"trap")))
 	 {
-	   G4Exception("Not coded trap yet");
+	   G4Exception("GDML trap not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"subtraction")))
-	 {
+	 BuildSubtraction(cur);
 
-	   G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
-	   G4double lunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"lunit"));
-	   G4double aunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"launit"));
-	   G4String firstname, secondname;
-
-	   G4String position_name;
-	   G4double position_unit;
-	   G4String position_type;
-	   G4ThreeVector PlacementPoint = G4ThreeVector(0.,0.,0.);
-
-	   G4String rotation_name;
-	   G4double rotation_unit;
-	   G4String rotation_type;
-	   G4RotationMatrix* componentRotation = NULL;
-
-	   G4String firstpos_name;
-	   G4double firstpos_unit;
-	   G4String firstpos_type;
-	   G4ThreeVector FirstPlacementPoint = G4ThreeVector(0.,0.,0.);
-
-	   G4String firstrot_name;
-	   G4double firstrot_unit;
-	   G4String firstrot_type;
-	   G4RotationMatrix* componentFirstRot = NULL;
-
-	   xmlNodePtr tempcur = cur->xmlChildrenNode;
-	   
-	   while(tempcur!=NULL)
-	     {
-	       if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"first")))
-		 firstname = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"));
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"second")))
-		 secondname = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"));
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"position")))
-		 {
-		   position_name = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"name"));	   
-		   position_unit = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"unit"));	   
-		   position_type = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"type"));	   
-		   PlacementPoint = G4ThreeVector(parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"x")),
-						  parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"y")),
-						  parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"z")));
-		   if(position_unit!=0 && lunit==0) PlacementPoint*=position_unit;
-		   else if(lunit!=0) PlacementPoint*=lunit;
-		 }
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"positionref")))
-		 {
-		   G4int i;
-		   for(i=0; i<(G4int)POS_LIST.size();i++)
-		     {
-		       if(POS_LIST[i].name==(parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"))))
-			 {
-			   PlacementPoint = POS_LIST[i].value;
-			   break;
-			 }
-		     }
-		 }
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"rotation")))
-		 {
-		   rotation_name = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"name"));	   
-		   rotation_unit = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"unit"));
-		   rotation_type = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"type"));
-		   G4ThreeVector rotvect = G4ThreeVector(parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"x")),
-							 parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"y")),
-							 parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"z")));
-		   if(rotation_unit!=0 && aunit==0) rotvect*=rotation_unit;
-		   else if(aunit!=0) rotvect*=aunit;
-		   componentRotation = RotateComponent(rotvect);
-		 }
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"rotationref")))
- 		 {
-		   G4int i;
-		   for(i=0; i<(G4int)ROT_LIST.size();i++)
-		     {
-		       if(ROT_LIST[i].name==(parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"))))
-			 {
-			   componentRotation = RotateComponent(ROT_LIST[i].value);
-			   break;
-			 }
-		     }
-		 }
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstposition")))
-		 {
-		   firstpos_name = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"name"));	   
-		   firstpos_unit = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"unit"));	   
-		   firstpos_type = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"type"));	   
-		   FirstPlacementPoint = G4ThreeVector(parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"x")),
-						  parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"y")),
-						  parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"z")));
-		   if(firstpos_unit!=0 && lunit==0) FirstPlacementPoint*=firstpos_unit;
-		   else if(lunit!=0) FirstPlacementPoint*=lunit;
-		 }
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstpositionref")))
-		 {
-		   G4int i;
-		   for(i=0; i<(G4int)POS_LIST.size();i++)
-		     {
-		       if(POS_LIST[i].name==(parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"))))
-			 {
-			   FirstPlacementPoint = POS_LIST[i].value;
-			   break;
-			 }
-		     }
-		 }
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstrotation")))
-		 {
-		   firstrot_name = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"name"));	   
-		   firstrot_unit = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"unit"));
-		   firstrot_type = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"type"));
-		   G4ThreeVector rotvect = G4ThreeVector(parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"x")),
-							 parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"y")),
-							 parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"z")));
-		   if(firstrot_unit!=0 && aunit==0) rotvect*=firstrot_unit;
-		   else if(aunit!=0) rotvect*=aunit;
-		   componentFirstRot = RotateComponent(rotvect);
-		 }
-
-	       else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstrotationref")))
-		 {
-		   G4int i;
-		   for(i=0; i<(G4int)ROT_LIST.size();i++)
-		     {
-		       if(ROT_LIST[i].name==(parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"))))
-			 {
-			   componentFirstRot = RotateComponent(ROT_LIST[i].value);
-			   break;
-			 }
-		     }
-		 }
-		 
-	       tempcur = tempcur->next;
-	     }
-
-	   G4int solidA=-1;
-	   G4int i;
-	   for(i=0; i<(G4int)SOLID_LIST.size(); i++)
-	     {
-	       if(SOLID_LIST[i]->GetName()== firstname)
-		 {
-		   solidA=i;
-		   break;
-		 }
-	     }
-
-	   G4int solidB=-1;
-	   for(i=0; i<(G4int)SOLID_LIST.size(); i++)
-	     {
-	       if(SOLID_LIST[i]->GetName()== secondname)
-		 {
-		   solidB=i;
-		   break;
-		 }
-	     }
-
-	   if (solidA==-1 || solidB==-1) 
-	     {
-	       G4cout << "Failing to buld subtraction solid: " << name << G4endl;
-	       G4Exception("BDSGeometryGDML:: One of Subtraction Solids not found!");
-	     }
-	   // cater for the 3 geant4 constructors
-	   if(componentRotation==NULL && componentFirstRot==NULL &&
-	      PlacementPoint==0.0 && FirstPlacementPoint==0.0)
-	     {
-	       SOLID_LIST.push_back(new G4SubtractionSolid(name,
-							   SOLID_LIST[solidA],
-							   SOLID_LIST[solidB])
-				    );
-	     }
-	   else if(componentFirstRot==NULL && FirstPlacementPoint==0.0)
-	     {
-	       G4Transform3D transform((*componentRotation).invert(),PlacementPoint);
-	       SOLID_LIST.push_back(new G4SubtractionSolid(name,
-							   SOLID_LIST[solidA],
-							   SOLID_LIST[solidB],
-							   transform)
-				    );
-
-	     }
-	   else G4Exception("Cant build subtraction solid properly");
-
-	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"torus")))
 	 {
-	   G4Exception("Not coded torus yet");
+	   G4Exception("GDML torus not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"trd")))
 	 {
-	   G4Exception("Not coded trd yet");
+	   G4Exception("GDML trd not currently implemented in BDSIM");
 	 }
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"union")))
 	 {
-	   G4Exception("Not coded union yet");
+	   G4Exception("GDML union not currently implemented in BDSIM");
 	 }
 
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"polycone")))
-	 {
-	   xmlNodePtr tempcur = cur->xmlChildrenNode;
-
-	   G4int numZPlanes = 0;
-	   while(tempcur!=NULL)
-	     {
-	       if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"zplane")))
-		 numZPlanes++;
-	       tempcur = tempcur->next;
-	     }
-
-	   G4double* zPlanes = NULL;
-	   G4double* rInner = NULL;
-	   G4double* rOuter = NULL;
-	   zPlanes = new G4double[numZPlanes];
-	   rInner = new G4double[numZPlanes];
-	   rOuter = new G4double[numZPlanes];
-
-	   tempcur = cur->xmlChildrenNode;
-	   G4int i=0;
-	   while(tempcur!=NULL)
-	     {
-	       if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"zplane")))
-		 {
-		   zPlanes[i] = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"z"));
-		   rInner[i] = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"rmin"));
-		   rOuter[i] = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"rmax"));
-		   i++;
-		 }
-	       tempcur = tempcur->next;
-	     }
-
-	   SOLID_LIST.push_back(new G4Polycone((parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"))),
-					       parseDblChar(xmlGetProp(cur,(const xmlChar*)"startphi")),
-					       parseDblChar(xmlGetProp(cur,(const xmlChar*)"deltaphi")),
-					       numZPlanes,
-					       zPlanes,
-					       rInner,
-					       rOuter)
-				);
-
-	   delete [] rInner;
-	   rInner = NULL;
-	   delete [] rOuter;
-	   rOuter = NULL;
-	   delete [] zPlanes;
-	   zPlanes = NULL;
-	 }
+	 BuildPolycone(cur);
 	   
        cur = cur->next;
      }
@@ -628,7 +454,7 @@ void BDSGeometryGDML::parseSOLID(xmlDocPtr doc, xmlNodePtr cur)
   return;
 }
 
-void BDSGeometryGDML::parseVOLUME(xmlDocPtr doc, xmlNodePtr cur)
+void BDSGeometryGDML::parseVOLUME(xmlNodePtr cur)
 {
   G4String volume_name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
   cur = cur->xmlChildrenNode;
@@ -657,44 +483,21 @@ void BDSGeometryGDML::parseVOLUME(xmlDocPtr doc, xmlNodePtr cur)
 
   if(materialref!="" && solidref!="")
     {
-      G4String::caseCompare cmpmode = G4String::ignoreCase;
-      G4int ID = -1;
-      G4int i;
-      for(i=0; i<(G4int)SOLID_LIST.size(); i++)
-	{
-	  G4String tempname1 = SOLID_LIST[i]->GetName();
-	  if(tempname1.compareTo(solidref,cmpmode)==0)
-	    {
-	      ID=i;
-	      break;
-	    }
-	}
-      if(ID==-1) // couldn't find it.
-	{
-	  G4cout << "Couldn't find solidref: " << solidref<<G4endl;
-	  G4Exception("Quitting in BDSGeometryGDML LogVol building");
-	}
       // TEMP 
       materialref="iron";
-      G4LogicalVolume* alogvol = new G4LogicalVolume(SOLID_LIST[ID],
+      G4LogicalVolume* alogvol = new G4LogicalVolume(GetSolidByName(solidref),
 						     theMaterials->GetMaterial(materialref),
 						     volume_name);
       
       LOGVOL_LIST.push_back(alogvol);
-      visRed+=1.0/SOLID_LIST.size();
-      //visGreen+=1.0/SOLID_LIST.size();
-      visGreen=0.5;
-      visBlue+=1.0/SOLID_LIST.size();
-      G4VisAttributes* VisAtt = 
-	new G4VisAttributes(G4Colour(visRed, visGreen, visBlue));
-      VisAtt->SetForceSolid(true);
-      alogvol->SetVisAttributes(VisAtt);
+
+      alogvol->SetVisAttributes(GetVisByName(visref));
       
       while(origcur!=NULL)
 	{
 	  if ((!xmlStrcmp(origcur->name, (const xmlChar *)"physvol")))
 	    {
-	      parsePHYSVOL(doc,origcur, volume_name);
+	      parsePHYSVOL(origcur, volume_name);
 	    }
 	  origcur = origcur->next;
 	}
@@ -711,19 +514,11 @@ void BDSGeometryGDML::parseVOLUME(xmlDocPtr doc, xmlNodePtr cur)
   return;
 }
 
-void BDSGeometryGDML::parsePHYSVOL(xmlDocPtr doc, xmlNodePtr cur, G4String volume_name)
+void BDSGeometryGDML::parsePHYSVOL(xmlNodePtr cur, G4String volume_name)
 {
   cur = cur->xmlChildrenNode;
 
   G4String volumeref;
-  G4String positionref;
-  G4String rotationref;
-  G4String position_name;
-  G4double position_unit;
-  G4String position_type;
-  G4String rotation_name;
-  G4double rotation_unit;
-  G4String rotation_type;
 
   G4RotationMatrix* componentRotation = NULL;
   
@@ -733,98 +528,31 @@ void BDSGeometryGDML::parsePHYSVOL(xmlDocPtr doc, xmlNodePtr cur, G4String volum
   while (cur != NULL)
      {
        if ((!xmlStrcmp(cur->name, (const xmlChar *)"volumeref")))
-	 {
-	   volumeref = parseStrChar(xmlGetProp(cur,(const xmlChar*)"ref"));
-	 }
+	 volumeref = parseStrChar(xmlGetProp(cur,(const xmlChar*)"ref"));
+
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"positionref")))
-	 {
-	   positionref = parseStrChar(xmlGetProp(cur,(const xmlChar*)"ref"));
-	   G4int i;
-	   for(i=0; i<(G4int)POS_LIST.size();i++)
-	     {
-	       if(POS_LIST[i].name==positionref)
-		 {
-		   PlacementPoint = POS_LIST[i].value;
-		   break;
-		 }
-	     }
-	 }
+	 PlacementPoint = GetPosition(parseStrChar(xmlGetProp(cur,(const xmlChar*)"ref")));
+       
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"position")))
-	 {
-	   position_name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));	   
-	   position_unit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"unit"));	   
-	   position_type = parseStrChar(xmlGetProp(cur,(const xmlChar*)"type"));	   
-	   PlacementPoint = G4ThreeVector(parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")),
-					  parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")),
-					  parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")));
-	   if(position_unit!=0) PlacementPoint*=position_unit;
-	 }
+	 PlacementPoint = GetPosition(cur);
+       
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"rotationref")))
-	 {
-	   rotationref = parseStrChar(xmlGetProp(cur,(const xmlChar*)"ref"));
-	   G4int i;
-	   for(i=0; i<(G4int)ROT_LIST.size();i++)
-	     {
-	       if(ROT_LIST[i].name==rotationref)
-		 {
-		   componentRotation = RotateComponent(ROT_LIST[i].value);
-		   break;
-		 }
-	     }
-	 }
+	 componentRotation = GetRotation(parseStrChar(xmlGetProp(cur,(const xmlChar*)"ref")));
+       
        else if ((!xmlStrcmp(cur->name, (const xmlChar *)"rotation")))
-	 {
-	   rotation_name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));	   
-	   rotation_unit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"unit"));	   
-	   rotation_type = parseStrChar(xmlGetProp(cur,(const xmlChar*)"type"));	   
-	   G4ThreeVector rotvect = G4ThreeVector(parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")),
-						 parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")),
-						 parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")));
-	   if(rotation_unit!=0) rotvect*=rotation_unit;
-	   componentRotation = RotateComponent(rotvect);
-	 }
+	 componentRotation = GetRotation(cur);
+
        cur = cur->next;
      }
 
-  G4String::caseCompare cmpmode = G4String::ignoreCase;
-  G4int ID = -1;
-  G4int i;
-  for(i=0; i<(G4int)LOGVOL_LIST.size(); i++)
-    {
-      G4String tempname = LOGVOL_LIST[i]->GetName();
-      if(tempname.compareTo(volumeref,cmpmode)==0)
-	{
-	  ID=i;
-	  break;
-	}
-    }
-  if (ID==-1)
-    {
-      G4cout << "Unable to locate volume: " << volumeref << G4endl;
-      G4Exception("Check volumes references");
-    }
-  G4int PARENTID = -1;
-  for(i=0; i<(G4int)LOGVOL_LIST.size(); i++)
-    {
-      G4String tempname = LOGVOL_LIST[i]->GetName();
-      if(tempname.compareTo(volume_name,cmpmode)==0)
-	{
-	  PARENTID=i;
-	  break;
-	}
-    }
-
-  if (PARENTID==-1)
-    {
-      G4cout << "Unable to locate volume: " << volume_name << G4endl;
-      G4Exception("Check volumes references");
-    }
+  G4LogicalVolume* currentVol = GetLogVolByName(volumeref);
+  G4LogicalVolume* parentVol = GetLogVolByName(volume_name);
 
   new G4PVPlacement(componentRotation,
 		    PlacementPoint,
-		    LOGVOL_LIST[ID],
-		    LOGVOL_LIST[ID]->GetName()+"_PhysiComp",
-		    LOGVOL_LIST[PARENTID],
+		    currentVol,
+		    currentVol->GetName()+"_PhysiComp",
+		    parentVol,
 		    false,
 		    0);
   

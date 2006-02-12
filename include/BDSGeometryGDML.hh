@@ -19,6 +19,9 @@
 #include "G4VSolid.hh"
 #include "G4Cons.hh"
 #include "G4Tubs.hh"
+#include "G4Polycone.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4Box.hh"
 #include "G4UserLimits.hh"
 #include "G4VisAttributes.hh"
 #include "BDSMySQLTable.hh"
@@ -61,6 +64,11 @@ struct CONST_REF{
   G4double value;
 };
 
+struct VIS_REF{
+  G4String name;
+  G4VisAttributes* value;
+};
+
 class BDSGeometryGDML
 {
 public:
@@ -68,12 +76,15 @@ public:
   ~BDSGeometryGDML();
 
   void parseDoc();
-  void parseGDML(xmlDocPtr doc, xmlNodePtr cur);
-  void parseDEFINE(xmlDocPtr doc, xmlNodePtr cur);
-  void parseSOLID(xmlDocPtr doc, xmlNodePtr cur);
-  void parseSTRUCTURE(xmlDocPtr doc, xmlNodePtr cur);
-  void parseVOLUME(xmlDocPtr doc, xmlNodePtr cur);
-  void parsePHYSVOL(xmlDocPtr doc, xmlNodePtr cur, G4String volume_name);
+  void parseGDML(xmlNodePtr cur);
+  void parseDISPLAY(xmlNodePtr cur);
+  void parseVIS(xmlNodePtr cur);
+  void parseDEFINE(xmlNodePtr cur);
+  void parseMATERIALS(xmlNodePtr cur);
+  void parseSOLID(xmlNodePtr cur);
+  void parseSTRUCTURE(xmlNodePtr cur);
+  void parseVOLUME(xmlNodePtr cur);
+  void parsePHYSVOL(xmlNodePtr cur, G4String volume_name);
 
   G4RotationMatrix* RotateComponent(G4ThreeVector rotvalues);
 
@@ -81,6 +92,7 @@ public:
   vector<G4LogicalVolume*> VOL_LIST;
   G4String parseStrChar(xmlChar* value);
   G4double parseDblChar(xmlChar* value);
+  G4bool parseBoolChar(xmlChar* value);
 
   G4bool stripwhitespace(G4String& str);
 
@@ -90,13 +102,32 @@ public:
   G4bool VerifyExpression(const char*);
   G4bool VerifyNumber(const char*);
   G4bool StrToFloat(const char* str, G4int start, G4int end, G4double& f);
+
 private:
+
+  // Fetching of imported objects
+  G4VisAttributes* GetVisByName(G4String name);
+  G4VSolid* GetSolidByName(G4String name);
+  G4LogicalVolume* GetLogVolByName(G4String name);
+  G4ThreeVector GetPosition(G4String name);
+  G4ThreeVector GetPosition(xmlNodePtr cur, G4double lunit=0.0);
+  G4RotationMatrix* GetRotation(G4String name);
+  G4RotationMatrix* GetRotation(xmlNodePtr cur, G4double aunit=0.0);
+
+
+  //Solid Builders
+
+  void BuildBox(xmlNodePtr cur);
+  void BuildTube(xmlNodePtr cur);
+  void BuildPolycone(xmlNodePtr cur);
+  void BuildSubtraction(xmlNodePtr cur);
 
   G4String itsGDMLfile;
   G4LogicalVolume* itsMarkerVol;
   vector <struct CONST_REF> CONST_LIST;
   vector <struct POS_REF> POS_LIST;
   vector <struct ROT_REF> ROT_LIST;
+  vector <struct VIS_REF> VIS_LIST;
   vector <G4VSolid*> SOLID_LIST;
   vector <G4LogicalVolume*> LOGVOL_LIST;
 
@@ -105,8 +136,150 @@ private:
 
 protected:
 };
-// simple casting - needed to suppress mulitple conversion warnings from gcc 3.3 and above compiler
-// second function of this method is to check for constants in value and or numerical functions and do them
+
+inline G4ThreeVector BDSGeometryGDML::GetPosition(xmlNodePtr cur, G4double lunit)
+{
+  G4String name, type;
+  G4double unit;
+  G4ThreeVector pos;
+
+  name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));	   
+  unit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"unit"));	   
+  type = parseStrChar(xmlGetProp(cur,(const xmlChar*)"type"));	   
+  pos  = G4ThreeVector(parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")),
+		       parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")),
+		       parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")));
+  if(unit!=0.0 && lunit==0) pos*=unit;
+  else if(lunit!=0.0) pos*=lunit;
+  POS_REF apos;
+  apos.name = name;
+  apos.value = pos;
+  POS_LIST.push_back(apos);
+  //G4cout << "pos: " <<name << " " << pos << G4endl;
+  return pos;
+}
+inline G4ThreeVector BDSGeometryGDML::GetPosition(G4String name)
+{
+  G4int ID = -1;
+  G4int i;
+  for(i=0; i<(G4int)POS_LIST.size();i++)
+    {
+      if(POS_LIST[i].name==name)
+	{
+	  ID=i;
+	  break;
+	}
+    }
+  if(ID==-1) // couldn't find it.
+    {
+      G4cout << "Couldn't find position: " << name<<G4endl;
+      G4Exception("Quitting in BDSGeometryGDML");
+    } 
+  //G4cout << "pos: " <<name << " " << POS_LIST[ID].value << G4endl;
+  return POS_LIST[ID].value;
+}
+inline G4RotationMatrix* BDSGeometryGDML::GetRotation(xmlNodePtr cur, G4double aunit)
+{
+  G4String name, type;
+  G4double unit;
+  G4ThreeVector rotvect;
+  
+  name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));	   
+  unit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"unit"));	   
+  type = parseStrChar(xmlGetProp(cur,(const xmlChar*)"type"));	   
+  rotvect = G4ThreeVector(parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")),
+			  parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")),
+			  parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")));
+  if(unit!=0.0 && aunit==0) rotvect*=unit;
+  else if(aunit!=0.0) rotvect*=aunit;
+  ROT_REF arot;
+  arot.name = name;
+  arot.value = rotvect;
+  ROT_LIST.push_back(arot);
+  //G4cout << "rot: " << name << " "<<rotvect << G4endl;
+  return RotateComponent(rotvect);
+}
+inline G4RotationMatrix* BDSGeometryGDML::GetRotation(G4String name)
+{
+  G4int ID = -1;
+  G4int i;
+  for(i=0; i<(G4int)ROT_LIST.size();i++)
+    {
+      if(ROT_LIST[i].name==name)
+	{
+	  ID=i;
+	  break;
+	}
+    }
+  if(ID==-1) // couldn't find it.
+    {
+      G4cout << "Couldn't find rotation: " << name<<G4endl;
+      G4Exception("Quitting in BDSGeometryGDML");
+    } 
+  //G4cout << "rot: " << name << " "<<ROT_LIST[ID].value << G4endl;
+  return RotateComponent(ROT_LIST[ID].value);
+}
+inline G4VisAttributes* BDSGeometryGDML::GetVisByName(G4String name)
+{
+  G4int ID = -1;
+  G4int i;
+  for(i=0; i<(G4int)VIS_LIST.size(); i++)
+    {
+      if(VIS_LIST[i].name==name)
+	{
+	  ID=i;
+	  break;
+	}
+    }
+  if(ID==-1) // couldn't find it.
+    {
+      G4cout << "Couldn't find visref: " << name<<G4endl;
+      G4cout << "Using default Vis settings" << G4endl;
+      return new G4VisAttributes(G4Colour(1.0,1.0,1.0));
+    } 
+  
+  return VIS_LIST[ID].value;
+}
+inline G4VSolid* BDSGeometryGDML::GetSolidByName(G4String name)
+{
+  G4int ID = -1;
+  G4int i;
+  for(i=0; i<(G4int)SOLID_LIST.size(); i++)
+    {
+      if(SOLID_LIST[i]->GetName()==name)
+	{
+	  ID=i;
+	  break;
+	}
+    }
+  if(ID==-1) // couldn't find it.
+    {
+      G4cout << "Couldn't find solid: " << name<<G4endl;
+      G4Exception("Quitting in BDSGeometryGDML");
+    } 
+  return SOLID_LIST[ID];
+}
+
+inline G4LogicalVolume* BDSGeometryGDML::GetLogVolByName(G4String name)
+{
+  G4String::caseCompare cmpmode = G4String::ignoreCase;
+  G4int ID = -1;
+  G4int i;
+  for(i=0; i<(G4int)LOGVOL_LIST.size(); i++)
+    {
+      if(LOGVOL_LIST[i]->GetName()==name)
+	{
+	  ID=i;
+	  break;
+	}
+    }
+  if(ID==-1) // couldn't find it.
+    {
+      G4cout << "Couldn't find logical volume: " << name<<G4endl;
+      G4Exception("Quitting in BDSGeometryGDML");
+    }
+  return LOGVOL_LIST[ID];
+}
 
 inline G4String BDSGeometryGDML::parseStrChar(xmlChar* value)
 {
@@ -114,6 +287,17 @@ inline G4String BDSGeometryGDML::parseStrChar(xmlChar* value)
   G4String val = G4String((char*)value);
   //G4cout << "strVAL: "<< val << G4endl;
   return val;
+}
+
+inline G4bool BDSGeometryGDML::parseBoolChar(xmlChar* value)
+{
+  if(value==NULL) return false;
+  G4String val = G4String((char*)value);
+  
+  if(val=="true") return true;
+  if(val=="false") return false;
+
+  return false;
 }
 
 inline G4double BDSGeometryGDML::parseDblChar(xmlChar* value)
@@ -364,6 +548,181 @@ inline G4bool BDSGeometryGDML::stripwhitespace(G4String& str)
   str = newstr;
   return true;
 }
+
+inline void BDSGeometryGDML::BuildBox(xmlNodePtr cur)
+{
+  G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
+  G4double x = parseDblChar(xmlGetProp(cur,(const xmlChar*)"x")); 
+  G4double y = parseDblChar(xmlGetProp(cur,(const xmlChar*)"y")); 
+  G4double z = parseDblChar(xmlGetProp(cur,(const xmlChar*)"z")); 
+  
+  G4double lunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"lunit"));
+  G4double aunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"launit"));
+  
+  if(aunit!=0) {}
+  if(lunit!=0) 
+    {
+      x*=lunit;
+      y*=lunit;
+      z*=lunit;
+    }
+  
+  SOLID_LIST.push_back(new G4Box(name,
+				 x/2.0,
+				 y/2.0,
+				 z/2.0)
+		       );
+}
+inline void BDSGeometryGDML::BuildTube(xmlNodePtr cur)
+{
+  G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
+  G4double rmin = parseDblChar(xmlGetProp(cur,(const xmlChar*)"rmin"));
+  G4double rmax = parseDblChar(xmlGetProp(cur,(const xmlChar*)"rmax"));
+  G4double length = parseDblChar(xmlGetProp(cur,(const xmlChar*)"z"));
+  G4double dphi = parseDblChar(xmlGetProp(cur,(const xmlChar*)"deltaphi"));
+  
+  G4double lunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"lunit"));
+  G4double aunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"launit"));
+  
+  if(aunit!=0) dphi*=aunit;
+  if(lunit!=0) 
+    {
+      rmin*=lunit;
+      rmax*=lunit;
+      length*=lunit;
+    }
+  
+  SOLID_LIST.push_back(new G4Tubs(name,
+				  rmin,
+				  rmax,
+				  length/2.0,
+				  0.0,
+				  dphi)
+		       );
+}
+inline void BDSGeometryGDML::BuildPolycone(xmlNodePtr cur)
+{
+  xmlNodePtr tempcur = cur->xmlChildrenNode;
+  
+  G4int numZPlanes = 0;
+  while(tempcur!=NULL)
+    {
+      if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"zplane")))
+	numZPlanes++;
+      tempcur = tempcur->next;
+    }
+  
+  G4double* zPlanes = NULL;
+  G4double* rInner = NULL;
+  G4double* rOuter = NULL;
+  zPlanes = new G4double[numZPlanes];
+  rInner = new G4double[numZPlanes];
+  rOuter = new G4double[numZPlanes];
+  
+  tempcur = cur->xmlChildrenNode;
+  G4int i=0;
+  while(tempcur!=NULL)
+    {
+      if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"zplane")))
+	{
+	  zPlanes[i] = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"z"));
+	  rInner[i] = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"rmin"));
+	  rOuter[i] = parseDblChar(xmlGetProp(tempcur,(const xmlChar*)"rmax"));
+	  i++;
+	}
+      tempcur = tempcur->next;
+    }
+  
+  SOLID_LIST.push_back(new G4Polycone((parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"))),
+				      parseDblChar(xmlGetProp(cur,(const xmlChar*)"startphi")),
+				      parseDblChar(xmlGetProp(cur,(const xmlChar*)"deltaphi")),
+				      numZPlanes,
+				      zPlanes,
+				      rInner,
+				      rOuter)
+		       );
+  
+  delete [] rInner;
+  rInner = NULL;
+  delete [] rOuter;
+  rOuter = NULL;
+  delete [] zPlanes;
+  zPlanes = NULL;
+}
+inline void BDSGeometryGDML::BuildSubtraction(xmlNodePtr cur)
+{
+  
+  G4String name = parseStrChar(xmlGetProp(cur,(const xmlChar*)"name"));
+  G4double lunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"lunit"));
+  G4double aunit = parseDblChar(xmlGetProp(cur,(const xmlChar*)"launit"));
+  G4String firstname, secondname;
+  
+  G4ThreeVector PlacementPoint = G4ThreeVector(0.,0.,0.);
+
+  G4RotationMatrix* componentRotation = NULL;
+
+  G4ThreeVector FirstPlacementPoint = G4ThreeVector(0.,0.,0.);
+
+  G4RotationMatrix* componentFirstRot = NULL;
+  
+  xmlNodePtr tempcur = cur->xmlChildrenNode;
+  
+  while(tempcur!=NULL)
+    {
+      if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"first")))
+	firstname = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"));
+      
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"second")))
+	secondname = parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref"));
+      
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"position")))
+	PlacementPoint = GetPosition(tempcur,lunit);
+      
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"positionref")))
+	PlacementPoint = GetPosition(parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref")));
+      
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"rotation")))
+	componentRotation = GetRotation(tempcur,aunit);
+
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"rotationref")))
+	componentRotation = GetRotation(parseStrChar(xmlGetProp(tempcur,(const xmlChar*)"ref")));
+      
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstposition")))
+	G4cout << "BDSGeometryGDML::BuildSubtraction: " << name<< " firstposition not supported" << G4endl;
+
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstpositionref")))
+	G4cout << "BDSGeometryGDML::BuildSubtraction: " << name<< " firstpositionref not supported" << G4endl;
+	
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstrotation")))
+	G4cout << "BDSGeometryGDML::BuildSubtraction: " << name<< " firstrotation not supported" << G4endl;
+	
+      else if ((!xmlStrcmp(tempcur->name, (const xmlChar *)"firstrotationref")))
+	G4cout << "BDSGeometryGDML::BuildSubtraction: " << name<< " firstrotationref not supported" << G4endl;
+	      
+      tempcur = tempcur->next;
+    }
+  
+  
+  if(componentRotation==0 && PlacementPoint==0)
+    {
+      SOLID_LIST.push_back(new G4SubtractionSolid(name,
+						  GetSolidByName(firstname),
+						  GetSolidByName(secondname))
+			   );
+    }
+  else
+    {
+      G4Transform3D transform(*componentRotation,PlacementPoint);
+      SOLID_LIST.push_back(new G4SubtractionSolid(name,
+						  GetSolidByName(firstname),
+						  GetSolidByName(secondname),
+						  transform)
+			   );
+      
+    }
+    
+}
+
 
 #endif
 
