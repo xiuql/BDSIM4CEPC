@@ -66,6 +66,8 @@ inline vector<G4String> StripComma(const G4String& text)
       strippedtext.push_back(atext);
       pch = strtok(NULL,",");
     }
+  delete [] tmp;
+  tmp=NULL;
   return strippedtext;
 }
 inline G4String StripFirst(const G4String& text)
