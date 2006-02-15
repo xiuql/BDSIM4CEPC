@@ -131,6 +131,9 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 
       if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
 
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
+
       G4Cons* aCone = new G4Cons(Name+"_Cone",
 				 rInnerStart,
 				 rOuterStart,
@@ -194,9 +197,9 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
 
       if(aSQLTable->GetVariable("NZPLANES")!=NULL)
 	numZplanes = aSQLTable->GetVariable("NZPLANES")->GetIntValue(k);
-      rInner = new G4double[numZplanes];
-      rOuter = new G4double[numZplanes];
-      zPos = new G4double[numZplanes];
+      rInner = new G4double[numZplanes+1];
+      rOuter = new G4double[numZplanes+1];
+      zPos = new G4double[numZplanes+1];
       
       for(G4int planenum=0; planenum<numZplanes; planenum++)
 	{
@@ -228,6 +231,9 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
 
       if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
 
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
+
       G4Polycone* aPolyCone = new G4Polycone(Name+"_PolyCone",
 					     0,
 					     twopi*radian,
@@ -258,7 +264,7 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
       aPolyConeVol->SetVisAttributes(VisAtt);
 
       VOL_LIST.push_back(aPolyConeVol);
-
+      
       delete [] rInner;
       rInner = NULL;
       delete [] rOuter;
@@ -313,6 +319,9 @@ void BDSGeometrySQL::BuildBox(BDSMySQLTable* aSQLTable)
 	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
 
       if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
 
       G4Box* aBox = new G4Box(Name+"_Box",
 			      lengthX/2,
@@ -399,6 +408,9 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
 	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
 
       if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
 
       G4Torus* aTorus = new G4Torus(Name+"_Torus",
 				    rInner,
@@ -628,14 +640,19 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
 	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
       if(Name=="_SQL") Name = TableName+BDSGlobals->StringFromInt(k) + "_SQL";
       if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
+
       if(PARENTNAME=="") PosZ-=itsMarkerLength/2; //Move definition of PosZ to front of element
             
+      PARENTNAME=itsMarkerVol->GetName()+"_"+Name;
       G4String::caseCompare cmpmode = G4String::ignoreCase;
 
       G4int PARENTID=0;
       if(PARENTNAME!=""){
 	PARENTNAME+="_LogVol";
-	for(G4int i=0; i<VOL_LIST.size(); i++)
+	for(G4int i=0; i<(G4int)VOL_LIST.size(); i++)
 	  {
 	    if(PARENTNAME.compareTo(VOL_LIST[i]->GetName(),cmpmode)==0)
 	      {
@@ -648,7 +665,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
       // to being in line with logvol names (needed for name checking loop
       Name+="_LogVol";
       G4int ID=0;
-      for(G4int i=0; i<VOL_LIST.size(); i++)
+      for(G4int i=0; i<(G4int)VOL_LIST.size(); i++)
 	{
 	  if(Name.compareTo(VOL_LIST[i]->GetName(),cmpmode)==0)
 	    {
