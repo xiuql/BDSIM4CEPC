@@ -53,16 +53,30 @@ BDSElement::BDSElement(G4String aName, G4String geometry, G4String bmap,
   itsField(NULL)
 {
   SetType(_ELEMENT);
-  if(DEBUG) G4cout<<"BDSElement : starting build logical volume "<<
-	      itsMarkerLogicalVolume<<G4endl;
 
-  BuildGeometry(); // build element box
+  // WARNING: ALign in and out will only apply to the first instance of the
+  //          element. Subsequent copies will have no alignement set.
+  align_in_volume = NULL;
+  align_out_volume = NULL;
 
-  if(DEBUG) G4cout<<"BDSElement : end build logical volume "<<
-	      itsMarkerLogicalVolume<<G4endl;
+  if(!(*LogVolCount)[itsName])
+    {
+      if(DEBUG) G4cout<<"BDSElement : starting build logical volume "<<
+		  itsMarkerLogicalVolume<<G4endl;
 
-  PlaceComponents(geometry,bmap); // place components (from file) and build filed maps
+      BuildGeometry(); // build element box
+      
+      if(DEBUG) G4cout<<"BDSElement : end build logical volume "<<
+		  itsMarkerLogicalVolume<<G4endl;
 
+      PlaceComponents(geometry,bmap); // place components (from file) and build filed maps
+    }
+  else
+    {
+      (*LogVolCount)[itsName]++;
+      
+      itsMarkerLogicalVolume=(*LogVol)[itsName];
+    }
 }
 
 void BDSElement::BuildGeometry()
@@ -260,8 +274,8 @@ void BDSElement::BuildMagField(G4int nvar, G4bool forceToAllDaughters)
 
   fChordFinder->SetDeltaChord(BDSGlobals->GetDeltaChord());
 
-  fieldManager->SetChordFinder( fChordFinder );
-  
+  fieldManager->SetChordFinder( fChordFinder ); 
+
   itsMarkerLogicalVolume->SetFieldManager(fieldManager,forceToAllDaughters);
   
   G4UserLimits* fUserLimits =
@@ -344,7 +358,7 @@ void BDSElement::AlignComponent(G4ThreeVector& TargetPos,
   if(align_in_volume != NULL)
     {
       G4cout << "BDSElement : Aligning incoming to SQL element " 
-	     << align_in_volume->GetName() << G4endl;
+      	     << align_in_volume->GetName() << G4endl;
       
       const G4RotationMatrix* inRot = align_in_volume->GetFrameRotation();
       TargetRot->transform((*inRot).inverse());
