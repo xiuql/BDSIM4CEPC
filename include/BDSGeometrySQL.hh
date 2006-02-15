@@ -9,8 +9,8 @@
 */
 
 
-#ifndef BDSInteractionPointSQL_h
-#define BDSInteractionPointSQL_h 1
+#ifndef BDSGeometrySQL_h
+#define BDSGeometrySQL_h 1
 
 #include "globals.hh"
 #include "BDSMaterials.hh"
