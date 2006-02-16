@@ -54,8 +54,8 @@ void BDSGeometrySQL::Construct(G4LogicalVolume *marker)
       else BuildSQLObjects(file);
     }
   
-  // Now that all solids are built - place them.
-  
+  // Close Geomlist file
+  ifs.close();
 }
 
 void BDSGeometrySQL::BuildSQLObjects(G4String file)
@@ -96,10 +96,14 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
   G4String Material;
   G4String TableName = aSQLTable->GetName();
   G4String Name;
+  G4double sphi;
+  G4double dphi;
 
   for(G4int k=0; k<NVariables; k++)
     {
       //Defaults
+      sphi =0.0;
+      dphi = twopi*radian;
       length = rOuterStart = rOuterEnd = 10.*mm;
       rInnerStart = rInnerEnd = 0.0;
       VisRed = VisGreen = VisBlue = 0.;
@@ -124,6 +128,10 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 	rOuterStart = aSQLTable->GetVariable("ROUTERSTART")->GetDblValue(k);
       if(aSQLTable->GetVariable("ROUTEREND")!=NULL)
 	rOuterEnd = aSQLTable->GetVariable("ROUTEREND")->GetDblValue(k);
+      if(aSQLTable->GetVariable("STARTPHI")!=NULL)
+	sphi = aSQLTable->GetVariable("STARTPHI")->GetDblValue(k);
+      if(aSQLTable->GetVariable("DELTAPHI")!=NULL)
+	dphi = aSQLTable->GetVariable("DELTAPHI")->GetDblValue(k);
       if(aSQLTable->GetVariable("MATERIAL")!=NULL)
 	Material = aSQLTable->GetVariable("MATERIAL")->GetStrValue(k);
       if(aSQLTable->GetVariable("NAME")!=NULL)
@@ -140,8 +148,8 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
 				 rInnerEnd,
 				 rOuterEnd,
 				 length/2,
-				 0,
-				 twopi*radian);
+				 sphi,
+				 dphi);
 
       G4LogicalVolume* aConeVol = 
 	new G4LogicalVolume(aCone,
@@ -186,10 +194,14 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
   G4String Material;
   G4String TableName = aSQLTable->GetName();
   G4String Name;
+  G4double sphi;
+  G4double dphi;
 
   for(G4int k=0; k<NVariables; k++)
     {
       //Defaults
+      sphi = 0.0;
+      dphi = twopi*radian;
       numZplanes = 0;
       VisRed = VisGreen = VisBlue = 0.;
       VisType = "W";
@@ -216,6 +228,10 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
 	    zPos[planenum] = aSQLTable->GetVariable(zPos_ID)->GetDblValue(k);
 	}
 
+      if(aSQLTable->GetVariable("STARTPHI")!=NULL)
+	sphi = aSQLTable->GetVariable("STARTPHI")->GetDblValue(k);
+      if(aSQLTable->GetVariable("DELTAPHI")!=NULL)
+	dphi = aSQLTable->GetVariable("DELTAPHI")->GetDblValue(k);
       if(aSQLTable->GetVariable("RED")!=NULL)
 	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
       if(aSQLTable->GetVariable("BLUE")!=NULL)
@@ -235,8 +251,8 @@ void BDSGeometrySQL::BuildPolyCone(BDSMySQLTable* aSQLTable)
       Name = itsMarkerVol->GetName()+"_"+Name;
 
       G4Polycone* aPolyCone = new G4Polycone(Name+"_PolyCone",
-					     0,
-					     twopi*radian,
+					     sphi,
+					     dphi,
 					     numZplanes,
 					     zPos,
 					     rInner,
@@ -362,8 +378,8 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
   G4double rInner;
   G4double rOuter;
   G4double rSwept;
-  G4double startingPhi;
-  G4double deltaPhi;
+  G4double sphi;
+  G4double dphi;
   G4double VisRed; 
   G4double VisGreen;
   G4double VisBlue;
@@ -378,8 +394,8 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
       rSwept = 20.*mm;
       rOuter = 10.*mm;
       rInner = 0.0;
-      startingPhi = 0.0;
-      deltaPhi=2*pi*radian;
+      sphi = 0.0;
+      dphi=2*pi*radian;
       VisRed = VisGreen = VisBlue = 0.;
       VisType = "W";
       Material = "VACUUM";
@@ -399,9 +415,9 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
       if(aSQLTable->GetVariable("RSWEPT")!=NULL)
 	rSwept = aSQLTable->GetVariable("RSWEPT")->GetDblValue(k);
       if(aSQLTable->GetVariable("STARTPHI")!=NULL)
-	startingPhi = aSQLTable->GetVariable("STARTPHI")->GetDblValue(k);
+	sphi = aSQLTable->GetVariable("STARTPHI")->GetDblValue(k);
       if(aSQLTable->GetVariable("DELTAPHI")!=NULL)
-	deltaPhi = aSQLTable->GetVariable("DELTAPHI")->GetDblValue(k);
+	dphi = aSQLTable->GetVariable("DELTAPHI")->GetDblValue(k);
       if(aSQLTable->GetVariable("MATERIAL")!=NULL)
 	Material = aSQLTable->GetVariable("MATERIAL")->GetStrValue(k);
       if(aSQLTable->GetVariable("NAME")!=NULL)
@@ -416,8 +432,8 @@ void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
 				    rInner,
 				    rOuter,
 				    rSwept,
-				    startingPhi,
-				    deltaPhi);
+				    sphi,
+				    dphi);
 
 
       G4LogicalVolume* aTorusVol = 
@@ -646,9 +662,9 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
 
       if(PARENTNAME=="") PosZ-=itsMarkerLength/2; //Move definition of PosZ to front of element
             
-      PARENTNAME=itsMarkerVol->GetName()+"_"+Name;
+      PARENTNAME=itsMarkerVol->GetName()+"_"+PARENTNAME;
       G4String::caseCompare cmpmode = G4String::ignoreCase;
-
+      
       G4int PARENTID=0;
       if(PARENTNAME!=""){
 	PARENTNAME+="_LogVol";
