@@ -11,13 +11,15 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSQuadStepper.cc,v 1.2 2005/08/18 16:49:41 agapov Exp $
+// $Id: BDSQuadStepper.cc,v 1.3 2005/11/15 16:24:10 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSQuadStepper.hh"
 #include "G4ThreeVector.hh"
 #include "G4LineSection.hh"
 #include "G4TransportationManager.hh"
+#include "G4Track.hh"
+#include "G4UserLimits.hh"
 using std::max;
 extern G4double BDSLocalRadiusOfCurvature;
 extern G4int event_number;
@@ -75,7 +77,13 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
       G4Navigator* QuadNavigator=
       	G4TransportationManager::GetTransportationManager()->
       	GetNavigatorForTracking();
-
+      if(h >= itsVolLength)
+	{
+	  // added steplength check for large h
+	  // (causes NAN with cosh and sinh later)
+	  h=itsVolLength;
+	  h2=h*h;
+	}
       G4AffineTransform LocalAffine=QuadNavigator-> 
       	GetLocalToGlobalTransform();
       // gab_dec03>>
@@ -288,11 +296,38 @@ void BDSQuadStepper::Stepper( const G4double yInput[],
 			     G4double yErr[]      )
 {  
   const G4int nvar = 6 ;
-
   G4int i;
-  for(i=0;i<nvar;i++) yErr[i]=0;
-  AdvanceHelix(yInput,0,hstep,yOut);
-  return ;
+  const G4double *pIn = yInput+3;
+  G4ThreeVector v0= G4ThreeVector( pIn[0], pIn[1], pIn[2]);  
+  G4double InitMag=v0.mag();
+  G4double kappa= - fPtrMagEqOfMot->FCof()*itsBGrad/InitMag;
+  
+  if(fabs(kappa)<1.e-6) //kappa is small - no error needed for paraxial treatment
+    {
+      for(i=0;i<nvar;i++) yErr[i]=0;
+      AdvanceHelix(yInput,0,hstep,yOut);
+    }
+  else   //need to compute errors for helical steps
+    {
+      G4double yTemp[7], yIn[7];
+      
+      //  Saving yInput because yInput and yOut can be aliases for same array
+      
+      for(i=0;i<nvar;i++) yIn[i]=yInput[i];
+      
+      G4double h = hstep * 0.5; 
+      
+      // Do two half steps
+      AdvanceHelix(yIn,   0,  h, yTemp);
+      AdvanceHelix(yTemp, 0, h, yOut); 
+      
+      // Do a full Step
+      h = hstep ;
+      AdvanceHelix(yIn, 0, h, yTemp); 
+      
+      for(i=0;i<nvar;i++) yErr[i] = yOut[i] - yTemp[i] ;
+    }
+  return;
 }
 
 G4double BDSQuadStepper::DistChord()   const 

@@ -48,6 +48,8 @@ class BDSQuadStepper : public G4MagIntegratorStepper
      void SetBGrad(G4double aBfield);
      G4double GetBGrad();
 
+  void SetVolLength(G4double aVolLength);
+
      void StepperName();
 
   /*
@@ -80,11 +82,16 @@ class BDSQuadStepper : public G4MagIntegratorStepper
     G4double itsBGrad;
   //    G4ThreeVector itsInitialPoint, itsFinalPoint, itsMidPoint,itsDistVec;
     G4double itsDist;
-
+  
+  G4double itsVolLength;
+  
 };
 
 inline  void BDSQuadStepper::SetBGrad(G4double aBGrad)
 {itsBGrad=aBGrad;
+}
+inline  void BDSQuadStepper::SetVolLength(G4double aVolLength)
+{itsVolLength=aVolLength;
 }
 inline G4double BDSQuadStepper::GetBGrad()
 {return itsBGrad;}

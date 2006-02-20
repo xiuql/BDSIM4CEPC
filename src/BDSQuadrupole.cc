@@ -123,7 +123,7 @@ void BDSQuadrupole::BuildBPFieldAndStepper()
   
   itsStepper=new BDSQuadStepper(itsEqRhs);
   itsStepper->SetBGrad(itsBGrad);
-
+  itsStepper->SetVolLength(itsLength);
 }
 
 BDSQuadrupole::~BDSQuadrupole()
