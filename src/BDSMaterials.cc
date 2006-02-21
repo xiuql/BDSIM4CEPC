@@ -99,11 +99,11 @@ BDSMaterials::BDSMaterials()
 	a = 32.066*g/mole;
 	G4Element* S = new G4Element(name="Sulphur", symbol="S", z = 16., a); //LDeacon 21 Feb 2006
 	
-	a=55.847*g/mole;
+	a = 55.847*g/mole;
 	G4Element* Fe = new G4Element(name="Iron", symbol="Fe", z=26., a); //LDeacon 21 Feb 2006
 	
 	a = 30.973762*g/mole;
-	G4Element* P = new G4 Element(name ="Phosphorous", symbol="P", z=15., a);//LDeacon 21 Feb 2006
+	G4Element* P = new G4Element(name ="Phosphorous", symbol="P", z=15., a);//LDeacon 21 Feb 2006
 
   density = 8.57*g/cm3;
   LCNiobium=new G4Material(name="LCNiobium",
@@ -117,11 +117,11 @@ BDSMaterials::BDSMaterials()
 
 	//Carbon Steel (shell of cryomodule). LDeacon 21 Feb 2006
 	density = 7.87*g/cm3;
-	LCCarbonSteel=new G4Material(name="LCCarbonSteel".
-															 density
+	LCCarbonSteel=new G4Material(name="LCCarbonSteel",
+															 density,
 															 ncomponents=5,
 															 kStateSolid,
-															 100*Kelvin, 
+															 100*kelvin, 
 															 1*atmosphere);
 
 	LCCarbonSteel->AddElement(C, fractionmass=0.0017);
