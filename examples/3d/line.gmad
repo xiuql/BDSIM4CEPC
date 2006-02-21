@@ -45,11 +45,14 @@ test2:line=(d,sbvu,dt,sbvd,d,sbvr,dt,sbvr);
 
 use,period=test1;
 
+sample, range=d[5];
 
 beam,  particle="e-",
        energy=10.0 * GeV,
        nparticles=1e+3,
-       distrType="gauss";
+       distrType="gauss",
+       sigmaX=0.01,
+       sigmaY=0.01;
       
-option, ngenerate=100, turnInteractions=1, 
-useEMHadronic=0;
+option, ngenerate=100, physicsList="standard";
+        
