@@ -6,7 +6,8 @@ all: htmlmanual pdfmanual
 htmlmanual: manual.texi
 	makeinfo $(MOPT) --html manual.texi
 pdfmanual:  manual.texi
-	texi2pdf manual.texi
+	texi2dvi manual.texi
+	dvipdf manual.dvi
 	rm -f *.aux *.cp *.fn *.toc *.pg *.ky *.log *.vr *.tp
 
 clean:
