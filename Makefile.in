@@ -12,18 +12,15 @@ all: lib bin parser
 ROOTLIBS=`$(ROOTSYS)/bin/root-config --libs`
 ROOTCFLAGS=`$(ROOTSYS)/bin/root-config --cflags`
 
-XMLCFLAGS=`xml2-config --cflags`
-XMLLIBS=`xml2-config --libs`
-
-LDLIBS3 += $(ROOTLIBS) GDML_LIBFLAG
+LDLIBS3 += $(ROOTLIBS) 
 
 # standard Geant4 make procedure
 include $(G4INSTALL)/config/binmake.gmk
 
 
-CPPFLAGS += -DG4VERSION=@G4VERSION -D@USE_ROOT -D@USE_XML -DCLHEP_VERSION=@CLHEP_VERSION
+CPPFLAGS += -DG4VERSION=@G4VERSION -D@USE_ROOT -DCLHEP_VERSION=@CLHEP_VERSION
 CPPFLAGS += -Df2cFortran
-CPPFLAGS += $(ROOTCFLAGS) GDML_CPPFLAG
+CPPFLAGS += $(ROOTCFLAGS) 
 CPPFLAGS += -g -Wall $(ROOTINCS) -I.
 
 LDFLAGS += -L$(G4LIBDIR) -L./parser -lgmad
@@ -35,7 +32,6 @@ distrib:
 	BDSIM/bdsim.cc BDSIM/bdsimrun BDSIM/Makefile.in \
 	BDSIM/configure BDSIM/README \
 	BDSIM/parser/*.h BDSIM/examples \
-	BDSIM/BDS_vis.mac BDSIM/gui.mac\
         BDSIM/docs BDSIM/parser \
 	BDSIM/examples BDSIM/utils
 
