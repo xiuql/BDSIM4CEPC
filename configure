@@ -21,16 +21,18 @@ echo " Checking your system ..."
 
 # Determine if libxml exist...
 # we will uyse at the end of the file
-xmltest=`which xml2-config`
-if [ ! -z "$xmltest" ]; then
-printf "You have libxml installed:\n"
-printf "Do you want to enable the GDML geometry description format ?\n"
-read -p "[y/n]" value
-if test "$value" == "y"; then
-    USE_XML="USE_XML"
-	         echo "           BDSIM is able to read GDML format...."
-fi
-fi
+#xmltest=`which xml2-config`
+#if [ ! -z "$xmltest" ]; then
+#printf "You have libxml installed:\n"
+#printf "Do you want to enable the GDML geometry description format ?\n"
+#read -p "[y/n]" value
+#if test "$value" == "y"; then
+#    USE_XML="USE_XML"
+#	         echo "           BDSIM is able to read GDML format...."
+#fi
+#fi
+
+
 # Determine G4 installation directory
 
 G4_install=$G4INSTALL
@@ -209,9 +211,6 @@ s%@BINDIR%$BIN_dir%g;
 s%@G4VERSION%$G4_version%g;
 s%@CLHEP_VERSION%$CLHEP_version%g;
 s%@USE_ROOT%$USE_ROOT%g;
-s%@USE_XML%$USE_XML%g;
-s/GDML_CPPFLAG/\$\(XMLCFLAGS\)/g;
-s/GDML_LIBFLAG/\$\(XMLLIBS\)/g;
 " >> $Makefile
 else
 cat Makefile.in  | sed "
@@ -223,11 +222,11 @@ s%@CLHEP_VERSION%$CLHEP_version%g;
 s%@USE_ROOT%$USE_ROOT%g;
 s/GDML_CPPFLAG//g;
 s/GDML_LIBFLAG//g;
-" | awk '!/XMLCFLAGS/{print$0}' | awk '!/XMLLIBS/{print$0}' >> $Makefile
+" >> $Makefile
 fi
 
 fi
-#echo `Makefile.in | se "s/\$\(ROOTLIBS\)/\$\(ROOTLIBS\)$(XMLLIBS)"`
+
 
 if test "$fatal" == "1" ; then
     echo "I found some errors, fix them first. Makefile not written" 
