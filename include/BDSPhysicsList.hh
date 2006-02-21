@@ -32,7 +32,8 @@ public:
   void ConstructEM();
 
   void ConstructEM_Low_Energy();
-  
+
+  void ConstructLaserWire();
 
 
 };
