@@ -56,24 +56,4 @@ clean :
 	rm -f parser libgmad.so $(OBJ) lex.yy.c parser.tab.c parser.tab.h
 
 
-# ggmad (geometry) parser
-
-gparser : gparser.cc ggmad.hh libggmad.so 
-	$(CC) gparser.cc -o gparser -L. -lggmad
-
-
-ggmad.o :ggmad.cc
-	$(CC) -Wall -fpic -c ggmad.cc
-
-glex.yy.o : glex.yy.c gparser.tab.c gparser.tab.h sym_table.h
-	$(CC) -Wall -fpic -c  lex.yy.c
-
-gy.tab.o : gparser.tab.h gparser.tab.c sym_table.h 
-	$(CC) -Wall -fpic -c $(INCL)  gparser.tab.c
-
-lex.gg.c : gparser.l gparser.tab.h gparser.y 
-	$(LEX) $(LOPT) -Pgg gparser.l
-
-gparser.tab.h gparser.tab.c : gparser.y
-	$(YACC) $(YOPT) gparser.y
 

@@ -13,5 +13,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   cout<<endl;
-  gmad_parser(stdin);
+  if(argc<2) return -1;
+  gmad_parser(argv[1]);
 }
