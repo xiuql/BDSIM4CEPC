@@ -8,8 +8,9 @@
 
 %x incl
 
+/*
 %option yylineno
-
+*/
 
 %{
   
@@ -27,12 +28,14 @@ extern int yyerror(char *s);
 
 #define MAX_INCLUDE_DEPTH 10
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+char include_filename_stack[MAX_INCLUDE_DEPTH][32];
+ int include_linenum_stack[MAX_INCLUDE_DEPTH];
 int include_stack_ptr = 0;
 
-/*
-#define YY_USER_ACTION yylloc.first_line = yylineno;\
-                       yylloc.last_line = yylineno;
-*/
+int line_num = 1;
+char* yyfilename;
+
+
 
 %}
 
@@ -42,7 +45,7 @@ int include_stack_ptr = 0;
 
 [\t ]+     //ignore whitespaces
 
-"!".*/\n {yylineno--;}    // ignore comments; there is a feature so that yylineno increases twice
+"!".*/\n { }    // commenst - ignore
 
 (([0-9]+)|([0-9]*\.[0-9]*))(e[+|-]?[0-9]+)? { yylval.dval=atof(yytext); return NUMBER; }
 
@@ -138,9 +141,17 @@ csample { return CSAMPLE; }
       yyin = fopen(yytext, "r");
       if(yyin)
 	{
+          //printf("saving to stack buffer n %d, file %s\n",include_stack_ptr,yyfilename );
+          // save info to the stack and load new buffer
+          include_linenum_stack[include_stack_ptr] = line_num;
+          line_num = 1;
+          strncpy(include_filename_stack[include_stack_ptr], yyfilename, 32);
+          strncpy(yyfilename,yytext,32); 
 	  include_stack[include_stack_ptr++] = YY_CURRENT_BUFFER;
+          strncpy(include_filename_stack[include_stack_ptr], yyfilename, 32);
 	  yy_switch_to_buffer(yy_create_buffer( yyin, YY_BUF_SIZE ) );
-	}
+	  //printf("done saving to stack\n");
+    	}
       else
 	{
 	  fprintf(stderr, "Error : can't open %s\n", yytext);
@@ -157,10 +168,17 @@ csample { return CSAMPLE; }
     }
   else
     {
+      // restore the previous buffer info
+      //printf("switching to previous buffer with %s\n", include_filename_stack[include_stack_ptr]);
       yy_delete_buffer(YY_CURRENT_BUFFER);
       yy_switch_to_buffer(include_stack[include_stack_ptr]);
+      strncpy( yyfilename, include_filename_stack[include_stack_ptr], 32) ;
+      line_num = include_linenum_stack[include_stack_ptr];
+      
     }
 }
+
+[\n]  line_num++;
 %%
 
 

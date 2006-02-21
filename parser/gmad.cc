@@ -13,6 +13,7 @@ extern struct symtab *symtab;
 extern int yyparse();
 
 extern FILE *yyin;
+extern char* yyfilename;
 
 extern int add_func(char *name, double (*func)(double));
 extern int add_var(char *name, double val,int is_rserved = 0);
@@ -94,6 +95,9 @@ int gmad_parser(string name)
   init();
   
   yyin=f; 
+  yyfilename = new char[32];
+  strncpy(yyfilename,name.c_str(),32);
+ 
   while(!feof(yyin))
     {
       yyparse();

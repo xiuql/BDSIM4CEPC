@@ -8,11 +8,15 @@
 
 %{
 
+  extern int line_num;
+  extern char* yyfilename;
+
+
   const int DEBUG = 0; // print debug info like parsing output etc.
   const int ECHO_GRAMMAR = 0; // print grammar rule expamsion (for debugging)
   const int VERBOSE = 0; // print warnings and errors
   const int VERBOSE_EXPAND = 0; // print the process of line expansion 
-  const int INTERACTIVE = 0; // print output of commands (like in interactive mode)
+  const int INTERACTIVE = 1; // print output of commands (like in interactive mode)
 
 #include "parser.h"
 
@@ -65,7 +69,11 @@ input :
        { 
 	 if(ECHO_GRAMMAR) printf("input -> input stmt ';' \n");
        }
-     ;
+/*       | error input';' */
+/* { */
+/*   yyerrok; */
+/* } */
+;
 
 
 stmt :          if_clause stmt { if(ECHO_GRAMMAR) printf("stmt -> IF '(' aexpr ')' stmt\n" ); execute = 1;}
@@ -73,6 +81,7 @@ stmt :          if_clause stmt { if(ECHO_GRAMMAR) printf("stmt -> IF '(' aexpr '
                 { if(ECHO_GRAMMAR) printf("stmt -> IF '(' bool_expr ')' ELSE stmt \n" ); }
               | atomic_stmt  { if(ECHO_GRAMMAR) printf("stmt -> atomic_stmt \n"); }
               | BEGN input END { if(ECHO_GRAMMAR) printf("stmt -> '{' stmt ';' atomic_stmt '}' \n"); }
+              
 ;
 
 if_clause: IF '(' aexpr ')' {if( ($3 > 0) && (execute > 0) ) execute = 1; else execute = 0;}
@@ -82,6 +91,11 @@ atomic_stmt :
             | expr { if(ECHO_GRAMMAR) printf("atomic_stmt -> expr\n"); }
             | command  { if(ECHO_GRAMMAR) printf("atomic_stmt -> command\n"); }
             | decl  { if(ECHO_GRAMMAR) printf("atomic_stmt -> decl\n"); }
+            | error
+              {
+		//yyerror(" : some error message\n"); 
+		if(ECHO_GRAMMAR) printf("\natomic_stmt -> error\n");
+	      }
 ;
 
 
@@ -1264,7 +1278,7 @@ beam_parameters :
 
 int yyerror(char *s)
 {
-  printf(s);
+  printf("%s at line %d , file %s\n",s, line_num, yyfilename);
   exit(1);
 }
 
