@@ -90,6 +90,21 @@ BDSMaterials::BDSMaterials()
   a = 92.906*g/mole;
   G4Element* Nb = new G4Element(name="Niobium", symbol="Nb", z=41., a);
 
+	a = 58.693*g/mole;
+	G4Element* Ni = new G4Element(name="Nickel", symbol="Ni", z=28., a); //LDeacon 6th Feb 2006
+	
+	a = 54.93805*g/mole;
+	G4Element* Mn = new G4Element(name="Manganese", symbol="Mn", z=25., a); //LDeacon 21 Feb 2006
+
+	a = 32.066*g/mole;
+	G4Element* S = new G4Element(name="Sulphur", symbol="S", z = 16., a); //LDeacon 21 Feb 2006
+	
+	a=55.847*g/mole;
+	G4Element* Fe = new G4Element(name="Iron", symbol="Fe", z=26., a); //LDeacon 21 Feb 2006
+	
+	a = 30.973762*g/mole;
+	G4Element* P = new G4 Element(name ="Phosphorous", symbol="P", z=15., a);//LDeacon 21 Feb 2006
+
   density = 8.57*g/cm3;
   LCNiobium=new G4Material(name="LCNiobium",
 			   density,
@@ -98,6 +113,22 @@ BDSMaterials::BDSMaterials()
 			   2*kelvin,
 			   1*atmosphere);
   LCNiobium->AddElement(Nb,1);
+
+
+	//Carbon Steel (shell of cryomodule). LDeacon 21 Feb 2006
+	density = 7.87*g/cm3;
+	LCCarbonSteel=new G4Material(name="LCCarbonSteel".
+															 density
+															 ncomponents=5,
+															 kStateSolid,
+															 100*Kelvin, 
+															 1*atmosphere);
+
+	LCCarbonSteel->AddElement(C, fractionmass=0.0017);
+  LCCarbonSteel->AddElement(Mn, fractionmass=0.0045);
+  LCCarbonSteel->AddElement(P, fractionmass=0.0004);
+  LCCarbonSteel->AddElement(S, fractionmass=0.0005);
+  LCCarbonSteel->AddElement(Fe, fractionmass=0.9929);
 
 
   pressure    = 1.e-9*(1.e-3*bar);
@@ -157,9 +188,7 @@ BDSMaterials::BDSMaterials()
   // aluminium
   G4Element* Al = new G4Element
     (name="Aluminium"  ,symbol="Al" , z= 13., a=26.98*g/mole);  
-  // iron
-  G4Element* Fe = new G4Element
-    (name="Iron"  ,symbol="Fe" , z= 26., a=55.85*g/mole);  
+
   G4Element* Si = new G4Element
     (name="Silicon",symbol="Si" , z= 14., a=28.09*g/mole);
 
@@ -182,6 +211,12 @@ BDSMaterials::BDSMaterials()
 			 kStateLiquid,300*kelvin,1*atmosphere);
   LCWater->AddElement(O, 1);
   LCWater->AddElement(H, 2);
+
+	//Invar.Temperature 2 kelvin. LDeacon 6th Feburary 2006
+	LCInvar = new G4Material
+		(name="LCInvar", density=8.1*kg/m3,ncomponents=2,kStateSolid,2*kelvin,1*atmosphere);
+	LCInvar->AddElement(Ni, fractionmass=0.35);
+	LCInvar->AddElement(Fe, fractionmass=0.65);
 
  // making Lead Tungstate
   LCLeadTungstate = new G4Material
