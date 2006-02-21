@@ -73,6 +73,7 @@ const int DEBUG = 1;
 
 
 //#include "BDSLaserWirePhysics.hh"
+#include "BDSLaserCompton.hh"
 //#include "BDSPlanckScatterPhysics.hh"
 //#include "BDSSynchRadPhysics.hh"
 //#include "BDSeBremPhysics.hh"
@@ -154,6 +155,15 @@ void BDSPhysicsList::ConstructProcess()
   // standard hadronic - photo-nuclear etc.
   if(BDSGlobals->GetPhysListName() == "hadronic_standard") 
     {
+      return;
+    }
+
+
+  // physics list for laser wire - standard em stuff + weighted compton scattering from laser wire
+  if(BDSGlobals->GetPhysListName() == "lw") 
+    {
+      ConstructEM();
+      ConstructLaserWire();
       return;
     }
 
@@ -376,4 +386,31 @@ void BDSPhysicsList::ConstructEM_Low_Energy()
       pmanager->AddProcess(new G4hLowEnergyIonisation,       -1,2,2);
     }
   }
+}
+
+
+void BDSPhysicsList::ConstructLaserWire()
+{
+  
+  theParticleIterator->reset();
+
+  BDSLaserCompton* lwProcess = new BDSLaserCompton;
+
+  while( (*theParticleIterator)() ){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+    
+    if (particleName == "e-") {
+      pmanager->AddProcess(lwProcess);
+      pmanager->SetProcessOrderingToLast(lwProcess,idxPostStep);
+    }
+
+    if (particleName == "e-") {
+      pmanager->AddProcess(lwProcess);
+      pmanager->SetProcessOrderingToLast(lwProcess,idxPostStep);
+    }
+
+  }
+
 }
