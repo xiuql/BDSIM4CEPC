@@ -6,13 +6,21 @@ option, beampipeRadius = 20 * cm,
 	beampipeThickness = 1 * cm;
 	
 
+include options.gmad;
+
 ! beamline definiton
 
 
-qd: quadrupole,l=1000 * m;
-d: drift,l=100 * m;
-s1: spoiler;
-a1: absorber;
+qd: quadrupole,l=1 * m;
+d: drift,l=1 * m;
+s1: rcol, l=0.1*m, xaper=1*cm,yaper=1*cm;
 endl:marker;
 
-test_line : line = (qd,d,s1,d,a1,d,endl);
+test_line : line = (qd,d,s1,d,d,endl);
+
+beam, particle="e-", energy=10*MeV,
+      distrType="gauss", sigmaX=0.1*m;
+
+option, physicsList="em_standard";
+
+use, period=test_line;
