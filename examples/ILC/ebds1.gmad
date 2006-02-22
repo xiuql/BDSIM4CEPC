@@ -75,5 +75,5 @@ include options.gmad;
        distrType="gauss",
        sigmaX=0.01*mm,
        sigmaY=0.01*mm,
-       sigmaXp=0.00,
-       sigmaYp=0.00;
+       sigmaXp=0.1,
+       sigmaYp=0.1;
