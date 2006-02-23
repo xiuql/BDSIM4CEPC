@@ -55,6 +55,8 @@ const int _GAUSSIAN = 0;
 const int _RING = 1;
 const int _SQUARE = 2;
 const int _CIRCLE = 3; 
+const int _ESHELL = 31;
+
 const int _GUINEAPIG_BUNCH = 4;
 const int _GUINEAPIG_PAIRS = 5;
 const int _GUINEAPIG_SLAC = 6;
@@ -63,6 +65,8 @@ struct Options {
 
   string physicsList;
 
+
+  // beam parameters
   string particleName;
   string distribType;
   string distribFile;
@@ -76,6 +80,8 @@ struct Options {
   double sigmaYp;
   double beamEnergy;
   double sigmaE;
+
+  double x, xp, y, yp; // for the elliptic shell distribution
 
   // for element specification
   double X0;
