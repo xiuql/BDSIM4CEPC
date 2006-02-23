@@ -273,6 +273,8 @@ G4int BDSOutput::WriteEnergyLoss(BDSEnergyCounterHitsCollection* hc)
 void BDSOutput::Echo(G4String str)
 {
   if(format == _ASCII)  of<<"#"<<str<<G4endl;
+  else // default
+    cout<<"#"<<str<<G4endl;
 }
 
 G4int BDSOutput::Commit(G4int FileNum)
