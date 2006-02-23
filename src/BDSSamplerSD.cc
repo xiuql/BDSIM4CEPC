@@ -62,6 +62,9 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 
   if(StoreHit)
     {
+      G4int TrackID = theTrack->GetTrackID();
+      G4int ParentID = theTrack->GetParentID();
+
       G4double time=theTrack->GetGlobalTime();
 
       G4double energy=theTrack->GetKineticEnergy()+
@@ -157,7 +160,7 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 			 start_z,start_E,start_x,start_xp,
 			 start_y,start_yp,
 			 z,energy,x,xPrime,y,yPrime,weight,
-			 PDGtype,nEvent);
+			 PDGtype,nEvent, ParentID, TrackID);
 
       smpHit->SetType(itsType);
 

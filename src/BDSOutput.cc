@@ -89,7 +89,9 @@ void BDSOutput::Init(G4int FileNum)
       SamplerTree->Branch("z",&z,"z/F");
       SamplerTree->Branch("weight",&weight,"weight/F");
       SamplerTree->Branch("part",&part,"part/I");
-      SamplerTree->Branch("nev",&nev,"z/I");
+      SamplerTree->Branch("nev",&nev,"nev/I");
+      SamplerTree->Branch("pID",&pID,"pID/I");
+      SamplerTree->Branch("tID",&track_id,"tID/I");
     }
 
   if(BDSGlobals->GetStoreTrajectory()) // create a tree with trajectories
@@ -171,7 +173,9 @@ G4int BDSOutput::WriteHits(BDSSamplerHitsCollection *hc)
        weight=(*hc)[i]->GetWeight();
        part=(*hc)[i]->GetPDGtype(); 
        nev=(*hc)[i]->GetEventNo(); 
-       
+       pID=(*hc)[i]->GetParentID(); 
+       track_id=(*hc)[i]->GetTrackID();
+      
        sTree->Fill();
        
      }

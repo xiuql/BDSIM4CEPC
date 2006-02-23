@@ -26,7 +26,8 @@ class BDSSamplerHit :public G4VHit
 		 G4double z,G4double mom,
 		 G4double x, G4double xPrime, G4double y, 
 		 G4double yPrime,G4double weight,
-		 G4int PDGtype,G4int nEvent);
+		 G4int PDGtype,G4int nEvent,
+		 G4int ParentID, G4int TrackID);
 
 
   ~BDSSamplerHit();
@@ -54,6 +55,8 @@ private:
   G4double itsWeight;
   G4int itsPDGtype;
   G4int itsEventNo;
+  G4int itsParentID;
+  G4int itsTrackID;
   G4String itsSampType;
   
 public:
@@ -119,7 +122,10 @@ public:
     {itsEventNo=nEvent;}
   inline G4int GetEventNo() const
     {return itsEventNo;}
-  
+  inline G4int GetParentID() const
+    {return itsParentID;}
+  inline G4int GetTrackID() const
+    {return itsTrackID;}
 };
 
 typedef G4THitsCollection<BDSSamplerHit> BDSSamplerHitsCollection;

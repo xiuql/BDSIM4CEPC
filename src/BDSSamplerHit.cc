@@ -24,14 +24,16 @@ G4double init_z,G4double init_mom,
 G4double init_x, G4double init_xPrime, G4double init_y, G4double init_yPrime,
 G4double z,G4double mom,
 G4double x, G4double xPrime, G4double y, G4double yPrime, G4double weight,
-G4int PDGtype,G4int nEvent)
+			     G4int PDGtype,G4int nEvent,
+			     G4int ParentID, G4int TrackID)
   :itsName(aName),
    itsInit_Z(init_z),itsInit_Mom(init_mom),itsInit_X(init_x),
    itsInit_XPrime(init_xPrime),
    itsInit_Y(init_y),itsInit_YPrime(init_yPrime),
    itsZ(z),itsMom(mom),itsX(x),itsXPrime(xPrime),
    itsY(y),itsYPrime(yPrime),itsWeight(weight),
-   itsPDGtype(PDGtype),itsEventNo(nEvent)
+   itsPDGtype(PDGtype),itsEventNo(nEvent),
+   itsParentID(ParentID),    itsTrackID(TrackID)
   {;}
 
 BDSSamplerHit::~BDSSamplerHit()
@@ -59,6 +61,9 @@ BDSSamplerHit::BDSSamplerHit(const BDSSamplerHit &right)
   itsPDGtype=right.itsPDGtype;
   itsEventNo=right.itsEventNo;
 
+  itsParentID=right.itsParentID;
+  itsTrackID=right.itsTrackID;
+
   itsSampType=right.itsSampType;
 
 }
@@ -84,6 +89,9 @@ const BDSSamplerHit& BDSSamplerHit::operator=(const BDSSamplerHit &right)
 
   itsPDGtype=right.itsPDGtype;
   itsEventNo=right.itsEventNo;
+
+  itsParentID=right.itsParentID;
+  itsTrackID=right.itsTrackID;
 
   itsSampType=right.itsSampType;
 
