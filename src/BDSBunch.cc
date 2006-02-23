@@ -3,6 +3,8 @@
 #include <iostream>
 #include "globals.hh"
 
+const int DEBUG = 1;
+
 using namespace std;
 
 extern G4bool verbose;      // run options
@@ -69,6 +71,15 @@ void BDSBunch::SetOptions(struct Options& opt)
       Y0 = opt.Y0;
       rMin = opt.Rmin;
       rMax = opt.Rmax;
+      energySpread = opt.sigmaE;
+    }
+  if(opt.distribType == "eshell")
+    {
+      distribType = _ESHELL;
+      shellx = opt.x;
+      shelly = opt.y;
+      shellxp = opt.xp;
+      shellyp = opt.yp;
       energySpread = opt.sigmaE;
     }
   if(opt.distribType == "guineapig_bunch")
@@ -175,10 +186,10 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
     }
   if(distribType == _RING)
     {
-      G4cout<<"RING: rMin="<<rMin<<" rMax="<<rMax<<G4endl;
+      if(DEBUG) G4cout<<"RING: rMin="<<rMin<<" rMax="<<rMax<<G4endl;
       
       r = ( rMin + (rMax - rMin) *  rand() / RAND_MAX ) * m;
-      phi = 2 * pi * rand() / RAND_MAX * m;
+      phi = 2 * pi * rand() / RAND_MAX;
 
       x0 = r * sin(phi);
       y0 = r * cos(phi);
@@ -189,6 +200,31 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
       t = 0;
       E = BDSGlobals->GetBeamKineticEnergy()
 	* (1 + energySpread/2. * (1. -2. * FlatGen->shoot()));
+    }
+  if(distribType == _ESHELL)
+    {
+      // generate elliptical shell - first generate on S1 and then transform into ellipse
+
+      if(DEBUG) G4cout<<"SHELL: x="<<shellx<<" xp="<<shellxp<<G4endl;
+      
+      phi = 2 * pi * rand() / RAND_MAX;
+
+      x0 = sin(phi) * shellx;
+      xp = cos(phi) * shellxp;
+
+      phi = 2 * pi * rand() / RAND_MAX;
+
+      y0 = sin(phi) * shelly;
+      yp = cos(phi) * shellyp;
+
+      z0 = 0;
+
+
+      zp=sqrt(1.-xp*xp -yp*yp);  
+      t = 0;
+      E = BDSGlobals->GetBeamKineticEnergy()
+	* (1 + energySpread/2. * (1. -2. * FlatGen->shoot()));
+
     }
   if(distribType == _GUINEAPIG_BUNCH)
     {
