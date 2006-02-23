@@ -30,7 +30,7 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   // defaults:
   itsEnergyOffset=0.;
   itsTrackWeightFactor=1.0;
-
+  
   if(opt.physicsList == "") 
     itsPhysListName = "standard";
   else
@@ -100,7 +100,9 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   itsNumberToGenerate = opt.numberToGenerate;
 
   itsNumberOfEventsPerNtuple = opt.numberOfEventsPerNtuple;
-
+  
+  itsEventNumberOffset = opt.eventNumberOffset;
+  
   itsRandomSeed = opt.randomSeed;
  
   if(opt.useTimer) {

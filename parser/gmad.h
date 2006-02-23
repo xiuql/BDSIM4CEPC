@@ -87,6 +87,7 @@ struct Options {
 
   int numberToGenerate;
   int numberOfEventsPerNtuple;
+  unsigned long int eventNumberOffset;
   int backgroundScaleFactor;
   double componentBoxSize;
   double tunnelRadius;
@@ -206,6 +207,7 @@ struct Parameters {
   
   // reset the parameters to defaults
   void flush() {
+
     l=0; lset = 0;
     r = 0; rset = 0;
 

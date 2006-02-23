@@ -806,6 +806,7 @@ void set_value(string name, double value )
   if(name == "nparticles" ) options.numberOfParticles = (int)value;
   if(name == "ngenerate" ) options.numberToGenerate = (int)value;
   if(name == "nperfile" ) options.numberOfEventsPerNtuple = (int)value;
+  if(name == "eventNumberOffset" ) options.eventNumberOffset = (int)value;
   if(name == "beampipeRadius" ) options.beampipeRadius = value;
 
   if(name == "boxSize" ) options.componentBoxSize = value;

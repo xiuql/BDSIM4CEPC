@@ -169,6 +169,8 @@ public:
 
   G4int GetNumberOfEventsPerNtuple();
 
+  G4int GetEventNumberOffset();
+
   // Internally transmitted variables:
   void SetGlobalBeamlineRotationY(G4double aYRotation);
   G4double GetGlobalBeamlineRotationY();
@@ -299,6 +301,7 @@ private:
 
   G4String itsOutputNtupleFileName;
   G4int itsNumberOfEventsPerNtuple;
+  G4int itsEventNumberOffset;
 
   // Internally used variables:
   G4double GlobalBeamlineRotationY;
@@ -592,6 +595,9 @@ inline G4String BDSGlobalConstants::GetOutputNtupleFileName()
 {return itsOutputNtupleFileName;}
 inline G4int BDSGlobalConstants::GetNumberOfEventsPerNtuple()
 {return itsNumberOfEventsPerNtuple;}
+
+inline G4int BDSGlobalConstants::GetEventNumberOffset()
+{return itsEventNumberOffset;}
 
 // Internally transmitted variables
   // Internally transmitted variables:
