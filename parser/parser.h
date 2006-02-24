@@ -820,7 +820,10 @@ void set_value(string name, double value )
   if(name == "sigmaT" ) options.sigmaT = value;
   if(name == "sigmaE" ) options.sigmaE = value;
 
-
+  if(name == "x" ) options.x = value;
+  if(name == "y" ) options.y = value;
+  if(name == "xp" ) options.xp = value;
+  if(name == "yp" ) options.yp = value;
 
   if(name == "X0" ) options.X0 = value;
   if(name == "Y0" ) options.X0 = value;
