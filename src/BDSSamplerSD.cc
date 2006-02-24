@@ -105,7 +105,7 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
       nEvent+=BDSGlobals->GetEventNumberOffset();
 
       G4int nSampler=theTrack->GetVolume()->GetCopyNo()+1;
-      G4String SampName = theTrack->GetVolume()->GetName();
+      G4String SampName = theTrack->GetVolume()->GetName()+"_"+BDSGlobals->StringFromInt(nSampler);
       G4int PDGtype=theTrack->GetDefinition()->GetPDGEncoding();
 
 

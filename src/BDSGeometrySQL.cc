@@ -557,7 +557,7 @@ void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
       }
       aSamplerVol->SetSensitiveDetector(BDSSamplerSensDet);
       bdsOutput.nSamplers++;
-      bdsOutput.SampName.push_back(Name);
+      bdsOutput.SampName.push_back(Name+"_1");
 
       VOL_LIST.push_back(aSamplerVol);
     }
