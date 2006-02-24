@@ -1,4 +1,4 @@
-include options.gmad;
+include /home/agapov/work/ilc-collimation/options.gmad;
 
 ! these constants are assumed
  rbpc1 := 1 * m;
@@ -47,33 +47,56 @@ include options.gmad;
 ! load beamline definitions;
 ! ------------------------------------------------------------------------------;
 
-  include ebsy.gxsif;
-  include eirt1.gxsif;
-  include eff1.gxsif;
-  include edl1.gxsif;
+  include /home/agapov/work/ilc-collimation/ebsy.gxsif;
+  include /home/agapov/work/ilc-collimation/eirt1.gxsif;
+  include /home/agapov/work/ilc-collimation/eff1.gxsif;
+  include /home/agapov/work/ilc-collimation/edl1.gxsif;
 
 ! ==============================================================================;
 ! input beam definitions;
 ! ------------------------------------------------------------------------------;
 
+  startl:marker;
+  endff:marker;
 	
-  !ebds:line=(ebsy,eirt1,eff1,edl1);
+  ebds:line=(startl,ebsy,eirt1,eff1,endff,edl1);
 
-  !use, period=ebsy;
-  use,period=eff1;
-  !use, period=eirt1;
-  !use, period=edl1;
+  use, period=ebds;
+  
+  sample, range=startl;
+  sample, range=endff;
 
-  !use, period=eff1;
-
-  sample, range=begeff1;
-  sample, range=endeffu;
+  !sample, range=bpmq079[1];
+  !sample, range=bpmq079[2];
+  !sample, range=bpmq079[3];
+  !sample, range=bpmq079[4];
+  !sample, range=bpmq079[5];
+  !sample, range=bpmq079[6];
+  !sample, range=bpmq079[7];
+  !sample, range=bpmq079[8];
+  !sample, range=bpmq079[9];
+  !sample, range=bpmq079[10];
+  !sample, range=bpmq079[11];
+  !sample, range=bpmq079[12];
+  !sample, range=bpmq079[13];
+  !sample, range=bpmq079[14];
+  !sample, range=bpmq079[15];
+  !sample, range=bpmq079[16];
+  !sample, range=bpmq079[17];
+  !sample, range=bpmq079[18];
+  !sample, range=bpmq079[19];
+  !sample, range=bpmq079[20];
+  !sample, range=bpmq079[21];
+  !sample, range=bpmq079[22];
+  !sample, range=bpmq079[23];
+  !sample, range=bpmq079[24];
 
   beam,  particle="e-",
        energy=ef * GeV,
        nparticles=1e+10,
-       distrType="gauss",
-       sigmaX=0.01*mm,
-       sigmaY=0.01*mm,
-       sigmaXp=0.1,
-       sigmaYp=0.1;
+       distrType="guineapig_bunch",
+       distrFile="halo.dat";
+       !distrType="eshell",
+       !x=1*mm, xp=0.002*mrad,
+       !y=0.6*mm, yp=0.0006*mrad;
+
