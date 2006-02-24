@@ -516,6 +516,9 @@ void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
 	  Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
 	}
       if(Name=="_SQL") Name = TableName+BDSGlobals->StringFromInt(k)+"_SQL";
+
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
      
       G4Cons* aSampler = new G4Cons(Name+"_samp",
 				    rInnerStart,
@@ -554,7 +557,7 @@ void BDSGeometrySQL::BuildSampler(BDSMySQLTable* aSQLTable)
       }
       aSamplerVol->SetSensitiveDetector(BDSSamplerSensDet);
       bdsOutput.nSamplers++;
-      bdsOutput.SampName.push_back(Name + "_PhysiComp_1");
+      bdsOutput.SampName.push_back(Name);
 
       VOL_LIST.push_back(aSamplerVol);
     }
@@ -664,7 +667,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
             
       PARENTNAME=itsMarkerVol->GetName()+"_"+PARENTNAME;
       G4String::caseCompare cmpmode = G4String::ignoreCase;
-      
+
       G4int PARENTID=0;
       if(PARENTNAME!=""){
 	PARENTNAME+="_LogVol";
@@ -679,11 +682,11 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
       }
       
       // to being in line with logvol names (needed for name checking loop
-      Name+="_LogVol";
+      G4String tmpname = Name+"_LogVol";
       G4int ID=0;
       for(G4int i=0; i<(G4int)VOL_LIST.size(); i++)
 	{
-	  if(Name.compareTo(VOL_LIST[i]->GetName(),cmpmode)==0)
+	  if(tmpname.compareTo(VOL_LIST[i]->GetName(),cmpmode)==0)
 	    {
 	      ID = i;
 	      continue;
@@ -698,7 +701,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
 	new G4PVPlacement(RotateComponent(RotPsi,RotPhi,RotTheta),
 			  PlacementPoint,
 			  VOL_LIST[ID],
-			  Name+"_PhysiComp",
+			  Name,
 			  VOL_LIST[PARENTID],
 			  false,
 			  0);

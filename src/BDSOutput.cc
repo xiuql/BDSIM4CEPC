@@ -158,6 +158,8 @@ G4int BDSOutput::WriteHits(BDSSamplerHitsCollection *hc)
 
        TTree* sTree=(TTree*)gDirectory->Get((*hc)[i]->GetName());
        
+       if(!sTree) G4Exception("BDSOutput: ROOT Sampler not found!");
+
        x0=(*hc)[i]->GetInitX() / micrometer; 
        xp0=(*hc)[i]->GetInitXPrime(); 
        y0=(*hc)[i]->GetInitY() / micrometer; 
