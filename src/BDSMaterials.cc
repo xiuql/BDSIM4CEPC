@@ -87,6 +87,9 @@ BDSMaterials::BDSMaterials()
   a = 207.2*g/mole;
   G4Element* Pb  = new G4Element(name="Lead"  ,symbol="Pb" , z= 82., a);
 
+  a = 47.867*g/mole;
+  G4Element* Ti = new G4Element(name="Titanium", symbol="Ti", z=22., a); 
+
   a = 92.906*g/mole;
   G4Element* Nb = new G4Element(name="Niobium", symbol="Nb", z=41., a);
 
@@ -191,6 +194,14 @@ BDSMaterials::BDSMaterials()
 
   G4Element* Si = new G4Element
     (name="Silicon",symbol="Si" , z= 14., a=28.09*g/mole);
+
+  LCNbTi = new G4Material
+    (name="LCNbTi", density=5.6*g/cm3, ncomponents=2,
+     kStateSolid,4*kelvin,1*atmosphere);
+  LCNbTi->AddElement(Nb, 1);
+  LCNbTi->AddElement(Ti, 1);
+  
+
 
   LCConcrete = new G4Material
     (name="LCConcrete", density=2.3*g/cm3, ncomponents=6,

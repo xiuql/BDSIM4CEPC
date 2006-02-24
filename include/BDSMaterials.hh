@@ -39,9 +39,9 @@ public:
   G4Material*  LCSilicon;
   G4Material*  LCBeryllium;
   G4Material*  LCNiobium;
-	G4Material*  LCInvar;
-	G4Material*  LCCarbonSteel;
-
+  G4Material*  LCNbTi;
+  G4Material*  LCInvar;
+  G4Material*  LCCarbonSteel;
 
 private:
 
@@ -68,8 +68,10 @@ inline G4Material* BDSMaterials::GetMaterial(G4String aMaterial)
   else if(aMaterial.compareTo("Beryllium",cmpmode)==0) return LCBeryllium;
   else if(aMaterial.compareTo("Silicon",cmpmode)==0) return LCSilicon;  
   else if(aMaterial.compareTo("Niobium",cmpmode)==0) return LCNiobium;  
-	else if(aMaterial.compareTo("Invar",cmpmode)==0) return LCInvar; 
-	else if(aMaterial.compareTo("CarbonSteel", cmpmode)==0) return LCCarbonSteel;
+  else if(aMaterial.compareTo("NbTi",cmpmode)==0) return LCNbTi;  
+  else if(aMaterial.compareTo("Invar",cmpmode)==0) return LCInvar; 
+  else if(aMaterial.compareTo("CarbonSteel", cmpmode)==0) return LCCarbonSteel;
+
   else
     {
       G4cout <<aMaterial<<" not known. Using Vacuum instead!!" <<G4endl;
