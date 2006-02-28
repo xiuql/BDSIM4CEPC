@@ -809,7 +809,8 @@ void set_value(string name, double value )
   if(name == "eventNumberOffset" ) options.eventNumberOffset = (int)value;
   if(name == "beampipeRadius" ) options.beampipeRadius = value;
 
-  if(name == "boxSize" ) options.componentBoxSize = value;
+  if(name == "boxSize" ) {options.componentBoxSize = value;}
+
   if(name == "tunnelRadius" ) options.tunnelRadius = value;
   if(name == "beampipeThickness" ) options.beampipeThickness = value;
 
@@ -851,6 +852,8 @@ void set_value(string name, double value )
   if(name == "stopTracks") options.stopTracks = (int) value; 
 
   if(name == "randomSeed") options.randomSeed = (int) value;
+
+  if(name == "srMultiplicity") options.synchPhotonMultiplicity = (int) value;
 
 
 }
