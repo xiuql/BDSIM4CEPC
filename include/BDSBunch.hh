@@ -94,6 +94,10 @@ private:
   G4double rMax;
   G4double Xp0;
   G4double Yp0;
+
+  // distribution parameters for the shell
+
+  G4double shellx, shelly, shellxp, shellyp;
   
   G4double betaX;
   G4double betaY;
