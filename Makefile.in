@@ -9,6 +9,37 @@ ROOTSYS=@ROOTSYS
 .PHONY: all
 all: gmad lib bin
 
+# stuff required for hadronic lists
+
+ifndef G4LISTS_BASE
+  EXTRALIBS += -L$(G4LIB)/plists/$(G4SYSTEM)
+  G4LISTS_BASE = $(G4INSTALL)/physics_lists
+else
+  EXTRALIBS += -L$(G4LISTS_BASE)/hadronic/plists/lib/$(G4SYSTEM)
+endif
+
+CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/Packaging/include
+#CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/QGSP_BERT/include
+#CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/QGSP_BIC/include
+#CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/QGSP_HP/include
+#CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_BERT/include
+#CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_BERT_HP/include
+#CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_BIC/include
+#CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_BIC_HP/include
+CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_LEAD/include
+
+#EXTRALIBS += -lQGSP_BERT
+#EXTRALIBS += -lQGSP_BIC
+#EXTRALIBS += -lQGSP_HP
+#EXTRALIBS += -lLHEP_BIC
+#EXTRALIBS += -lLHEP_BIC_HP
+#EXTRALIBS += -lLHEP_BERT
+#EXTRALIBS += -lLHEP_BERT_HP
+EXTRALIBS += -lLHEP_LEAD
+EXTRALIBS += -lPackaging
+
+
+
 ROOTLIBS=`$(ROOTSYS)/bin/root-config --libs`
 ROOTCFLAGS=`$(ROOTSYS)/bin/root-config --cflags`
 
@@ -24,6 +55,7 @@ CPPFLAGS += $(ROOTCFLAGS)
 CPPFLAGS += -g -Wall $(ROOTINCS) -I.
 
 LDFLAGS += -L$(G4LIBDIR) -L./parser -lgmad
+
 
 install:
 
