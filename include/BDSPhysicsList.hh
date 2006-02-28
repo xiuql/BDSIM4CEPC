@@ -33,7 +33,11 @@ public:
 
   void ConstructEM_Low_Energy();
 
+  void ConstructSR();
+
   void ConstructLaserWire();
+
+  void ConstructHadronic();
 
 
 };

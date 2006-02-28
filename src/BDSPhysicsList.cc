@@ -33,6 +33,9 @@ const int DEBUG = 1;
 //#include "EMPhysics.hh"
 #include "MuonPhysics.hh"
 //#include "HadronPhysicsQGSP_HP.hh"
+
+#include "HadronPhysicsLHEP.hh"
+
 //#include "IonPhysics.hh"
 
 
@@ -75,7 +78,8 @@ const int DEBUG = 1;
 //#include "BDSLaserWirePhysics.hh"
 #include "BDSLaserCompton.hh"
 //#include "BDSPlanckScatterPhysics.hh"
-//#include "BDSSynchRadPhysics.hh"
+//#include "BDSSynchrotronRadiation.hh"
+#include "G4SynchrotronRadiation.hh"
 //#include "BDSeBremPhysics.hh"
 #include "BDSGammaConversionPhysics.hh"
 #include "BDSLowEMPhysics.hh"
@@ -144,6 +148,14 @@ void BDSPhysicsList::ConstructProcess()
       return;
     }
 
+  // synchrotron radiation
+  if(BDSGlobals->GetPhysListName() == "sr") 
+    {
+      ConstructEM();
+      ConstructSR();
+      return;
+    }
+
   // standard electromagnetic + muon
   if(BDSGlobals->GetPhysListName() == "em_muon") 
     {
@@ -155,11 +167,14 @@ void BDSPhysicsList::ConstructProcess()
   // standard hadronic - photo-nuclear etc.
   if(BDSGlobals->GetPhysListName() == "hadronic_standard") 
     {
+      ConstructEM();
+      ConstructHadronic();
       return;
     }
 
 
-  // physics list for laser wire - standard em stuff + weighted compton scattering from laser wire
+  // physics list for laser wire - standard em stuff +
+  // weighted compton scattering from laser wire
   if(BDSGlobals->GetPhysListName() == "lw") 
     {
       ConstructEM();
@@ -237,6 +252,9 @@ void BDSPhysicsList::ConstructParticle()
   //  Construct  resonaces and quarks
   G4ShortLivedConstructor pShortLivedConstructor;
   pShortLivedConstructor.ConstructParticle();
+
+  //theMiscLHEP=new G4MiscLHEPBuilder;
+  //theStoppingHadron=new G4StoppingHadronBuilder;
 
 
 
@@ -406,11 +424,64 @@ void BDSPhysicsList::ConstructLaserWire()
       pmanager->SetProcessOrderingToLast(lwProcess,idxPostStep);
     }
 
-    if (particleName == "e-") {
+    if (particleName == "e+") {
       pmanager->AddProcess(lwProcess);
       pmanager->SetProcessOrderingToLast(lwProcess,idxPostStep);
     }
 
+  }
+
+}
+
+
+
+void BDSPhysicsList::ConstructHadronic()
+{
+
+  G4NeutronBuilder* theNeutrons=new G4NeutronBuilder;
+  G4LHEPNeutronBuilder * theLHEPNeutron;
+  theNeutrons->RegisterMe(theLHEPNeutron=new G4LHEPNeutronBuilder);
+
+  G4ProtonBuilder * thePro;
+  G4LHEPProtonBuilder * theLHEPPro;
+
+  thePro=new G4ProtonBuilder;
+  thePro->RegisterMe(theLHEPPro=new G4LHEPProtonBuilder);
+
+  G4PiKBuilder * thePiK;
+  G4LHEPPiKBuilder * theLHEPPiK;
+
+  thePiK=new G4PiKBuilder;
+  thePiK->RegisterMe(theLHEPPiK=new G4LHEPPiKBuilder);
+
+  theNeutrons->Build();
+  thePro->Build();
+
+
+
+}
+
+void BDSPhysicsList::ConstructSR()
+{
+  G4SynchrotronRadiation* srProcess = new G4SynchrotronRadiation;
+
+  theParticleIterator->reset();
+
+  while( (*theParticleIterator)() ){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+    
+    if (particleName == "e-") {
+      pmanager->AddProcess(srProcess);
+      pmanager->SetProcessOrderingToLast(srProcess,idxPostStep);
+    }
+    
+    if (particleName == "e+") {
+      pmanager->AddProcess(srProcess);
+      pmanager->SetProcessOrderingToLast(srProcess,idxPostStep);
+    }
+    
   }
 
 }
