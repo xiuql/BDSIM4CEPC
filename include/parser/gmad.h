@@ -73,6 +73,9 @@ struct Options {
 
   int numberOfParticles;
 
+  int nlinesIgnore; // ignore first lines in the input bunch file
+
+
   double sigmaX;
   double sigmaY;
   double sigmaT;
