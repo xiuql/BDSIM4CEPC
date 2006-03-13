@@ -47,6 +47,7 @@ void BDSOutput::SetFormat(G4int val)
       G4cout<<"output format ASCII, filename: "<<filename<<G4endl;
       of.open(filename);
       of<<"### BDSIM output created "<<ctime(&tm)<<" ####"<<G4endl;
+
     }
   if( format == _ROOT)
     {
@@ -132,9 +133,9 @@ G4int BDSOutput::WriteHits(BDSSamplerHitsCollection *hc)
 	  <<" "
 	  <<(*hc)[i]->GetZ() / m
 	  <<" "
-	  <<(*hc)[i]->GetXPrime()/(1.e-6*radian)
+	  <<(*hc)[i]->GetXPrime()
 	  <<" "
-	  <<(*hc)[i]->GetYPrime()/(1.e-6*radian)
+	  <<(*hc)[i]->GetYPrime()
 	  <<G4endl;
       }
     
