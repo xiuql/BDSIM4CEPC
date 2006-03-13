@@ -45,6 +45,7 @@ public:
   G4int WriteHits(BDSSamplerHitsCollection*);
   G4int WriteTrajectory(TrajectoryVector* TrajVec);
   G4int WriteEnergyLoss(BDSEnergyCounterHitsCollection*);
+
   void Echo(G4String str);
 
   G4int Commit(G4int FileNum);   // close the event
