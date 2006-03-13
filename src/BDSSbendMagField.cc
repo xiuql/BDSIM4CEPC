@@ -10,6 +10,8 @@
 #include "geomdefs.hh"
 #include "BDSSbendMagField.hh"
 
+const int DEBUG = 0;
+
 BDSSbendMagField::BDSSbendMagField(const G4ThreeVector& aField,
 			       const G4double length,
 			       const G4double angle) 
@@ -24,7 +26,7 @@ BDSSbendMagField::BDSSbendMagField(const G4ThreeVector& aField,
 	(BDSGlobals->GetBeamMomentum()/GeV)/
 	(0.299792458 * (GeV/tesla/m)*itsLocalRadius/m);
 
-      G4cout<<"B_inferred="<<B_inferred/tesla<<
+      if(DEBUG) G4cout<<"B_inferred="<<B_inferred/tesla<<
 	" aField="<<aField/tesla<<G4endl;
     }
   else
