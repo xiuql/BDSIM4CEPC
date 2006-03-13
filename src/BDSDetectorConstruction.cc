@@ -428,7 +428,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   ofstream BDSOutline;
   if(verbose)
     {
-      BDSOutline.open("BDSOutline.dat");
+      BDSOutline.open("bds_outline.dat");
       BDSOutline << "Name of Element\t" << "Length/m\t" << "Position/m" << G4endl; 
     }
   // define geometry scope
