@@ -30,7 +30,7 @@
 #include<string>
 
 
-const int DEBUG= 1;
+const int DEBUG= 0;
 
 //============================================================
 
