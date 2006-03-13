@@ -3,7 +3,7 @@
 #include <iostream>
 #include "globals.hh"
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 using namespace std;
 
@@ -12,6 +12,7 @@ extern G4bool verboseStep;
 extern G4bool verboseEvent;
 extern G4int verboseEventNumber;
 extern G4bool isBatch;
+
 
 BDSBunch::BDSBunch()
 {
@@ -51,6 +52,9 @@ BDSBunch::~BDSBunch()
 
 void BDSBunch::SetOptions(struct Options& opt)
 {
+  G4double val;
+#define _skip(nvalues) for(G4int i=0;i<nvalues;i++) InputBunchFile>>val;
+
 
   distribType = _GAUSSIAN; // default
 
@@ -87,18 +91,22 @@ void BDSBunch::SetOptions(struct Options& opt)
       distribType = _GUINEAPIG_BUNCH;
       inputfile = opt.distribFile;
       InputBunchFile.open(inputfile);
+      if(DEBUG) G4cout<<"GUINEAPIG_BUNCH: skipping "<<opt.nlinesIgnore<<"  lines"<<G4endl;
+      _skip(opt.nlinesIgnore * 6);
     }
   if(opt.distribType == "guineapig_slac")
     {
       distribType = _GUINEAPIG_SLAC;
       inputfile = opt.distribFile;
       InputBunchFile.open(inputfile);
+      _skip(opt.nlinesIgnore);
     }
   if(opt.distribType == "guineapig_pairs")
     {
       distribType = _GUINEAPIG_PAIRS;
       inputfile = opt.distribFile;
       InputBunchFile.open(inputfile);
+      _skip(opt.nlinesIgnore);
     }
 }
 
@@ -176,7 +184,7 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
   if(distribType == _GAUSSIAN)
     {
       x0 = sigmaX * GaussGen->shoot() * m;
-      y0 = sigmaX * GaussGen->shoot() * m;
+      y0 = sigmaY * GaussGen->shoot() * m;
       z0 = 0;
       xp = sigmaXp * GaussGen->shoot();
       yp = sigmaYp * GaussGen->shoot();
