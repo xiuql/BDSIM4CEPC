@@ -327,7 +327,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   
 
   // needed to draw trajectories and hits:
-  if(!BDSGlobals->GetUseBatch()) evt->Draw();
+  if(!isBatch) evt->Draw();
   
   // clear out the remaining trajectories
   TrajectoryVector::iterator iT;
