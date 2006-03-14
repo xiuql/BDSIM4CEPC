@@ -853,6 +853,8 @@ void set_value(string name, double value )
 
   if(name == "randomSeed") options.randomSeed = (int) value;
 
+  if(name == "nlinesIgnore") options.nlinesIgnore = (int) value;
+
   if(name == "srMultiplicity") options.synchPhotonMultiplicity = (int) value;
 
 
