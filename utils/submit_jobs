@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # submit jobs -
+# Example : submit_jobs ebds_job.gmad 10 1000
 
-usage="Usage : bdsimrun [gmad file] [njobs] [nevents] \n "
+
+usage="Usage : submit_jobs [gmad template file] [njobs] [nevents] \n "
 
 qsub=$(which qsub 2> /dev/null)
 qopt="-q medium"
