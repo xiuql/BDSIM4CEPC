@@ -117,7 +117,7 @@ G4int BDSOutput::WriteHits(BDSSamplerHitsCollection *hc)
 {
   if( format == _ASCII) {
     
-    of<<"#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):"<<G4endl;
+    //of<<"#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):"<<G4endl;
     
     G4cout.precision(6);
     
@@ -267,6 +267,22 @@ G4int BDSOutput::WriteEnergyLoss(BDSEnergyCounterHitsCollection* hc)
 #endif
   }
 
+ if( format == _ASCII) {
+  
+    G4int n_hit = hc->entries();
+    
+    for (G4int i=0;i<n_hit;i++)
+      {
+	G4double Energy=(*hc)[i]->GetEnergy();
+	G4double EWeightZ=(*hc)[i]->
+	  GetEnergyWeightedPosition()/Energy;
+	
+	of<<EWeightZ/m<<"  "<<Energy/GeV<<G4endl;
+
+      }
+
+  }
+
 }
 
 
@@ -277,7 +293,7 @@ void BDSOutput::Echo(G4String str)
 {
   if(format == _ASCII)  of<<"#"<<str<<G4endl;
   else // default
-    cout<<"#"<<str<<G4endl;
+    G4cout<<"#"<<str<<G4endl;
 }
 
 G4int BDSOutput::Commit(G4int FileNum)

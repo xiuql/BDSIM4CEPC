@@ -156,7 +156,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
       G4cout << G4endl;
     }
 
-  if(verboseEvent) bdsOutput.Echo("Begin of event:" + BDSGlobals->StringFromInt(event_number) ) ;
+  if(verboseEvent) G4cout<<"Begin of event: "<<event_number<<G4endl ;
 
   
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
@@ -187,8 +187,9 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
 
   if(DEBUG) G4cout<<"BDSEventAction : end of event action"<<G4endl;
+ 
   if(verboseEvent || verboseEventNumber == event_number)
-    bdsOutput.Echo("processing end of event");
+    G4cout<<"processing end of event"<<G4endl;
 
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
 

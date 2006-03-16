@@ -91,6 +91,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       distribType = _GUINEAPIG_BUNCH;
       inputfile = opt.distribFile;
       InputBunchFile.open(inputfile);
+      if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       if(DEBUG) G4cout<<"GUINEAPIG_BUNCH: skipping "<<opt.nlinesIgnore<<"  lines"<<G4endl;
       _skip(opt.nlinesIgnore * 6);
     }
@@ -99,6 +100,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       distribType = _GUINEAPIG_SLAC;
       inputfile = opt.distribFile;
       InputBunchFile.open(inputfile);
+      if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore);
     }
   if(opt.distribType == "guineapig_pairs")
@@ -106,6 +108,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       distribType = _GUINEAPIG_PAIRS;
       inputfile = opt.distribFile;
       InputBunchFile.open(inputfile);
+      if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore);
     }
 }
