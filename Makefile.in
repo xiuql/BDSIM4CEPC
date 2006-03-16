@@ -27,6 +27,7 @@ CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/Packaging/include
 #CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_BIC/include
 #CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_BIC_HP/include
 CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_LEAD/include
+CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP/include
 
 #EXTRALIBS += -lQGSP_BERT
 #EXTRALIBS += -lQGSP_BIC
@@ -36,6 +37,7 @@ CPPFLAGS += -I$(G4LISTS_BASE)/hadronic/LHEP_LEAD/include
 #EXTRALIBS += -lLHEP_BERT
 #EXTRALIBS += -lLHEP_BERT_HP
 EXTRALIBS += -lLHEP_LEAD
+EXTRALIBS += -lLHEP
 EXTRALIBS += -lPackaging
 
 
