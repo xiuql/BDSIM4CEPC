@@ -78,7 +78,7 @@ const int DEBUG = 1;
 //#include "BDSLaserWirePhysics.hh"
 #include "BDSLaserCompton.hh"
 //#include "BDSPlanckScatterPhysics.hh"
-//#include "BDSSynchrotronRadiation.hh"
+#include "BDSSynchrotronRadiation.hh"
 #include "G4SynchrotronRadiation.hh"
 //#include "BDSeBremPhysics.hh"
 #include "BDSGammaConversionPhysics.hh"
@@ -138,6 +138,14 @@ void BDSPhysicsList::ConstructProcess()
   if(BDSGlobals->GetPhysListName() == "em_standard") 
     {
       ConstructEM();
+      if(BDSGlobals->GetSynchRadOn()) ConstructSR();
+      return;
+    }
+
+  if(BDSGlobals->GetPhysListName() == "merlin") 
+    {
+      ConstructMerlin();
+      if(BDSGlobals->GetSynchRadOn()) ConstructSR();
       return;
     }
 
@@ -145,14 +153,7 @@ void BDSPhysicsList::ConstructProcess()
   if(BDSGlobals->GetPhysListName() == "em_low") 
     {
       ConstructEM_Low_Energy();
-      return;
-    }
-
-  // synchrotron radiation
-  if(BDSGlobals->GetPhysListName() == "sr") 
-    {
-      ConstructEM();
-      ConstructSR();
+      if(BDSGlobals->GetSynchRadOn()) ConstructSR();
       return;
     }
 
@@ -352,6 +353,54 @@ void BDSPhysicsList::ConstructEM()
   }
 }
 
+void BDSPhysicsList::ConstructMerlin()
+{
+  theParticleIterator->reset();
+  while( (*theParticleIterator)() ){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+    
+    if (particleName == "gamma") {
+      // gamma         
+      //pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
+      //pmanager->AddDiscreteProcess(new G4ComptonScattering);
+      //pmanager->AddDiscreteProcess(new G4GammaConversion);
+      
+    } else if (particleName == "e-") {
+      //electron
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4eIonisation,       -1, 2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 3,3);      
+      
+    } else if (particleName == "e+") {
+      //positron
+      //pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      //pmanager->AddProcess(new G4eIonisation,       -1, 2,2);
+      //pmanager->AddProcess(new G4eBremsstrahlung,   -1, 3,3);
+      //pmanager->AddProcess(new G4eplusAnnihilation,  0,-1,4);
+      
+    } else if( particleName == "mu+" || 
+               particleName == "mu-"    ) {
+      //muon  
+      //pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      //pmanager->AddProcess(new G4MuIonisation,      -1, 2,2);
+      //pmanager->AddProcess(new G4MuBremsstrahlung,  -1, 3,3);
+      //pmanager->AddProcess(new G4MuPairProduction,  -1, 4,4);       
+      
+    } else if ((!particle->IsShortLived()) &&
+	       (particle->GetPDGCharge() != 0.0) && 
+	       (particle->GetParticleName() != "chargedgeantino")) {
+      //all others charged particles except geantino
+      //jcc pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      //jcc pmanager->AddProcess(new G4hIonisation,       -1, 2,2);
+      //step limit
+      //pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);         
+      ///pmanager->AddProcess(new G4UserSpecialCuts,   -1,-1,4);  
+    }
+  }
+}
+
 
 void BDSPhysicsList::ConstructEM_Low_Energy()
 {
@@ -463,7 +512,14 @@ void BDSPhysicsList::ConstructHadronic()
 
 void BDSPhysicsList::ConstructSR()
 {
-  G4SynchrotronRadiation* srProcess = new G4SynchrotronRadiation;
+
+  // BDSIM's version of Synchrotron Radiation
+  BDSSynchrotronRadiation* srProcess = new BDSSynchrotronRadiation;
+  
+
+  // G4's version of Synchrotron Radiation - not used because does not have
+  // Multiplicity or MeanFreeFactor capability
+  //G4SynchrotronRadiation* srProcess = new G4SynchrotronRadiation;
 
   theParticleIterator->reset();
 
@@ -483,5 +539,5 @@ void BDSPhysicsList::ConstructSR()
     }
     
   }
-
+  
 }

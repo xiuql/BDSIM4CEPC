@@ -855,8 +855,13 @@ void set_value(string name, double value )
 
   if(name == "nlinesIgnore") options.nlinesIgnore = (int) value;
 
+  if(name == "synchRadOn") options.synchRadOn = (int) value;
+  if(name == "srMeanFreeFactor") options.synchMeanFreeFactor = (int) value;
+  if(name == "srRescale") options.synchRescale = (int) value;
+  if(name == "srLowX") options.synchLowX = value;
+  if(name == "srLowGamE") options.synchLowGamE = value;
   if(name == "srMultiplicity") options.synchPhotonMultiplicity = (int) value;
-
+  if(name == "srTrackPhotons") options.synchTrackPhotons = (int) value;
 
 }
 

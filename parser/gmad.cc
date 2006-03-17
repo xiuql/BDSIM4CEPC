@@ -62,6 +62,11 @@ void init()
 
   params.flush();
 
+  // Default Values for Options (the rest are set to 0)
+
+  options.synchPhotonMultiplicity = 1;
+  options.synchMeanFreeFactor = 1;
+
   
 }
 
