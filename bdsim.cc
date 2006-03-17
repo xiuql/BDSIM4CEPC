@@ -66,6 +66,11 @@ const int DEBUG = 1;
 // Print program usage
 static void usage()
 {
+  G4cout<<"bdsim : version 0.1 build _UNKNOWN_BUILD_DATE_"<<G4endl;
+  G4cout<<"        (C) 2001-2006 Royal Holloway University London"<<G4endl;
+  G4cout<<"        http://flc.pp.rhul.ac.uk/bdsim.html"<<G4endl;
+  G4cout<<G4endl;
+
   G4cout<<"Usage: bdsim [options]"<<G4endl;
   G4cout<<"Options:"<<G4endl;
   G4cout<<"--file=<filename>   : specify the lattice file "<<G4endl
