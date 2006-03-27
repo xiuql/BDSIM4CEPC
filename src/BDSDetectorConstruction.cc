@@ -52,21 +52,17 @@ const int DEBUG = 0;
 #include "BDSRBend.hh"
 #include "BDSQuadrupole.hh"
 #include "BDSDrift.hh"
+#include "BDSRfCavity.hh"
 #include "BDSSkewSextupole.hh"
 #include "BDSSextupole.hh"
 #include "BDSOctupole.hh"
 #include "BDSDecapole.hh"
-//#include "BDSKiller.hh"
 #include "BDSSampler.hh"
-//#include "BDSSpoiler.hh"
-//#include "BDSAbsorber.hh"
 
 #include "BDSLaserWire.hh"
 #include "BDSLWCalorimeter.hh"
 
 #include "BDSMuSpoiler.hh"
-//#include "BDSBlock.hh"
-//#include "BDSWedge.hh"
 #include "BDSTransform3D.hh"
 #include "BDSElement.hh"
 #include "BDSSamplerCylinder.hh"
@@ -120,9 +116,6 @@ G4Navigator* QuadNavigator;
 
 //=========================================
 G4FieldManager* theOuterFieldManager;
-
-//typedef std::map<G4String,G4MagneticField*> OuterFieldMap;
-//OuterFieldMap* theOuterFieldMap;
 
 extern BDSOutput bdsOutput;
 extern G4bool verbose;
@@ -228,9 +221,19 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 
 	if(DEBUG) G4cout<<"---->adding Drift "<<G4String( (*it).name )<<" l="<<(*it).l/m<<
-		    "aper="<<aper/m<<G4endl;
+		    " aper="<<aper/m<<G4endl;
 	if((*it).l > 0) // skip zero-length drift-defined elements
 	  theBeamline.push_back(new BDSDrift(G4String((*it).name),(*it).l * m,aper));
+      }
+
+       if((*it).type==_RF ) {
+	G4double aper = bpRad;
+	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+
+	if(DEBUG) G4cout<<"---->adding RF "<<G4String( (*it).name )<<" l="<<(*it).l/m<<
+	  " aper="<<aper/m<<" Ez="<<(*it).ez/megavolt<<G4endl;
+	if((*it).l > 0) // skip zero-length elements
+	  theBeamline.push_back(new BDSRfCavity(G4String((*it).name),(*it).l * m,aper,(*it).ez));
       }
       
       if((*it).type==_SBEND ) {
