@@ -20,28 +20,29 @@ using namespace std;
 const int _NONE = -1;
 const int _MARKER = 1;
 const int _DRIFT = 2;
-const int _SBEND = 3; 
-const int _QUAD  = 4;
-const int _SEXTUPOLE  = 5;
-const int _OCTUPOLE = 6;
-const int _MULT  = 7;
-const int _SOLENOID = 8;
-const int _ELEMENT = 9;
-const int _LINE = 10;
-const int _COLLIMATOR = 11;
-const int _ECOL = 12;
-const int _RCOL = 13;
-const int _LASER=14;
-const int _MATERIAL=15;
+const int _RF = 3;
+const int _SBEND = 4; 
+const int _QUAD  = 5;
+const int _SEXTUPOLE  = 6;
+const int _OCTUPOLE = 7;
+const int _MULT  = 8;
+const int _SOLENOID = 9;
+const int _ELEMENT = 10;
+const int _LINE = 11;
+const int _COLLIMATOR = 12;
+const int _ECOL = 13;
+const int _RCOL = 14;
+const int _LASER=15;
+const int _MATERIAL=16;
 
 const int _VKICK=31;
 const int _HKICK=32;
 
-const int _SAMPLER = 16;
-const int _CSAMPLER = 17;
-const int _GAS = 18;
+const int _SAMPLER = 41;
+const int _CSAMPLER = 42;
+const int _GAS = 51;
 
-const int _TRANSFORM3D = 29;
+const int _TRANSFORM3D = 61;
 
 const char *typestr(int type);
 
@@ -147,6 +148,8 @@ struct Element {
   double l,k0,k1,k2,k3,angle,aper,tilt,xsize,ysize,r;
   double xdir, ydir, zdir, waveLength; // for laser wire and 3d transforms
 
+  double ez; // for rf cavities
+
   double phi, theta, psi; // for 3d transforms
 
   list<double> knl;
@@ -194,6 +197,8 @@ struct Parameters {
   double aper; int aperset;   // aperture (circular)
   double phi, theta, psi; // for 3d transforms
   int phiset, thetaset, psiset;
+
+  double ez; int ezset;
 
   double xsize, ysize; int xsizeset, ysizeset; // aperture (or laser spotsize for laser)
   double xdir, ydir, zdir, waveLength; int xdirset, ydirset, zdirset, waveLengthset;
@@ -251,6 +256,8 @@ struct Parameters {
 
     knl.erase(knl.begin(),knl.end());
     ksl.erase(ksl.begin(),ksl.end());
+
+    ez = 0; ezset = 0;
     
     geomset = 0; bmapset = 0;
     strcpy(geometry,"");
