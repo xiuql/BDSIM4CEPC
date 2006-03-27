@@ -47,6 +47,10 @@ void init()
   add_var("MeV",1e-3,_RESERVED);
   add_var("TeV",1e+3,_RESERVED);
 
+  add_var("MV",1.0,_RESERVED);
+
+  add_var("Tesla",1.0,_RESERVED);
+
   add_var("mm",1e-3,_RESERVED);
   add_var("cm",1e-2,_RESERVED);
   add_var("m",1.0,_RESERVED);

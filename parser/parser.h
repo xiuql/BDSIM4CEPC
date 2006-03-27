@@ -50,6 +50,8 @@ const char *typestr(int type) {
     return "marker";
   case _DRIFT :
     return "drift";
+  case _RF :
+   return "rf";
   case _SBEND : 
     return "sbend";
   case _QUAD :
@@ -113,6 +115,8 @@ void flush(struct Element& e )
   e.psi = 0;
   e.theta = 0;
 
+  e.ez = 0;
+
   e.aper = 0;
   e.waveLength = 0;
 
@@ -168,6 +172,8 @@ void copy_properties(list<struct Element>::iterator dest, list<struct Element>::
   (*dest).knl = (*src).knl;
   (*dest).ksl = (*src).ksl;
 
+  (*dest).ez = (*src).ez; 
+
   (*dest).A = (*src).A;
   (*dest).Z = (*src).Z;
   (*dest).density = (*src).density;
@@ -212,6 +218,8 @@ void inherit_properties(struct Element e)
 
 
   if(!params.aperset) { params.aper = e.aper; params.aperset = 1; }
+
+  if(!params.ezset) { params.ez = e.ez; params.ezset = 1; }
 
   if(!params.tiltset) { params.tilt = e.tilt; params.tiltset = 1; }
   if(!params.knlset) { params.knl = e.knl; params.knlset = 1; }
@@ -285,6 +293,12 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
   case _DRIFT:
     e.type = _DRIFT;
     e.l = params.l;
+    break;
+
+  case _RF:
+    e.type = _RF;
+    e.l = params.l;
+    e.ez = params.ez;
     break;
 
   case _SBEND:
@@ -894,6 +908,7 @@ double property_lookup(char *element_name, char *property_name)
    if(!strcmp(property_name,"theta")) return (*it).theta;
    if(!strcmp(property_name,"waveLength")) return (*it).waveLength;
    if(!strcmp(property_name,"tilt")) return (*it).tilt;
+   if(!strcmp(property_name,"ez")) return (*it).ez;
 
    if(!strcmp(property_name,"A")) return (*it).A;
    if(!strcmp(property_name,"Z")) return (*it).Z;

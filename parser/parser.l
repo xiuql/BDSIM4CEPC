@@ -56,6 +56,7 @@ char* yyfilename;
 
 marker { return MARKER; } // reserved elements
 drift { return DRIFT; }
+rfcavity { return RF; }
 dipole { return DIPOLE; }
 sbend { return SBEND; } 
 hkicker { return HKICK; }
@@ -66,10 +67,8 @@ sextupole { return SEXTUPOLE; }
 octupole { return OCTUPOLE; }
 multipole { return MULTIPOLE; }
 solenoid { return SOLENOID; }
-spoiler { return SPOILER ; }
 rcol { return RCOL;}
 ecol { return ECOL; } 
-absorber { return ABSORBER; }
 element { return ELEMENT; }
 transform3d { return TRANSFORM3D ; }
 collimator { return COLLIMATOR; }

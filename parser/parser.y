@@ -16,7 +16,7 @@
   const int ECHO_GRAMMAR = 0; // print grammar rule expamsion (for debugging)
   const int VERBOSE = 0; // print warnings and errors
   const int VERBOSE_EXPAND = 0; // print the process of line expansion 
-  const int INTERACTIVE = 1; // print output of commands (like in interactive mode)
+  const int INTERACTIVE =0; // print output of commands (like in interactive mode)
 
 #include "parser.h"
 
@@ -44,7 +44,7 @@
 %token <dval> NUMBER
 %token <symp> VARIABLE VECVAR FUNC 
 %token <str> STR
-%token MARKER ELEMENT DRIFT DIPOLE SBEND QUADRUPOLE SEXTUPOLE OCTUPOLE MULTIPOLE 
+%token MARKER ELEMENT DRIFT RF DIPOLE SBEND QUADRUPOLE SEXTUPOLE OCTUPOLE MULTIPOLE 
 %token SOLENOID COLLIMATOR RCOL ECOL LINE SEQUENCE SPOILER ABSORBER LASER TRANSFORM3D
 %token VKICK HKICK KICK
 %token PERIOD APERTURE FILENAME GAS PIPE MATERIAL
@@ -115,6 +115,15 @@ decl : VARIABLE ':' marker
 	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : drift\n",$1->name);
 	   // check parameters and write into element table
 	   write_table(params,$1->name,_DRIFT);
+	   params.flush();
+	 }
+       } 
+     | VARIABLE ':' rf
+       {
+	 if(execute) {
+	   if(ECHO_GRAMMAR) printf("decl -> VARIABLE (%s) : rf\n",$1->name);
+	   // check parameters and write into element table
+	   write_table(params,$1->name,_RF);
 	   params.flush();
 	 }
        } 
@@ -279,6 +288,9 @@ marker : MARKER ;
 drift : DRIFT parameters
 ;
 
+rf : RF parameters
+;
+
 sbend : SBEND parameters
 ;
 
@@ -382,6 +394,8 @@ parameters:
 		  // azimuthal angle
 		    else
 		  if(!strcmp($3->name,"psi"))  {params.psi = $5; params.psiset = 1;} // 3rd  angle
+		  else
+		  if(!strcmp($3->name,"ez"))  {params.ez = $5; params.ezset = 1;} // rf voltage
 		    else
 		  if(!strcmp($3->name,"fint")) {;} // fringe field parameters
 		    else
