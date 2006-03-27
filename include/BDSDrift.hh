@@ -8,6 +8,7 @@
 #define BDSDrift_h 1
 
 #include"globals.hh"
+
 #include "BDSMaterials.hh"
 #include "G4LogicalVolume.hh"
 #include "BDSDriftStepper.hh"
@@ -19,6 +20,12 @@
 #include "G4VisAttributes.hh"
 #include "G4UniformMagField.hh"
 #include "G4PVPlacement.hh"               
+
+#include "G4UniformElectricField.hh"
+//#include "G4ClassicalRK4.hh"
+#include "G4MagErrorStepper.hh"
+#include "G4EqMagElectricField.hh"
+#include "G4TransportationManager.hh"
 
 #include "BDSMultipole.hh"
 
@@ -33,15 +40,12 @@ class BDSDrift :public BDSMultipole
   private:
 
   //  void BuildOuterLogicalVolume();
-  // void BuildMarkerFieldAndStepper();
+  void BuildMarkerFieldAndStepper();
   //void BuildMarkerLogicalVolume();
 
   G4VisAttributes* SetVisAttributes();
 
-  // field related objects:
-  BDSDriftStepper* itsStepper;
-  G4UniformMagField* itsMagField;
-  G4Mag_UsualEqRhs* itsEqRhs;
+
 };
 
 #endif
