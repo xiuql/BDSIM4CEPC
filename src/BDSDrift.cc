@@ -14,6 +14,12 @@
 #include "G4UserLimits.hh"
 #include "G4TransportationManager.hh"
 
+
+#include "G4MagIntegratorDriver.hh"
+
+#include "G4ExplicitEuler.hh"
+
+
 #include <map>
 
 //============================================================
@@ -64,17 +70,6 @@ G4VisAttributes* BDSDrift::SetVisAttributes()
   return itsVisAttributes;
 }
 
-/*
-void BDSDrift::BuildMarkerFieldAndStepper()
-{
-  // set up the magnetic field and stepper
-  G4ThreeVector Bfield(0.,0.,0.);
-  itsMagField=new G4UniformMagField(Bfield);
-  itsEqRhs=new G4Mag_UsualEqRhs(itsMagField);
-  
-  itsStepper=new BDSDriftStepper(itsEqRhs);
-}
-*/
 
 BDSDrift::~BDSDrift()
 {
@@ -82,7 +77,7 @@ BDSDrift::~BDSDrift()
   if(itsMarkerLogicalVolume) delete itsMarkerLogicalVolume;
   if(itsOuterLogicalVolume) delete itsOuterLogicalVolume;
   if(itsPhysiComp) delete itsPhysiComp;
-  if(itsMagField) delete itsMagField;
-  if(itsEqRhs) delete itsEqRhs;
-  if(itsStepper) delete itsStepper;
+  //if(itsField) delete itsField;
+  //if(itsEqRhs) delete itsEqRhs;
+  //if(itsStepper) delete itsStepper;
 }
