@@ -61,6 +61,7 @@ const int _ESHELL = 31;
 const int _GUINEAPIG_BUNCH = 4;
 const int _GUINEAPIG_PAIRS = 5;
 const int _GUINEAPIG_SLAC = 6;
+const int _CAIN = 7;
 
 struct Options {
 

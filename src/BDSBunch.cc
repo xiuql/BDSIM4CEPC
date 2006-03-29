@@ -111,6 +111,14 @@ void BDSBunch::SetOptions(struct Options& opt)
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore);
     }
+  if(opt.distribType == "cain")
+    {
+      distribType = _CAIN;
+      inputfile = opt.distribFile;
+      InputBunchFile.open(inputfile);
+      if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
+      _skip(opt.nlinesIgnore);
+    }
 }
 
 // get initial bunch distribution parameters in Gaussian case 
@@ -300,7 +308,7 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 	    if(E<0) BDSGlobals->SetParticleDefinition(G4ParticleTable::
 						      GetParticleTable()
 						      ->FindParticle("e+"));
-	    E=abs(E)*GeV;
+	    E=fabs(E)*GeV;
 	    x0*= nanometer;
 	    y0*= nanometer;
 	    z0*= nanometer;
@@ -315,6 +323,159 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 	    // use the Kinetic energy:
 	    E-=BDSGlobals->GetParticleDefinition()->GetPDGMass();
 	  }
+    }
+
+  if(distribType == _CAIN)
+    {
+      // Note that for the CAIN input the following variables are read in but NOT used by BDSIM:
+      //     generation, weight, spin_x, spin_y, spin_z
+
+      G4int type;
+      G4int gen;
+      G4int pos;
+      G4double weight;
+      G4double part_mass;
+      G4double px,py,pz;
+      G4double sx;
+      G4double sy;
+      G4double sz;
+      G4String dbl_var;
+      G4String rep = 'E';      
+      #define  _READ(value) InputBunchFile>>value
+
+      if(_READ(type))
+	{
+	  
+	  _READ(gen); // Read in but not currently used
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      weight = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else weight = atof(dbl_var);
+	  // weight read in but not currently used
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      t = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else t = atof(dbl_var);
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      x0 = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else x0 = atof(dbl_var);
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      y0 = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else y0 = atof(dbl_var);
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      z0 = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else z0 = atof(dbl_var);
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      E = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else E = atof(dbl_var);
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      px = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else px = atof(dbl_var);
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      py = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else py = atof(dbl_var);
+	  
+	  _READ(dbl_var);
+	  if(dbl_var.contains('D'))
+	    {
+	      pos = dbl_var.first('D');
+	      pz = atof( dbl_var.replace(pos,1,rep.data(),1) );
+	    }
+	  else pz = atof(dbl_var);
+	  
+	  // Spin Components read in - but not currently used
+	  _READ(sx);
+	  _READ(sy);
+	  _READ(sz);
+	  
+	  if(type==1) BDSGlobals->SetParticleDefinition(G4ParticleTable::
+							GetParticleTable()
+							->FindParticle("gamma"));
+	  else if(type==2) BDSGlobals->SetParticleDefinition(G4ParticleTable::
+							     GetParticleTable()
+							     ->FindParticle("e-"));
+	  else if(type==3) BDSGlobals->SetParticleDefinition(G4ParticleTable::
+							     GetParticleTable()
+							     ->FindParticle("e+"));
+	  
+	  t*= m/c_light;
+	  x0*= m;
+	  y0*= m;
+	  z0*= m;
+	  E*=eV;
+	  px*=eV/c_light;
+	  py*=eV/c_light;
+	  pz*=eV/c_light;
+	  
+	  part_mass = BDSGlobals->GetParticleDefinition()->GetPDGMass();	    
+	  
+	  // use the Kinetic energy:
+	  E-=part_mass;
+	  
+	  // calculate the momentum direction needed for BDSPrimaryGenerator
+	  xp = px*c_light / sqrt(E*E + 2*E*part_mass);
+	  yp = py*c_light / sqrt(E*E + 2*E*part_mass);
+	  zp = pz*c_light / sqrt(E*E + 2*E*part_mass);
+	  /*	  
+	  G4cout << "Bunch input was: " << G4endl;
+	  G4cout << type << "\t"
+		 << gen << "\t"
+		 << weight << "\t"
+		 << t/m << "\t"
+		 << x0/m << "\t"
+		 << y0/m << "\t"
+		 << z0/m << "\t"
+		 << E/eV << "\t"
+		 << px/(eV/c_light) << "\t"
+		 << py/(eV/c_light) << "\t"
+		 << pz/(eV/c_light) << "\t"
+		 << sx << "\t"
+		 << sy << "\t"
+		 << sz << "\t"
+		 << xp << "\t"
+		 << yp << "\t"
+		 << zp << "\t"
+		 << G4endl << G4endl;
+	  */	  
+	}
     }
 }
 
