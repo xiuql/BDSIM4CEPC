@@ -1,6 +1,7 @@
 #include "BDSGlobalConstants.hh" // must be first in include list
 #include "BDSGeometrySQL.hh"
 #include "G4Box.hh"
+#include "G4Trap.hh"
 #include "G4Tubs.hh"
 #include "G4Cons.hh"
 #include "G4Torus.hh"
@@ -37,6 +38,7 @@ BDSGeometrySQL::BDSGeometrySQL(G4String DBfile, G4double markerlength)
   if(!ifs) G4Exception("Unable to load SQL database file: " + DBfile);
   align_in_volume = NULL;  //default alignment (does nothing)
   align_out_volume = NULL;  //default alignment (does nothing)
+  HasFields = false;
 }
 
 BDSGeometrySQL::~BDSGeometrySQL()
@@ -74,6 +76,7 @@ void BDSGeometrySQL::BuildSQLObjects(G4String file)
       if(ObjectType.compareTo("CONE",cmpmode)==0) BuildCone(itsSQLTable[i]);
       else if(ObjectType.compareTo("POLYCONE",cmpmode)==0) BuildPolyCone(itsSQLTable[i]);
       else if(ObjectType.compareTo("BOX",cmpmode)==0) BuildBox(itsSQLTable[i]);
+      else if(ObjectType.compareTo("TRAP",cmpmode)==0) BuildTrap(itsSQLTable[i]);
       else if(ObjectType.compareTo("TORUS",cmpmode)==0) BuildTorus(itsSQLTable[i]);
       else if(ObjectType.compareTo("SAMPLER",cmpmode)==0) BuildSampler(itsSQLTable[i]);
     }
@@ -371,6 +374,91 @@ void BDSGeometrySQL::BuildBox(BDSMySQLTable* aSQLTable)
   PlaceComponents(aSQLTable, VOL_LIST);
 }
 
+void BDSGeometrySQL::BuildTrap(BDSMySQLTable* aSQLTable)
+{
+  G4int NVariables = aSQLTable->GetVariable("LENGTHXPLUS")->GetNVariables();
+
+  G4double lengthXPlus;
+  G4double lengthXMinus;
+  G4double lengthYPlus;
+  G4double lengthYMinus;
+  G4double lengthZ;
+  G4double VisRed;
+  G4double VisGreen;
+  G4double VisBlue;
+  G4String VisType;
+  G4String Material;
+  G4String TableName = aSQLTable->GetName();
+
+  G4String Name;
+
+  for(G4int k=0; k<NVariables; k++)
+    {
+      VisRed = VisGreen = VisBlue = 0.;
+      VisType = "W";
+      Material = "VACUUM";
+      if(aSQLTable->GetVariable("RED")!=NULL)
+	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
+      if(aSQLTable->GetVariable("BLUE")!=NULL)
+	VisBlue = aSQLTable->GetVariable("BLUE")->GetDblValue(k);
+      if(aSQLTable->GetVariable("GREEN")!=NULL)
+	VisGreen = aSQLTable->GetVariable("GREEN")->GetDblValue(k);
+      if(aSQLTable->GetVariable("VISATT")!=NULL)
+	VisType = aSQLTable->GetVariable("VISATT")->GetStrValue(k);
+      if(aSQLTable->GetVariable("LENGTHXPLUS")!=NULL)
+	lengthXPlus = aSQLTable->GetVariable("LENGTHXPLUS")->GetDblValue(k);
+      if(aSQLTable->GetVariable("LENGTHXMINUS")!=NULL)
+	lengthXMinus = aSQLTable->GetVariable("LENGTHXMINUS")->GetDblValue(k);
+      if(aSQLTable->GetVariable("LENGTHYPLUS")!=NULL)
+	lengthYPlus = aSQLTable->GetVariable("LENGTHYPLUS")->GetDblValue(k);
+      if(aSQLTable->GetVariable("LENGTHYMINUS")!=NULL)
+	lengthYMinus = aSQLTable->GetVariable("LENGTHYMINUS")->GetDblValue(k);
+      if(aSQLTable->GetVariable("LENGTHZ")!=NULL)
+	lengthZ = aSQLTable->GetVariable("LENGTHZ")->GetDblValue(k);
+      if(aSQLTable->GetVariable("MATERIAL")!=NULL)
+	Material = aSQLTable->GetVariable("MATERIAL")->GetStrValue(k);
+      if(aSQLTable->GetVariable("NAME")!=NULL)
+	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
+
+      if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
+
+      G4Trap* aTrap = new G4Trap(Name+"_Trd",
+				 lengthXPlus/2,
+				 lengthXMinus/2,
+				 lengthYPlus/2,
+				 lengthYMinus/2,
+				 lengthZ/2);
+      
+      G4LogicalVolume* aTrapVol = 
+	new G4LogicalVolume(aTrap,
+			    theMaterials->GetMaterial(Material),
+			    Name+"_LogVol");
+      
+      G4UserLimits* TrapUserLimits = new G4UserLimits();
+      TrapUserLimits->SetMaxAllowedStep(lengthZ);
+      aTrapVol->SetUserLimits(TrapUserLimits);
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(VisRed, VisGreen, VisBlue));
+      switch (VisType(0))
+	{
+	case 'W': VisAtt->SetForceWireframe(true); break;
+	case 'I': VisAtt->SetVisibility(false); break;
+	case 'S': VisAtt->SetForceSolid(true); break;
+	case 'w': VisAtt->SetForceWireframe(true); break;
+	case 'i': VisAtt->SetVisibility(false); break;
+	case 's': VisAtt->SetForceSolid(true); break;
+	}
+      aTrapVol->SetVisAttributes(VisAtt);
+
+      VOL_LIST.push_back(aTrapVol);
+    }
+
+  PlaceComponents(aSQLTable, VOL_LIST);
+}
+
 void BDSGeometrySQL::BuildTorus(BDSMySQLTable* aSQLTable)
 {
   G4int NVariables = aSQLTable->GetVariable("RINNER")->GetNVariables();
@@ -613,6 +701,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
   G4int align_in;
   G4int align_out;
   G4int SetSensitive;
+  G4double FieldX, FieldY, FieldZ;
 
   for(G4int k=0; k<NVariables; k++) // Now run through and place according to
     { 
@@ -625,6 +714,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
       align_out=0;
       SetSensitive=0;
       MagType = "";
+      FieldX = FieldY = FieldZ = 0.0;
       if(aSQLTable->GetVariable("PARENTNAME")!=NULL)
 	PARENTNAME = aSQLTable->GetVariable("PARENTNAME")->GetStrValue(k);
       if(aSQLTable->GetVariable("POSX")!=NULL)
@@ -649,6 +739,12 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
 	K4 = aSQLTable->GetVariable("K4")->GetDblValue(k);
       if(aSQLTable->GetVariable("MAGTYPE")!=NULL)
 	MagType = aSQLTable->GetVariable("MAGTYPE")->GetStrValue(k);
+      if(aSQLTable->GetVariable("FIELDX")!=NULL)
+	FieldX = aSQLTable->GetVariable("FIELDX")->GetDblValue(k);
+      if(aSQLTable->GetVariable("FIELDY")!=NULL)
+	FieldY = aSQLTable->GetVariable("FIELDY")->GetDblValue(k);
+      if(aSQLTable->GetVariable("FIELDZ")!=NULL)
+	FieldZ = aSQLTable->GetVariable("FIELDZ")->GetDblValue(k);
       if(aSQLTable->GetVariable("ALIGNIN")!=NULL)
 	align_in = aSQLTable->GetVariable("ALIGNIN")->GetIntValue(k);
       if(aSQLTable->GetVariable("ALIGNOUT")!=NULL)
@@ -739,14 +835,23 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
 	sqrt(pow(P0,2)- pow(electron_mass_c2,2))/(0.299792458 * (GeV/(tesla*m)));
       if(MagType.compareTo("QUAD",cmpmode)==0)
 	{
+	  HasFields = true;
 	  QuadBgrad.push_back(brho * K1 * tesla / m);
 	  Quadvol.push_back(PhysiComp->GetName());
 	}
 
       if(MagType.compareTo("SEXT",cmpmode)==0)
 	{
+	  HasFields = true;
 	  SextBgrad.push_back(brho * K2 * tesla / (m*m));
 	  Sextvol.push_back(PhysiComp->GetName());
+	}
+
+      if(FieldX || FieldY || FieldZ) //if any vols have non-zero field components
+	{
+	  HasFields = true;
+	  UniformField.push_back(G4ThreeVector(FieldX*tesla,FieldY*tesla,FieldZ*tesla));
+	  Fieldvol.push_back(PhysiComp->GetName());
 	}
   }
 }

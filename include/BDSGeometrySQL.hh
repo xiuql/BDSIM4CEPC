@@ -41,7 +41,11 @@ public:
   ~BDSGeometrySQL();
 
   void Construct(G4LogicalVolume *marker);
-  
+
+  // For List of uniform fields for volumes
+  vector<G4ThreeVector> UniformField;
+  vector<G4String> Fieldvol; 
+
   // For List of Quad/Sext Fields
   vector<G4double> QuadBgrad;
   vector<G4String> Quadvol; 
@@ -52,14 +56,16 @@ public:
   vector<G4LogicalVolume*> SensitiveComponents;
 
   vector<G4LogicalVolume*> VOL_LIST;
+  G4bool HasFields;
 
 private:
 
   void BuildSQLObjects(G4String file);
   void BuildCone(BDSMySQLTable* aSQLTable);
   void BuildPolyCone(BDSMySQLTable* aSQLTable);
-  void BuildTorus(BDSMySQLTable* aSQLTable);
   void BuildBox(BDSMySQLTable* aSQLTable);
+  void BuildTrap(BDSMySQLTable* aSQLTable);
+  void BuildTorus(BDSMySQLTable* aSQLTable);
   void BuildSampler(BDSMySQLTable* aSQLTable);
   G4RotationMatrix* RotateComponent(G4double psi,
 				    G4double phi,

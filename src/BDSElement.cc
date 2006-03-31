@@ -187,22 +187,28 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
     Mokka = new BDSGeometrySQL(gFile,itsLength);
     Mokka->Construct(itsMarkerLogicalVolume);
     vector<G4LogicalVolume*> SensComps = Mokka->SensitiveComponents;
-    for(G4int id=0; id<SensComps.size(); id++)
+    for(G4int id=0; id<(G4int)SensComps.size(); id++)
       SetMultipleSensitiveVolumes(SensComps[id]);
     align_in_volume = Mokka->align_in_volume;
     align_out_volume = Mokka->align_out_volume;
     // attach magnetic field if present
 
-    if(bFormat=="mokka")
+    if(bFormat=="mokka" || bFormat=="none")
       {
-	itsField = new BDSMagFieldSQL(bFile,itsLength,
-				      Mokka->Quadvol, Mokka->QuadBgrad,
-				      Mokka->Sextvol, Mokka->SextBgrad);
-
-	// build the magnetic field manager and transportation
-	BuildMagField(6,true);
+	if(Mokka->HasFields || bFile!="")
+	  // Check for field file or volumes with fields
+	  // as there may be cases where there are no bFormats given
+	  // in gmad file but fields might be set to volumes in SQL files
+	  {
+	    itsField = new BDSMagFieldSQL(bFile,itsLength,
+					  Mokka->Quadvol, Mokka->QuadBgrad,
+					  Mokka->Sextvol, Mokka->SextBgrad,
+					  Mokka->Fieldvol,Mokka->UniformField);
+	    
+	    // build the magnetic field manager and transportation
+	    BuildMagField(6,true);
+	  }
       }
-
   } 
   else if(gFormat=="gdml") {
     

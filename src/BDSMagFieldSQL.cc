@@ -24,11 +24,13 @@ using namespace std;
 BDSMagFieldSQL::BDSMagFieldSQL(const G4String& aFieldFile,
 			       G4double aMarkerLength,
 			       vector<G4String> Quadvol, vector<G4double> QuadBgrad,
-			       vector<G4String> Sextvol, vector<G4double> SextBgrad)
+			       vector<G4String> Sextvol, vector<G4double> SextBgrad,
+			       vector<G4String> Fieldvol, vector<G4ThreeVector> UniformField)
 
   :ifs(aFieldFile.c_str()),FieldFile(aFieldFile),itsMarkerLength(aMarkerLength),
    itsQuadVol(Quadvol), itsQuadBgrad(QuadBgrad),
-   itsSextVol(Sextvol), itsSextBgrad(SextBgrad)
+   itsSextVol(Sextvol), itsSextBgrad(SextBgrad),
+   itsFieldVol(Fieldvol), itsUniformField(UniformField)
 {
 }
 
@@ -42,8 +44,8 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
     G4TransportationManager::GetTransportationManager()-> 
     GetNavigatorForTracking();
   // gab_dec03>>
-  G4ThreeVector LocalR, GlobalR, LocalB, RLocalR, QuadB, SextB;
-  LocalR = GlobalR = LocalB = RLocalR = QuadB = SextB = G4ThreeVector(0.,0.,0.);
+  G4ThreeVector LocalR, GlobalR, LocalB, RLocalR, QuadB, SextB, FieldB;
+  LocalR = GlobalR = LocalB = RLocalR = QuadB = SextB = FieldB= G4ThreeVector(0.,0.,0.);
   
   GlobalR.setX(Point[0]);
   GlobalR.setY(Point[1]);
@@ -64,8 +66,9 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
   G4String VolName = aTouchable->GetVolume()->GetName();
   G4bool inQuad=false;
   G4bool inSext=false;
+  G4bool inField=false;
   
-  for(int i=0; i<itsQuadVol.size(); i++)
+  for(G4int i=0; i<(G4int)itsQuadVol.size(); i++)
     {
       if(VolName==itsQuadVol[i])
 	{
@@ -84,7 +87,7 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
     }
   if(!inQuad) //i.e. if no quad found in previous check ^^^^^
     {
-      for(int i=0; i<itsSextVol.size(); i++)
+      for(G4int i=0; i<(G4int)itsSextVol.size(); i++)
 	{
 	  if(VolName==itsSextVol[i])
 	    {
@@ -103,11 +106,28 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
 	}
     }
   
+  for(G4int i=0; i<(G4int)itsFieldVol.size(); i++)
+    {
+      if(VolName==itsFieldVol[i])
+	{
+	  GlobalAffine=IRNavigator->GetGlobalToLocalTransform();
+	  LocalAffine=IRNavigator->GetLocalToGlobalTransform();
+	  LocalR=GlobalAffine.TransformPoint(GlobalR); 
+	  LocalR.setY(-LocalR.y());
+	  LocalR.setX(-LocalR.x());	  // -ve signs because of Geant Co-ord System
+	  FieldB = itsUniformField[i];
+	  FieldB = LocalAffine.TransformAxis(FieldB);
+	  inField=true;
+	  break;
+	}
+    }
+
   G4double tempz = RLocalR.z()/cm;
   G4double zlow = floor(tempz);
   G4int ilow = (G4int)(zlow);
   G4double zhi = zlow + 1.0;
-  if (ilow > itsBz.size()) LocalB = G4ThreeVector(0.,0.,0.);
+  if (ilow > (G4int)itsBz.size() ||
+      itsBz.size()==0) LocalB = G4ThreeVector(0.,0.,0.);
   else
     {
       // Calculate the field local to MarkerVolume
@@ -128,12 +148,13 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
   //LocalB=G4ThreeVector(0.,0.,0.); //turn Bfield from Solenoid off
   if(inQuad) LocalB+=QuadB;
   if(inSext) LocalB+=SextB;
+  if(inField) LocalB+=FieldB;
 
   // b-field
   Bfield[0] = LocalB.x();
   Bfield[1] = LocalB.y();
   Bfield[2] = LocalB.z();
-
+  //G4cout << "BField: " << LocalB << G4endl;
   // e-field
   Bfield[3] = 0;
   Bfield[4] = 0;
@@ -154,49 +175,52 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
 
 void BDSMagFieldSQL::Prepare(G4VPhysicalVolume *referenceVolume)
 {
-  G4cout<<"BDSElement:: creating SQL field map"<<G4endl;
-
-  if(!ifs)
+  if(FieldFile!="")
     {
-      G4cerr<<"\nBDSMagFieldSQL.cc: Unable to open Field Map File: " << FieldFile << G4endl;
-      G4Exception("Aborting Program");
+      G4cout<<"BDSElement:: creating SQL field map"<<G4endl;
+
+      if(!ifs)
+	{
+	  G4cerr<<"\nBDSMagFieldSQL.cc: Unable to open Field Map File: " << FieldFile << G4endl;
+	  G4Exception("Aborting Program");
+	}
+      else
+	G4cout << "Loading SQL Field Map file: " << FieldFile << G4endl;
+      
+      if(FieldFile.contains("inverse")) itsMarkerLength*=-1;
+      double temp_z;
+      double temp_Bz;
+      double temp_solB;
+      while(!ifs.eof()){
+	if(FieldFile.contains("SiD"))
+	  ifs >> temp_z >> temp_Bz >> temp_solB;
+	
+	if(FieldFile.contains("LD"))
+	  ifs >> temp_z >> temp_Bz >> temp_solB >> temp_solB;
+	
+	if(FieldFile.contains("TESLA"))
+	  ifs >> temp_z >> temp_Bz;
+	
+	itsZ.push_back(temp_z*m);
+	itsBz.push_back(temp_Bz*tesla);
+      }
+      
+      itsdz = itsZ[1] - itsZ[0];
+      
+      //first element:
+      itsdBz_by_dz.push_back( (itsBz[1] - itsBz[0]) / itsdz );
+      itsBr_over_r.push_back(0.5 * itsdBz_by_dz[0] );
+      
+      for(G4int j=1; j<(G4int)itsBz.size()-2; j++)
+	{
+	  itsdBz_by_dz.push_back( (itsBz[j+1] - itsBz[j-1]) / (2*itsdz) );
+	  itsBr_over_r.push_back(0.5 * itsdBz_by_dz[j] );
+	}
+      
+      //last element:
+      itsdBz_by_dz.push_back( (itsBz[itsBz.size()-1] - itsBz[itsBz.size()-2]) / itsdz );
+      itsBr_over_r.push_back(0.5 * itsdBz_by_dz[itsdBz_by_dz.size()-1] );
     }
-  else
-    G4cout << "Loading SQL Field Map file: " << FieldFile << G4endl;
-
-  if(FieldFile.contains("inverse")) itsMarkerLength*=-1;
-  double temp_z;
-  double temp_Bz;
-  double temp_solB;
-  while(!ifs.eof()){
-    if(FieldFile.contains("SiD"))
-      ifs >> temp_z >> temp_Bz >> temp_solB;
-
-    if(FieldFile.contains("LD"))
-      ifs >> temp_z >> temp_Bz >> temp_solB >> temp_solB;
-
-    if(FieldFile.contains("TESLA"))
-      ifs >> temp_z >> temp_Bz;
-    
-    itsZ.push_back(temp_z*m);
-    itsBz.push_back(temp_Bz*tesla);
-  }
- 
-  itsdz = itsZ[1] - itsZ[0];
-  
-  //first element:
-  itsdBz_by_dz.push_back( (itsBz[1] - itsBz[0]) / itsdz );
-  itsBr_over_r.push_back(0.5 * itsdBz_by_dz[0] );
-
-  for(int j=1; j<itsBz.size()-2; j++)
-    {
-      itsdBz_by_dz.push_back( (itsBz[j+1] - itsBz[j-1]) / (2*itsdz) );
-      itsBr_over_r.push_back(0.5 * itsdBz_by_dz[j] );
-    }
-
-  //last element:
-  itsdBz_by_dz.push_back( (itsBz[itsBz.size()-1] - itsBz[itsBz.size()-2]) / itsdz );
-  itsBr_over_r.push_back(0.5 * itsdBz_by_dz[itsdBz_by_dz.size()-1] );
   
   SetOriginRotation(*(referenceVolume->GetFrameRotation()));
   SetOriginTranslation(referenceVolume->GetFrameTranslation());

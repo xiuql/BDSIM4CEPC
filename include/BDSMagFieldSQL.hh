@@ -23,7 +23,8 @@ public:  // with description
 
   BDSMagFieldSQL(const G4String& FieldFile, G4double aMarkerLength,
 		 vector<G4String> Quadvol, vector<G4double> QuadBgrad,
-		 vector<G4String> Sextvol, vector<G4double> SextBgrad);
+		 vector<G4String> Sextvol, vector<G4double> SextBgrad,
+		 vector<G4String> Fieldvol, vector<G4ThreeVector> UniformField);
   virtual ~BDSMagFieldSQL();
   // Constructor and destructor. No actions.
 
@@ -44,6 +45,10 @@ private:
   vector<G4String> itsQuadVol; 
   vector<G4double> itsSextBgrad;
   vector<G4String> itsSextVol; 
+
+  // For Uniform Fields
+  vector<G4ThreeVector> itsUniformField;
+  vector<G4String> itsFieldVol; 
 
   // For Solenoid FieldMaps
   vector<G4double> itsBz;
