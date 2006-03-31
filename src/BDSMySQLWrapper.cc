@@ -47,28 +47,32 @@ inline G4String StripQuotes(const G4String& text)
 inline vector<G4String> StripComma(const G4String& text)
 {
   vector<G4String> strippedtext;
-  if(text=="")
+  G4String comma_text = text;
+  if(text==',')
     {
-      strippedtext.push_back(text);
       return strippedtext;
     }
-  //  G4int pos = text.find(",");
-  //  text.substr(0,text.length()-1);
-  char* pch;
-  G4int len = strlen(text.c_str());
-  char* tmp = new char[len];
-  strcpy(tmp,text.c_str());
-  pch = strtok(tmp,",");
-  G4String atext;
-  while(pch != NULL)
+  
+  G4int length = comma_text.length();
+  G4int curr=0;
+  while(comma_text.contains(','))
     {
-      atext = pch;
-      strippedtext.push_back(atext);
-      pch = strtok(NULL,",");
+      curr = comma_text.first(',');
+      //G4cout << "Init: " << comma_text << G4endl;
+      if(curr!=0) strippedtext.push_back(comma_text.substr(0,curr));
+      //if(curr!=0) G4cout << "Res: " << comma_text.substr(0,curr) << G4endl;
+
+      if(curr+1>=length) 
+	{
+	  comma_text="";
+	  break;
+	}
+      else comma_text = comma_text.substr(curr+1,length);
     }
-  delete [] tmp;
-  tmp=NULL;
+  if(comma_text.length()>0) strippedtext.push_back(comma_text);
+  //if(comma_text.length()>0) G4cout << "Res: " << comma_text << G4endl;
   return strippedtext;
+
 }
 inline G4String StripFirst(const G4String& text)
 {
@@ -187,6 +191,7 @@ G4int BDSMySQLWrapper::ReadComponent()
 		      for(G4int k=0; k<table[j]->GetNVariables(); k++)
 			{
 			  _READ(input);
+			  //G4cout << "Input: " << input << "\t";
 			  if(input=="(") _READ(input);
 			  if(input.contains("(")) input = StripFirst(input);
 			  if(input.contains(");")) input = StripEnd(input);
@@ -194,8 +199,10 @@ G4int BDSMySQLWrapper::ReadComponent()
 			  if(input.contains(","))
 			    {
 			      vector<G4String> vctInput = StripComma(input);
+			      if(vctInput.size()==0) k--;
 			      for(int i=0; i<vctInput.size(); i++)
 				{
+				  //G4cout << "Res: " << vctInput[i] << G4endl;
 				  if(table[j]->GetVariable(k)->GetVarType()=="DOUBLE")
 				    table[j]->GetVariable(k)->AddValue(atof(vctInput[i])*mm);
 				  else if(table[j]->GetVariable(k)->GetVarType()=="STRING")
@@ -207,6 +214,7 @@ G4int BDSMySQLWrapper::ReadComponent()
 			    }
 			  else
 			    {
+			      //G4cout << "Res: " << input << G4endl;
 			      if(table[j]->GetVariable(k)->GetVarType()=="DOUBLE")
 				table[j]->GetVariable(k)->AddValue(atof(input)*mm);
 			      else if(table[j]->GetVariable(k)->GetVarType()=="STRING")
