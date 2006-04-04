@@ -309,6 +309,54 @@ Variable type: @code{DOUBLE(10,3)}
 
 @end itemize
 
+@subsubsection 'Trapezoid' Solid Types
+
+Append @code{_TRAP} to the table name in order to make use of the G4Trd solid type - which is deined as a trapezoid with the X and Y dimensions varying along z functions. The following table parameters are specific to the box solid:
+
+@itemize @bullet
+
+@item @code{LENGTHXPLUS} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the x-extent of the box's dimensions at the surface positioned at +dz.
+
+@item @code{LENGTHXPMINUS} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the x-extent of the box's dimensions at the surface positioned at -dz.
+
+@item @code{LENGTHYPLUS} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the y-extent of the box's dimensions at the surface positioned at +dz.
+
+@item @code{LENGTHYPMINUS} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the y-extent of the box's dimensions at the surface positioned at -dz.
+
+@item @code{LENGTHZ} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the z-extent of the box's dimensions.
+
+@end itemize
+
 @subsubsection 'Cone' Solid Types
 
 Append @code{_CONE} to the table name in order to make use of the G4Cons solid type. The following table parameters are specific to the cone solid:
