@@ -1,16 +1,18 @@
-/** BDSIM, v0.1   
+//  
+//   BDSIM, (C) 2001-2006 
+//    
+//   version 0.2 
+//   last modified : 28 Mar 2006 by agapov@pp.rhul.ac.uk
+//  
 
-Last modified 15.11.2005 by Ilya Agapov
-
-**/
 
 
 //
-//  Physics list
+//    Physics lists
 //
 
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 #include "BDSGlobalConstants.hh" // must be first in include list
 #include "BDSPhysicsList.hh"
@@ -29,10 +31,8 @@ const int DEBUG = 1;
 #include <iomanip>   
 
 #include "GeneralPhysics.hh"
-//#include "EM_GNPhysics.hh"
-//#include "EMPhysics.hh"
 #include "MuonPhysics.hh"
-//#include "HadronPhysicsQGSP_HP.hh"
+
 
 #include "HadronPhysicsLHEP.hh"
 
@@ -57,6 +57,10 @@ const int DEBUG = 1;
 #include "G4MuBremsstrahlung.hh"
 #include "G4MuPairProduction.hh"
 
+
+#include "G4GammaConversionToMuons.hh"
+#include "G4MuonNucleusProcess.hh"
+
 #include "G4hIonisation.hh"
 #include "G4ionIonisation.hh"
 
@@ -71,6 +75,7 @@ const int DEBUG = 1;
 // e-
 #include "G4LowEnergyIonisation.hh"
 #include "G4LowEnergyBremsstrahlung.hh"
+#include "G4AnnihiToMuPair.hh"
 
 #include "G4hLowEnergyIonisation.hh"
 
@@ -83,6 +88,24 @@ const int DEBUG = 1;
 //#include "BDSeBremPhysics.hh"
 #include "BDSGammaConversionPhysics.hh"
 #include "BDSLowEMPhysics.hh"
+
+#include "G4StepLimiter.hh"
+
+
+// Hadronic
+
+#include "G4TheoFSGenerator.hh"
+#include "G4GeneratorPrecompoundInterface.hh"
+#include "G4QGSModel.hh"
+#include "G4GammaParticipants.hh"
+#include "G4QGSMFragmentation.hh"
+#include "G4ExcitedStringDecay.hh"
+
+#include "G4GammaNuclearReaction.hh"
+#include "G4ElectroNuclearReaction.hh"
+#include "G4PhotoNuclearProcess.hh"
+#include "G4ElectronNuclearProcess.hh"
+#include "G4PositronNuclearProcess.hh"
 
 
 // particle definition
@@ -109,6 +132,7 @@ const int DEBUG = 1;
 #include "G4BaryonConstructor.hh"
 #include "G4IonConstructor.hh"
 
+
 //ShortLived
 #include "G4ShortLivedConstructor.hh"
 
@@ -133,6 +157,11 @@ void BDSPhysicsList::ConstructProcess()
 {
   // register physics processes here
   AddTransportation();
+
+
+  // stuff needed to limitsteps
+
+  
 
   // standard e+/e-/gamma electromagnetic interactions
   if(BDSGlobals->GetPhysListName() == "em_standard") 
@@ -192,25 +221,7 @@ void BDSPhysicsList::ConstructProcess()
 	"  using transportation only (standard) "<<G4endl;
     } 
 
-  
-       
-      
-      // Special process
-      //  if(BDSGlobals->GetPlanckOn())
-      // 	RegisterPhysics( new BDSPlanckScatterPhysics("BDSPlanckScatter"));
-      
-      //       if(BDSGlobals->GetLaserwireWavelength())
-      // 	RegisterPhysics( new BDSLaserWirePhysics("BDSLaserWire"));
-      
-      //       if(BDSGlobals->GetSynchRadOn())
-      // 	RegisterPhysics( new BDSSynchRadPhysics("BDSSynchRad"));
-      
-      //       if(BDSGlobals->GetBDSeBremOn())
-      // 	RegisterPhysics( new BDSeBremPhysics("BDSeBrem"));
-      
-      //       if(BDSGlobals->GetUseMuonPairProduction())
-      // 	RegisterPhysics( new BDSGammaConversionPhysics("BDSGamConv"));
-      
+        
      
 }
 
@@ -318,12 +329,14 @@ void BDSPhysicsList::ConstructEM()
       pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
       pmanager->AddDiscreteProcess(new G4ComptonScattering);
       pmanager->AddDiscreteProcess(new G4GammaConversion);
+      //pmanager->AddDiscreteProcess(new G4GammaConversionToMuons);
       
     } else if (particleName == "e-") {
       //electron
-      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
-      pmanager->AddProcess(new G4eIonisation,       -1, 2,2);
-      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 3,3);      
+      pmanager->AddProcess(new G4MultipleScattering,-1, 2,1);
+      pmanager->AddProcess(new G4eIonisation,       -1, 3,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 4,3);     
+      //pmanager->AddProcess(new G4StepLimiter,   -1, 1,4);  
       
     } else if (particleName == "e+") {
       //positron
@@ -335,10 +348,11 @@ void BDSPhysicsList::ConstructEM()
     } else if( particleName == "mu+" || 
                particleName == "mu-"    ) {
       //muon  
-      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
-      pmanager->AddProcess(new G4MuIonisation,      -1, 2,2);
-      pmanager->AddProcess(new G4MuBremsstrahlung,  -1, 3,3);
-      pmanager->AddProcess(new G4MuPairProduction,  -1, 4,4);       
+      //pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      //pmanager->AddProcess(new G4MuIonisation,      -1, 2,2);
+      //pmanager->AddProcess(new G4MuBremsstrahlung,  -1, 3,3);
+      //pmanager->AddProcess(new G4MuPairProduction,  -1, 4,4);     
+      //pmanager->AddDiscreteProcess(new G4MuonNucleusProcess);     
       
     } else if ((!particle->IsShortLived()) &&
 	       (particle->GetPDGCharge() != 0.0) && 
@@ -487,26 +501,78 @@ void BDSPhysicsList::ConstructLaserWire()
 void BDSPhysicsList::ConstructHadronic()
 {
 
-  G4NeutronBuilder* theNeutrons=new G4NeutronBuilder;
-  G4LHEPNeutronBuilder * theLHEPNeutron;
-  theNeutrons->RegisterMe(theLHEPNeutron=new G4LHEPNeutronBuilder);
+ //  G4NeutronBuilder* theNeutrons=new G4NeutronBuilder;
+//   G4LHEPNeutronBuilder * theLHEPNeutron;
+//   theNeutrons->RegisterMe(theLHEPNeutron=new G4LHEPNeutronBuilder);
 
-  G4ProtonBuilder * thePro;
-  G4LHEPProtonBuilder * theLHEPPro;
+//   G4ProtonBuilder * thePro;
+//   G4LHEPProtonBuilder * theLHEPPro;
 
-  thePro=new G4ProtonBuilder;
-  thePro->RegisterMe(theLHEPPro=new G4LHEPProtonBuilder);
+//   thePro=new G4ProtonBuilder;
+//   thePro->RegisterMe(theLHEPPro=new G4LHEPProtonBuilder);
 
-  G4PiKBuilder * thePiK;
-  G4LHEPPiKBuilder * theLHEPPiK;
+//   G4PiKBuilder * thePiK;
+//   G4LHEPPiKBuilder * theLHEPPiK;
 
-  thePiK=new G4PiKBuilder;
-  thePiK->RegisterMe(theLHEPPiK=new G4LHEPPiKBuilder);
+//   thePiK=new G4PiKBuilder;
+//   thePiK->RegisterMe(theLHEPPiK=new G4LHEPPiKBuilder);
 
-  theNeutrons->Build();
-  thePro->Build();
+//   theNeutrons->Build();
+//   thePro->Build();
+//   thePiK->Build();
 
 
+  // Photonuclear processes
+
+  G4PhotoNuclearProcess * thePhotoNuclearProcess;
+  G4ElectronNuclearProcess * theElectronNuclearProcess;
+  G4PositronNuclearProcess * thePositronNuclearProcess;
+  G4ElectroNuclearReaction * theElectroReaction;
+  G4GammaNuclearReaction * theGammaReaction;  
+  
+  G4TheoFSGenerator * theModel;
+  G4GeneratorPrecompoundInterface * theCascade;
+  G4QGSModel< G4GammaParticipants > * theStringModel;
+  G4QGSMFragmentation * theFragmentation;
+  G4ExcitedStringDecay * theStringDecay;
+
+
+
+  thePhotoNuclearProcess = new G4PhotoNuclearProcess;
+  theGammaReaction = new G4GammaNuclearReaction;
+  theElectronNuclearProcess = new G4ElectronNuclearProcess;
+  thePositronNuclearProcess = new G4PositronNuclearProcess;
+  theElectroReaction = new G4ElectroNuclearReaction;
+
+  theModel = new G4TheoFSGenerator;
+  
+  theStringModel = new G4QGSModel< G4GammaParticipants >;
+  theStringDecay = new G4ExcitedStringDecay(theFragmentation=new G4QGSMFragmentation);
+  theStringModel->SetFragmentationModel(theStringDecay);
+  
+  theCascade = new G4GeneratorPrecompoundInterface;
+  
+  theModel->SetTransport(theCascade);
+  theModel->SetHighEnergyGenerator(theStringModel);
+
+
+  G4ProcessManager * aProcMan = 0;
+  
+  aProcMan = G4Gamma::Gamma()->GetProcessManager();
+  theGammaReaction->SetMaxEnergy(3.5*GeV);
+  thePhotoNuclearProcess->RegisterMe(theGammaReaction);
+  theModel->SetMinEnergy(3.*GeV);
+  theModel->SetMaxEnergy(100*TeV);
+  thePhotoNuclearProcess->RegisterMe(theModel);
+  aProcMan->AddDiscreteProcess(thePhotoNuclearProcess);
+
+  aProcMan = G4Electron::Electron()->GetProcessManager();
+  theElectronNuclearProcess->RegisterMe(theElectroReaction);
+  aProcMan->AddDiscreteProcess(theElectronNuclearProcess);
+  
+  aProcMan = G4Positron::Positron()->GetProcessManager();
+  thePositronNuclearProcess->RegisterMe(theElectroReaction);
+  aProcMan->AddDiscreteProcess(thePositronNuclearProcess);
 
 }
 
