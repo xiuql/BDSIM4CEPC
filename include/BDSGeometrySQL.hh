@@ -62,6 +62,7 @@ private:
 
   void BuildSQLObjects(G4String file);
   void BuildCone(BDSMySQLTable* aSQLTable);
+  void BuildEllipticalCone(BDSMySQLTable* aSQLTable);
   void BuildPolyCone(BDSMySQLTable* aSQLTable);
   void BuildBox(BDSMySQLTable* aSQLTable);
   void BuildTrap(BDSMySQLTable* aSQLTable);

@@ -4,6 +4,7 @@
 #include "G4Trap.hh"
 #include "G4Tubs.hh"
 #include "G4Cons.hh"
+#include "G4EllipticalCone.hh"
 #include "G4Torus.hh"
 #include "G4Polycone.hh"
 #include "G4VisAttributes.hh"
@@ -74,6 +75,7 @@ void BDSGeometrySQL::BuildSQLObjects(G4String file)
       G4String ObjectType = TableName.substr(pos+1,TableName.length() - pos);
       G4String::caseCompare cmpmode = G4String::ignoreCase;
       if(ObjectType.compareTo("CONE",cmpmode)==0) BuildCone(itsSQLTable[i]);
+      else if(ObjectType.compareTo("ELLIPTICALCONE",cmpmode)==0) BuildEllipticalCone(itsSQLTable[i]);
       else if(ObjectType.compareTo("POLYCONE",cmpmode)==0) BuildPolyCone(itsSQLTable[i]);
       else if(ObjectType.compareTo("BOX",cmpmode)==0) BuildBox(itsSQLTable[i]);
       else if(ObjectType.compareTo("TRAP",cmpmode)==0) BuildTrap(itsSQLTable[i]);
@@ -176,6 +178,90 @@ void BDSGeometrySQL::BuildCone(BDSMySQLTable* aSQLTable)
       aConeVol->SetVisAttributes(VisAtt);
 
       VOL_LIST.push_back(aConeVol);
+
+    }
+
+  PlaceComponents(aSQLTable, VOL_LIST);
+}
+
+void BDSGeometrySQL::BuildEllipticalCone(BDSMySQLTable* aSQLTable)
+{
+  G4int NVariables = aSQLTable->GetVariable("LENGTHZ")->GetNVariables();
+
+  G4double lengthZ;
+  G4double pxSemiAxis;
+  G4double pySemiAxis;
+  G4double pzTopCut;
+  G4double VisRed; 
+  G4double VisGreen;
+  G4double VisBlue;
+  G4String VisType;
+  G4String Material;
+  G4String TableName = aSQLTable->GetName();
+  G4String Name;
+
+  for(G4int k=0; k<NVariables; k++)
+    {
+      //Defaults
+      lengthZ = 10.*mm;
+      VisRed = VisGreen = VisBlue = 0.;
+      VisType = "W";
+      Material = "VACUUM";
+
+      if(aSQLTable->GetVariable("RED")!=NULL)
+	VisRed = aSQLTable->GetVariable("RED")->GetDblValue(k);
+      if(aSQLTable->GetVariable("BLUE")!=NULL)
+	VisBlue = aSQLTable->GetVariable("BLUE")->GetDblValue(k);
+      if(aSQLTable->GetVariable("GREEN")!=NULL)
+	VisGreen = aSQLTable->GetVariable("GREEN")->GetDblValue(k);
+      if(aSQLTable->GetVariable("VISATT")!=NULL)
+	VisType = aSQLTable->GetVariable("VISATT")->GetStrValue(k);
+      if(aSQLTable->GetVariable("LENGTHZ")!=NULL)
+	lengthZ = aSQLTable->GetVariable("LENGTHZ")->GetDblValue(k);
+      if(aSQLTable->GetVariable("XSEMIAXIS")!=NULL)
+	pxSemiAxis = aSQLTable->GetVariable("XSEMIAXIS")->GetDblValue(k);
+      if(aSQLTable->GetVariable("YSEMIAXIS")!=NULL)
+	pySemiAxis = aSQLTable->GetVariable("YSEMIAXIS")->GetDblValue(k);
+      if(aSQLTable->GetVariable("ZCUT")!=NULL)
+	pzTopCut = aSQLTable->GetVariable("ZCUT")->GetDblValue(k);
+      if(aSQLTable->GetVariable("MATERIAL")!=NULL)
+	Material = aSQLTable->GetVariable("MATERIAL")->GetStrValue(k);
+      if(aSQLTable->GetVariable("NAME")!=NULL)
+	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
+
+      if(Name=="") Name = TableName+BDSGlobals->StringFromInt(k);
+
+      // make sure that each name is unique!
+      Name = itsMarkerVol->GetName()+"_"+Name;
+
+      G4EllipticalCone* aEllipticalCone = new G4EllipticalCone(Name+"_EllipticalCone",
+							       pxSemiAxis,
+							       pySemiAxis,
+							       lengthZ/2,
+							       pzTopCut);
+
+      G4LogicalVolume* aEllipticalConeVol = 
+	new G4LogicalVolume(aEllipticalCone,
+			    theMaterials->GetMaterial(Material),
+			    Name+"_LogVol");
+      
+      G4UserLimits* EllipticalConeUserLimits = new G4UserLimits();
+      EllipticalConeUserLimits->SetMaxAllowedStep(lengthZ);
+      aEllipticalConeVol->SetUserLimits(EllipticalConeUserLimits);
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(VisRed, VisGreen, VisBlue));
+      switch (VisType(0))
+	{
+	case 'W': VisAtt->SetForceWireframe(true); break;
+	case 'I': VisAtt->SetVisibility(false); break;
+	case 'S': VisAtt->SetForceSolid(true); break;
+	case 'w': VisAtt->SetForceWireframe(true); break;
+	case 'i': VisAtt->SetVisibility(false); break;
+	case 's': VisAtt->SetForceSolid(true); break;
+	}
+      aEllipticalConeVol->SetVisAttributes(VisAtt);
+
+      VOL_LIST.push_back(aEllipticalConeVol);
 
     }
 
