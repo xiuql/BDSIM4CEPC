@@ -163,6 +163,14 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
     ggmad = new GGmadDriver(gFile);
     ggmad->Construct(itsMarkerLogicalVolume);
 
+    // set sensitive volumes
+    //vector<G4LogicalVolume*> SensComps = ggmad->SensitiveComponents;
+    //for(G4int id=0; id<SensComps.size(); id++)
+    //  SetMultipleSensitiveVolumes(SensComps[id]);
+
+    
+    SetMultipleSensitiveVolumes(itsMarkerLogicalVolume);
+
     // attach magnetic field if present
 
     if(bFormat=="XY")
