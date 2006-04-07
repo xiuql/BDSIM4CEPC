@@ -395,5 +395,12 @@ void GetMaterial(G4Material *&theMaterial, G4String material)
       return;
     }
 
+  if(material=="\"Lead\"" || material=="Lead")
+    {
+      theMaterial = theMaterials->LCLead;
+      return;
+    }
+
+
   theMaterial = theMaterials->LCVacuum; // default is vacuum
 }
