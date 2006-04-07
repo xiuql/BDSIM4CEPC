@@ -1,9 +1,17 @@
-/** BDSIM, v0.1   
+//  
+//   BDSIM, (C) 2001-2006 
+//    
+//   version 0.2 
+//   last modified : 28 Mar 2006 by agapov@pp.rhul.ac.uk
+//  
 
-Last modified 15.11.2005 by Ilya Agapov
-// Xm temporarily disabled
 
-**/
+
+//
+//    Main code
+//
+
+
 
 const int DEBUG = 1;
 
@@ -13,10 +21,6 @@ const int DEBUG = 1;
 #include "G4UImanager.hh"        // G4 session managers
 #include "G4UIterminal.hh"
 #include "G4UItcsh.hh"
-
-//#ifdef G4UI_USE_XM
-//#include "G4UIXm.hh"
-//#endif
 
 #include "Randomize.hh"
 
@@ -288,17 +292,11 @@ int main(int argc,char** argv) {
 
    if(!isBatch)
     {
-      //#ifdef G4UI_USE_XM
-      //      if(DEBUG) G4cout<<"New Xm session"<<G4endl;
-      //session = new G4UIXm(0,tmp);
-      //if(DEBUG) G4cout<<"done"<<G4endl;
-      //#else
 #ifdef G4UI_USE_TCSH
       session = new G4UIterminal(new G4UItcsh);
 #else
       session = new G4UIterminal();
 #endif    
-      //#endif
       
     }  
 
@@ -409,10 +407,6 @@ int main(int argc,char** argv) {
 	}
     }
 
-
-  // neutrons - redefine the transportation process
-  // TODO : interface to MCNP and Geant models
-  
   
   
   bdsOutput.Init(0); // activate the output - setting the first filename to 
@@ -422,12 +416,9 @@ int main(int argc,char** argv) {
     {
       // get the pointer to the User Interface manager 
       G4UImanager* UI = G4UImanager::GetUIpointer();  
-      // G4UIterminal is a (dumb) terminal.
+ 
       UI->ApplyCommand("/control/execute " + visMacroFile);    
-      //#ifdef G4UI_USE_XM
-      // Customize the G4UIXm menubar with a macro file :
-      //UI->ApplyCommand("/control/execute gui.mac");
-      //#endif
+ 
       session->SessionStart();
       delete session;
       
