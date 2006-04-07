@@ -1,3 +1,17 @@
+//  
+//   BDSIM, (C) 2001-2006 
+//    
+//   version 0.2 
+//   last modified : 28 Mar 2006 by agapov@pp.rhul.ac.uk
+//  
+
+
+
+//
+//    Stacking action - taken when secondaries created
+//
+
+
 
 #include "BDSGlobalConstants.hh"
 #include "BDSStackingAction.hh"
@@ -10,6 +24,11 @@
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
 #include "G4ios.hh"
+
+
+
+const int DEBUG = 0;
+
 
 BDSStackingAction::BDSStackingAction()
 { 
@@ -24,11 +43,12 @@ BDSStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 {
   G4ClassificationOfNewTrack classification = fWaiting;
  
+  if(DEBUG)
+    G4cout<<"StackingAction: ClassifyNewtrack "<<aTrack->GetTrackID()<<
+      " "<<aTrack->GetDefinition()->GetParticleName()<<G4endl;
+
   if(BDSGlobals->GetStopTracks()) // if tracks killed after interaction
     {
-      
-      //G4cout<<"StackingAction: ClassifyNewtrack "<<aTrack->GetTrackID()<<
-      //	" "<<aTrack->GetDefinition()->GetParticleName()<<G4endl;
       
       // kill secondary electrons
       
