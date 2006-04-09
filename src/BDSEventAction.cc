@@ -283,47 +283,20 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 
   if(BDSGlobals->GetStoreMuonTrajectories()&& TrajVec)
     {
+
+      if(DEBUG) G4cout<<"PROCESSING MUON TRAJECTORY VECTOR"<<G4endl;
+
+      bdsOutput.WriteTrajectory(TrajVec);
+   
+    }
+
+  if(BDSGlobals->GetStoreNeutronTrajectories()&& TrajVec)
+    {
       
-      //bdsOutput.WriteTrajectory();
-      // TODO : implement trajectory storage
+      if(DEBUG) G4cout<<"PROCESSING NEUTRON TRAJECTORY VECTOR"<<G4endl;
       
-      //   G4int tID;
-      //       G4TrajectoryPoint* TrajPoint;
-      //       G4ThreeVector TrajPos;  
-      //       G4bool storeTraj;
-      //       if(TrajVec)
-      // 	{
-      // 	  TrajectoryVector::iterator iT;
-      // 	  for(iT=TrajVec->begin();iT<TrajVec->end();iT++)
-      // 	    {
-      // 	      G4Trajectory* Traj=(G4Trajectory*)(*iT);
-      // 	      tID=Traj->GetTrackID();	      
-      // 	      storeTraj=false;
-      // 	      for(G4int i=0;i<theMuonTrackVector->size();i++)
-      // 		if((*theMuonTrackVector)[i]==tID)
-      // 		  storeTraj=true;
+      bdsOutput.WriteTrajectory(TrajVec);
       
-      // 	      if(storeTraj)
-      // 		{
-      // 		  BDSRoot->BuildTrajectoryTree();
-      
-      // 		  for(G4int j=0; j<Traj->GetPointEntries(); j++)
-      // 		    {
-      // 		      TrajPoint=(G4TrajectoryPoint*)Traj->GetPoint(j);
-      // 		      TrajPos=TrajPoint->GetPosition();
-      // 		      BDSRoot->LoadTrajectoryTree(&TrajPos);
-      // 		      G4cout<<"TrajPos="<<TrajPos<<G4endl;
-      // 		    }
-      // 		}
-      // 	      else
-      // 		{// trajectory not a muon - so delete it
-      // 		  delete Traj;
-      // 		  TrajVec->erase(iT);
-      // 		  iT--;
-      // 		}
-      // 	    }
-      // 	}
-      //       delete theMuonTrackVector;
     }
   
 

@@ -95,13 +95,15 @@ void BDSOutput::Init(G4int FileNum)
       SamplerTree->Branch("tID",&track_id,"tID/I");
     }
 
-  if(BDSGlobals->GetStoreTrajectory()) // create a tree with trajectories
+  if(BDSGlobals->GetStoreTrajectory() || BDSGlobals->GetStoreMuonTrajectories() || BDSGlobals->GetStoreNeutronTrajectories()) 
+    // create a tree with trajectories
     {
       //G4cout<<"BDSOutput::storing trajectories set"<<G4endl;
       TTree* TrajTree = new TTree("Trajectories", "Trajectories");
       TrajTree->Branch("x",&x,"x/F");
       TrajTree->Branch("y",&y,"y/F");
       TrajTree->Branch("z",&z,"z/F");
+      TrajTree->Branch("part",&part,"part/I");
     }
 
   // build energy loss histogram
@@ -219,7 +221,7 @@ G4int BDSOutput::WriteTrajectory(TrajectoryVector* TrajVec)
 	  G4Trajectory* Traj=(G4Trajectory*)(*iT);
 	  
 	  tID=Traj->GetTrackID();	      
-	  
+	  part = Traj->GetPDGEncoding();
 	  
 	  for(G4int j=0; j<Traj->GetPointEntries(); j++)
 	    {

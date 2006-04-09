@@ -18,12 +18,26 @@ void BDSUserTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
   // store muon trajectories
     if(BDSGlobals->GetStoreMuonTrajectories())
       {
+
+	//G4cout<<"STORING MUON TRAJECTORIES"<<G4endl;
+
 	if( abs(aTrack->GetDefinition()->GetPDGEncoding())==13)
 	  {fpTrackingManager->SetStoreTrajectory(true); }
 	else
 	  { fpTrackingManager->SetStoreTrajectory(false); }
       }
 
+    if(BDSGlobals->GetStoreNeutronTrajectories())
+      {
+	
+	//G4cout<<"STORING MUON TRAJECTORIES"<<G4endl;
+	
+	if( abs(aTrack->GetDefinition()->GetPDGEncoding())==2112)
+	  {fpTrackingManager->SetStoreTrajectory(true); }
+	else
+	  { fpTrackingManager->SetStoreTrajectory(false); }
+      }
+    
     
   // Store trajectories for primaries
     if(BDSGlobals->GetStoreTrajectory())
@@ -35,15 +49,15 @@ void BDSUserTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
       }
  
 
-  /*  
+    /*
   if(aTrack->GetDefinition()->GetParticleName()=="neutron")
     {
       BDSNeutronTrackInfo* Info= new BDSNeutronTrackInfo();
       Info->SetIsLogged(false);
       fpTrackingManager->SetUserTrackInformation(Info);
     }
+    */
   
-  */
 }
 
 BDSUserTrackingAction::~BDSUserTrackingAction()
