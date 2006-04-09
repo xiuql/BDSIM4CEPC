@@ -119,6 +119,7 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   itsHadronInelasticScaleFactor = opt.hadronInelasticScaleFactor;
 
   itsStoreMuonTrajectories = opt.storeMuonTrajectories;
+  itsStoreNeutronTrajectories = opt.storeNeutronTrajectories;
   itsStoreTrajectory = opt.storeTrajectory;
 
   //G4cout<<"STOREA TRAJ = "<< itsStoreTrajectory<<G4endl;
