@@ -1,4 +1,4 @@
-include /home/agapov/work/ilc-collimation/options.gmad;
+include options.gmad;
 
 ! these constants are assumed
  rbpc1 := 1 * m;
@@ -47,10 +47,10 @@ include /home/agapov/work/ilc-collimation/options.gmad;
 ! load beamline definitions;
 ! ------------------------------------------------------------------------------;
 
-  include /home/agapov/work/ilc-collimation/ebsy.gxsif;
-  include /home/agapov/work/ilc-collimation/eirt1.gxsif;
-  include /home/agapov/work/ilc-collimation/eff1.gxsif;
-  include /home/agapov/work/ilc-collimation/edl1.gxsif;
+  include ebsy.gxsif;
+  include eirt1.gxsif;
+  include eff1.gxsif;
+  include edl1.gxsif;
 
 ! ==============================================================================;
 ! input beam definitions;
@@ -59,37 +59,16 @@ include /home/agapov/work/ilc-collimation/options.gmad;
   startl:marker;
   endff:marker;
 	
+  tunnel, geometry="gmad:tunnel.geo";
+
   ebds:line=(startl,ebsy,eirt1,eff1,endff,edl1);
 
   use, period=ebds;
   
+  
   sample, range=startl;
   sample, range=endff;
 
-  !sample, range=bpmq079[1];
-  !sample, range=bpmq079[2];
-  !sample, range=bpmq079[3];
-  !sample, range=bpmq079[4];
-  !sample, range=bpmq079[5];
-  !sample, range=bpmq079[6];
-  !sample, range=bpmq079[7];
-  !sample, range=bpmq079[8];
-  !sample, range=bpmq079[9];
-  !sample, range=bpmq079[10];
-  !sample, range=bpmq079[11];
-  !sample, range=bpmq079[12];
-  !sample, range=bpmq079[13];
-  !sample, range=bpmq079[14];
-  !sample, range=bpmq079[15];
-  !sample, range=bpmq079[16];
-  !sample, range=bpmq079[17];
-  !sample, range=bpmq079[18];
-  !sample, range=bpmq079[19];
-  !sample, range=bpmq079[20];
-  !sample, range=bpmq079[21];
-  !sample, range=bpmq079[22];
-  !sample, range=bpmq079[23];
-  !sample, range=bpmq079[24];
 
   beam,  particle="e-",
        energy=ef * GeV,

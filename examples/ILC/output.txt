@@ -1,14 +1,2 @@
-### BDSIM output created Wed Feb 22 14:58:55 2006
+### BDSIM output created Sun Apr  9 18:27:46 2006
  ####
-#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
-11 250 2.85011 -11.297 5.00001e-06 0 0
-11 250 4.9274 -9.62307 796.001 -0.193059 -0.244159
-
-#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
-11 250 -6.11871 -8.18209 5.00001e-06 0 0
-11 250 -10.5782 -6.96972 796.001 0.414465 -0.176837
-
-#hits (PDGtype  p[GeV/c],x[micron],y[micron],z[m],x'[microrad],y'[microrad]):
-11 250 -4.72907 -5.86656 5.00001e-06 0 0
-11 250 -8.17576 -4.99729 796.001 0.320334 -0.126792
-
