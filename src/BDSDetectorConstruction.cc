@@ -20,6 +20,9 @@ const int DEBUG = 0;
 
 #include "G4UserLimits.hh"
 
+#include "G4Region.hh"
+#include "G4ProductionCuts.hh"
+
 #include "G4Tubs.hh"
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
@@ -78,6 +81,7 @@ const int DEBUG = 0;
 
 // GMAD interface
 #include "parser/gmad.h"
+#include "ggmad.hh"
 
 extern void GetMaterial(G4Material *&theMaterial, G4String material); //from ggmad
 
@@ -400,13 +404,11 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 						 (*it).zdir *m, (*it).phi * rad, (*it).theta*rad,(*it).psi*rad ));
 	
       }
-      
     }
   
-  // free the parser list
   
   if(DEBUG) G4cout<<"size of parser list: "<< beamline_list.size() << G4endl;;
-  beamline_list.clear();
+
   
   
   
@@ -525,6 +527,19 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
   G4cout<<"Charged Thresholdcut="<<BDSGlobals->GetThresholdCutCharged()/GeV<<" GeV"<<G4endl;
   G4cout<<"Photon Thresholdcut="<<BDSGlobals->GetThresholdCutPhotons()/GeV<<" GeV"<<G4endl;
+
+
+  G4cout<<"Creating regions..."<<G4endl;
+  
+  G4Region* precisionRegion = new G4Region("precision");
+   
+  G4ProductionCuts* theProductionCuts = new G4ProductionCuts();
+  
+  theProductionCuts->SetProductionCut(1.e-6*m,"gamma");
+  theProductionCuts->SetProductionCut(1.e-6*m,"e+");
+  theProductionCuts->SetProductionCut(1.e-6*m,"e-");
+  
+  precisionRegion->SetProductionCuts(theProductionCuts);
 
   // world
 
@@ -691,6 +706,19 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	G4String LogVolName=LocalLogVol->GetName();
 	int nCopy=(*LogVolCount)[LogVolName]-1;
 	(*LogVolCount)[LogVolName]++;
+
+
+	// add the wolume to one of the regions
+
+
+	if((*iBeam)->GetType() == _ELEMENT)
+	  {
+	    //G4cout<<"ENCOUNTERED ELEMENT : "<<_ELEMENT<<" ADDING TO PRECISION REg\n";
+	    LocalLogVol->SetRegion(precisionRegion);
+	    precisionRegion->AddRootLogicalVolume(LocalLogVol);
+	    
+	  }
+
 	
 	// set up the sensitive volumes for energy counting:
 	(*iBeam)->SetCopyNumber(nCopy);
@@ -758,6 +786,55 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	
       }
     }
+
+  // construct tunnel
+  for(it = beamline_list.begin();it!=beamline_list.end();it++)
+    {
+      
+      if((*it).type==_TUNNEL ) {
+	G4cout<<"BUILDING TUNNEL : "<<(*it).l<<"  "<<(*it).name<<G4endl;
+	
+	G4String gFormat="",  gFile="";
+	G4String geometry = (*it).geometryFile;
+
+	// get geometry format and file
+	G4int pos = geometry.find(":");
+	
+	if(pos<0) { 
+	  G4cerr<<"WARNING: invalid geometry reference format : "<<geometry<<endl;
+	  gFormat="none";
+	}
+	
+	else {
+	  gFormat = geometry.substr(0,pos);
+	  gFile = geometry.substr(pos+1,geometry.length() - pos); 
+	}
+	
+	G4cout<<"placing components\n: geometry format - "<<gFormat<<G4endl<<
+	  "file - "<<gFile<<G4endl;
+	
+	GGmadDriver *ggmad;
+	
+	if(gFormat=="gmad") {
+	 
+	  ggmad = new GGmadDriver(gFile);
+	  ggmad->Construct(logicWorld);
+
+	  
+	} else  G4cerr<<"Tunnel won't be build! "<<endl;
+      }
+      
+    }
+  
+  // free the parser list
+  
+  beamline_list.clear();
+
+  // theProductionCuts->SetProductionCut(1.e-6*m,"gamma");
+//   theProductionCuts->SetProductionCut(1.e-6*m,"e+");
+//   theProductionCuts->SetProductionCut(1.e-6*m,"e-");
+  
+//   precisionRegion->SetProductionCuts(theProductionCuts);
   
   if(DEBUG) G4cout<<"end placement, size="<<theBeamline.size()<<G4endl;
   
