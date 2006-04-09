@@ -47,7 +47,7 @@
 %token MARKER ELEMENT DRIFT RF DIPOLE SBEND QUADRUPOLE SEXTUPOLE OCTUPOLE MULTIPOLE 
 %token SOLENOID COLLIMATOR RCOL ECOL LINE SEQUENCE SPOILER ABSORBER LASER TRANSFORM3D
 %token VKICK HKICK KICK
-%token PERIOD APERTURE FILENAME GAS PIPE MATERIAL
+%token PERIOD APERTURE FILENAME GAS PIPE TUNNEL MATERIAL
 %token BEAM OPTION PRINT RANGE STOP USE VALUE ECHO PRINTF SAMPLE CSAMPLE
 %token IF ELSE BEGN END LE GE NE FOR
 %token CUT
@@ -1068,6 +1068,15 @@ command : STOP             { if(execute) quit(); }
 		if(ECHO_GRAMMAR) printf("command -> GAS\n");
 		add_gas("gas",$3->name, element_count, params.material);
 		element_count = 1;
+		params.flush();
+	      }
+          }
+        | TUNNEL ',' parameters // beampipe gas
+          {
+	    if(execute)
+	      {  
+		if(ECHO_GRAMMAR) printf("command -> TUNNEL\n");
+		write_table(params,"tunnel",_TUNNEL);
 		params.flush();
 	      }
           }

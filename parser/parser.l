@@ -74,6 +74,7 @@ transform3d { return TRANSFORM3D ; }
 collimator { return COLLIMATOR; }
 pipe { return PIPE; }
 gas { return GAS; }
+tunnel { return TUNNEL; }
 matdef { return MATERIAL; }
 laser { return LASER; }
 

@@ -78,6 +78,8 @@ const char *typestr(int type) {
     return "csampler";
   case _GAS:
     return "gas";
+  case _TUNNEL:
+    return "tunnel";
   case _MATERIAL:
     return "material";
   case _LASER:
@@ -465,6 +467,12 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
     e.temper = params.temper;
     break;
 
+  case _TUNNEL:
+    e.type = _TUNNEL;
+    e.l = -1;
+    e.geometryFile = string(params.geometry);
+    break;
+
   default:
     break;  
   }
@@ -613,8 +621,11 @@ int expand_line(char *name, char *start, char* end)
 	}
 
 
-      // insert the samplers
-      
+      // insert the tunnel if present
+
+      it = element_lookup("tunnel");
+      if(it!=NULL)
+	beamline_list.push_back(*it);
       
       return 0;
     }
@@ -862,7 +873,9 @@ void set_value(string name, double value )
   if(name == "useEMHadronic" ) options.useEMHadronic = (int) value;
 
   if(name == "storeTrajectory") options.storeTrajectory = (int) value; 
-  
+  if(name == "storeMuonTrajectory") options.storeMuonTrajectories = (int) value; 
+  if(name == "storeNeutronTrajectory") options.storeNeutronTrajectories = (int) value; 
+
   if(name == "stopTracks") options.stopTracks = (int) value; 
 
   if(name == "randomSeed") options.randomSeed = (int) value;

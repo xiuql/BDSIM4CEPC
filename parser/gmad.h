@@ -41,6 +41,7 @@ const int _HKICK=32;
 const int _SAMPLER = 41;
 const int _CSAMPLER = 42;
 const int _GAS = 51;
+const int _TUNNEL = 52;
 
 const int _TRANSFORM3D = 61;
 
@@ -133,6 +134,7 @@ struct Options {
   double muonProductionScaleFactor;
   double hadronInelasticScaleFactor;
   int storeMuonTrajectories;
+  int storeNeutronTrajectories;
   int storeTrajectory;
   int stopTracks;
   int useMuonShowers;
