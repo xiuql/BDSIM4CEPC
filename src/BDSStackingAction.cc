@@ -43,6 +43,9 @@ BDSStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 {
   G4ClassificationOfNewTrack classification = fWaiting;
  
+  G4String pName=aTrack->GetDefinition()->GetParticleName();
+
+
   if(DEBUG)
     G4cout<<"StackingAction: ClassifyNewtrack "<<aTrack->GetTrackID()<<
       " "<<aTrack->GetDefinition()->GetParticleName()<<G4endl;
