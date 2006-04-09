@@ -131,9 +131,12 @@ public:
   G4bool GetUseTimer();
   G4bool GetUseEMHadronic();
   G4bool GetUseMuonPairProduction();
+
   G4bool GetStoreMuonTrajectories();
+  G4bool GetStoreNeutronTrajectories();
   G4bool GetStoreTrajectory();
   G4bool GetUseMuonShowers();
+
   G4bool GetIncludeIronMagFields();
 
 
@@ -274,7 +277,7 @@ private:
   G4double itsMuonEnergyCutScaleFactor;
 
   G4bool itsStoreTrajectory;
-
+  G4bool itsStoreNeutronTrajectories;
   G4bool itsIncludeIronMagFields;
 
   G4double itsLengthSafety;
@@ -533,6 +536,9 @@ inline G4bool BDSGlobalConstants::GetUseMuonPairProduction()
 
 inline G4bool BDSGlobalConstants::GetStoreMuonTrajectories()
 {return itsStoreMuonTrajectories;}
+
+inline G4bool BDSGlobalConstants::GetStoreNeutronTrajectories()
+{return itsStoreNeutronTrajectories;}
 
 inline G4bool BDSGlobalConstants::GetStoreTrajectory()
 {return itsStoreTrajectory;}
