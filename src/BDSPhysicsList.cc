@@ -58,7 +58,7 @@ const int DEBUG = 0;
 #include "G4MuPairProduction.hh"
 
 
-#include "G4GammaConversionToMuons.hh"
+#include "BDSGammaConversionToMuons.hh"
 #include "G4MuonNucleusProcess.hh"
 
 #include "G4hIonisation.hh"
@@ -189,8 +189,7 @@ void BDSPhysicsList::ConstructProcess()
   // standard electromagnetic + muon
   if(BDSGlobals->GetPhysListName() == "em_muon") 
     {
-      RegisterPhysics(  new MuonPhysics("muon"));
-      RegisterPhysics( new BDSGammaConversionPhysics("BDSGamConv"));
+      ConstructMuon();
       return;
     }
 
@@ -299,10 +298,13 @@ void BDSPhysicsList::ConstructParticle()
   
 }
 
+
+#include "G4Region.hh"
+#include "G4ProductionCuts.hh"
 void BDSPhysicsList::SetCuts()
 {
   if (verbose){
-    G4cout << "BDSPhysicsList:: setting cuts";
+    G4cout << "BDSPhysicsList:: setting cuts\n";
     
   }
   
@@ -366,6 +368,58 @@ void BDSPhysicsList::ConstructEM()
     }
   }
 }
+
+void BDSPhysicsList::ConstructMuon()
+{
+  theParticleIterator->reset();
+  while( (*theParticleIterator)() ){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+    
+    if (particleName == "gamma") {
+      // gamma         
+      pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
+      pmanager->AddDiscreteProcess(new G4ComptonScattering);
+      pmanager->AddDiscreteProcess(new G4GammaConversion);
+      pmanager->AddDiscreteProcess(new BDSGammaConversionToMuons);
+      
+    } else if (particleName == "e-") {
+      //electron
+      pmanager->AddProcess(new G4MultipleScattering,-1, 2,1);
+      pmanager->AddProcess(new G4eIonisation,       -1, 3,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 4,3);     
+      //pmanager->AddProcess(new G4StepLimiter,   -1, 1,4);  
+      
+    } else if (particleName == "e+") {
+      //positron
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4eIonisation,       -1, 2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 3,3);
+      pmanager->AddProcess(new G4eplusAnnihilation,  0,-1,4);
+      
+    } else if( particleName == "mu+" || 
+               particleName == "mu-"    ) {
+      //muon  
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4MuIonisation,      -1, 2,2);
+      pmanager->AddProcess(new G4MuBremsstrahlung,  -1, 3,3);
+      pmanager->AddProcess(new G4MuPairProduction,  -1, 4,4);     
+      pmanager->AddDiscreteProcess(new G4MuonNucleusProcess);     
+      
+    } else if ((!particle->IsShortLived()) &&
+	       (particle->GetPDGCharge() != 0.0) && 
+	       (particle->GetParticleName() != "chargedgeantino")) {
+      //all others charged particles except geantino
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4hIonisation,       -1, 2,2);
+      //step limit
+      //pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);         
+      ///pmanager->AddProcess(new G4UserSpecialCuts,   -1,-1,4);  
+    }
+  }
+}
+
 
 void BDSPhysicsList::ConstructMerlin()
 {

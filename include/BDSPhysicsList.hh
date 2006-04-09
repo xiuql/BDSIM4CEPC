@@ -31,6 +31,8 @@ public:
 
   void ConstructEM();
 
+  void ConstructMuon();
+
   void ConstructMerlin();
 
   void ConstructEM_Low_Energy();
