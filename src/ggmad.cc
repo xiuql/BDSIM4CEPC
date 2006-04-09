@@ -49,6 +49,10 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
   G4LogicalVolume *lvol;
   G4VPhysicalVolume* PhysiComp;
 
+  G4VisAttributes *visAttr = new G4VisAttributes(true, G4Colour(0.2,0.2,0.2));
+  visAttr->SetForceSolid(true);
+						 
+
   G4int count = 0;
 
   while (inputf.good())
@@ -69,7 +73,9 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 		getParameter(x,"x",token); //half lengthes
 		getParameter(y,"y",token);
 		getParameter(z,"z",token);
-
+		getParameter(phi,"phi",token);
+		getParameter(theta,"theta",token);
+		getParameter(psi,"psi",token);
 		getParameter(material,"material",token);
 	      }
 
@@ -93,9 +99,14 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 
 	    // place into mother volume
 
-	     PhysiComp = 
+	    G4RotationMatrix *rot = new G4RotationMatrix;
+	    rot->rotateX(2*pi*phi/360.);
+	    rot->rotateY(2*pi*theta/360.);
+	    rot->rotateZ(2*pi*psi/360.);
+
+	    PhysiComp = 
 	       new G4PVPlacement(
-		      0,			     // rotation
+		      rot,			     // rotation
 		      G4ThreeVector(x0,y0,z0),	                     // at (x0,y0,z0)
 		      lvol,  // its logical volume
 		      "vol_"+G4String(count),	     // its name
@@ -125,7 +136,9 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 		getParameter(z,"z",token);
 		getParameter(phi0,"phi0",token);
 		getParameter(dphi,"dphi",token);
-		
+		getParameter(phi,"phi",token);
+		getParameter(theta,"theta",token);
+		getParameter(psi,"psi",token);
 		getParameter(material,"material",token);
 	      }
 	    
@@ -154,9 +167,15 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 	    
 	    // place into mother volume
 	    
+	    G4RotationMatrix *rot = new G4RotationMatrix;
+	    rot->rotateX(2*pi*phi/360.);
+	    rot->rotateY(2*pi*theta/360.);
+	    rot->rotateZ(2*pi*psi/360.);
+
+
 	    PhysiComp = 
 	      new G4PVPlacement(
-				0,			     // rotation
+				rot,			     // rotation
 				G4ThreeVector(x0,y0,z0),     // at (0,0,0)
 				lvol,  // its logical volume
 				"vol_"+G4String(count),	     // its name
@@ -187,7 +206,9 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 		getParameter(z,"z",token);
 		getParameter(phi0,"phi0",token);
 		getParameter(dphi,"dphi",token);
-		
+		getParameter(phi,"phi",token);
+		getParameter(theta,"theta",token);
+		getParameter(psi,"psi",token);
 		getParameter(material,"material",token);
 	      }
 	    
@@ -197,6 +218,7 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 	    
 	    
 	    G4cout<<"creating cons : "<<x0<<"  "<<y0<<" "<<z0<<endl;
+	    G4cout<<"rotation : "<<phi<<"  "<<theta<<" "<<psi<<endl;
 	    
 	    // default - tube
 	    phi0 = 0;
@@ -214,13 +236,20 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 	    lvol = new G4LogicalVolume(aCons,
 				       theMaterial,
 				       "_bmp_logical");
+
+	    lvol->SetVisAttributes( visAttr );
 	    
 	    
 	    // place into mother volume
-	    
+
+	    G4RotationMatrix *rot = new G4RotationMatrix;
+	    rot->rotateX(2*pi*phi/360.);
+	    rot->rotateY(2*pi*theta/360.);
+	    rot->rotateZ(2*pi*psi/360.);
+
 	    PhysiComp = 
 	      new G4PVPlacement(
-				0,			     // rotation
+				rot,			     // rotation
 				G4ThreeVector(x0,y0,z0),     // at (0,0,0)
 				lvol,  // its logical volume
 				"vol_"+G4String(count),	     // its name
@@ -272,10 +301,13 @@ void GGmadDriver::Construct(G4LogicalVolume *marker)
 				       theMaterial,
 				       "_bmp_logical");
 
-	    G4RotationMatrix *rot = new G4RotationMatrix(phi,theta,psi);
-	    
-	    
 	    // place into mother volume
+
+	    G4RotationMatrix *rot = new G4RotationMatrix;
+	    rot->rotateX(2*pi*phi/360.);
+	    rot->rotateY(2*pi*theta/360.);
+	    rot->rotateZ(2*pi*psi/360.);
+	    
 	    
 	    PhysiComp = 
 	      new G4PVPlacement(
@@ -398,6 +430,12 @@ void GetMaterial(G4Material *&theMaterial, G4String material)
   if(material=="\"Lead\"" || material=="Lead")
     {
       theMaterial = theMaterials->LCLead;
+      return;
+    }
+
+  if(material=="\"Concrete\"" || material=="Concrete")
+    {
+      theMaterial = theMaterials->LCConcrete;
       return;
     }
 
