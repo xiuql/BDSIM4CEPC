@@ -1,2 +1,0 @@
-### BDSIM output created Sun Apr  9 18:27:46 2006
- ####

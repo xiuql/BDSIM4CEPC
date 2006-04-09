@@ -35,6 +35,7 @@
 #        described in the event action.
 
 /vis/viewer/set/viewpointThetaPhi 90 90
+/vis/viewer/scaleTo 1 300 1
 # /vis/drawVolume
 #/vis/scene/add/trajectories
 # /tracking/storeTrajectory 0
