@@ -46,8 +46,10 @@
 
 #include "G4VProcess.hh"
 
-
 #include "G4MagneticField.hh"
+
+
+#include "G4Region.hh"
 
 extern BDSMaterials* theMaterials;
 
@@ -405,26 +407,39 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
   if(proc)G4cout<<" process="<<proc->GetProcessName()<<G4endl<<G4endl;
   */
 
-  if(pName=="gamma")
-    {
-      G4double photonCut = BDSGlobals->GetThresholdCutPhotons();
+  // this cuts apply to default region
 
-      if(ThisTrack->GetTotalEnergy()<photonCut)
-	{
-	  //ThisTrack->SetKineticEnergy(0.);
-	  ThisTrack->SetTrackStatus(fStopAndKill);
-	  //ThisTrack->SetBelowThresholdFlag();
-	}
-    }
+  G4LogicalVolume* LogVol=ThisTrack->GetVolume()->GetLogicalVolume();
+  G4Region* reg = LogVol->GetRegion();
 
-  if(pName=="e-"||pName=="e+")
+  //G4cout<<"I am in "<<reg->GetName()<<G4endl;
+
+  if(reg->GetName() != "precision")
     {
-      if(ThisTrack->GetTotalEnergy()<BDSGlobals->GetThresholdCutCharged())
+      
+      
+      if(pName=="gamma")
 	{
-	  //	  ThisTrack->SetKineticEnergy(0.);
-	  ThisTrack->SetTrackStatus(fStopAndKill);
-	  //ThisTrack->SetBelowThresholdFlag();
+	  G4double photonCut = BDSGlobals->GetThresholdCutPhotons();
+	  
+	  if(ThisTrack->GetTotalEnergy()<photonCut)
+	    {
+	      //ThisTrack->SetKineticEnergy(0.);
+	      ThisTrack->SetTrackStatus(fStopAndKill);
+	      //ThisTrack->SetBelowThresholdFlag();
+	    }
 	}
+      
+      if(pName=="e-"||pName=="e+")
+	{
+	  if(ThisTrack->GetTotalEnergy()<BDSGlobals->GetThresholdCutCharged())
+	    {
+	      //	  ThisTrack->SetKineticEnergy(0.);
+	      ThisTrack->SetTrackStatus(fStopAndKill);
+	      //ThisTrack->SetBelowThresholdFlag();
+	    }
+	}
+      
     }
   
   /*
@@ -439,9 +454,9 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
   
   if(pName=="neutron" && ThisTrack->GetMaterial()->GetName() =="LCVacuum")
     {
-
+      
       /*
-      G4VUserTrackInformation* Info=ThisTrack->GetUserInformation();
+	G4VUserTrackInformation* Info=ThisTrack->GetUserInformation();
 
       if(Info)
 	{
