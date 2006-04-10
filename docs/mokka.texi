@@ -274,6 +274,14 @@ Variable type: @code{VARCHAR(32)}
       This is an optional parameter. This is the visual state setting for the object. Setting this to ``W'' results in a wireframe displayment of the object. ``S'' produces a shaded solid and ``I'' leaves the object invisible. The default is set to be wireframe.
 
 
+@item @code{FIELDX, FIELDY, FIELDZ} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      These are optional parameters. They can be used to apply a uniform field to any volume, with default units of Tesla. Note that if there is a solenoid field present throughout the enitre @code{element} then this uniform field will act in addition to the solenoid field.
+
 @end itemize
 
 
@@ -311,7 +319,7 @@ Variable type: @code{DOUBLE(10,3)}
 
 @subsubsection 'Trapezoid' Solid Types
 
-Append @code{_TRAP} to the table name in order to make use of the G4Trd solid type - which is deined as a trapezoid with the X and Y dimensions varying along z functions. The following table parameters are specific to the box solid:
+Append @code{_TRAP} to the table name in order to make use of the G4Trd solid type - which is deined as a trapezoid with the X and Y dimensions varying along z functions. The following table parameters are specific to the trapezoid solid:
 
 @itemize @bullet
 
@@ -472,7 +480,7 @@ Variable type: @code{DOUBLE(10,3)}
 @end itemize
 @subsubsection 'Polycone' Solid Types
 
-Append @code{_POLYCONE} to the table name in order to make use of the G4Cons solid type. The following table parameters are specific to the polycone solid:
+Append @code{_POLYCONE} to the table name in order to make use of the G4Polycone solid type. The following table parameters are specific to the polycone solid:
 
 @itemize @bullet
 
@@ -527,6 +535,63 @@ Variable type: @code{DOUBLE(10,3)}
 
 
 @end itemize
+
+@subsubsection 'Elliptical Cone' Solid Types
+
+Append @code{_ELLIPTICALCONE} to the table name in order to make use of the G4Ellipticalcone solid type. The following table parameters are specific to the elliptical cone solid:
+
+@itemize @bullet
+
+@item @code{XSEMIAXIS} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the Semiaxis in X.
+
+
+@item @code{YSEMIAXIS} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the Semiaxis in Y.
+
+
+@item @code{LENGTHZ} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the height of the elliptical cone.
+
+
+@item @code{ZCUT} 
+
+
+Variable type: @code{DOUBLE(10,3)}
+
+
+      This is a required  parameter. This value will be used to specify the upper cut plane level.
+
+@end itemize
+
+
+Note that the above parameters are used to define an elliptical cone with the following parametric equations (in the usual Geant4 way):
+
+@code{x = XSEMIAXIS * (LENGTHZ - u) / u * Cos(v)}
+
+
+@code{Y = YSEMIAXIS * (LENGTHZ - u) / u * Sin(v)}
+
+
+@code{z = u}
+
+
+where @code{v} is between @code{0} and @code{2*PI} and @code{u} between @code{0} and @code{h} respectively.
 
 @subsection Creating a geometry list
 
