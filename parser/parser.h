@@ -890,6 +890,20 @@ void set_value(string name, double value )
   if(name == "srMultiplicity") options.synchPhotonMultiplicity = (int) value;
   if(name == "srTrackPhotons") options.synchTrackPhotons = (int) value;
 
+  if(name == "minimumEpsilonStep" ) options.minimumEpsilonStep = value;
+  if(name == "maximumEpsilonStep" ) options.maximumEpsilonStep = value;
+  if(name == "deltaOneStep" ) options.deltaOneStep = value;
+
+  if(name == "prodCutPhotons" ) options.prodCutPhotons = value;
+  if(name == "prodCutPhotonsP" ) options.prodCutPhotonsP = value;
+
+  if(name == "prodCutElectrons" ) options.prodCutElectrons = value;
+  if(name == "prodCutElectronsP" ) options.prodCutElectronsP = value;
+
+  if(name == "prodCutPositrons" ) options.prodCutPositrons = value;
+  if(name == "prodCutPositronsP" ) options.prodCutPositronsP = value;
+
+
 }
 
 

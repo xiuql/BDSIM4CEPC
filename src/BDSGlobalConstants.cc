@@ -59,6 +59,12 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
 
   itsTrackWeightFactor = opt.trackWeightFactor;
 
+  itsProdCutPhotons = opt.prodCutPhotons * m;
+  itsProdCutPhotonsP = opt.prodCutPhotonsP * m;
+  itsProdCutElectrons = opt.prodCutElectrons * m;
+  itsProdCutElectronsP = opt.prodCutElectronsP * m;
+  itsProdCutPositrons = opt.prodCutPositrons * m;
+  itsProdCutPositronsP = opt.prodCutPositronsP * m;
 
 
   itsDeltaChord = opt.deltaChord * m;
@@ -66,7 +72,10 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   itsChordStepMinimum = opt.chordStepMinimum * m;
 
   itsDeltaIntersection= opt.deltaIntersection * m;
-
+  
+  itsMinimumEpsilonStep = opt.minimumEpsilonStep;
+  itsMaximumEpsilonStep = opt.maximumEpsilonStep;
+  itsDeltaOneStep = opt.deltaOneStep * m;
 
 
   itsTurnOnInteractions = opt.turnOnInteractions;

@@ -535,9 +535,15 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
    
   G4ProductionCuts* theProductionCuts = new G4ProductionCuts();
   
-  theProductionCuts->SetProductionCut(1.e-6*m,"gamma");
-  theProductionCuts->SetProductionCut(1.e-6*m,"e+");
-  theProductionCuts->SetProductionCut(1.e-6*m,"e-");
+  if(BDSGlobals->GetProdCutPhotonsP()>0)
+    theProductionCuts->SetProductionCut(BDSGlobals->GetProdCutPhotonsP(),"gamma");
+
+  if(BDSGlobals->GetProdCutElectronsP()>0)
+    theProductionCuts->SetProductionCut(BDSGlobals->GetProdCutElectronsP(),"e-");
+
+  if(BDSGlobals->GetProdCutPositronsP()>0)
+    theProductionCuts->SetProductionCut(BDSGlobals->GetProdCutPositronsP(),"e+");
+
   
   precisionRegion->SetProductionCuts(theProductionCuts);
 

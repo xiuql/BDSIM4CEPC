@@ -107,10 +107,22 @@ struct Options {
   double beampipeThickness;
   double thresholdCutCharged;
   double thresholdCutPhotons;
+  
+  double prodCutPhotons;
+  double prodCutPhotonsP;
+  double prodCutElectrons;
+  double prodCutElectronsP;
+  double prodCutPositrons;
+  double prodCutPositronsP;
+
+
   double trackWeightFactor;
   double deltaChord;
   double chordStepMinimum;
   double deltaIntersection;
+  double minimumEpsilonStep;
+  double maximumEpsilonStep;
+  double deltaOneStep;
   bool turnOnInteractions;
   int useLowEMPhysics;
   int synchRadOn;

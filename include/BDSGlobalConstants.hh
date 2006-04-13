@@ -41,7 +41,9 @@ public:
   
   
 
-  
+  G4double GetMinimumEpsilonStep();
+  G4double GetMaximumEpsilonStep();
+  G4double GetDeltaOneStep();
 
   void SetLogFile(ofstream & os);
   void StripHeader(istream& is);
@@ -97,6 +99,13 @@ public:
   G4double GetThresholdCutCharged();
   G4double GetThresholdCutPhotons();
   G4double GetTrackWeightFactor();
+
+  G4double GetProdCutPhotons();
+  G4double GetProdCutPhotonsP();
+  G4double GetProdCutElectrons();
+  G4double GetProdCutElectronsP();
+  G4double GetProdCutPositrons();
+  G4double GetProdCutPositronsP();
 
 
   // physical processes etc.
@@ -219,6 +228,10 @@ private:
 
   G4double itsBackgroundScaleFactor;
 
+  G4double itsMinimumEpsilonStep;
+  G4double itsMaximumEpsilonStep;
+  G4double itsDeltaOneStep;
+
   G4double itsComponentBoxSize;
   G4double itsMagnetPoleSize;
   G4double itsMagnetPoleRadius;
@@ -242,6 +255,13 @@ private:
 
   G4double itsThresholdCutCharged;
   G4double itsThresholdCutPhotons;
+
+  G4double itsProdCutPhotons;
+  G4double itsProdCutPhotonsP;
+  G4double itsProdCutElectrons;
+  G4double itsProdCutElectronsP;
+  G4double itsProdCutPositrons;
+  G4double itsProdCutPositronsP;
 
   G4String itsPhysListName;
 
@@ -333,6 +353,21 @@ private:
   G4double itsWedgeDisplacement;
   G4bool itsPreviousWasWedge;
 };
+
+inline G4double BDSGlobalConstants::GetMinimumEpsilonStep()
+{
+  return itsMinimumEpsilonStep;
+}
+
+inline G4double BDSGlobalConstants::GetMaximumEpsilonStep()
+{
+  return itsMaximumEpsilonStep;
+}
+
+inline G4double BDSGlobalConstants::GetDeltaOneStep()
+{
+  return itsDeltaOneStep;
+}
 
 inline void BDSGlobalConstants::SetLogFile(ofstream & os)
 {
@@ -428,6 +463,20 @@ inline G4double BDSGlobalConstants::GetThresholdCutCharged()
 {return itsThresholdCutCharged;}
 inline G4double BDSGlobalConstants::GetThresholdCutPhotons() 
 {return itsThresholdCutPhotons;}
+
+inline G4double BDSGlobalConstants::GetProdCutPhotons() 
+{return itsProdCutPhotons;}
+inline G4double BDSGlobalConstants::GetProdCutPhotonsP() 
+{return itsProdCutPhotonsP;}
+inline G4double BDSGlobalConstants::GetProdCutElectrons() 
+{return itsProdCutElectrons;}
+inline G4double BDSGlobalConstants::GetProdCutElectronsP() 
+{return itsProdCutElectronsP;}
+inline G4double BDSGlobalConstants::GetProdCutPositrons() 
+{return itsProdCutPositrons;}
+inline G4double BDSGlobalConstants::GetProdCutPositronsP() 
+{return itsProdCutPositronsP;}
+
 
 inline G4double BDSGlobalConstants::GetWorldSizeZ() 
 {return itsWorldSizeZ;}

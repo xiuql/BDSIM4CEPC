@@ -309,7 +309,17 @@ void BDSPhysicsList::SetCuts()
   }
   
   SetCutsWithDefault();   
+
+  if(BDSGlobals->GetProdCutPhotons()>0)
+    SetCutValue(BDSGlobals->GetProdCutPhotons(),"gamma");
   
+  if(BDSGlobals->GetProdCutElectrons()>0)
+    SetCutValue(BDSGlobals->GetProdCutElectrons(),"e-");
+  
+  if(BDSGlobals->GetProdCutPositrons()>0)
+    SetCutValue(BDSGlobals->GetProdCutPositrons(),"e+");
+
+
   if(verbose)
     DumpCutValuesTable(); 
   

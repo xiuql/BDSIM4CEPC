@@ -235,6 +235,14 @@ void BDSMultipole::BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
   itsBPFieldMgr->SetChordFinder(itsChordFinder);
   itsBPFieldMgr->SetDeltaIntersection(BDSGlobals->GetDeltaIntersection());
 
+  if(BDSGlobals->GetMinimumEpsilonStep()>0)
+    itsBPFieldMgr->SetMinimumEpsilonStep(BDSGlobals->GetMinimumEpsilonStep());
+
+  if(BDSGlobals->GetMaximumEpsilonStep()>0)
+    itsBPFieldMgr->SetMaximumEpsilonStep(BDSGlobals->GetMaximumEpsilonStep());
+
+  if(BDSGlobals->GetDeltaOneStep()>0)
+    itsBPFieldMgr->SetDeltaOneStep(BDSGlobals->GetDeltaOneStep());
 }
 
 
