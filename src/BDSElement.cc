@@ -211,6 +211,7 @@ void BDSElement::PlaceComponents(G4String geometry, G4String bmap)
 	    itsField = new BDSMagFieldSQL(bFile,itsLength,
 					  Mokka->Quadvol, Mokka->QuadBgrad,
 					  Mokka->Sextvol, Mokka->SextBgrad,
+					  Mokka->Octvol, Mokka->OctBgrad,
 					  Mokka->Fieldvol,Mokka->UniformField);
 	    
 	    // build the magnetic field manager and transportation

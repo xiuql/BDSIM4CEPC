@@ -25,11 +25,13 @@ BDSMagFieldSQL::BDSMagFieldSQL(const G4String& aFieldFile,
 			       G4double aMarkerLength,
 			       vector<G4String> Quadvol, vector<G4double> QuadBgrad,
 			       vector<G4String> Sextvol, vector<G4double> SextBgrad,
+			       vector<G4String> Octvol, vector<G4double> OctBgrad,
 			       vector<G4String> Fieldvol, vector<G4ThreeVector> UniformField)
 
   :ifs(aFieldFile.c_str()),FieldFile(aFieldFile),itsMarkerLength(aMarkerLength),
    itsQuadVol(Quadvol), itsQuadBgrad(QuadBgrad),
    itsSextVol(Sextvol), itsSextBgrad(SextBgrad),
+   itsOctVol(Octvol), itsOctBgrad(OctBgrad),
    itsFieldVol(Fieldvol), itsUniformField(UniformField)
 {
 }
@@ -44,8 +46,8 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
     G4TransportationManager::GetTransportationManager()-> 
     GetNavigatorForTracking();
   // gab_dec03>>
-  G4ThreeVector LocalR, GlobalR, LocalB, RLocalR, QuadB, SextB, FieldB;
-  LocalR = GlobalR = LocalB = RLocalR = QuadB = SextB = FieldB= G4ThreeVector(0.,0.,0.);
+  G4ThreeVector LocalR, GlobalR, LocalB, RLocalR, QuadB, SextB, OctB, FieldB;
+  LocalR = GlobalR = LocalB = RLocalR = QuadB = SextB = OctB = FieldB= G4ThreeVector(0.,0.,0.);
   
   GlobalR.setX(Point[0]);
   GlobalR.setY(Point[1]);
@@ -66,6 +68,7 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
   G4String VolName = aTouchable->GetVolume()->GetName();
   G4bool inQuad=false;
   G4bool inSext=false;
+  G4bool inOct = false;
   G4bool inField=false;
   
   for(G4int i=0; i<(G4int)itsQuadVol.size(); i++)
@@ -97,11 +100,33 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
 	      LocalR.setY(-LocalR.y());
 	      LocalR.setX(-LocalR.x());	  // -ve signs because of Geant Co-ord System
 	      SextB.setX(LocalR.x()*LocalR.y()*itsSextBgrad[i]);
-	      SextB.setY(-(LocalR.x()*LocalR.x()-LocalR.y()*LocalR.y())*itsSextBgrad[i]/2);
+	      SextB.setY(-(LocalR.x()*LocalR.x()-LocalR.y()*LocalR.y())*itsSextBgrad[i]/2.);
 	      SextB.setZ(0.0);
 	      SextB = LocalAffine.TransformAxis(SextB);
 	      inSext=true;
 	      break;
+	    }
+	}
+      if(!inSext)
+	{
+	  for(G4int i=0; i<(G4int)itsOctVol.size(); i++)
+	    {
+	      if(VolName==itsOctVol[i])
+		{
+		  GlobalAffine=IRNavigator->GetGlobalToLocalTransform();
+		  LocalAffine=IRNavigator->GetLocalToGlobalTransform();
+		  LocalR=GlobalAffine.TransformPoint(GlobalR); 
+		  LocalR.setY(-LocalR.y());
+		  LocalR.setX(-LocalR.x());	  // -ve signs because of Geant Co-ord System
+		  OctB.setX( (3*LocalR.x()*LocalR.x()*LocalR.y() - 
+			      LocalR.y()*LocalR.y()*LocalR.y())*itsOctBgrad[i]/6.);
+		  OctB.setY( (LocalR.x()*LocalR.x()*LocalR.x() -
+			      LocalR.x()*LocalR.y()*LocalR.y())*itsOctBgrad[i]/6.);
+		  OctB.setZ(0.0);
+		  OctB = LocalAffine.TransformAxis(OctB);
+		  inOct=true;
+		  break;
+		}
 	    }
 	}
     }
@@ -148,6 +173,7 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
   //LocalB=G4ThreeVector(0.,0.,0.); //turn Bfield from Solenoid off
   if(inQuad) LocalB+=QuadB;
   if(inSext) LocalB+=SextB;
+  if(inOct) LocalB+=OctB;
   if(inField) LocalB+=FieldB;
 
   // b-field

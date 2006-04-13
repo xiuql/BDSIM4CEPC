@@ -46,11 +46,13 @@ public:
   vector<G4ThreeVector> UniformField;
   vector<G4String> Fieldvol; 
 
-  // For List of Quad/Sext Fields
+  // For List of Quad/Sext/Oct Fields
   vector<G4double> QuadBgrad;
   vector<G4String> Quadvol; 
   vector<G4double> SextBgrad;
   vector<G4String> Sextvol;
+  vector<G4double> OctBgrad;
+  vector<G4String> Octvol;
   G4VPhysicalVolume* align_in_volume;
   G4VPhysicalVolume* align_out_volume;
   vector<G4LogicalVolume*> SensitiveComponents;
