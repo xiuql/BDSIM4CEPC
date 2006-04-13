@@ -89,9 +89,8 @@ BDSMySQLWrapper::BDSMySQLWrapper (const G4String& SQLFileName)
   : ifs(SQLFileName.c_str())
   
 {
-  assert(ifs);
-  
-  G4cout<<"Loading SQL Filename="<<SQLFileName<<G4endl;
+  if(ifs) G4cout<<"Loading SQL Filename="<<SQLFileName<<G4endl;
+  else G4cout<<"Unable to load SQL file: "<<SQLFileName<<G4endl;
 }
 
 vector<BDSMySQLTable*> BDSMySQLWrapper::ConstructTable ()
