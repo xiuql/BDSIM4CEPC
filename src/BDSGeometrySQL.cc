@@ -6,6 +6,7 @@
 #include "G4Cons.hh"
 #include "G4EllipticalCone.hh"
 #include "G4Torus.hh"
+#include "G4SubtractionSolid.hh"
 #include "G4Polycone.hh"
 #include "G4VisAttributes.hh"
 #include "G4LogicalVolume.hh"
@@ -780,6 +781,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
   G4double RotPhi;
   G4double K1,K2,K3,K4;
   G4String PARENTNAME;
+  G4String InheritStyle;
   G4String Name;
   G4String MagType;
   G4String TableName = aSQLTable->GetName();
@@ -796,6 +798,7 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
       RotPsi = RotTheta = RotPhi = 0.;
       K1 = K2 = K3 = K4 = 0.;
       PARENTNAME = "";
+      InheritStyle = "";
       align_in=0;
       align_out=0;
       SetSensitive=0;
@@ -837,6 +840,8 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
 	align_out = aSQLTable->GetVariable("ALIGNOUT")->GetIntValue(k);
       if(aSQLTable->GetVariable("SETSENSITIVE")!=NULL)
 	SetSensitive = aSQLTable->GetVariable("SETSENSITIVE")->GetIntValue(k);
+      if(aSQLTable->GetVariable("INHERITSTYLE")!=NULL)
+	InheritStyle = aSQLTable->GetVariable("INHERITSTYLE")->GetStrValue(k);
       if(aSQLTable->GetVariable("NAME")!=NULL)
 	Name = aSQLTable->GetVariable("NAME")->GetStrValue(k);
       if(Name=="_SQL") Name = TableName+BDSGlobals->StringFromInt(k) + "_SQL";
@@ -878,6 +883,18 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
       if(SetSensitive) SensitiveComponents.push_back(VOL_LIST[ID]);
 
       G4ThreeVector PlacementPoint(PosX,PosY,PosZ);
+
+      if(InheritStyle.compareTo("SUBTRACT",cmpmode)==0)
+	{
+	  G4VSolid* original = VOL_LIST[PARENTID]->GetSolid();
+	  G4VSolid* sub = VOL_LIST[ID]->GetSolid();
+	  VOL_LIST[PARENTID]->SetSolid(new G4SubtractionSolid(VOL_LIST[PARENTID]->GetName(),
+							 original,
+							 sub,
+							 RotateComponent(RotPsi,RotPhi,RotTheta),
+							 PlacementPoint));
+	}
+
 
       G4VPhysicalVolume* PhysiComp = 
 	new G4PVPlacement(RotateComponent(RotPsi,RotPhi,RotTheta),
@@ -931,6 +948,13 @@ void BDSGeometrySQL::PlaceComponents(BDSMySQLTable* aSQLTable, vector<G4LogicalV
 	  HasFields = true;
 	  SextBgrad.push_back(brho * K2 * tesla / (m*m));
 	  Sextvol.push_back(PhysiComp->GetName());
+	}
+
+      if(MagType.compareTo("OCT",cmpmode)==0)
+	{
+	  HasFields = true;
+	  OctBgrad.push_back(brho * K3 * tesla / (m*m*m));
+	  Octvol.push_back(PhysiComp->GetName());
 	}
 
       if(FieldX || FieldY || FieldZ) //if any vols have non-zero field components
