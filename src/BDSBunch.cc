@@ -203,7 +203,7 @@ void BDSBunch::SetOptions(struct Options& opt)
 	      } else {
 		G4String fmt = rest.substr(pos1+1,pos2-1);
 		//G4cout<<"fmt ->"<<fmt<<G4endl;
-		sd.name="x";
+		sd.name="y";
 
 		if(fmt=="m") sd.unit=1;
 		if(fmt=="cm") sd.unit=1.e-2;
