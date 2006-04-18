@@ -32,6 +32,19 @@ public:
 	Float_t GetBDSK3(){return item.k3;}
 	Float_t GetBDSTilt(){return item.tilt;}
 	Double_t SetBDSX2(Double_t S){s=S;}
+
+	Float_t GetAperX()
+	{
+	  if(item.type==_RCOL || item.type==_ECOL)
+	    return item.xsize;
+	  else return item.aper;
+	}
+	Float_t GetAperY()
+	{
+	  if(item.type==_RCOL || item.type==_ECOL)
+	    return item.ysize;
+	  else return item.aper;
+	}
 	
 private:
 	Element item;

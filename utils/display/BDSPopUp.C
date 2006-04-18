@@ -11,7 +11,8 @@ Last modified 06.12.2005
 ClassImp(BDSPopUp) 
 
 BDSPopUp::BDSPopUp(TString name, short type,Float_t len, Float_t s,
-					   Float_t k0, Float_t k1, Float_t k2, Float_t k3, Float_t angle)
+		   Float_t k0, Float_t k1, Float_t k2, Float_t k3,
+		   Float_t angle, Float_t aper_x, Float_t aper_y)
 : TCanvas("echo_canvas","Optics Specs.",960,10,330,200)
 {
 	TString temp;
@@ -25,10 +26,12 @@ BDSPopUp::BDSPopUp(TString name, short type,Float_t len, Float_t s,
 	TText *t1 = new TText(0.02,0.7,temp);
 	temp=Form("@ %f m with a length of %f m",s,len);
 	TText *t2 = new TText(0.02,0.6,temp);
+	temp=Form("Aperture: X = %f m, Y = %f m",aper_x,aper_y);
+	TText *t3 = new TText(0.02,0.5,temp);
 	temp=Form("k1=%f, k2=%f",k0,k1);
-	TText *t3 = new TText(0.02,0.4,temp);
-	temp=Form("k3=%f, k4=%f",k2,k3);
 	TText *t4 = new TText(0.02,0.3,temp);
+	temp=Form("k3=%f, k4=%f",k2,k3);
+	TText *t5 = new TText(0.02,0.2,temp);
 	temp=Form("angle=%f",angle);
 	
 	t0->SetTextColor(2);
@@ -42,10 +45,13 @@ BDSPopUp::BDSPopUp(TString name, short type,Float_t len, Float_t s,
 	t3->SetTextSize(0.09);
 	t4->SetTextAlign(12);
 	t4->SetTextSize(0.09);	
+	t5->SetTextAlign(12);
+	t5->SetTextSize(0.09);	
 	
 	t0->Draw();
 	t1->Draw();
 	t2->Draw();
 	t3->Draw();
 	t4->Draw();
+	t5->Draw();
 }

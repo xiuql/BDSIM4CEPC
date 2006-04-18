@@ -36,7 +36,6 @@ BDSCanvas::BDSCanvas(char* opticfile):TCanvas("BDSIMBrowser","BDSIM ROOT Framewo
 	plot->SetRightMargin(1.-xmax_axis_position);
 	plot->Draw();
 
-
 	BDSParser parser;
 	parser.LoadFile(line,opticfile);
 	plot->cd();

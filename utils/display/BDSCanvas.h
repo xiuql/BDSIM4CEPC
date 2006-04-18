@@ -58,6 +58,10 @@ public:
 	TString* GetNameElement() {return NameElement;}
 	Int_t NumberElement;
 	Int_t GetNumberElement() {return NumberElement;}	
+	Double_t ElementXAper[MAX_ELEMENTS];
+	Double_t* GetElementXAper() {return ElementXAper;}
+	Double_t ElementYAper[MAX_ELEMENTS];
+	Double_t* GetElementYAper() {return ElementYAper;}
 
 private:		
 	BDSPad *line;

@@ -72,8 +72,9 @@ void BDSPad::BoxClicked()
 	Float_t k2=element->GetBDSK2();
 	Float_t k3=element->GetBDSK3();
 	Float_t angle=element->GetBDSAngle();
-
-	BDSPopUp *echo = new BDSPopUp(name,type,len,s,k0,k1,k2,k3,angle);
+	Float_t aper_x=element->GetAperX();
+	Float_t aper_y=element->GetAperY();
+	BDSPopUp *echo = new BDSPopUp(name,type,len,s,k0,k1,k2,k3,angle,aper_x,aper_y);
 }
 void BDSPad::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
@@ -219,7 +220,7 @@ void BDSPad::AddBDSBox(Element _item, Double_t s)
 		}
 	}
 	
-	if(_item.type==_ECOL)
+	if(_item.type==_ECOL || _item.type==_RCOL)
 	{
 	y1=0.2;
 	y2=0.8;

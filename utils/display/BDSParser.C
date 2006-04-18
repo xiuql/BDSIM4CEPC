@@ -23,20 +23,43 @@ void BDSParser::LoadFile(BDSPad* _pad, char* _path)
 	_pad->Begin();
 	for(it = beamline_list.begin();it!=beamline_list.end();it++)
 	{
-	if((*it).l> 1e-9)
+	  if((*it).l> 1e-9)
+	    {
+	      s_current += (*it).l;
+	     
+	      if((*it).type==_RCOL || (*it).type==_ECOL)
 		{
-		s_current += (*it).l;
+		  ((BDSCanvas*)gPad->GetCanvas())->ElementXAper[nelement]=(*it).xsize;
+		  ((BDSCanvas*)gPad->GetCanvas())->ElementYAper[nelement]=(*it).ysize;
+		  
+		}
+	      else
+		{
+		  if((*it).aper!=0)
+		    {
+		      ((BDSCanvas*)gPad->GetCanvas())->ElementXAper[nelement]=(*it).aper;
+		      ((BDSCanvas*)gPad->GetCanvas())->ElementYAper[nelement]=(*it).aper;
+		    } 
+		  
+		  else
+		    {
+		      ((BDSCanvas*)gPad->GetCanvas())->ElementXAper[nelement]=options.beampipeRadius;
+		      ((BDSCanvas*)gPad->GetCanvas())->ElementYAper[nelement]=options.beampipeRadius;
+		    }
+		}
 		((BDSCanvas*)gPad->GetCanvas())->EndPositionElement[nelement]=s_current;
 		temp=Form((*it).name);
 		((BDSCanvas*)gPad->GetCanvas())->NameElement[nelement]=temp;	
 		temp=Form(typestr((*it).type));
 		((BDSCanvas*)gPad->GetCanvas())->TypeElement[nelement]=temp;	
 		_pad->AddBDSBox(*it,s_current);
+		cout << (*it).name << 
+"\t\t"<<s_current-(*it).l<<"\t\t"<<s_current<<"\t\t"<<(*it).l<<endl;
 		nelement++;
 		}
 	}
 	((BDSCanvas*)gPad->GetCanvas())->NumberElement=nelement-1;
-	cout << "total length "  << s_current << endl;	
+	cout << "total length "  << s_current<< endl;	
 	_pad->End();
 }
 
