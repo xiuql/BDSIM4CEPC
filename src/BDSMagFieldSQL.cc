@@ -107,29 +107,31 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
 	      break;
 	    }
 	}
-      if(!inSext)
+    }
+  
+  if(!inSext && !inSext)
+    {
+      for(G4int i=0; i<(G4int)itsOctVol.size(); i++)
 	{
-	  for(G4int i=0; i<(G4int)itsOctVol.size(); i++)
+	  if(VolName==itsOctVol[i])
 	    {
-	      if(VolName==itsOctVol[i])
-		{
-		  GlobalAffine=IRNavigator->GetGlobalToLocalTransform();
-		  LocalAffine=IRNavigator->GetLocalToGlobalTransform();
-		  LocalR=GlobalAffine.TransformPoint(GlobalR); 
-		  LocalR.setY(-LocalR.y());
-		  LocalR.setX(-LocalR.x());	  // -ve signs because of Geant Co-ord System
-		  OctB.setX( (3*LocalR.x()*LocalR.x()*LocalR.y() - 
-			      LocalR.y()*LocalR.y()*LocalR.y())*itsOctBgrad[i]/6.);
-		  OctB.setY( (LocalR.x()*LocalR.x()*LocalR.x() -
-			      LocalR.x()*LocalR.y()*LocalR.y())*itsOctBgrad[i]/6.);
-		  OctB.setZ(0.0);
-		  OctB = LocalAffine.TransformAxis(OctB);
-		  inOct=true;
+	      GlobalAffine=IRNavigator->GetGlobalToLocalTransform();
+	      LocalAffine=IRNavigator->GetLocalToGlobalTransform();
+	      LocalR=GlobalAffine.TransformPoint(GlobalR); 
+	      LocalR.setY(-LocalR.y());
+	      LocalR.setX(-LocalR.x());	  // -ve signs because of Geant Co-ord System
+	      OctB.setX( (3*LocalR.x()*LocalR.x()*LocalR.y() - 
+			  LocalR.y()*LocalR.y()*LocalR.y())*itsOctBgrad[i]/6.);
+	      OctB.setY( (LocalR.x()*LocalR.x()*LocalR.x() -
+			  LocalR.x()*LocalR.y()*LocalR.y())*itsOctBgrad[i]/6.);
+	      OctB.setZ(0.0);
+	      OctB = LocalAffine.TransformAxis(OctB);
+	      inOct=true;
 		  break;
-		}
 	    }
 	}
     }
+    
   
   for(G4int i=0; i<(G4int)itsFieldVol.size(); i++)
     {
