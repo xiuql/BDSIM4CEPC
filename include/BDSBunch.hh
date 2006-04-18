@@ -19,6 +19,13 @@ using namespace CLHEP;
 //class RandFlat;
 
 
+struct Doublet {
+
+  G4String name;
+  G4double unit; // relative to SI units, i.e. mm=0.001 etc.
+
+};
+
 class BDSBunch {
 
 public: 
@@ -108,6 +115,8 @@ private:
 
   int distribType;
   G4double energySpread;
+
+  list<struct Doublet> fields;
 
   // input filename
   G4String inputfile;

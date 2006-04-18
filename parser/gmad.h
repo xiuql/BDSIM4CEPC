@@ -58,6 +58,7 @@ const int _RING = 1;
 const int _SQUARE = 2;
 const int _CIRCLE = 3; 
 const int _ESHELL = 31;
+const int _UDEF = 32;
 
 const int _GUINEAPIG_BUNCH = 4;
 const int _GUINEAPIG_PAIRS = 5;

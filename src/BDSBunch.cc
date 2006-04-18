@@ -67,6 +67,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       SetSigmaYp(opt.sigmaYp);
       SetSigmaT(opt.sigmaT);
       energySpread = opt.sigmaE;
+      return;
     }
   if(opt.distribType == "ring")
     {
@@ -76,6 +77,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       rMin = opt.Rmin;
       rMax = opt.Rmax;
       energySpread = opt.sigmaE;
+      return;
     }
   if(opt.distribType == "eshell")
     {
@@ -85,6 +87,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       shellxp = opt.xp;
       shellyp = opt.yp;
       energySpread = opt.sigmaE;
+      return;
     }
   if(opt.distribType == "guineapig_bunch")
     {
@@ -94,6 +97,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       if(DEBUG) G4cout<<"GUINEAPIG_BUNCH: skipping "<<opt.nlinesIgnore<<"  lines"<<G4endl;
       _skip(opt.nlinesIgnore * 6);
+      return;
     }
   if(opt.distribType == "guineapig_slac")
     {
@@ -102,6 +106,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       InputBunchFile.open(inputfile);
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore * 6);
+      return;
     }
   if(opt.distribType == "guineapig_pairs")
     {
@@ -110,6 +115,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       InputBunchFile.open(inputfile);
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore * 7);
+      return;
     }
   if(opt.distribType == "cain")
     {
@@ -118,6 +124,208 @@ void BDSBunch::SetOptions(struct Options& opt)
       InputBunchFile.open(inputfile);
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore * 14);
+      return;
+    }
+  else //assuming the format is "field[unit]:field[unit]:..." - User Defined
+    {
+      G4cout<<"distrType -> "<<opt.distribType<<G4endl;
+      distribType = _UDEF; 
+   
+      // construct the list of read attributes
+
+      G4String unparsed_str = opt.distribType; 
+      G4int pos = unparsed_str.find(":");
+
+      struct Doublet sd;
+
+      while(pos > 0)
+	{
+	  pos = unparsed_str.find(":");
+	  G4String token = unparsed_str.substr(0,pos);
+	  unparsed_str = unparsed_str.substr(pos+1);
+	  //G4cout<<"token ->"<<token<<G4endl;
+	  //G4cout<<"unparsed_str ->"<<unparsed_str<<G4endl;
+	  //G4cout<<"pos ->"<<pos<<G4endl;
+
+	  // see if the token has a meeting
+	  if( token.length() > 2) {
+	    if(token.substr(0,1)=="E") {
+	      //G4cout<<"E!"<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name = "E"; 
+		if(fmt=="GeV") sd.unit=1;
+		if(fmt=="MeV") sd.unit=1.e-3;
+		if(fmt=="KeV") sd.unit=1.e-6;
+		if(fmt=="eV") sd.unit=1.e-9;
+
+		fields.push_back(sd);
+	      }
+	    }
+	    if( (token.substr(0,1)=="x") && (token.substr(1,1)!="p") ) {
+	      //G4cout<<"x!"<<G4endl;
+	      //G4cout<<token.substr(0,1)<<G4endl;
+	      //G4cout<<token.substr(1,2)<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name="x";
+
+		if(fmt=="m") sd.unit=1;
+		if(fmt=="cm") sd.unit=1.e-2;
+		if(fmt=="mm") sd.unit=1.e-3;
+
+		fields.push_back(sd);
+
+	      }
+	    }
+	    if(token.substr(0,1)=="y" && token.substr(1,1)!="p" ) {
+	      //G4cout<<"y!"<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name="x";
+
+		if(fmt=="m") sd.unit=1;
+		if(fmt=="cm") sd.unit=1.e-2;
+		if(fmt=="mm") sd.unit=1.e-3;
+		
+
+		fields.push_back(sd);
+	      }
+	    }
+	    if(token.substr(0,1)=="z" && token.substr(1,1)!="p" ) {
+	      //G4cout<<"z!"<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name="z";
+
+		if(fmt=="m") sd.unit=1;
+		if(fmt=="cm") sd.unit=1.e-2;
+		if(fmt=="mm") sd.unit=1.e-3;
+
+
+		fields.push_back(sd);
+	      }
+	    }
+	    if(token.substr(0,2)=="xp") {
+	      //G4cout<<"xp!"<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name="xp";
+
+		if(fmt=="rad") sd.unit=1;
+		if(fmt=="mrad") sd.unit=1.e-3;
+		
+
+		fields.push_back(sd);
+		
+	      }
+	    }
+	    if(token.substr(0,2)=="yp") {
+	      //G4cout<<"yp!"<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name="yp";
+
+		if(fmt=="rad") sd.unit=1;
+		if(fmt=="mrad") sd.unit=1.e-3;
+		
+
+		fields.push_back(sd);
+	      }
+	    }
+	    if(token.substr(0,2)=="zp") {
+	      //G4cout<<"E!"<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name="zp";
+
+		if(fmt=="rad") sd.unit=1;
+		if(fmt=="mrad") sd.unit=1.e-3;
+		
+
+		fields.push_back(sd);
+	      }
+	    }
+	    if(token.substr(0,2)=="pt") {
+	      //G4cout<<"pt!"<<G4endl;
+	      G4String rest = token.substr(1);
+	      //G4cout<<"rest ->"<<rest<<G4endl;
+	      G4int pos1 = rest.find("[");
+	      G4int pos2 = rest.find("]");
+	      if(pos1 < 0 || pos2 < 0) {
+		G4cerr<<"unit format wrong!!!"<<G4endl;
+	      } else {
+		G4String fmt = rest.substr(pos1+1,pos2-1);
+		//G4cout<<"fmt ->"<<fmt<<G4endl;
+		sd.name="pt";
+
+		fields.push_back(sd);
+	      }
+	    }
+	    
+
+	  } else {
+	      // definitely error
+	    }
+
+	}
+
+      
+
+      inputfile = opt.distribFile;
+      InputBunchFile.open(inputfile);
+      if(!InputBunchFile.good()) {
+	G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
+      
     }
 }
 
@@ -475,6 +683,44 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 		 << zp << "\t"
 		 << G4endl << G4endl;
 	  */	  
+	}
+    }
+
+  if(distribType == _UDEF)
+    {
+
+      E = x0 = y0 = z0 = xp = yp = zp = 0;
+
+     #define  _READ(value) InputBunchFile>>value
+
+      G4int type;
+
+      list<struct Doublet>::iterator it;
+      
+      for(it=fields.begin();it!=fields.end();it++)
+	{
+	  //G4cout<<it->name<<"  ->  "<<it->unit<<G4endl;
+	  if(it->name=="E") { _READ(E); E *= ( GeV * it->unit ); }
+	  if(it->name=="x") { _READ(x0); x0 *= ( m * it->unit ); }
+	  if(it->name=="y") { _READ(y0); y0 *= ( m * it->unit ); }
+	  if(it->name=="z") { _READ(z0); z0 *= ( m * it->unit ); }
+	  if(it->name=="xp") { _READ(xp); xp *= ( radian * it->unit ); }
+	  if(it->name=="yp") { _READ(yp); yp *= ( radian * it->unit ); }
+	  if(it->name=="zp") { _READ(zp); zp *= ( radian * it->unit ); }
+	  if(it->name=="pt") {
+	       _READ(type);
+	       if(InputBunchFile.good())
+	       BDSGlobals->SetParticleDefinition(G4ParticleTable::
+						 GetParticleTable()
+						 ->FindParticle(type));
+	  }
+
+      
+	  zp=sqrt(1.-xp*xp -yp*yp);  
+	  t=-z0/c_light;
+	  // use the Kinetic energy:
+	  E-=BDSGlobals->GetParticleDefinition()->GetPDGMass();
+	  
 	}
     }
 }
