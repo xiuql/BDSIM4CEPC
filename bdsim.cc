@@ -53,7 +53,7 @@ const int DEBUG = 1;
 #include "BDSUserTrackingAction.hh"
 #include "BDSSteppingVerbose.hh"
 #include "BDSRunManager.hh"
-
+#include "BDSGeometryInterface.hh"
 
 #include "BDSOutput.hh"  // interface to result output
 #include "BDSSamplerSD.hh"
@@ -66,7 +66,6 @@ const int DEBUG = 1;
 
 //=======================================================
 
-
 // Print program usage
 static void usage()
 {
@@ -77,17 +76,20 @@ static void usage()
 
   G4cout<<"Usage: bdsim [options]"<<G4endl;
   G4cout<<"Options:"<<G4endl;
-  G4cout<<"--file=<filename>   : specify the lattice file "<<G4endl
-	<<"--output=<fmt>      : output format (root|ascii), default ascii"<<G4endl
-	<<"--outfile=<file>    : output file name. Will be appended with _N"<<G4endl
-        <<"                      where N = 0, 1, 2, 3... etc."<<G4endl
-	<<"--vis_mac=<file>    : file with the visualization macro script, default vis.mac"<<G4endl
-	<<"--help              : display this message"<<G4endl
-	<<"--verbose           : display general parameters before run"<<G4endl
-    	<<"--verbose_event     : display information for every event "<<G4endl
-    	<<"--verbose_step=N    : display tracking information after each step"<<G4endl
-	<<"--verbose_event_num : display tracking information for event number N"<<G4endl
-	<<"--batch             : batch mode - no graphics"<<G4endl;
+  G4cout<<"--file=<filename>    : specify the lattice file "<<G4endl
+	<<"--output=<fmt>       : output format (root|ascii), default ascii"<<G4endl
+	<<"--outfile=<file>     : output file name. Will be appended with _N"<<G4endl
+        <<"                       where N = 0, 1, 2, 3... etc."<<G4endl
+	<<"--vis_mac=<file>     : file with the visualization macro script, default vis.mac"<<G4endl
+	<<"--help               : display this message"<<G4endl
+	<<"--verbose            : display general parameters before run"<<G4endl
+    	<<"--verbose_event      : display information for every event "<<G4endl
+    	<<"--verbose_step=N     : display tracking information after each step"<<G4endl
+	<<"--verbose_event_num  : display tracking information for event number N"<<G4endl
+	<<"--batch              : batch mode - no graphics"<<G4endl
+	<<"--outline=<file>     : print geometry info to BDSOutline.dat"<<G4endl
+	<<"--outline_type=<fmt> : print geometry info to BDSOutline.dat"<<G4endl
+	<<"                       where fmt = optics | survey"<<G4endl;
 
 }
 
@@ -97,17 +99,18 @@ BDSOutput bdsOutput;                // output interface
 BDSBunch theBunch;  // bunch information
 G4int outputFormat=_ASCII;
 G4String outputFilename="output";  //receives a .txt or .root in BDSOutput
+G4String outlinefile="BDSOutline.dat";  
+G4String outlineType="";
 G4String inputFilename= "optics.gmad"; // input file with gmad lattice description
 G4String visMacroFile="vis.mac"; // visualization macro file
 
+G4bool outline = false;
 G4bool verbose = false;  // run options
 G4bool verboseStep = false;
 G4bool verboseEvent = false;
 G4int verboseEventNumber = -1;
 G4bool isBatch = false;
 BDSSamplerSD* BDSSamplerSensDet;
-
-
 
 //=======================================================
 
@@ -121,6 +124,8 @@ int main(int argc,char** argv) {
   
    static struct option LongOptions[] = {
      { "help" , 0, 0, 0 },
+     { "outline", 1, 0, 0 },
+     { "outline_type", 1, 0, 0 },
      { "verbose", 0, 0, 0 },
      { "verbose_step", 0, 0, 0 },
      { "verbose_event", 0, 0, 0 },
@@ -163,7 +168,6 @@ int main(int argc,char** argv) {
 	  {
 	    isBatch = true;
 	  }
-	
 	if( !strcmp(LongOptions[OptionIndex].name , "verbose") )
 	  {
 	    verbose = true; 
@@ -194,6 +198,16 @@ int main(int argc,char** argv) {
 	    if(optarg) {
 	      outputFilename=optarg;
 	    }
+	  }
+	if( !strcmp(LongOptions[OptionIndex].name , "outline") )
+	  {
+	    if(optarg) outlinefile = optarg; 
+	    outline=true;
+	  }
+	if( !strcmp(LongOptions[OptionIndex].name , "outline_type") )
+	  {
+	    if(optarg) outlineType = optarg; 
+	    outline=true;  // can't have outline type without turning on outline!
 	  }
 	if( !strcmp(LongOptions[OptionIndex].name , "file") )
 	  {
@@ -412,6 +426,12 @@ int main(int argc,char** argv) {
   bdsOutput.Init(0); // activate the output - setting the first filename to 
                      // be appended with _0
 
+  BDSGeometryInterface* BDSGI = new BDSGeometryInterface(outlinefile);
+  if(outline)
+    {
+      if(outlineType=="survey") BDSGI->Survey();
+      if(outlineType=="optics") BDSGI->Optics();
+    }
   if (!isBatch)   // Define UI session for interactive mode.
     {
       // get the pointer to the User Interface manager 
@@ -427,6 +447,7 @@ int main(int argc,char** argv) {
     { 
       runManager->BeamOn(BDSGlobals->GetNumberToGenerate());
     }
+
   
   // job termination  
 #ifdef G4VIS_USE
