@@ -87,8 +87,8 @@ static void usage()
     	<<"--verbose_step=N     : display tracking information after each step"<<G4endl
 	<<"--verbose_event_num  : display tracking information for event number N"<<G4endl
 	<<"--batch              : batch mode - no graphics"<<G4endl
-	<<"--outline=<file>     : print geometry info to BDSOutline.dat"<<G4endl
-	<<"--outline_type=<fmt> : print geometry info to BDSOutline.dat"<<G4endl
+	<<"--outline=<file>     : print geometry info to <file>"<<G4endl
+	<<"--outline_type=<fmt> : type of outline format"<<G4endl
 	<<"                       where fmt = optics | survey"<<G4endl;
 
 }
