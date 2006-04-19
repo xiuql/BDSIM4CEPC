@@ -111,6 +111,7 @@ void flush(struct Element& e )
   e.k0 = 0;
   e.k1 = 0;
   e.k2 = 0;
+  e.k3 = 0;
   e.angle = 0;
   e.tilt = 0;
   e.phi = 0;
