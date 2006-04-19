@@ -10,7 +10,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSOctStepper.cc,v 1.3 2006/02/01 14:22:50 agapov Exp $
+// $Id: BDSOctStepper.cc,v 1.4 2006/04/19 02:38:09 carter Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSOctStepper.hh"
@@ -160,11 +160,32 @@ void BDSOctStepper::Stepper( const G4double yInput[],
 			    G4double yOut[],
 			    G4double yErr[]      )
 {  
+  G4int i;
   const G4int nvar = 6 ;
   
-  G4int i;
-  for(i=0;i<nvar;i++) yErr[i]=0;
-  AdvanceHelix(yInput,0,hstep,yOut);
+  const G4double *pIn = yInput+3;
+  G4ThreeVector v0= G4ThreeVector( pIn[0], pIn[1], pIn[2]);  
+  G4double InitMag=v0.mag();
+  G4double kappa=  -fPtrMagEqOfMot->FCof()*itsBTrpPrime/InitMag;
+  
+  G4double yTemp[7], yIn[7];
+  
+  //  Saving yInput because yInput and yOut can be aliases for same array
+  
+  for(i=0;i<nvar;i++) yIn[i]=yInput[i];
+  
+  G4double h = hstep * 0.5; 
+  
+  // Do two half steps
+  AdvanceHelix(yIn,   0,  h, yTemp);
+  AdvanceHelix(yTemp, 0, h, yOut); 
+  
+  // Do a full Step
+  h = hstep ;
+  AdvanceHelix(yIn, 0, h, yTemp); 
+  
+  for(i=0;i<nvar;i++) yErr[i] = yOut[i] - yTemp[i] ;
+
   return ;
 }
 
