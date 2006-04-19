@@ -27,7 +27,7 @@ class BDSSextupole :public BDSMultipole
   public:
     BDSSextupole(G4String aName, G4double aLength,
 		 G4double bpRad,G4double FeRad,
-		  G4double BDblPrime);
+		 G4double BDblPrime, G4double tilt);
     ~BDSSextupole();
 
   protected:

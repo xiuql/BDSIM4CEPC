@@ -27,7 +27,7 @@ class BDSOctupole :public BDSMultipole
   public:
     BDSOctupole(G4String aName, G4double aLength,
 		G4double bpRad,G4double FeRad,
-		G4double BTrpPrime);
+		G4double BTrpPrime, G4double tilt);
     ~BDSOctupole();
 
   protected:

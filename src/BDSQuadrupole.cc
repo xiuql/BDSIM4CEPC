@@ -32,11 +32,11 @@ extern BDSMaterials* theMaterials;
 
 BDSQuadrupole::BDSQuadrupole(G4String aName,G4double aLength, 
 			     G4double bpRad,G4double FeRad,
-			     G4double bGrad):
+			     G4double bGrad, G4double tilt):
   BDSMultipole(aName,aLength, bpRad, FeRad,SetVisAttributes()),
   itsBGrad(bGrad)
 {
-
+  itsTilt = tilt;
   if (!(*LogVolCount)[itsName])
     {
       BuildBPFieldAndStepper();
