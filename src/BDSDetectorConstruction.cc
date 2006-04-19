@@ -821,7 +821,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
 	if(use_graphics)
 	  {
-	    (*iBeam)->GetVisAttributes()->SetVisibility(false);
+	    (*iBeam)->GetVisAttributes()->SetVisibility(true);
 	    //(*iBeam)->GetVisAttributes()->SetForceSolid(true);
 	    (*iBeam)->GetMarkerLogicalVolume()->
 	      SetVisAttributes((*iBeam)->GetVisAttributes());
