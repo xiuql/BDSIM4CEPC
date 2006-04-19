@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSSextStepper.cc,v 1.1.1.1 2004/12/14 18:57:39 agapov Exp $
+// $Id: BDSSextStepper.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSSextStepper.hh"
@@ -47,11 +47,11 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
 
 
    G4double kappa=  -fPtrMagEqOfMot->FCof()*itsBDblPrime/InitMag;
-
+   
    //   if(event_number>71)G4cout<<"h="<<h<<
    //		" InitMag="<<InitMag<<"kappa="<<kappa<<G4endl;
 
-   if(abs(kappa)<1.e-12)
+   if(fabs(kappa)<1.e-12)
      {
        G4ThreeVector positionMove  = (h/InitMag) * v0;
        
@@ -74,14 +74,6 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
        G4AffineTransform LocalAffine=SextNavigator->
 	 GetLocalToGlobalTransform();
 
-      // gab_dec03>>
-      // position 
-       // position 
-       //G4ThreeVector LocalR = SextNavigator->GetCurrentLocalCoordinate();
-       // position derivative r' (normalised to unity)
-       //G4ThreeVector LocalRp= (SextNavigator->ComputeLocalAxis(v0)).unit();
-      // gab_dec03
-
       G4AffineTransform GlobalAffine=SextNavigator->
 	GetGlobalToLocalTransform();
       G4ThreeVector LocalR=GlobalAffine.TransformPoint(GlobalPosition); 
@@ -91,7 +83,6 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
 
        G4double x0=LocalR.x(); 
        G4double y0=LocalR.y();
-       //       G4double z0=LocalR.z();
 
        // Evaluate field at the approximate midpoint of the step.
        x0=x0+LocalRp.x()*h/2;
@@ -110,9 +101,9 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
        LocalRpp.setZ(xp*x02My02-2*yp*x0*y0);
 
        LocalRpp*=kappa/2; // 2 is actually a 2! factor.
-
        // determine effective curvature
        G4double R_1 = LocalRpp.mag();
+
        if(R_1>0.)
 	 {    
 	   G4double h2=h*h;
@@ -121,7 +112,7 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
 
 	   // Save for Synchrotron Radiation calculations:
 	   BDSLocalRadiusOfCurvature=1./R_1;
-
+	   
            G4double dx=LocalRp.x()*h + LocalRpp.x()*h2/2; 
 	   G4double dy=LocalRp.y()*h + LocalRpp.y()*h2/2;
 
@@ -169,10 +160,30 @@ void BDSSextStepper::Stepper( const G4double yInput[],
   const G4int nvar = 6 ;
   
   G4int i;
-  for(i=0;i<nvar;i++) yErr[i]=0;
+ 
+  const G4double *pIn = yInput+3;
+  G4ThreeVector v0= G4ThreeVector( pIn[0], pIn[1], pIn[2]);  
+  G4double InitMag=v0.mag();
+  G4double kappa=  -fPtrMagEqOfMot->FCof()*itsBDblPrime/InitMag;
   
-  AdvanceHelix(yInput,0,hstep,yOut);
-
+  G4double yTemp[7], yIn[7];
+  
+  //  Saving yInput because yInput and yOut can be aliases for same array
+  
+  for(i=0;i<nvar;i++) yIn[i]=yInput[i];
+  
+  G4double h = hstep * 0.5; 
+  
+  // Do two half steps
+  AdvanceHelix(yIn,   0,  h, yTemp);
+  AdvanceHelix(yTemp, 0, h, yOut); 
+  
+  // Do a full Step
+  h = hstep ;
+  AdvanceHelix(yIn, 0, h, yTemp); 
+  
+  for(i=0;i<nvar;i++) yErr[i] = yOut[i] - yTemp[i] ;
+  
   return ;
 }
 
