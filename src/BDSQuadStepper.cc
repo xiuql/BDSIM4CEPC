@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSQuadStepper.cc,v 1.3 2005/11/15 16:24:10 agapov Exp $
+// $Id: BDSQuadStepper.cc,v 1.4 2006/02/20 14:05:16 carter Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSQuadStepper.hh"
@@ -54,7 +54,12 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
   G4double h2=h*h;
 
   G4ThreeVector LocalR,LocalRp ;
-
+  /*
+  G4cout << "kappa: " << kappa << G4endl;
+  G4cout << "InitMag: " << InitMag << G4endl;
+  G4cout << "itsBGrad: " << itsBGrad << G4endl;
+  G4cout << "fPtrMagEqOfMot->FCof(): " << fPtrMagEqOfMot->FCof() << G4endl << G4endl;
+  */
   // relevant momentum scale is p_z, not P_tot:
   // check that the approximations are valid, else do a linear step:
   if(fabs(kappa)<1.e-12)
@@ -77,7 +82,7 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
       G4Navigator* QuadNavigator=
       	G4TransportationManager::GetTransportationManager()->
       	GetNavigatorForTracking();
-      if(h >= itsVolLength)
+      if(h > itsVolLength)
 	{
 	  // added steplength check for large h
 	  // (causes NAN with cosh and sinh later)
@@ -316,13 +321,14 @@ void BDSQuadStepper::Stepper( const G4double yInput[],
       for(i=0;i<nvar;i++) yIn[i]=yInput[i];
       
       G4double h = hstep * 0.5; 
-      
+      if(h>itsVolLength) h = itsVolLength/2.;
       // Do two half steps
       AdvanceHelix(yIn,   0,  h, yTemp);
       AdvanceHelix(yTemp, 0, h, yOut); 
       
       // Do a full Step
       h = hstep ;
+      if(h>itsVolLength) h = itsVolLength;
       AdvanceHelix(yIn, 0, h, yTemp); 
       
       for(i=0;i<nvar;i++) yErr[i] = yOut[i] - yTemp[i] ;
