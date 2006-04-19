@@ -10,7 +10,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSOctStepper.cc,v 1.2 2005/11/07 12:09:26 carter Exp $
+// $Id: BDSOctStepper.cc,v 1.3 2006/02/01 14:22:50 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSOctStepper.hh"
@@ -43,7 +43,7 @@ void BDSOctStepper::AdvanceHelix( const G4double  yIn[],
 
   // relevant momentum scale is p_z, not P_tot:
   // check that the approximations are valid, else do a linear step:
-  if(abs(kappa)<1.e-20)
+  if(fabs(kappa)<1.e-20)
     {
       G4ThreeVector positionMove  = (h/InitMag) * v0;
       

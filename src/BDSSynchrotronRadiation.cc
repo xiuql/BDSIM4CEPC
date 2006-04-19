@@ -61,7 +61,7 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
   
   for (int i=0; i<BDSGlobals->GetSynchPhotonMultiplicity(); i++){
 
-    if(abs(R)>0)
+    if(fabs(R)>0)
       GamEnergy=SynGenC(BDSGlobals->GetSynchLowX())*
 	CritEngFac*pow(eEnergy,3)/abs(R);
     
