@@ -57,7 +57,21 @@ public:
   const G4double GetXOffset() const;  // frame offset 
   const G4double GetYOffset() const;
   const G4double GetZOffset() const;
+  
+  G4double GetAperX();
+  G4double GetAperY();
 
+  G4double GetK1();
+  G4double GetK2();
+  G4double GetK3();
+
+  //Set is only for Outline readout purposes - doesn't change magnet strengths
+  void SetK1(G4double K1);
+  void SetK2(G4double K2);
+  void SetK3(G4double K3);
+
+  G4RotationMatrix* GetRotation();
+  G4ThreeVector GetPosition();
   
   const G4double GetTilt() const;  // component tilt 
   
@@ -110,7 +124,7 @@ public:
 
   // in case a mapped field is provided creates a field mesh in global coordinates
   virtual void PrepareField(G4VPhysicalVolume *referenceVolume); 
-
+  
   // in case a component requires specific alignment (e.g. SQL/BDSElement)
   virtual void AlignComponent(G4ThreeVector& TargetPos, 
 			      G4RotationMatrix *TargetRot,
@@ -148,11 +162,13 @@ protected:
   G4double itsYAper;
   G4double itsAngle;
   G4double itsTilt;
-
+  
   G4double itsPhi;
   G4double itsTheta;
   G4double itsPsi;
-
+  G4double itsK1, itsK2, itsK3;
+  G4RotationMatrix* itsRotation;
+  G4ThreeVector itsPosition;
   BDSBeamPipe* itsBeamPipe;
   G4MagneticField* itsOuterMagField;
   G4Mag_EqRhs* itsOuterEqRhs;
@@ -191,7 +207,7 @@ BDSAcceleratorComponent (
 			G4String& aName,G4double aLength, 
 			G4double aBpRadius,G4double aXAper,G4double aYAper, 
 			G4VisAttributes* aVisAtt,G4double angle,
-			G4double XOffset, G4double YOffset,G4double ZOffset): 
+			G4double XOffset, G4double YOffset,G4double ZOffset):
   itsName(aName),itsLength(aLength),itsBpRadius(aBpRadius),
   itsXAper(aXAper),itsYAper(aYAper),itsAngle(angle),
   itsVisAttributes(aVisAtt),
@@ -229,6 +245,43 @@ inline const G4double BDSAcceleratorComponent::GetPsi () const
 
 inline void BDSAcceleratorComponent::SetPsi (G4double val)
 {itsPsi = val;}
+
+inline G4double BDSAcceleratorComponent::GetAperX()
+{
+  if(itsXAper==0) // i.e. it has not been set
+    return itsBpRadius;
+  else return itsXAper;
+}
+
+inline G4double BDSAcceleratorComponent::GetAperY()
+{
+  if(itsYAper==0) // i.e. it has not been set
+    return itsBpRadius;
+  else return itsYAper;
+}
+
+inline G4double BDSAcceleratorComponent::GetK1()
+{ return itsK1; }
+
+inline G4double BDSAcceleratorComponent::GetK2()
+{ return itsK2; }
+
+inline G4double BDSAcceleratorComponent::GetK3()
+{ return itsK3; }
+
+inline void BDSAcceleratorComponent::SetK1(G4double K1)
+{ itsK1 = K1; }
+
+inline void BDSAcceleratorComponent::SetK2(G4double K2)
+{ itsK2 = K2; }
+
+inline void BDSAcceleratorComponent::SetK3(G4double K3)
+{ itsK3 = K3; }
+
+inline G4RotationMatrix* BDSAcceleratorComponent::GetRotation()
+{ return itsRotation;}
+inline G4ThreeVector BDSAcceleratorComponent::GetPosition()
+{ return itsPosition;}
 
 inline const G4String BDSAcceleratorComponent::GetName () const
 {return itsName;}

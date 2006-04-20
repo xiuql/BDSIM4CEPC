@@ -21,8 +21,10 @@ void BDSAcceleratorComponent::AlignComponent(G4ThreeVector& TargetPos,
 					     G4ThreeVector& rlast,
 					     G4ThreeVector& localX,
 					     G4ThreeVector& localY,
-					     G4ThreeVector& localZ) 
-{//do nothing by default
+					     G4ThreeVector& localZ)
+{//do nothing by default, except set rotation and position for BDSOutline
+  itsRotation=TargetRot;
+  itsPosition=TargetPos;
   return;
 }
 
