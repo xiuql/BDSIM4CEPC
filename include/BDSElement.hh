@@ -22,7 +22,8 @@
 #include "BDSXYMagField.hh"
 
 #include "G4EqMagElectricField.hh"
-#include "G4ClassicalRK4.hh"
+//#include "G4ClassicalRK4.hh"
+#include "BDSRK4Stepper.hh"
 
 
 class BDSElement :public BDSAcceleratorComponent
