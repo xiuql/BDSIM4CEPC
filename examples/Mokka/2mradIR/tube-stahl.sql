@@ -26,40 +26,40 @@ CREATE TABLE TUBE_CONE (
 );
                       
 # inner parallel part, next to IP
-INSERT INTO TUBE_CONE VALUES (30.5e-3, 0.0, 30.5, 0.0, 1.0, 1.0, "S", 61, 14.0, 14.0, 14.5, 14.5, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 30.5, 0.0, 1.0, 1.0, "S", 61, 14.0, 14.0, 14.5, 14.5, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # inner bulge near IP
-INSERT INTO TUBE_CONE VALUES (116.5e-3, 0.0, 116.5, 0.0, 1.0, 1.0, "S", 111, 14.0, 22.0, 14.5, 23.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 116.5, 0.0, 1.0, 1.0, "S", 111, 14.0, 22.0, 14.5, 23.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # outer parallel part
-INSERT INTO TUBE_CONE VALUES (218.05e-3, 0.0, 218.05, 0.0, 1.0, 1.0, "S", 92.1, 22.0, 22.0, 23.0, 23.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 218.05, 0.0, 1.0, 1.0, "S", 92.1, 22.0, 22.0, 23.0, 23.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # outer bulge in front of ECAL
-INSERT INTO TUBE_CONE VALUES (1532.05e-3, 0.0, 1532.05, 0.0, 1.0, 1.0, "S", 2535.9, 22.0, 239.0, 23.0, 240.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 1532.05, 0.0, 1.0, 1.0, "S", 2535.9, 22.0, 239.0, 23.0, 240.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # inside ECAL
-INSERT INTO TUBE_CONE VALUES (2919.5e-3, 0.0, 2919.5, 0.0, 1.0, 1.0, "S", 239.0, 239.0, 239.0, 240.0, 240.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 2919.5, 0.0, 1.0, 1.0, "S", 239.0, 239.0, 239.0, 240.0, 240.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # face in front of LumCal
-INSERT INTO TUBE_CONE VALUES (3039.5e-3, 0.0, 3039.5, 0.0, 1.0, 1.0, "S", 1.0, 69.0, 69.0, 240.0, 240.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3039.5, 0.0, 1.0, 1.0, "S", 1.0, 69.0, 69.0, 240.0, 240.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # inside LumCal
-INSERT INTO TUBE_CONE VALUES (3150e-3, 0.0, 3150.0, 0.0, 1.0, 1.0, "S", 220.0, 69.0, 69.0, 70.0, 70.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3150.0, 0.0, 1.0, 1.0, "S", 220.0, 69.0, 69.0, 70.0, 70.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # bellow behind LumCal
-INSERT INTO TUBE_CONE VALUES (3275e-3, 0.0, 3275.0, 0.0, 1.0, 1.0, "S", 30.0, 69.0, 69.0, 100.0, 100.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3275.0, 0.0, 1.0, 1.0, "S", 30.0, 69.0, 69.0, 100.0, 100.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # in front of & behind pump
-INSERT INTO TUBE_CONE VALUES (3444.5e-3, 0.0, 3444.5, 0.0, 1.0, 1.0, "S", 309.0, 99.0, 99.0, 100.0, 100.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3444.5, 0.0, 1.0, 1.0, "S", 309.0, 99.0, 99.0, 100.0, 100.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # face in front of BeamCal
-INSERT INTO TUBE_CONE VALUES (3599.5e-3, 0.0, 3599.5, 0.0, 1.0, 1.0, "S", 1.0, 15.0, 15.0, 100.0, 100.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3599.5, 0.0, 1.0, 1.0, "S", 1.0, 15.0, 15.0, 100.0, 100.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # inside BeamCal
-INSERT INTO TUBE_CONE VALUES (3729.5e-3, 0.0, 3729.5, 0.0, 1.0, 1.0, "S", 259.0, 15.0, 15.0, 16.0, 16.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3729.5, 0.0, 1.0, 1.0, "S", 259.0, 15.0, 15.0, 16.0, 16.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
 # face behind BeamCal
-INSERT INTO TUBE_CONE VALUES (3859.5e-3, 0.0, 3859.5, 0.0, 1.0, 1.0, "S", 1.0, 15.0, 15.0, 20.0, 20.0, 0., 0., 1e-3, "BERYLLIUM", ""); 
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3859.5, 0.0, 1.0, 1.0, "S", 1.0, 15.0, 15.0, 20.0, 20.0, 0., 0., 0.0, "BERYLLIUM", ""); 
 
  # face behind BeamCal
-INSERT INTO TUBE_CONE VALUES (3910e-3, 0.0, 3910.0, 0.0, 1.0, 1.0, "S", 100.0, 19.0, 19.0, 20.0, 20.0, 0., 0., 1e-3, "BERYLLIUM", "");
+INSERT INTO TUBE_CONE VALUES (0, 0.0, 3910.0, 0.0, 1.0, 1.0, "S", 100.0, 19.0, 19.0, 20.0, 20.0, 0., 0., 0.0, "BERYLLIUM", "");
