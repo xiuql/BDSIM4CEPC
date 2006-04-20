@@ -47,7 +47,7 @@ const int DEBUG = 0;
 #include "BDSOutput.hh"
 
 typedef list<BDSAcceleratorComponent*>  BDSBeamline;
-extern BDSBeamline theBeamline;
+BDSBeamline theBeamline;
 
 typedef std::vector<G4int> MuonTrackVector;
 MuonTrackVector* theMuonTrackVector;
