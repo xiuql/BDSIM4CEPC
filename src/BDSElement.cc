@@ -45,13 +45,14 @@ extern G4RotationMatrix* RotY90;
 //============================================================
 
 BDSElement::BDSElement(G4String aName, G4String geometry, G4String bmap,
-		       G4double aLength, G4double bpRad):
+		       G4double aLength, G4double bpRad, G4double outR):
   BDSAcceleratorComponent(
 			  aName,
 			  aLength,bpRad,0,0,
 			  SetVisAttributes()),
   itsField(NULL)
 {
+  itsOuterR = outR;
   SetType(_ELEMENT);
 
   // WARNING: ALign in and out will only apply to the first instance of the
@@ -86,11 +87,13 @@ void BDSElement::BuildGeometry()
   // Build the logical volume 
 
   if(DEBUG) G4cout<<"BDSElement : creating logical volume"<<G4endl;
-  
-  G4double elementSizeX =BDSGlobals->GetTunnelRadius() / 2;
-
-  G4double elementSizeY =BDSGlobals->GetTunnelRadius() / 2;
-  
+  G4double elementSizeX,elementSizeY = itsOuterR;
+  if(itsOuterR==0)
+    {
+      elementSizeX =BDSGlobals->GetTunnelRadius() / 2;
+      elementSizeY =BDSGlobals->GetTunnelRadius() / 2;
+    }
+      
   itsMarkerLogicalVolume = 
     new G4LogicalVolume(new G4Box(itsName+"generic_element",
 				  elementSizeX,

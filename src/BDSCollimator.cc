@@ -31,11 +31,11 @@ extern BDSMaterials* theMaterials;
 
 BDSCollimator::BDSCollimator (G4String aName,G4double aLength,G4double bpRad,
 			      G4double xAper,G4double yAper, G4int type,
-			  G4Material *CollimatorMaterial):
+			      G4Material *CollimatorMaterial, G4double outR):
   BDSAcceleratorComponent(aName,
 			  aLength,bpRad,xAper,yAper,
 			  SetVisAttributes()),
-  itsCollimatorMaterial(CollimatorMaterial), itsType(type)
+  itsCollimatorMaterial(CollimatorMaterial), itsType(type), itsOuterR(outR)
 {
   
   if ( (*LogVolCount)[itsName]==0)
@@ -75,11 +75,13 @@ void BDSCollimator::BuildInnerCollimator()
 
   if(itsXAper <= 0) itsXAper = BDSGlobals->GetComponentBoxSize()/2;
   if(itsYAper <= 0) itsYAper = BDSGlobals->GetComponentBoxSize()/2;
-  
+
+  if(itsOuterR==0) itsOuterR = BDSGlobals->GetComponentBoxSize()/2;
+
   itsSolidLogVol=
     new G4LogicalVolume(new G4Box(itsName+"_solid",
-				  BDSGlobals->GetComponentBoxSize()/2,
-				  BDSGlobals->GetComponentBoxSize()/2,
+				  itsOuterR,
+				  itsOuterR,				  
 				  itsLength/2),
 			//itsCollimatorMaterial,
 			itsCollimatorMaterial,

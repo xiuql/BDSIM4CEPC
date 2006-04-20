@@ -29,7 +29,7 @@
 class BDSElement :public BDSAcceleratorComponent
 {
 public:
-  BDSElement(G4String aName, G4String geometry, G4String bmap, G4double aLength, G4double bpRad);
+  BDSElement(G4String aName, G4String geometry, G4String bmap, G4double aLength, G4double bpRad, G4double outR);
   ~BDSElement();
 
   void BuildGeometry();
@@ -55,7 +55,7 @@ protected:
 private:
 
   BDSField *itsField;
-
+  G4double itsOuterR;
   // Volume to align incoming beamline on inside the marker volume
   // (set during Geometery construction)
   G4VPhysicalVolume* align_in_volume;

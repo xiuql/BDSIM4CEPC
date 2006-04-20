@@ -147,15 +147,15 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
   else
     {
       itsSegRot=new G4RotationMatrix();
-      G4double DeltaRot=abs(itsAngle)/(double(nSegments));
+      G4double DeltaRot=fabs(itsAngle)/(double(nSegments));
       
-      G4double angle=- abs(itsAngle/2)-DeltaRot/2.;
+      G4double angle=- fabs(itsAngle/2)-DeltaRot/2.;
       itsSegRot->rotateY(acos(0.) + angle );
       
       G4double X,Y,Z,R,Z0;
       
-      R=itsLength/abs(itsAngle);
-      Z0=R*(1.-cos(abs(itsAngle/2)-DeltaRot/2.));
+      R=itsLength/fabs(itsAngle);
+      Z0=R*(1.-cos(fabs(itsAngle/2)-DeltaRot/2.));
       
       // loop:
       for(G4int iSeg=0;iSeg<nSegments;iSeg++)
@@ -200,6 +200,7 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
   itsBeampipeLogicalVolume->SetUserLimits(itsBeampipeUserLimits);
 
   itsInnerBeampipeUserLimits->SetMaxAllowedStep(itsLength);
+  //itsInnerBeampipeUserLimits->SetMaxAllowedStep(itsLength/40.);
 
   itsInnerBPLogicalVolume->SetUserLimits(itsInnerBeampipeUserLimits);
 
@@ -215,8 +216,17 @@ void BDSMultipole::BuildBeampipe(G4double aLength, G4int nSegments)
 
   itsMarkerLogicalVolume->
     SetFieldManager(BDSGlobals->GetZeroFieldManager(),false);
+  
+  G4VisAttributes* VisAtt = 
+    new G4VisAttributes(G4Colour(0., 0., 0));
+  VisAtt->SetForceSolid(true);
+  itsInnerBPLogicalVolume->SetVisAttributes(VisAtt);
 
-
+  G4VisAttributes* VisAtt1 = 
+    new G4VisAttributes(G4Colour(0., 0, 0.));
+  VisAtt1->SetForceSolid(true);
+  itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
+  
 }
 
 
@@ -234,7 +244,7 @@ void BDSMultipole::BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
   itsBPFieldMgr->SetDetectorField(aField);
   itsBPFieldMgr->SetChordFinder(itsChordFinder);
   itsBPFieldMgr->SetDeltaIntersection(BDSGlobals->GetDeltaIntersection());
-
+  
   if(BDSGlobals->GetMinimumEpsilonStep()>0)
     itsBPFieldMgr->SetMinimumEpsilonStep(BDSGlobals->GetMinimumEpsilonStep());
 
@@ -243,6 +253,7 @@ void BDSMultipole::BuildBPFieldMgr(G4MagIntegratorStepper* aStepper,
 
   if(BDSGlobals->GetDeltaOneStep()>0)
     itsBPFieldMgr->SetDeltaOneStep(BDSGlobals->GetDeltaOneStep());
+  
 }
 
 
@@ -277,6 +288,9 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
   // compute saggita:
   G4double sagitta=0.;
 
+  G4double outerRadius = itsOuterR;
+  if(itsOuterR==0) outerRadius = BDSGlobals->GetComponentBoxSize()/2;
+
   if(itsNSegments>1)
     {
       sagitta=itsLength/itsAngle*(1.-cos(itsAngle/2.));
@@ -286,7 +300,7 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
     itsOuterLogicalVolume=
       new G4LogicalVolume(new G4Tubs(itsName+"_solid",
 				     itsInnerIronRadius+sagitta,
-				     BDSGlobals->GetComponentBoxSize()/2,
+				     outerRadius,
 				     aLength/2,
 				     0,twopi*radian),
 			  theMaterials->LCVacuum,
@@ -298,7 +312,7 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
     itsOuterLogicalVolume=
       new G4LogicalVolume(new G4Tubs(itsName+"_solid",
 				     itsInnerIronRadius+sagitta,
-				     BDSGlobals->GetComponentBoxSize()/2,
+				     outerRadius,
 				     aLength/2,
 				     0,twopi*radian),
 			  theMaterials->LCIron,
@@ -376,6 +390,10 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
   //  itsOuterUserLimits->SetMaxAllowedStep(aLength);
   itsOuterLogicalVolume->SetUserLimits(itsOuterUserLimits);
 
+  G4VisAttributes* VisAtt = 
+    new G4VisAttributes(G4Colour(1.0, 0., 0.));
+  VisAtt->SetForceSolid(true);
+  itsOuterLogicalVolume->SetVisAttributes(VisAtt);
 
 }
 

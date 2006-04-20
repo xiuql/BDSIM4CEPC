@@ -55,7 +55,7 @@ public:
 
   void BuildOuterFieldManager(G4int nPoles, G4double poleField, 
 			      G4double phiOffset);
-
+  void SetOuterRadius(G4double outR);
 protected:
   G4LogicalVolume* itsBeampipeLogicalVolume;
   G4LogicalVolume* itsInnerBPLogicalVolume;
@@ -77,11 +77,13 @@ protected:   // these might need to be accessed from the child classes
   G4RotationMatrix* itsSegRot;
   G4ThreeVector itsSegPos;
   G4int itsNSegments;
-
+  G4double itsOuterR;
 };
 
 inline G4FieldManager* BDSMultipole::GetBPFieldMgr()
 {return itsBPFieldMgr;}
 
+inline void BDSMultipole::SetOuterRadius(G4double outR)
+{itsOuterR = outR;}
 
 #endif

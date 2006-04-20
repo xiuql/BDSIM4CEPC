@@ -32,10 +32,11 @@ extern G4RotationMatrix* RotY90;
 
 BDSSectorBend::BDSSectorBend(G4String aName,G4double aLength, 
 			     G4double bpRad,G4double FeRad,
-			     G4double bField, G4double angle,
+			     G4double bField, G4double angle, G4double outR,
 			     G4double tilt,  G4double bGrad, G4int nSegments):
   BDSMultipole(aName,aLength, bpRad, FeRad,SetVisAttributes(),0,0,angle)
 {
+  SetOuterRadius(outR);
   itsTilt = tilt;
   itsBField = bField;
   itsBGrad = bGrad;
@@ -352,6 +353,15 @@ void BuildBeampipe2(BDSSectorBend *sb,G4double length, G4double angle)
   // zero field in the marker volume
   sb->itsMarkerLogicalVolume->
     SetFieldManager(BDSGlobals->GetZeroFieldManager(),false);
+  G4VisAttributes* VisAtt = 
+    new G4VisAttributes(G4Colour(0., 0., 0));
+  VisAtt->SetForceSolid(true);
+  sb->itsInnerBPLogicalVolume->SetVisAttributes(VisAtt);
+
+  G4VisAttributes* VisAtt1 = 
+    new G4VisAttributes(G4Colour(0., 0, 0.));
+  VisAtt1->SetForceSolid(true);
+  sb->itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
   
 }
 

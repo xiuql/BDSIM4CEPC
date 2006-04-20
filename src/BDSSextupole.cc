@@ -32,10 +32,11 @@ extern BDSMaterials* theMaterials;
 
 BDSSextupole::BDSSextupole(G4String aName,G4double aLength, 
 			   G4double bpRad,G4double FeRad,
-			   G4double BDblPrime, G4double tilt):
+			   G4double BDblPrime, G4double tilt, G4double outR):
   BDSMultipole(aName,aLength, bpRad, FeRad,SetVisAttributes()),
   itsBDblPrime(BDblPrime)
 {
+  SetOuterRadius(outR);
   itsTilt=tilt;
   if (!(*LogVolCount)[itsName])
     {

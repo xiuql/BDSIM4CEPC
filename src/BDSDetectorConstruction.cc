@@ -204,8 +204,32 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   for(it = beamline_list.begin();it!=beamline_list.end();it++)
     {
       added_comp = false;
+     
       if(DEBUG) G4cout<<(*it).name<<"    "<<typestr((*it).type)<<"  "<<(*it).l<<G4endl;
-           
+
+      if( (*it).outR!=0)
+	{
+	  if( (*it).outR < (*it).aper)
+	    {
+	      G4cout << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	      G4cout << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	      G4Exception("Quitting BDSIM in DetectorConstruction!");
+	    }
+	  if( (*it).outR < (*it).xsize)
+	    {
+	      G4cout << (*it).name << " has outer radius smaller than x-aperture!"<<G4endl;
+	      G4cout << "xsize= "<<(*it).xsize<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	      G4Exception("Quitting BDSIM in DetectorConstruction!");
+	    }
+	  if( (*it).outR < (*it).ysize)
+	    {
+	      G4cout << (*it).name << " has outer radius smaller than y-aperture!"<<G4endl;
+	      G4cout << "ysize= "<<(*it).ysize<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	      G4Exception("Quitting BDSIM in DetectorConstruction!");
+	    }
+
+	}
+     
       if((*it).type==_SAMPLER ) {
 	if(DEBUG) G4cout<<"---->adding Sampler "<<G4String( (*it).name )<<G4endl;
 	
@@ -266,7 +290,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	} 
 	else {
 	  theBeamline.push_back(new BDSSectorBend((*it).name,(*it).l * m,aper,FeRad,bField,
-						 (*it).angle,(*it).tilt,bPrime));
+						  (*it).angle,(*it).outR*m,(*it).tilt,bPrime));
 	}
       
       added_comp=true;
@@ -285,7 +309,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	} 
 	else {
 	  theBeamline.push_back(new BDSRBend( (*it).name,(*it).l * m,bpRad,FeRad,bField,
-					      (*it).angle,(*it).tilt,bPrime));
+					      (*it).angle,(*it).outR*m,(*it).tilt,bPrime));
 	}
       
       added_comp=true;
@@ -303,7 +327,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	} 
 	else {
 	  theBeamline.push_back(new BDSRBend( (*it).name,(*it).l * m,bpRad,FeRad,bField,
-					      (*it).angle,pi/2,bPrime));
+					      (*it).angle,pi/2,bPrime,(*it).outR * m));
 	}
       
       added_comp=true;
@@ -320,7 +344,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if(DEBUG) { G4cout<<"---->adding Quad, "<<G4String( (*it).name )<<
 	    " k1 ="<<(*it).k1<<" b' ="<<bPrime<<" brho = "<<brho<< " aper="<<aper/m<<G4endl; }
 
-	theBeamline.push_back(new BDSQuadrupole(G4String((*it).name),(*it).l * m,aper,FeRad,bPrime,(*it).tilt));
+	theBeamline.push_back(new BDSQuadrupole(G4String((*it).name),(*it).l * m,aper,FeRad,bPrime,(*it).tilt,(*it).outR * m));
 	
       
       added_comp=true;
@@ -333,7 +357,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding Sextupole, "<<G4String( (*it).name )<<
 	    " k1 ="<<(*it).k2<<" b'' ="<<bDoublePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
-	theBeamline.push_back(new BDSSextupole(G4String((*it).name),(*it).l * m,aper,FeRad,bDoublePrime,(*it).tilt));
+	theBeamline.push_back(new BDSSextupole(G4String((*it).name),(*it).l * m,aper,FeRad,bDoublePrime,(*it).tilt,(*it).outR * m));
       
       added_comp=true;
       }
@@ -347,7 +371,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding octupole, "<<G4String( (*it).name )<<
 		      " k3 ="<<(*it).k3<<" b''' ="<<bTriplePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
-	theBeamline.push_back(new BDSOctupole(G4String((*it).name),(*it).l * m,aper,FeRad,bTriplePrime,(*it).tilt));
+	theBeamline.push_back(new BDSOctupole(G4String((*it).name),(*it).l * m,aper,FeRad,bTriplePrime,(*it).tilt,(*it).outR * m));
       
       added_comp=true;
       }
@@ -360,7 +384,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	
 	
 	theBeamline.push_back(new BDSElement( G4String((*it).name) , G4String((*it).geometryFile), 
-					      G4String((*it).bmapFile), (*it).l * m, bpRad ) );
+					      G4String((*it).bmapFile), (*it).l * m, bpRad ,(*it).outR * m) );
       
       added_comp=true;
       }
@@ -389,7 +413,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if(DEBUG) G4cout<<"retrieved material :"<<aMaterial->GetName()<<G4endl;
 
 	theBeamline.push_back(new BDSCollimator(G4String((*it).name),(*it).l * m,bpRad,
-						(*it).xsize * m,(*it).ysize * m,_ECOL,aMaterial) );
+						(*it).xsize * m,(*it).ysize * m,_ECOL,aMaterial, (*it).outR*m) );
       
       added_comp=true;
       }
@@ -404,7 +428,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if(DEBUG) G4cout<<"retrieved material :"<<aMaterial->GetName()<<G4endl;
 
 	theBeamline.push_back(new BDSCollimator(G4String((*it).name),(*it).l * m,bpRad,
-						(*it).xsize * m,(*it).ysize * m,_RCOL,aMaterial) );
+						(*it).xsize * m,(*it).ysize * m,_RCOL,aMaterial, (*it).outR*m) );
       
       added_comp=true;
       }
@@ -821,7 +845,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
 	if(use_graphics)
 	  {
-	    (*iBeam)->GetVisAttributes()->SetVisibility(true);
+	    (*iBeam)->GetVisAttributes()->SetVisibility(false);
 	    //(*iBeam)->GetVisAttributes()->SetForceSolid(true);
 	    (*iBeam)->GetMarkerLogicalVolume()->
 	      SetVisAttributes((*iBeam)->GetVisAttributes());

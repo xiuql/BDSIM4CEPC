@@ -121,6 +121,7 @@ void flush(struct Element& e )
   e.ez = 0;
 
   e.aper = 0;
+  e.outR = 0;
   e.waveLength = 0;
 
   e.xdir = 0;
@@ -167,6 +168,7 @@ void copy_properties(list<struct Element>::iterator dest, list<struct Element>::
   (*dest).waveLength = (*src).waveLength; 
  
   (*dest).aper = (*src).aper; 
+  (*dest).outR = (*src).outR; 
   (*dest).tilt = (*src).tilt; 
   (*dest).k0 = (*src).k0; 
   (*dest).k1 = (*src).k1;  
@@ -221,6 +223,7 @@ void inherit_properties(struct Element e)
 
 
   if(!params.aperset) { params.aper = e.aper; params.aperset = 1; }
+  if(!params.outRset) { params.outR = e.outR; params.outRset = 1; }
 
   if(!params.ezset) { params.ez = e.ez; params.ezset = 1; }
 
@@ -285,6 +288,7 @@ int write_table(struct Parameters params,char* name, int type, list<struct Eleme
   e.name = name;
   e.lst = NULL;
   e.aper = params.aper;
+  e.outR = params.outR;
   e.xsize = params.xsize;
   e.ysize = params.ysize;
   
@@ -926,6 +930,7 @@ double property_lookup(char *element_name, char *property_name)
    if(!strcmp(property_name,"k0")) return (*it).k0;
    if(!strcmp(property_name,"k1")) return (*it).k1;
    if(!strcmp(property_name,"aper")) return (*it).aper;
+   if(!strcmp(property_name,"outR")) return (*it).outR;
    if(!strcmp(property_name,"xsize")) return (*it).xsize;
    if(!strcmp(property_name,"ysize")) return (*it).ysize;
    if(!strcmp(property_name,"xdir")) return (*it).xdir;

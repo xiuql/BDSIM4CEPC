@@ -376,6 +376,7 @@ parameters:
 		  if(!strcmp($3->name,"aper") ||!strcmp($3->name,"aperture") ) 
 			      { params.aper = $5; params.aperset = 1;}
 		    else
+		  if(!strcmp($3->name,"outR") ) { params.outR = $5; params.outRset = 1;}
 		  if(!strcmp($3->name,"xsize") ) { params.xsize = $5; params.xsizeset = 1;}
 		    else
 		  if(!strcmp($3->name,"ysize") ) { params.ysize = $5; params.ysizeset = 1;}

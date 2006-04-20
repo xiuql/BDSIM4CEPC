@@ -161,7 +161,7 @@ struct Element {
   char * name;
 
   
-  double l,k0,k1,k2,k3,angle,aper,tilt,xsize,ysize,r;
+  double l,k0,k1,k2,k3,angle,aper,tilt,xsize,ysize,r, outR;
   double xdir, ydir, zdir, waveLength; // for laser wire and 3d transforms
 
   double ez; // for rf cavities
@@ -216,6 +216,8 @@ struct Parameters {
 
   double ez; int ezset;
 
+  double outR; int outRset; // outer radius of magnets
+
   double xsize, ysize; int xsizeset, ysizeset; // aperture (or laser spotsize for laser)
   double xdir, ydir, zdir, waveLength; int xdirset, ydirset, zdirset, waveLengthset;
 
@@ -260,6 +262,7 @@ struct Parameters {
     psi = 0; psiset = 0;
 
     aper = 0; aperset = 0;
+    outR = 0;
     tilt = 0; tiltset = 0;
 
     k0 = 0; k0set = 0;

@@ -23,7 +23,7 @@ class BDSCollimator :public BDSAcceleratorComponent
 {
 public:
   BDSCollimator(G4String aName, G4double aLength,G4double bpRad, 
-	     G4double xAper, G4double yAper,G4int type,G4Material *collimatorMaterial);
+	     G4double xAper, G4double yAper,G4int type,G4Material *collimatorMaterial, G4double outR);
   ~BDSCollimator();
 
 protected:
@@ -47,6 +47,7 @@ private:
   G4Material* itsCollimatorMaterial;
   BDSEnergyCounterSD* itsEnergyCounterSD;
   G4int itsType;
+  G4double itsOuterR;
 };
 
 #endif
