@@ -412,7 +412,7 @@ where (x,y) is now a coordinate system rotated by 45 degrees around s with respe
 @item @code{tilt} [rad] - roll angle about the longitudinal axis, clockwise.
 @item @code{aper} - aperture [m] (default same as beampipe radius)@
 @item @code{outR} - external radius [m] of magnet (default set to @code{componentBoxSize} option)
-end itemize
+@end itemize
 
 Example :
 
