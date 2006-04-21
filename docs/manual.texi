@@ -98,17 +98,20 @@ point to the ./parser directory and to the directory where libbdsim.so is.
 where the options are
 
 @example
---file=<filename>   : specify the lattice file
---output=<fmt>      : output format (root|ascii), default ascii
---outfile=<file>    : output file name. Will be appended with _N
-                      where N = 0, 1, 2, 3... etc.
---vis_mac=<file>    : visualization macro script, default vis.mac
---help              : display this message
---verbose           : display general parameters before run
---verbose_event     : display information for every event
---verbose_step=N    : display tracking information after each step
---verbose_event_num : display tracking information for event number N
---batch             : batch mode - no graphics
+--file=<filename>    : specify the lattice file
+--output=<fmt>       : output format (root|ascii), default ascii
+--outfile=<file>     : output file name. Will be appended with _N
+                       where N = 0, 1, 2, 3... etc.
+--vis_mac=<file>     : visualization macro script, default vis.mac
+--help               : display this message
+--verbose            : display general parameters before run
+--verbose_event      : display information for every event
+--verbose_step=N     : display tracking information after each step
+--verbose_event_num  : display tracking information for event number N
+--batch              : batch mode - no graphics
+--outline=<file>     : print geometry/optics info to <file>
+--outline_type=<fmt> : type of outline format
+                       where fmt = optics | survey
 @end example
 
 
@@ -365,6 +368,7 @@ Attributes:
 @item @code{angle} - bending angle [rad] (default 0)
 @item @code{B} - magnetic field [T] 
 @item @code{aper} - aperture [m] (default same as beampipe radius)
+@item @code{outR} - external radius [m] of magnet (default set to @code{componentBoxSize} option)
 @end itemize
 
 when @code{B} is set, this defines a magnet with appropriate field strength and @code{angle}
@@ -384,6 +388,7 @@ Attributes:
 @item @code{angle} - bending angle [rad] (default 0)
 @item @code{B} - magnetic field [T] 
 @item @code{aper} - aperture [m] (default same as beampipe radius)
+@item @code{outR} - external radius [m] of magnet (default set to @code{componentBoxSize} option)
 @end itemize
 
 Example :
@@ -405,8 +410,9 @@ Positive @code{k1} means horisontal focusing of positively charged particles. (d
 ks1 =  (1/B rho ) (dBy  / dx) [m^-2]
 where (x,y) is now a coordinate system rotated by 45 degrees around s with respect to the normal one.(default 0). 
 @item @code{tilt} [rad] - roll angle about the longitudinal axis, clockwise.
-@item @code{aper} - aperture [m] (default same as beampipe radius)
-@end itemize
+@item @code{aper} - aperture [m] (default same as beampipe radius)@
+@item @code{outR} - external radius [m] of magnet (default set to @code{componentBoxSize} option)
+end itemize
 
 Example :
 
@@ -425,6 +431,7 @@ ks2 =  (1/B rho ) (d^2 By  / dx^2) [m^-3]
 where (x,y) is now a coordinate system rotated by 30 degrees around s with respect to the normal one.(default 0). 
 @item @code{tilt} [rad] - roll angle about the longitudinal axis, clockwise.
 @item @code{aper} - aperture [m] (default same as beampipe radius)
+@item @code{outR} - external radius [m] of magnet (default set to @code{componentBoxSize} option)
 @end itemize
 
 Example :
@@ -444,6 +451,7 @@ Positive @code{k1} means horisontal focusing of positively charged particles. (d
 ks3 =  (1/B rho ) (d^3 By  / dx^3) [m^-3]
 where (x,y) is now a coordinate system rotated by 30 degrees around s with respect to the normal one.(default 0). 
 @item @code{tilt} [rad] - roll angle about the longitudinal axis, clockwise.
+@item @code{outR} - external radius [m] of magnet (default set to @code{componentBoxSize} option)
 @end itemize
 
 Example :
@@ -464,6 +472,7 @@ Attributes:
 @item @code{xsize} - horizontal aperture [m]
 @item @code{xsize} - vertical aperture [m]
 @item @code{material} - material 
+@item @code{outR} - limits external extent [m] of collimator (default set to @code{componentBoxSize} option)
 @end itemize
 
 Example : 
@@ -483,6 +492,7 @@ Attributes:
 @item @code{xsize} - horizontal aperture [m]
 @item @code{xsize} - vertical aperture [m]
 @item @code{material} - material 
+@item @code{outR} - limits external extent [m] of collimator (default set to @code{componentBoxSize} option)
 @end itemize
 
 
@@ -531,6 +541,7 @@ entity with arbitrary B field maps @footnote{E fields will be implemented starti
 @item @code{geometry} = @code{<geometry_description>}
 @item @code{bmap} = @code{<bmap_description> }
 @c @item @code{emap} = @code{<emap_description>}
+@item @code{outR} - limits external extent component box size (default set to @code{componentBoxSize} option)
 @end itemize
 
 
@@ -759,8 +770,8 @@ The following options influence the geometry
 
 @code{beampipeRadius}    - default beampipe radius [m]
 @code{beampipeThickness} - default beampipe thickness [m]
-@code{tunnelRadius}      - tunnel Radius 
-@code{boxSize}           - default accelerator component size
+@code{tunnelRadius}      - tunnel Radius [m]
+@code{boxSize}           - default accelerator component size [m]
 
 
 @end example
@@ -769,15 +780,35 @@ The following options influence the tracking
 
 @example
 
-@code{deltaChord}          - 
-@code{deltaIntersection}   - 
-@code{chordStepMinimum}    - 
-@code{lengthSafety}        - 
-@code{thresholdCutCharged} -
-@code{thresholdCutPhotons} - 
-@code{randomSeed}          -
-@code{stopTracks}          -
-@code{physicsList}         -
+@code{deltaChord}          - chord finder precision
+@code{deltaIntersection}   - boundary intersection precision
+@code{chordStepMinimum}    - minimum step size
+@code{lengthSafety}        - element overlap safety
+@code{thresholdCutCharged} - charged particle cutoff energy
+@code{thresholdCutPhotons} - photon cutoff energy
+@code{randomSeed}          - seed for the random number generator
+                             setting to -1 uses the system clock to generate the seed
+@code{stopTracks}          - if set, tracks are terminated after interaction with
+                             material and energy deposit recorded
+@code{physicsList}         - determines the set of physics processes used
+@code{ngenerate}           - number of primary particles fired when in batch mode
+@code{nperfile}            - number of events recorded per file
+@code{nlinesIgnore}        - number of lines to skip when reading bunch files
+@code{synchRadOn}          - turn on Synchrotron Radiation process
+@code{srTrackPhotons}      - whether to track the SR photons
+@code{srLowX}              - Sets lowest energy of SR to X*E_critical
+@code{srLowGamE}           - lowest energy of propagating SR photons
+@code{minimumEpsilonStep}  - minimum relative error acceptable in stepping
+@code{maximumEpsilonStep}  - maximum relative error acceptable in stepping
+@code{deltaOneStep}        - set position error acceptable in an integration steps
+@code{prodCutPhotons}      - standard overall production cuts for photons
+@code{prodCutPhotonsP}     - precision production cuts photons in @code{element}
+@code{prodCutElectrons}    - standard overall production cuts for electrons
+@code{prodCutElectronsP}   - precision production cuts electrons in @code{element}
+@code{prodCutPositrons}    - standard overall production cuts for positrons
+@code{prodCutPositronsP}   - precision production cuts positrons in @code{element}
+
+
 
 @end example
 
@@ -792,7 +823,19 @@ The parameters related to the beam are given by the @code{beam} command
 
 @code{beam, <name>=value,...};
 
-@code{beam, particle=electron,energy=100, momentum=1,1,1;}
+
+The available parameters are:
+
+@example
+
+@code{particle}    - particle name, "e-","e+","gamma","proton", etc
+@code{energy}      - particle energy
+@code{distrType}   - type of distribution
+@code{distrFile}   - input bunch file
+
+@end example
+
+@code{beam, particle="e+",energy=100*MeV, distrType="gauss";}
 
 @subsection @code{sample}
 
