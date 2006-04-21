@@ -130,6 +130,7 @@ Variable type: @code{VARCHAR(32)}
 
       This is an optional parameter. If supplied, then the volume will be created with this material type - note that the material must be given as a character string inside double quotation marks(``). The default material is set as Vacuum.      
 
+
 @item @code{PARENTNAME} 
 
 
@@ -137,6 +138,16 @@ Variable type: @code{VARCHAR(32)}
 
 
       This is an optional parameter. If supplied, then the volume will be placed as a daughter volume to the object with @code{ID} equal to @code{PARENTNAME}. The default parent is set to be the Component Volume. Note that if @code{PARENTID} is set to the Component Volume then @code{POSZ} will be defined with respect to the start of the object. Else @code{POSZ} will be defined with respect to the center of the parent object.
+
+
+@item @code{INHERITSTYLE} 
+
+
+Variable type: @code{VARCHAR(32)}
+
+
+      This is an optional parameter to be used with @code{PARENTNAME}. If set to ``SUBTRACT`` then the instead of placing the volume within the parent volume as an inherited object, it will be subtracted from the parent volume in a boolean solid operation. The default for this value is set to ```` - which sets to the usual mother/daughter volume inheritance.
+
 
 
 @item @code{ALIGNIN} 
@@ -169,7 +180,7 @@ Variable type: @code{INTEGER(11)}
 Variable type: @code{VARCHAR(32)}
 
 
-      This is an optional parameter. If supplied, then the object will be set up to produce the appropriate magnetic field using the supplied @code{K1} or @code{K2} table parameter values . Two magnet types are available - ``QUAD'' and ``SEXT''. The default is set to no magnet type. Note that if @code{MAGTYPE} is set to a value whilst @code{K1} or @code{K2} are not set, then no magnetic field will be implemented.
+      This is an optional parameter. If supplied, then the object will be set up to produce the appropriate magnetic field using the supplied @code{K1} or @code{K2} table parameter values . Three magnet types are available - ``QUAD'',  ``SEXT'' and  ``OCT''. The default is set to no magnet type. Note that if @code{MAGTYPE} is set to a value whilst @code{K1}/@code{K2}/@code{K3} are not set, then no magnetic field will be implemented.
 
 @item @code{K1} 
 
@@ -177,7 +188,7 @@ Variable type: @code{VARCHAR(32)}
 Variable type: @code{DOUBLE(10,3)}
 
 
-      This is an optional parameter. If set to a value other than zero, in conjuction with @code{MAGTYPE} set to ``QUAD'' then a quadrupole field with this @code{K1} value will be set up within the object. Default it set to zero.
+      This is an optional parameter. If set to a value other than zero, in conjuction with @code{MAGTYPE} set to ``QUAD'' then a quadrupole field with this @code{K1} value will be set up within the object. Default is set to zero.
 
 
 @item @code{K2} 
@@ -186,83 +197,43 @@ Variable type: @code{DOUBLE(10,3)}
 Variable type: @code{DOUBLE(10,3)}
 
 
-      This is an optional parameter. If set to a value other than zero, in conjuction with @code{MAGTYPE} set to ``SEXT'' then a sextupole field with this @code{K2} value will be set up within the object. Default it set to zero.
+      This is an optional parameter. If set to a value other than zero, in conjuction with @code{MAGTYPE} set to ``SEXT'' then a sextupole field with this @code{K2} value will be set up within the object. Default is set to zero.
 
-@item @code{POSX} 
-
-
-Variable type: @code{DOUBLE(10,3)}
-
-
-      This is a required parameter. This is the X-position in mm used to place the object in the component volume. It is defined with respect to the center of the component volume and with respect to the component volume's rotation.
-
-@item @code{POSY} 
+@item @code{K3} 
 
 
 Variable type: @code{DOUBLE(10,3)}
 
 
-      This is a required parameter. This is the Y-position in mm used to place the object in the component volume. It is defined with respect to the center of the component volume and with respect to the component volume's rotation.
+      This is an optional parameter. If set to a value other than zero, in conjuction with @code{MAGTYPE} set to ``OCT'' then a sextupole field with this @code{K3} value will be set up within the object. Default is set to zero.
 
-@item @code{POSZ} 
-
-
-Variable type: @code{DOUBLE(10,3)}
-
-
-      This is a required parameter. This is the Z-position in mm used to place the object in the component volume. It is defined with respect to the start of the component volume and with respect to the component volume's rotation.
-
-@item @code{ROTPSI} 
+@item @code{POSX, POSY, POSZ} 
 
 
 Variable type: @code{DOUBLE(10,3)}
 
 
-      This is an optional parameter. This is the psi Euler angle in radians used to rotate the obejct before it is placed. The default is set to zero.
-
-@item @code{ROTTHETA} 
+      These are required parameters. They are form the position in mm used to place the object in the component volume. @code{POSX} and @code{POSY} are defined with respect to the center of the component volume and with respect to the component volume's rotation. @code{POSZ} is defined with respect to the start of the component volume. Note that if the object is being placed inside another volume using @code{PARENTNAME} then the position will refers to the center of the parent object.
 
 
-Variable type: @code{DOUBLE(10,3)}
-
-
-      This is an optional parameter. This is the theta Euler angle in radians used to rotate the obejct before it is placed. The default is set to zero.
-
-
-@item @code{ROTPHI} 
+@item @code{ROTPSI, ROTTHETA, ROTPHI} 
 
 
 Variable type: @code{DOUBLE(10,3)}
 
 
-      This is an optional parameter. This is the phi Euler angle in radians used to rotate the obejct before it is placed. The default is set to zero.
+      These are optional parameters. They are the Euler angles in radians used to rotate the obejct before it is placed. The default is set to zero for each angle.
 
 
-@item @code{RED} 
 
-
-Variable type: @code{DOUBLE(10,3)}
-
-
-      This is an optional parameter. This is the red component of the RGB colour assigned to the object and should be a value between 0 and 1. The default is set to zero.
-
-
-@item @code{BLUE} 
+@item @code{RED, BLUE, GREEN} 
 
 
 Variable type: @code{DOUBLE(10,3)}
 
 
-      This is an optional parameter. This is the blue component of the RGB colour assigned to the object and should be a value between 0 and 1. The default is set to zero.
+      These are optional parameters. They are the RGB colour components assigned to the object and should be a value between 0 and 1. The default is set to zero for each colour.
 
-
-@item @code{GREEN} 
-
-
-Variable type: @code{DOUBLE(10,3)}
-
-
-      This is an optional parameter. This is the green component of the RGB colour assigned to the object and should be a value between 0 and 1. The default is set to zero.
 
 
 @item @code{VISATT} 
@@ -291,29 +262,14 @@ Append @code{_BOX} to the table name in order to make use of the G4Box solid typ
 
 @itemize @bullet
 
-@item @code{LENGTHX} 
+@item @code{LENGTHX, LENGTHY, LENGTHZ} 
 
 
 Variable type: @code{DOUBLE(10,3)}
 
 
-      This is a required  parameter. This value will be used to specify the x-extent of the box's dimensions.
+      These are required  parameters. There values will be used to specify the box's dimensions.
 
-@item @code{LENGTHY} 
-
-
-Variable type: @code{DOUBLE(10,3)}
-
-
-      This is a required  parameter. This value will be used to specify the y-extent of the box's dimensions.
-
-@item @code{LENGTHZ} 
-
-
-Variable type: @code{DOUBLE(10,3)}
-
-
-      This is a required  parameter. This value will be used to specify the z-extent of the box's dimensions.
 
 @end itemize
 
