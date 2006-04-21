@@ -46,10 +46,12 @@ void BDSGeometryInterface::Optics()
       if((*iBeam)->GetType() == 14 ) //RCOL
 	aper_type=1;
       else if((*iBeam)->GetType() == 13) //ECOL
-	if((*iBeam)->GetAperX()==(*iBeam)->GetAperY()) 
-	  aper_type=2;
-	else aper_type=3;
-      else aper_type=1;
+	{
+	  if((*iBeam)->GetAperX()==(*iBeam)->GetAperY()) 
+	    aper_type=2;
+	  else aper_type=3;
+	}
+      else aper_type=2; // circular is default
       
       optics.setf(ios::fixed, ios::floatfield);
       optics.setf(ios::showpoint);
