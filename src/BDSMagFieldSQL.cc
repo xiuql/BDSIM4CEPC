@@ -61,6 +61,20 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
   const G4AffineTransform MarkerToGlobal=GlobalToMarker.Inverse();
   
   RLocalR=GlobalToMarker.TransformPoint(GlobalR);
+  
+  if( fabs(RLocalR.z()) > fabs(itsMarkerLength/2) )
+    {
+      // Outside of mokka region - field should be zero. This is needed
+      // because sometimes RKStepper asks for overly large steps (1km)
+      Bfield[0] = 0;
+      Bfield[1] = 0;
+      Bfield[2] = 0;
+      Bfield[3] = 0;
+      Bfield[4] = 0;
+      Bfield[5] = 0;
+      return;
+      
+    }
 
   if(itsMarkerLength>0) RLocalR.setZ(RLocalR.z()+itsMarkerLength/2);
   else RLocalR.setZ( -(RLocalR.z()+fabs(itsMarkerLength)/2) + fabs(itsMarkerLength));
@@ -150,6 +164,15 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
     }
 
   G4double tempz = RLocalR.z()/cm;
+  if(tempz<0)  //Mokka region resets Z to be positive at starting from one
+               //Edge of the region
+    {
+      // This should NEVER happen. If it does, then the cause is either that
+      // the mokka region length is not set properly, or that the BDSRKStepper
+      // is asking for a step length greater than the Mokka marker length
+      G4cout << "Z position in Mokka region less than 0 - check step lengths!!" << G4endl;
+      G4Exception("Quitting BDSIM in BDSMagFieldSQL.cc");
+    }
   G4double zlow = floor(tempz);
   G4int ilow = (G4int)(zlow);
   G4double zhi = zlow + 1.0;
@@ -182,11 +205,22 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
   Bfield[0] = LocalB.x();
   Bfield[1] = LocalB.y();
   Bfield[2] = LocalB.z();
-  //G4cout << "BField: " << LocalB << G4endl;
   // e-field
   Bfield[3] = 0;
   Bfield[4] = 0;
   Bfield[5] = 0;
+
+
+  /*
+  G4cout << "BField: " << LocalB << G4endl;
+  G4cout << itsMarkerLength << G4endl;
+  G4cout << RLocalR << G4endl;
+  G4cout << ilow << G4endl;
+  G4cout << QuadB << G4endl;
+  G4cout << SextB << G4endl;
+  G4cout << OctB << G4endl;
+  G4cout << G4endl;
+  */
   
   
   if(DEBUG) 
