@@ -262,7 +262,7 @@ struct Parameters {
     psi = 0; psiset = 0;
 
     aper = 0; aperset = 0;
-    outR = 0;
+    outR = 0; outRset = 0;
     tilt = 0; tiltset = 0;
 
     k0 = 0; k0set = 0;
