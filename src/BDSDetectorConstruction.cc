@@ -207,7 +207,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
      
       if(DEBUG) G4cout<<(*it).name<<"    "<<typestr((*it).type)<<"  "<<(*it).l<<G4endl;
 
-      if( (*it).outR>0)
+      if( (*it).outR>0 && (*it).type!=_LINE)
 	{
 	  if( (*it).outR < (*it).aper)
 	    {
