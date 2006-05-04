@@ -46,7 +46,6 @@ private:
 private:
   G4Material* itsCollimatorMaterial;
   BDSEnergyCounterSD* itsEnergyCounterSD;
-  G4int itsType;
   G4double itsOuterR;
 };
 

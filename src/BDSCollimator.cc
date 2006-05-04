@@ -13,7 +13,7 @@
 
 #include "G4SDManager.hh"
 #include "G4UserLimits.hh"
-
+#include "parser/gmad.h"
 #include <map>
 
 //============================================================
@@ -35,9 +35,10 @@ BDSCollimator::BDSCollimator (G4String aName,G4double aLength,G4double bpRad,
   BDSAcceleratorComponent(aName,
 			  aLength,bpRad,xAper,yAper,
 			  SetVisAttributes()),
-  itsCollimatorMaterial(CollimatorMaterial), itsType(type), itsOuterR(outR)
+  itsCollimatorMaterial(CollimatorMaterial), itsOuterR(outR)
 {
-  
+  if(type==_RCOL) itsType="rcol";
+  if(type==_ECOL) itsType="ecol";
   if ( (*LogVolCount)[itsName]==0)
     {
       itsMarkerLogicalVolume=
@@ -87,7 +88,7 @@ void BDSCollimator::BuildInnerCollimator()
 			itsCollimatorMaterial,
 			itsName+"_solid");
 
-  if(itsType == _RCOL)
+  if(itsType == "rcol")
     {
       itsInnerLogVol=
 	new G4LogicalVolume(new G4Box(itsName+"_inner",
@@ -98,7 +99,7 @@ void BDSCollimator::BuildInnerCollimator()
 			    itsName+"_inner");
     }
   
-  if(itsType == _ECOL)
+  if(itsType == "ecol")
     {
       itsInnerLogVol=
 	new G4LogicalVolume(new G4EllipticalTube(itsName+"_inner",
