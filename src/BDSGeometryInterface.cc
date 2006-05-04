@@ -43,9 +43,9 @@ void BDSGeometryInterface::Optics()
   for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
     { 
       G4int aper_type; //1 = rect, 2 = circ, 3 = elispe
-      if((*iBeam)->GetType() == 14 ) //RCOL
+      if((*iBeam)->GetType() == "rcol" ) //RCOL
 	aper_type=1;
-      else if((*iBeam)->GetType() == 13) //ECOL
+      else if((*iBeam)->GetType() == "ecol") //ECOL
 	{
 	  if((*iBeam)->GetAperX()==(*iBeam)->GetAperY()) 
 	    aper_type=2;
