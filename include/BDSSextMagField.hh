@@ -20,11 +20,13 @@ public:  // with description
 
   virtual void  GetFieldValue( const G4double Point[4],
 			       G4double *Bfield ) const;
-
+  void SetBDblPrime(G4double aBDblePrime);
 private:
   G4double itsBDblePrime;
 
 };
 
+inline void BDSSextMagField::SetBDblPrime(G4double aBDblePrime)
+{ itsBDblePrime = aBDblePrime; }
 
 #endif /* BDSSEXTMAGFIELD */

@@ -19,6 +19,8 @@
 
 #include <map>
 
+const int DEBUG = 0;
+
 //============================================================
 
 typedef std::map<G4String,int> LogVolCountMap;
@@ -38,6 +40,7 @@ BDSOctupole::BDSOctupole(G4String aName,G4double aLength,
 {
   SetOuterRadius(outR);
   itsTilt=tilt;
+  itsType="oct";
   if (!(*LogVolCount)[itsName])
     {
       BuildBPFieldAndStepper();
@@ -107,6 +110,12 @@ BDSOctupole::BDSOctupole(G4String aName,G4double aLength,
   
 }
 
+void BDSOctupole::SynchRescale(G4double factor)
+{
+  itsStepper->SetBTrpPrime(factor*itsBTrpPrime);
+  itsMagField->SetBTrpPrime(factor*itsBTrpPrime);
+  if(DEBUG) G4cout << "Oct " << itsName << " has been scaled" << G4endl;
+}
 
 G4VisAttributes* BDSOctupole::SetVisAttributes()
 {

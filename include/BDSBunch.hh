@@ -126,6 +126,8 @@ private:
   RandGauss* GaussGen;
   RandFlat* FlatGen;
   
+  // event number for phase for ellipse for SR rescaling
+  G4int partId;
 };
 
 #endif

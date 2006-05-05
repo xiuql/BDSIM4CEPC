@@ -30,6 +30,7 @@ class BDSOctupole :public BDSMultipole
 		G4double BTrpPrime, G4double tilt, G4double outR);
     ~BDSOctupole();
 
+  void SynchRescale(G4double factor);
   protected:
 
   private:

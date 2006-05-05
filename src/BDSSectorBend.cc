@@ -14,8 +14,11 @@
 #include "G4UserLimits.hh"
 #include "G4TransportationManager.hh"
 #include "G4PropagatorInField.hh"
+#include "G4SubtractionSolid.hh"
 
 #include <map>
+
+const int DEBUG = 0;
 
 //============================================================
 
@@ -43,7 +46,7 @@ BDSSectorBend::BDSSectorBend(G4String aName,G4double aLength,
 
   itsType="sbend";
 
-  if (!(*LogVolCount)[itsName])
+  if (!(*LogVolCount)[itsName] )
     {
       BuildSBMarkerLogicalVolume();
 
@@ -54,6 +57,7 @@ BDSSectorBend::BDSSectorBend(G4String aName,G4double aLength,
       BuildBPFieldMgr(itsStepper,itsMagField);
 
       BuildDefaultOuterLogicalVolume(itsLength);
+
       SetMultipleSensitiveVolumes(itsBeampipeLogicalVolume);
       SetMultipleSensitiveVolumes(itsOuterLogicalVolume);
 
@@ -84,20 +88,85 @@ BDSSectorBend::BDSSectorBend(G4String aName,G4double aLength,
 	  //BuildOuterFieldManager(2, BFldIron,0);
 	}
 
+      
+      // vis attr
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(0., 0., 0));
+      VisAtt->SetForceSolid(true);
+      itsInnerBPLogicalVolume->SetVisAttributes(VisAtt);
+      
+      G4VisAttributes* VisAtt1 = 
+	new G4VisAttributes(G4Colour(0.1, 0.1, 0.1));
+      VisAtt1->SetForceSolid(true);
+      itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
+      
+      G4VisAttributes* VisAtt2 = 
+	new G4VisAttributes(G4Colour(0., 0., 1.));
+      VisAtt2->SetForceSolid(true);
+      itsOuterLogicalVolume->SetVisAttributes(VisAtt2);
+      
+
+
       (*LogVolCount)[itsName]=1;
       (*LogVol)[itsName]=itsMarkerLogicalVolume;
     }
   else
     {
       (*LogVolCount)[itsName]++;
+      if(BDSGlobals->GetSynchRadOn()&& BDSGlobals->GetSynchRescale())
+	{
+	  // with synchrotron radiation, the rescaled magnetic field
+	  // means elements with the same name must have different
+	  //logical volumes, becuase they have different fields
+	  itsName+=BDSGlobals->StringFromInt((*LogVolCount)[itsName]);
 
-	itsMarkerLogicalVolume=(*LogVol)[itsName];
+	  BuildSBMarkerLogicalVolume();
 
+	  BuildBeampipe2(this,itsLength,itsAngle);
+
+	  BuildBPFieldAndStepper();
+
+	  BuildBPFieldMgr(itsStepper,itsMagField);
+
+	  BuildDefaultOuterLogicalVolume(itsLength);
+	  SetMultipleSensitiveVolumes(itsBeampipeLogicalVolume);
+	  SetMultipleSensitiveVolumes(itsOuterLogicalVolume);
+
+	  // vis attr
+	  G4VisAttributes* VisAtt = 
+	    new G4VisAttributes(G4Colour(0., 0., 0));
+	  VisAtt->SetForceSolid(true);
+	  itsInnerBPLogicalVolume->SetVisAttributes(VisAtt);
+	  
+	  G4VisAttributes* VisAtt1 = 
+	    new G4VisAttributes(G4Colour(0.1, 0.1, 0.1));
+	  VisAtt1->SetForceSolid(true);
+	  itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
+	  
+	  G4VisAttributes* VisAtt2 = 
+	    new G4VisAttributes(G4Colour(0., 0., 1.));
+	  VisAtt2->SetForceSolid(true);
+	  itsOuterLogicalVolume->SetVisAttributes(VisAtt2);
+	  
+	  
+	  (*LogVol)[itsName]=itsMarkerLogicalVolume;
+	}
+      else
+	{
+	  itsMarkerLogicalVolume=(*LogVol)[itsName];
+	}      
     }
-
 
 }
 
+void BDSSectorBend::SynchRescale(G4double factor)
+{
+  itsStepper->SetBGrad(itsBGrad*factor);
+  itsStepper->SetBField(-itsBField*factor);
+  // note that there are no methods to set the BDSSBendMagField as this
+  // class does not do anything with the BFields.
+  if(DEBUG) G4cout << "Sbend " << itsName << " has been scaled" << G4endl;
+}
 
 G4VisAttributes* BDSSectorBend::SetVisAttributes()
 {
@@ -247,8 +316,8 @@ void BuildBeampipe2(BDSSectorBend *sb,G4double length, G4double angle)
 // 		      0);		             // copy number
   
   
-  // *** try with tubes 
-
+  // *** try with tubes - but should really be rectangular apertures
+  
   G4double tubLen = 0.5 * ( xHalfLengthPlus + xHalfLengthMinus );
 
   G4Tubs *pipeTubs = new G4Tubs(sb->itsName+"_pipe_outer",
@@ -258,7 +327,7 @@ void BuildBeampipe2(BDSSectorBend *sb,G4double length, G4double angle)
 				 0, // starting phi
 				 twopi * rad ); // delta phi
   
-  G4Tubs *pipeInner = new G4Tubs(sb->itsName+"_pipe_inner",
+   G4Tubs *pipeInner = new G4Tubs(sb->itsName+"_pipe_inner",
 				 0,  // inner R
 				 sb->itsBpRadius-BDSGlobals->GetBeampipeThickness(), // outer R
 				 tubLen , // length
@@ -336,6 +405,119 @@ void BuildBeampipe2(BDSSectorBend *sb,G4double length, G4double angle)
   //
 
 
+  // **** Try using tube with opening and closing angles....
+  // The geometry building WORKS - but the reference frame needs to be changed
+  // in the stepper - so do not use!!
+  /*  
+  // length of tube be the Vertical Gap
+
+  // Inner and Outer Radius will be the Horizontal Gap of beampipe
+  G4double centerR = halfLength /  fabs( sin( angle / 2 ) );
+  G4double InnerR = centerR - sb->itsBpRadius;
+  G4double OuterR = centerR + sb->itsBpRadius;
+
+  // Inner and Outer Radius will be the Horizontal size of outer solid
+  G4double outerRadius = sb->itsOuterR;
+  if(outerRadius==0) outerRadius = BDSGlobals->GetComponentBoxSize()/2;
+  G4double SolidOuterR = centerR + outerRadius;
+  G4double SolidInnerR = centerR - outerRadius;
+
+  //start phi and delta phi
+
+  G4double sPhi = 3*pi/2-fabs(angle/2);
+  G4double dPhi = fabs(angle);
+
+  if(angle<0) sPhi-=pi;
+
+  G4Tubs *pipeInner = new G4Tubs(sb->itsName+"_pipe_inner",
+				 InnerR+BDSGlobals->GetBeampipeThickness(),
+				 OuterR-BDSGlobals->GetBeampipeThickness(),
+				 sb->itsBpRadius-2*BDSGlobals->GetBeampipeThickness(),
+				 sPhi, // starting phi
+				 dPhi); // delta phi
+
+  G4Tubs *pipeOuter_tmp = new G4Tubs(sb->itsName+"_pipe_outer_tmp",
+				 InnerR,
+				 OuterR,
+				 sb->itsBpRadius,
+				 sPhi, // starting phi
+  				 dPhi); // delta phi
+
+  G4Tubs *OuterSolid_tmp = new G4Tubs(sb->itsName+"_solid_tmp",
+				  SolidInnerR,
+				  SolidOuterR,
+				  outerRadius,
+				  sPhi, // starting phi
+				  dPhi); // delta phi
+  
+  G4SubtractionSolid *pipeOuter = new G4SubtractionSolid("_pipe_outer",
+							 pipeOuter_tmp,
+							 pipeInner);
+  G4SubtractionSolid *OuterSolid = new G4SubtractionSolid("_solid",
+							  OuterSolid_tmp,
+							  pipeOuter_tmp);
+							
+
+  sb->itsBeampipeLogicalVolume=	
+    new G4LogicalVolume(pipeOuter,
+			theMaterials->LCAluminium,
+			sb->itsName+"_bmp_logical");
+  
+  sb->itsInnerBPLogicalVolume=	
+    new G4LogicalVolume(pipeInner,
+			theMaterials->LCVacuum,
+			sb->itsName+"_bmp_Inner_log");
+
+  sb->itsOuterLogicalVolume=	
+    new G4LogicalVolume(OuterSolid,
+			theMaterials->LCIron,
+			sb->itsName+"_outer");
+
+  G4RotationMatrix* InvRot= new G4RotationMatrix;
+  G4RotationMatrix* Rot= new G4RotationMatrix;
+
+  G4double rotAngle = -pi/2 * rad; // * sign(sb->itsAngle);
+  InvRot->rotateY(-rotAngle + pi);
+  Rot->rotateX(rotAngle);
+
+   G4ThreeVector pipeTorusOrigin(0, 0, centerR * fabs( cos(angle / 2) ) );
+
+   if(angle < 0)
+     {
+       //Rot->rotateY(pi);
+       //Rot->rotateZ(pi);
+       pipeTorusOrigin.setZ(-centerR * fabs( cos(angle / 2) ) );
+     }
+
+  new G4PVPlacement(
+		    Rot,		       // rotation
+		    pipeTorusOrigin,	               // at (0,0,0)
+		    sb->itsInnerBPLogicalVolume, // its logical volume
+		    sb->itsName+"_InnerBmp",     // its name
+		    sb->itsMarkerLogicalVolume, // its mother  volume
+		    false,		       // no boolean operation
+		    0);		       // copy number
+
+  new G4PVPlacement(
+		    Rot,		       // rotation
+		    pipeTorusOrigin,	               // at (0,0,0)
+		    sb->itsBeampipeLogicalVolume, // its logical volume
+		    sb->itsName+"_bmp",     // its name
+		    sb->itsMarkerLogicalVolume, // its mother  volume
+		    false,		       // no boolean operation
+		    0);		       // copy number
+
+  new G4PVPlacement(
+		    Rot,		       // rotation
+		    pipeTorusOrigin,         // at (0,0,0)
+		    sb->itsOuterLogicalVolume, // its logical volume
+		    sb->itsName+"_solid",     // its name
+		    sb->itsMarkerLogicalVolume, // its mother  volume
+		    false,		       // no boolean operation
+		    0);		       // copy number
+  
+
+  */  
   sb->itsBeampipeUserLimits =
     new G4UserLimits("beampipe cuts",DBL_MAX,DBL_MAX,DBL_MAX,
   		     BDSGlobals->GetThresholdCutCharged());
@@ -343,7 +525,13 @@ void BuildBeampipe2(BDSSectorBend *sb,G4double length, G4double angle)
   sb->itsInnerBeampipeUserLimits =
     new G4UserLimits("inner beamipe cuts",DBL_MAX,DBL_MAX,DBL_MAX,
   		     BDSGlobals->GetThresholdCutCharged());
+  /*  
+  sb->itsOuterUserLimits =
+    new G4UserLimits("sbend cut",sb->itsLength,DBL_MAX,DBL_MAX,
+		     BDSGlobals->GetThresholdCutCharged());
   
+  sb->itsOuterLogicalVolume->SetUserLimits(sb->itsOuterUserLimits);
+  */
   sb->itsBeampipeUserLimits->SetMaxAllowedStep(sb->itsLength);
   sb->itsBeampipeLogicalVolume->SetUserLimits(sb->itsBeampipeUserLimits);
   
@@ -353,15 +541,7 @@ void BuildBeampipe2(BDSSectorBend *sb,G4double length, G4double angle)
   // zero field in the marker volume
   sb->itsMarkerLogicalVolume->
     SetFieldManager(BDSGlobals->GetZeroFieldManager(),false);
-  G4VisAttributes* VisAtt = 
-    new G4VisAttributes(G4Colour(0., 0., 0));
-  VisAtt->SetForceSolid(true);
-  sb->itsInnerBPLogicalVolume->SetVisAttributes(VisAtt);
-
-  G4VisAttributes* VisAtt1 = 
-    new G4VisAttributes(G4Colour(0., 0, 0.));
-  VisAtt1->SetForceSolid(true);
-  sb->itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
+ 
   
 }
 

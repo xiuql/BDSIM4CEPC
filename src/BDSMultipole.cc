@@ -390,10 +390,10 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
   //  itsOuterUserLimits->SetMaxAllowedStep(aLength);
   itsOuterLogicalVolume->SetUserLimits(itsOuterUserLimits);
 
-  G4VisAttributes* VisAtt = 
-    new G4VisAttributes(G4Colour(1.0, 0., 0.));
-  VisAtt->SetForceSolid(true);
-  itsOuterLogicalVolume->SetVisAttributes(VisAtt);
+ //  G4VisAttributes* VisAtt = 
+//     new G4VisAttributes(G4Colour(1.0, 0., 0.));
+//   VisAtt->SetForceSolid(true);
+//   itsOuterLogicalVolume->SetVisAttributes(VisAtt); 
 
 }
 

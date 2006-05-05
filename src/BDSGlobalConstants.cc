@@ -78,6 +78,8 @@ BDSGlobalConstants::BDSGlobalConstants(struct Options& opt)
   itsDeltaOneStep = opt.deltaOneStep * m;
 
 
+  doTwiss = opt.doTwiss;
+
   itsTurnOnInteractions = opt.turnOnInteractions;
 
   itsUseLowEMPhysics = opt.useLowEMPhysics;

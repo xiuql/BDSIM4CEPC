@@ -31,6 +31,7 @@ class BDSQuadrupole :public BDSMultipole
 		  G4double bGrad, G4double tilt, G4double outR);
     ~BDSQuadrupole();
 
+  void SynchRescale(G4double factor);
   protected:
 
   private:

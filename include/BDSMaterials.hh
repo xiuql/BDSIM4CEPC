@@ -32,6 +32,7 @@ public:
   G4Material*  LaserVac;
   G4Material*  LCCopper;
   G4Material*  LCConcrete;
+  G4Material*  LCSoil;
   G4Material*  LCWater;
   G4Material*  LCLeadTungstate;
   G4Material*  LCLead;

@@ -438,6 +438,11 @@ void GetMaterial(G4Material *&theMaterial, G4String material)
       theMaterial = theMaterials->LCConcrete;
       return;
     }
+  if(material=="\"Soil\"" || material=="Soil")
+    {
+      theMaterial = theMaterials->LCSoil;
+      return;
+    }
 
 
   theMaterial = theMaterials->LCVacuum; // default is vacuum

@@ -30,6 +30,7 @@ class BDSSextupole :public BDSMultipole
 		 G4double BDblPrime, G4double tilt, G4double outR);
     ~BDSSextupole();
 
+  void SynchRescale(G4double factor);
   protected:
 
   private:

@@ -20,11 +20,14 @@ public:  // with description
 
   virtual void  GetFieldValue( const G4double Point[4],
 			       G4double *Bfield ) const;
-
+  void SetBGrad(G4double aBGrad);
 private:
   G4double itsBGrad;
+  G4bool hasBeenScaled;
 
 };
 
+inline void BDSQuadMagField::SetBGrad(G4double aBGrad)
+{ itsBGrad = aBGrad; }
 
 #endif /* BDSQUADMAGFIELD */

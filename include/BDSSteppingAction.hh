@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSSteppingAction.hh,v 1.1.1.1 2004/12/14 18:57:41 agapov Exp $
+// $Id: BDSSteppingAction.hh,v 1.1 2005/01/22 17:05:31 agapov Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -21,6 +21,8 @@
 
 #ifndef BDSSteppingAction_h
 #define BDSSteppingAction_h 1
+
+#include <vector>
 
 #include "G4UserSteppingAction.hh"
 
@@ -42,6 +44,11 @@ private:
   G4double itsLastZpos;
   G4double itsZposTolerance;
   G4double itsPosKick;
+  G4double postponedEnergy;
+
+  vector<G4ThreeVector> r;
+  vector<G4ThreeVector> rp;
+  
 
  };
 

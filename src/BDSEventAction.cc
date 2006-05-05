@@ -81,6 +81,8 @@ extern G4bool verboseEvent;
 extern G4int verboseEventNumber;
 extern G4bool isBatch;
 
+extern int nptwiss;
+
 
 //======================================================
 
@@ -109,6 +111,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 { 
   event_number = evt->GetEventID();
   htot=0.;
+
   
   if(BDSGlobals->GetStoreMuonTrajectories())
     theMuonTrackVector=new MuonTrackVector();
@@ -143,17 +146,27 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 	}
     }
   
-  if ((event_number+1)%printModulo ==0)
+  if(BDSGlobals->DoTwiss())
     {
-      G4cout << "\n---> Begin of event: " << event_number ;
-      
-      if(BDSGlobals->GetUseTimer())
-	{ 
-	  BDSGlobals->GetTimer()->Stop();
-	  G4cout<<" Time: "<<*BDSGlobals->GetTimer();
-	  BDSGlobals->GetTimer()->Start();
+      if(event_number==0) {
+	if(!BDSGlobals->GetSynchRescale())G4cout << "\n---> Calculating Twiss Parameters"<<G4endl;
+	if(BDSGlobals->GetSynchRescale()) G4cout<<"\n---> Calculating Twiss Parameters and Rescaling magnets" <<G4endl;
+      }
+    }
+  else
+    {
+      if ((event_number+1)%printModulo ==0)
+	{
+	  G4cout << "\n---> Begin of event: " << event_number ;
+	  
+	  if(BDSGlobals->GetUseTimer())
+	    { 
+	      BDSGlobals->GetTimer()->Stop();
+	      G4cout<<" Time: "<<*BDSGlobals->GetTimer();
+	      BDSGlobals->GetTimer()->Start();
+	    }
+	  G4cout << G4endl;
 	}
-      G4cout << G4endl;
     }
 
   if(verboseEvent) G4cout<<"Begin of event: "<<event_number<<G4endl ;
@@ -185,7 +198,14 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 
 void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
-
+  if(BDSGlobals->GetSynchRescale())
+    {
+      if(event_number==nptwiss-1)
+	{
+	  G4cout << "\n---> Done" <<G4endl;
+	  G4EventManager::GetEventManager()->GetStackManager()->clear();
+	}
+    }
   if(DEBUG) G4cout<<"BDSEventAction : end of event action"<<G4endl;
  
   if(verboseEvent || verboseEventNumber == event_number)

@@ -19,6 +19,8 @@
 
 #include <map>
 
+const int DEBUG = 0;
+
 //============================================================
 
 typedef std::map<G4String,int> LogVolCountMap;
@@ -38,6 +40,7 @@ BDSSextupole::BDSSextupole(G4String aName,G4double aLength,
 {
   SetOuterRadius(outR);
   itsTilt=tilt;
+  itsType="sext";
   if (!(*LogVolCount)[itsName])
     {
       BuildBPFieldAndStepper();
@@ -49,9 +52,6 @@ BDSSextupole::BDSSextupole(G4String aName,G4double aLength,
       BuildDefaultOuterLogicalVolume(itsLength);
       SetMultipleSensitiveVolumes(itsBeampipeLogicalVolume);
       SetMultipleSensitiveVolumes(itsOuterLogicalVolume);
-
-      //SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
-      //SetSensitiveVolume(itsOuterLogicalVolume);// for laserwire
 
       if(BDSGlobals->GetIncludeIronMagFields())
 	{
@@ -96,8 +96,9 @@ BDSSextupole::BDSSextupole(G4String aName,G4double aLength,
 	  BuildBeampipe(itsLength);
 	  BuildDefaultOuterLogicalVolume(itsLength);
 
-	  SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
-	  //SetSensitiveVolume(itsOuterLogicalVolume);// for laserwire      
+	  SetMultipleSensitiveVolumes(itsBeampipeLogicalVolume);
+	  SetMultipleSensitiveVolumes(itsOuterLogicalVolume);
+
 	  (*LogVol)[itsName]=itsMarkerLogicalVolume;
 	}
       else
@@ -108,6 +109,12 @@ BDSSextupole::BDSSextupole(G4String aName,G4double aLength,
   
 }
 
+void BDSSextupole::SynchRescale(G4double factor)
+{
+  itsStepper->SetBDblPrime(factor*itsBDblPrime);
+  itsMagField->SetBDblPrime(factor*itsBDblPrime);
+  if(DEBUG) G4cout << "Sext " << itsName << " has been scaled" << G4endl;
+}
 
 G4VisAttributes* BDSSextupole::SetVisAttributes()
 {
@@ -124,7 +131,6 @@ void BDSSextupole::BuildBPFieldAndStepper()
   
   itsStepper=new BDSSextStepper(itsEqRhs);
   itsStepper->SetBDblPrime(itsBDblPrime);
-
 }
 
 BDSSextupole::~BDSSextupole()

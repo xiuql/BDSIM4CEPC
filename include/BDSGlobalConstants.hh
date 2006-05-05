@@ -39,7 +39,9 @@ public:
 
   ~BDSGlobalConstants();
   
-  
+
+  G4bool DoTwiss();
+  void SetDoTwiss(G4bool val); 
 
   G4double GetMinimumEpsilonStep();
   G4double GetMaximumEpsilonStep();
@@ -73,20 +75,20 @@ public:
   void SetTotalS(G4double TotalS);
   G4double GetTotalS();  
 
-  void SetVerticalComponentOffset(G4double VerticalComponentOffset);
-  void SetHorizontalComponentOffset(G4double HorizontalComponentOffset);
-  void AddVerticalComponentOffset(G4double VerticalComponentOffset);
-  void AddHorizontalComponentOffset(G4double HorizontalComponentOffset);
-  G4double GetVerticalComponentOffset(); 
-  G4double GetHorizontalComponentOffset(); 
+ //  void SetVerticalComponentOffset(G4double VerticalComponentOffset);
+//   void SetHorizontalComponentOffset(G4double HorizontalComponentOffset);
+//   void AddVerticalComponentOffset(G4double VerticalComponentOffset);
+//   void AddHorizontalComponentOffset(G4double HorizontalComponentOffset);
+//   G4double GetVerticalComponentOffset(); 
+//   G4double GetHorizontalComponentOffset(); 
 
   G4double GetComponentBoxSize();
   G4double GetMagnetPoleSize();
   G4double GetMagnetPoleRadius();
 
   G4double GetTunnelRadius(); 
-  G4double GetHorizontalBeamlineOffset(); 
-  G4double GetVerticalBeamlineOffset(); 
+  //G4double GetHorizontalBeamlineOffset(); 
+  //G4double GetVerticalBeamlineOffset(); 
 
   G4double GetBeampipeRadius(); 
   G4double GetBeampipeThickness(); 
@@ -117,7 +119,9 @@ public:
 
   G4bool GetSynchRadOn();
   G4bool GetSynchRescale();
+  void SetSynchRescale(G4bool srRescale);
   G4bool GetSynchTrackPhotons();
+  void SetSynchTrackPhotons(G4bool srTrackPhotons);
   G4double GetSynchLowX();
   G4double GetSynchLowGamE();
   G4int GetSynchPhotonMultiplicity();
@@ -132,9 +136,9 @@ public:
   G4bool GetLaserwireTrackPhotons();
   G4bool GetLaserwireTrackElectrons();
 
-  G4bool GetReadBunchFile();
-  G4bool GetWriteBunchFile();
-  G4bool GetExtractBunchFile();
+  // G4bool GetReadBunchFile();
+  // G4bool GetWriteBunchFile();
+  //G4bool GetExtractBunchFile();
 
   G4bool GetTurnOnInteractions();
   G4bool GetUseTimer();
@@ -237,11 +241,11 @@ private:
   G4double itsMagnetPoleRadius;
 
   G4double itsTunnelRadius;
-  G4double itsHorizontalBeamlineOffset;
-  G4double itsVerticalBeamlineOffset;
+  //G4double itsHorizontalBeamlineOffset;
+  //G4double itsVerticalBeamlineOffset;
  
-  G4double itsVerticalComponentOffset;
-  G4double itsHorizontalComponentOffset;
+  //G4double itsVerticalComponentOffset;
+  //G4double itsHorizontalComponentOffset;
 
   G4double itsBeampipeRadius; 
   G4double itsBeampipeThickness; 
@@ -285,9 +289,11 @@ private:
   G4bool itsLaserwireTrackElectrons;
   G4bool itsTurnOnInteractions;
 
-  G4bool itsReadBunchFile;
-  G4bool itsWriteBunchFile;
-  G4bool itsExtractBunchFile;
+  G4bool doTwiss;
+
+  //  G4bool itsReadBunchFile;
+  // G4bool itsWriteBunchFile;
+  // G4bool itsExtractBunchFile;
   G4bool itsUseTimer;
   G4bool itsUseEMHadronic;
   G4bool itsUseMuonPairProduction;
@@ -437,10 +443,10 @@ inline G4double BDSGlobalConstants::GetMagnetPoleRadius()
 inline G4double BDSGlobalConstants::GetTunnelRadius()
 {return itsTunnelRadius;}
 
-inline  G4double BDSGlobalConstants::GetHorizontalBeamlineOffset()
-{return itsHorizontalBeamlineOffset;}
-inline  G4double BDSGlobalConstants::GetVerticalBeamlineOffset()
-{return itsVerticalBeamlineOffset;}
+// inline  G4double BDSGlobalConstants::GetHorizontalBeamlineOffset()
+// {return itsHorizontalBeamlineOffset;}
+// inline  G4double BDSGlobalConstants::GetVerticalBeamlineOffset()
+// {return itsVerticalBeamlineOffset;}
 
 
 
@@ -488,20 +494,20 @@ inline G4double BDSGlobalConstants::GetTotalS()
 inline void BDSGlobalConstants::SetTotalS(G4double TotalS) 
 {itsTotalS=TotalS;}
 
-inline void BDSGlobalConstants::SetVerticalComponentOffset(G4double VerticalComponentOffset)
-{itsVerticalComponentOffset=VerticalComponentOffset;}
-inline void BDSGlobalConstants::SetHorizontalComponentOffset(G4double HorizontalComponentOffset)
-{itsHorizontalComponentOffset=HorizontalComponentOffset;}
+// inline void BDSGlobalConstants::SetVerticalComponentOffset(G4double VerticalComponentOffset)
+// {itsVerticalComponentOffset=VerticalComponentOffset;}
+// inline void BDSGlobalConstants::SetHorizontalComponentOffset(G4double HorizontalComponentOffset)
+// {itsHorizontalComponentOffset=HorizontalComponentOffset;}
 
-inline void BDSGlobalConstants::AddVerticalComponentOffset(G4double VerticalComponentOffset)
-{itsVerticalComponentOffset+=VerticalComponentOffset;}
-inline void BDSGlobalConstants::AddHorizontalComponentOffset(G4double HorizontalComponentOffset)
-{itsHorizontalComponentOffset+=HorizontalComponentOffset;}
+// inline void BDSGlobalConstants::AddVerticalComponentOffset(G4double VerticalComponentOffset)
+// {itsVerticalComponentOffset+=VerticalComponentOffset;}
+// inline void BDSGlobalConstants::AddHorizontalComponentOffset(G4double HorizontalComponentOffset)
+// {itsHorizontalComponentOffset+=HorizontalComponentOffset;}
 
-inline G4double BDSGlobalConstants::GetVerticalComponentOffset()
-{return itsVerticalComponentOffset;}
-inline G4double BDSGlobalConstants::GetHorizontalComponentOffset()
-{return itsHorizontalComponentOffset;}
+// inline G4double BDSGlobalConstants::GetVerticalComponentOffset()
+// {return itsVerticalComponentOffset;}
+// inline G4double BDSGlobalConstants::GetHorizontalComponentOffset()
+// {return itsHorizontalComponentOffset;}
 
 
 inline G4String BDSGlobalConstants::GetPhysListName()
@@ -523,8 +529,14 @@ inline G4bool BDSGlobalConstants::GetSynchRadOn()
 inline G4bool BDSGlobalConstants::GetSynchRescale()
 {return itsSynchRescale;}
 
+inline void BDSGlobalConstants::SetSynchRescale(G4bool srRescale)
+{itsSynchRescale = srRescale;}
+
 inline G4bool BDSGlobalConstants::GetSynchTrackPhotons()
 {return itsSynchTrackPhotons ;}
+
+inline void BDSGlobalConstants::SetSynchTrackPhotons(G4bool srTrackPhotons)
+{itsSynchTrackPhotons=srTrackPhotons ;}
 
 inline G4double BDSGlobalConstants::GetSynchLowX()
 {return itsSynchLowX ;}
@@ -556,14 +568,14 @@ inline G4bool BDSGlobalConstants::GetLaserwireTrackPhotons()
 inline G4bool BDSGlobalConstants::GetLaserwireTrackElectrons()
 {return itsLaserwireTrackElectrons ;}
 
-inline G4bool BDSGlobalConstants::GetReadBunchFile()
-{return itsReadBunchFile;}
+// inline G4bool BDSGlobalConstants::GetReadBunchFile()
+// {return itsReadBunchFile;}
 
-inline G4bool BDSGlobalConstants::GetExtractBunchFile()
-{return itsExtractBunchFile;}
+// inline G4bool BDSGlobalConstants::GetExtractBunchFile()
+// {return itsExtractBunchFile;}
 
-inline G4bool BDSGlobalConstants::GetWriteBunchFile()
-{return itsWriteBunchFile ;}
+// inline G4bool BDSGlobalConstants::GetWriteBunchFile()
+// {return itsWriteBunchFile ;}
 
 inline G4double BDSGlobalConstants::GetLengthSafety()
 {return itsLengthSafety;}
@@ -698,6 +710,11 @@ inline G4bool BDSGlobalConstants::GetPreviousWasWedge()
 inline void BDSGlobalConstants::SetPreviousWasWedge(G4bool PreviousWasWedge)
 {itsPreviousWasWedge=PreviousWasWedge;}
 
+inline G4bool BDSGlobalConstants::DoTwiss() 
+{return doTwiss;}
+
+inline void BDSGlobalConstants::SetDoTwiss(G4bool val) 
+{doTwiss = val;}
 
 extern BDSGlobalConstants* BDSGlobals;
 #endif

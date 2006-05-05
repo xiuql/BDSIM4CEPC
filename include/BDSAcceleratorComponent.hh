@@ -124,7 +124,8 @@ public:
 
   // in case a mapped field is provided creates a field mesh in global coordinates
   virtual void PrepareField(G4VPhysicalVolume *referenceVolume); 
-  
+  virtual void SynchRescale(G4double factor); 
+
   // in case a component requires specific alignment (e.g. SQL/BDSElement)
   virtual void AlignComponent(G4ThreeVector& TargetPos, 
 			      G4RotationMatrix *TargetRot,
@@ -163,6 +164,7 @@ protected:
   G4double itsAngle;
   G4double itsTilt;
   
+  G4double itsMagScaleFactor;
   G4double itsPhi;
   G4double itsTheta;
   G4double itsPsi;
@@ -219,6 +221,7 @@ BDSAcceleratorComponent (
   itsTheta = 0;
   itsPsi = 0;
   itsTilt = 0;
+  itsMagScaleFactor = 1;
 }
 
 

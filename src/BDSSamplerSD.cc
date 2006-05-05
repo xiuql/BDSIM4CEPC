@@ -58,7 +58,8 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
   //  // tmp - only store muons
   //     G4String pName=theTrack->GetDefinition()->GetParticleName();
   //    if(pName=="mu+"||pName=="mu-")
-  // 	{ // tmp
+  // 	{ // tm
+  if(BDSGlobals->DoTwiss()) StoreHit=false;
 
   if(StoreHit)
     {

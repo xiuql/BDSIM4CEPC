@@ -14,6 +14,11 @@ void BDSAcceleratorComponent::PrepareField(G4VPhysicalVolume *referenceVolume)
   return;
 }
 
+void BDSAcceleratorComponent::SynchRescale(G4double factor)
+{
+  return;
+}
+
 void BDSAcceleratorComponent::AlignComponent(G4ThreeVector& TargetPos,
 					     G4RotationMatrix *TargetRot, 
 					     G4RotationMatrix& globalRotation,

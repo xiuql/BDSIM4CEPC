@@ -36,7 +36,7 @@ class BDSSectorBend :public BDSMultipole
 		  G4double bField, G4double angle, G4double outR,
 		  G4double tilt = 0, G4double bGrad=0, G4int nSegments=1);
     ~BDSSectorBend();
-
+  void SynchRescale(G4double factor);
   protected:
 
   private:

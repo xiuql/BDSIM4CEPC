@@ -50,6 +50,13 @@ BDSStackingAction::ClassifyNewTrack(const G4Track * aTrack)
     G4cout<<"StackingAction: ClassifyNewtrack "<<aTrack->GetTrackID()<<
       " "<<aTrack->GetDefinition()->GetParticleName()<<G4endl;
 
+  if(BDSGlobals->DoTwiss())
+    {
+            if((aTrack->GetParentID() <= 0) &&
+	       (aTrack->GetTrackStatus()==fPostponeToNextEvent) )
+	classification = fPostpone;
+    }
+
   if(BDSGlobals->GetStopTracks()) // if tracks killed after interaction
     {
       

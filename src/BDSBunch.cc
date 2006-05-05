@@ -13,6 +13,7 @@ extern G4bool verboseEvent;
 extern G4int verboseEventNumber;
 extern G4bool isBatch;
 
+extern G4int nptwiss;
 
 BDSBunch::BDSBunch()
 {
@@ -35,6 +36,8 @@ BDSBunch::BDSBunch()
   emitX = 0;
   emitY = 0;
 
+  partId = 0;
+
   distribType = _GAUSSIAN;
   
   GaussGen=new RandGauss(*HepRandom::getTheEngine());
@@ -55,6 +58,13 @@ void BDSBunch::SetOptions(struct Options& opt)
   G4double val;
 #define _skip(nvalues) for(G4int i=0;i<nvalues;i++) InputBunchFile>>val;
 
+  // twiss parameters - set always if present
+  SetBetaX(opt.betx);
+  SetBetaY(opt.bety);
+  SetAlphaX(opt.alfx);
+  SetAlphaY(opt.alfy);
+  SetEmitX(opt.emitx);
+  SetEmitY(opt.emity);
 
   distribType = _GAUSSIAN; // default
 
@@ -396,9 +406,53 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 			       G4double& t, G4double& E)
 {
 
+  //G4cout<<"Twiss: "<<betaX<<" "<<betaY<<" "<<alphaX<<" "<<alphaY<<" "<<emitX<<" "<<emitY<<G4endl;
+
   if(verboseStep) G4cout<<"distribution type: "<<distribType<<G4endl;
 
   double r, phi;
+  // Rescal must be at the top of GetNextParticle
+  if(BDSGlobals->DoTwiss() && partId<nptwiss)
+    {
+      // temp numbers - to be replaced by parsed parameters
+
+      
+      G4double sigx = sqrt(betaX*emitX);
+      G4double sigxp= sqrt(emitX / betaX);
+      
+      G4double sigy = sqrt(betaY*emitY);
+      G4double sigyp= sqrt(emitY / betaY);
+
+      G4double pi = 2.*asin(1.);
+
+      partId++;
+      E = BDSGlobals->GetBeamKineticEnergy();
+      zp = 1;
+      t=0;
+      z0=0;
+      if(partId<=nptwiss/2) //primary - xx' ellipse
+	{
+	  x0 = sigx * cos(partId* 2 * pi);
+	  xp = -sigxp * ( alphaX * cos(partId * 2 * pi )
+			  + sin(partId * 2 * pi ) );
+	  y0 = 0;
+	  yp = 0;
+	}
+      else if(partId<=nptwiss) //primary - yy' ellipse
+	{
+	  x0 = 0;
+	  xp = 0;
+	  y0 = sigy * cos( (partId-nptwiss/2)*2*pi);
+	  yp = -sigyp * ( alphaY * cos( (partId-nptwiss/2) * 2 * pi)
+			  + sin( (partId-nptwiss/2) * 2 * pi) );
+	}
+      //tmp - check units of above equations!!
+      x0*=m;
+      y0*=m;
+      xp*=radian;
+      yp*=radian;
+      return;
+    }
 
   if(distribType == _GAUSSIAN)
     {
@@ -723,6 +777,7 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 	  
 	}
     }
+
 }
 
 

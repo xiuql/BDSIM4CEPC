@@ -112,6 +112,8 @@ G4int verboseEventNumber = -1;
 G4bool isBatch = false;
 BDSSamplerSD* BDSSamplerSensDet;
 
+G4int nptwiss = 200; // number of particles for twiss parameters matching (by tracking)
+
 //=======================================================
 
 
@@ -356,73 +358,7 @@ int main(int argc,char** argv) {
   if(DEBUG) G4cout<<"init kernel done"<<G4endl;
   
   //  PhysList->BDSAddTransportation();
-  
-  // bias inelastic events
-  
-  G4ProcessManager *pManager = 0;
-  G4ProcessVector *procVec = 0;
-  G4String pName;
-  G4HadronInelasticProcess* HadInProc=0;
-  
-  pManager = G4Electron::Electron()->GetProcessManager();
-  procVec=pManager->GetProcessList();
-  G4int nProc,iProc;
-  nProc=pManager->GetProcessListLength();
-  
-  if(DEBUG) G4cout<<"electron - Hadron inelastic"<<G4endl;
-
-  for(iProc=0;iProc<nProc;iProc++)
-    {
-      pName=(*procVec)[iProc]->GetProcessName();
-      if(pName=="ElectroNuclear") 
-	{
-	  HadInProc=
-	    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
-	  HadInProc->
-	    BiasCrossSectionByFactor(BDSGlobals->
-				     GetHadronInelasticScaleFactor());
-	}
-    }
-  
-  pManager = G4Positron::Positron()->GetProcessManager();
-  procVec=pManager->GetProcessList();
-  nProc=pManager->GetProcessListLength();
-
-  if(DEBUG) G4cout<<"positron - Hadron inelastic"<<G4endl;
-
-  for(iProc=0;iProc<nProc;iProc++)
-    {
-      pName=(*procVec)[iProc]->GetProcessName();
-      if(pName=="PositronNuclear")
-	{
-	  HadInProc=
-	    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
-	  HadInProc->
-	    BiasCrossSectionByFactor(BDSGlobals->
-				     GetHadronInelasticScaleFactor());
-	}
-    }
-  
-  
-  pManager =G4Gamma::Gamma()->GetProcessManager();
-  procVec=pManager->GetProcessList();
-  nProc=pManager->GetProcessListLength();
-  
-  for(iProc=0;iProc<nProc;iProc++)
-    {
-      pName=(*procVec)[iProc]->GetProcessName();
-      if(pName=="PhotoNuclear")
-	{
-	  HadInProc=
-	    static_cast<G4HadronInelasticProcess*>((*procVec)[iProc]);
-	  HadInProc->
-	    BiasCrossSectionByFactor(BDSGlobals->
-				     GetHadronInelasticScaleFactor());
-	}
-    }
-
-  
-  
+        
   bdsOutput.Init(0); // activate the output - setting the first filename to 
                      // be appended with _0
 
@@ -432,6 +368,27 @@ int main(int argc,char** argv) {
       if(outlineType=="survey") BDSGI->Survey();
       if(outlineType=="optics") BDSGI->Optics();
     }
+
+
+  // Track nptwiss particles for beta functions (and SR Rescaling)
+  if(BDSGlobals->DoTwiss())
+    {
+      // turn off SR Tracking of Photons if present
+      BDSGlobals->SetSynchTrackPhotons(0);
+
+      runManager->BeamOn(nptwiss);
+
+      // Clear Stack
+      G4EventManager::GetEventManager()->GetStackManager()->ClearPostponeStack();
+      // reset SR Tracking Flag
+      BDSGlobals->SetSynchTrackPhotons(options.synchTrackPhotons);
+
+    }
+
+  // now turn off SR Rescaling
+  BDSGlobals->SetDoTwiss(false);
+  BDSGlobals->SetSynchRescale(false);
+
   if (!isBatch)   // Define UI session for interactive mode.
     {
       // get the pointer to the User Interface manager 

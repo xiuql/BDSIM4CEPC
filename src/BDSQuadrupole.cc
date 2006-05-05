@@ -19,6 +19,9 @@
 
 #include <map>
 
+const int DEBUG = 0;
+
+
 //============================================================
 
 typedef std::map<G4String,int> LogVolCountMap;
@@ -37,7 +40,11 @@ BDSQuadrupole::BDSQuadrupole(G4String aName,G4double aLength,
   itsBGrad(bGrad)
 {
   SetOuterRadius(outR);
+ 
+  itsType="quad";
+
   itsTilt = tilt;
+  
   if (!(*LogVolCount)[itsName])
     {
       BuildBPFieldAndStepper();
@@ -52,6 +59,21 @@ BDSQuadrupole::BDSQuadrupole(G4String aName,G4double aLength,
       //SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
       //SetSensitiveVolume(itsOuterLogicalVolume);// for laserwire
 
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(0., 0., 0));
+      VisAtt->SetForceSolid(true);
+      itsInnerBPLogicalVolume->SetVisAttributes(VisAtt);
+      
+      G4VisAttributes* VisAtt1 = 
+	new G4VisAttributes(G4Colour(0.4, 0.4, 0.4));
+      VisAtt1->SetForceSolid(true);
+      itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
+      
+      G4VisAttributes* VisAtt2 = 
+	new G4VisAttributes(G4Colour(1., 0., 0.));
+      VisAtt2->SetForceSolid(true);
+      itsOuterLogicalVolume->SetVisAttributes(VisAtt2);
+      
       if(BDSGlobals->GetIncludeIronMagFields())
 	{
 	  G4double polePos[4];
@@ -104,8 +126,18 @@ BDSQuadrupole::BDSQuadrupole(G4String aName,G4double aLength,
 	  itsMarkerLogicalVolume=(*LogVol)[itsName];
 	}      
     }
+
+
 }
   
+void BDSQuadrupole::SynchRescale(G4double factor)
+{
+  itsStepper->SetBGrad(factor*itsBGrad);
+  itsMagField->SetBGrad(factor*itsBGrad);
+  if(DEBUG) G4cout << "Quad " << itsName << " has been scaled" << G4endl;
+}
+
+
 G4VisAttributes* BDSQuadrupole::SetVisAttributes()
 {
   itsVisAttributes=new G4VisAttributes(G4Colour(1,0,0));

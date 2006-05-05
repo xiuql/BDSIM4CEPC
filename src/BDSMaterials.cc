@@ -93,21 +93,30 @@ BDSMaterials::BDSMaterials()
   a = 92.906*g/mole;
   G4Element* Nb = new G4Element(name="Niobium", symbol="Nb", z=41., a);
 
-	a = 58.693*g/mole;
-	G4Element* Ni = new G4Element(name="Nickel", symbol="Ni", z=28., a); //LDeacon 6th Feb 2006
-	
-	a = 54.93805*g/mole;
-	G4Element* Mn = new G4Element(name="Manganese", symbol="Mn", z=25., a); //LDeacon 21 Feb 2006
+  a = 58.693*g/mole;
+  G4Element* Ni = new G4Element(name="Nickel", symbol="Ni", z=28., a); //LDeacon 6th Feb 2006
+  
+  a = 54.93805*g/mole;
+  G4Element* Mn = new G4Element(name="Manganese", symbol="Mn", z=25., a); //LDeacon 21 Feb 2006
+  
+  a = 32.066*g/mole;
+  G4Element* S = new G4Element(name="Sulphur", symbol="S", z = 16., a); //LDeacon 21 Feb 2006
+  
+  a = 55.847*g/mole;
+  G4Element* Fe = new G4Element(name="Iron", symbol="Fe", z=26., a); //LDeacon 21 Feb 2006
+  
+  a = 30.973762*g/mole;
+  G4Element* P = new G4Element(name ="Phosphorous", symbol="P", z=15., a);//LDeacon 21 Feb 2006
 
-	a = 32.066*g/mole;
-	G4Element* S = new G4Element(name="Sulphur", symbol="S", z = 16., a); //LDeacon 21 Feb 2006
-	
-	a = 55.847*g/mole;
-	G4Element* Fe = new G4Element(name="Iron", symbol="Fe", z=26., a); //LDeacon 21 Feb 2006
-	
-	a = 30.973762*g/mole;
-	G4Element* P = new G4Element(name ="Phosphorous", symbol="P", z=15., a);//LDeacon 21 Feb 2006
-
+  G4Element* Ca = new G4Element
+    (name="Calcium",symbol="Ca" , z= 20., a=40.078*g/mole);
+  // aluminium
+  G4Element* Al = new G4Element
+    (name="Aluminium"  ,symbol="Al" , z= 13., a=26.98*g/mole);  
+  
+  G4Element* Si = new G4Element
+    (name="Silicon",symbol="Si" , z= 14., a=28.09*g/mole);
+  
   density = 8.57*g/cm3;
   LCNiobium=new G4Material(name="LCNiobium",
 			   density,
@@ -118,16 +127,16 @@ BDSMaterials::BDSMaterials()
   LCNiobium->AddElement(Nb,1);
 
 
-	//Carbon Steel (shell of cryomodule). LDeacon 21 Feb 2006
-	density = 7.87*g/cm3;
-	LCCarbonSteel=new G4Material(name="LCCarbonSteel",
-															 density,
-															 ncomponents=5,
-															 kStateSolid,
-															 100*kelvin, 
-															 1*atmosphere);
-
-	LCCarbonSteel->AddElement(C, fractionmass=0.0017);
+  //Carbon Steel (shell of cryomodule). LDeacon 21 Feb 2006
+  density = 7.87*g/cm3;
+  LCCarbonSteel=new G4Material(name="LCCarbonSteel",
+			       density,
+			       ncomponents=5,
+			       kStateSolid,
+			       100*kelvin, 
+			       1*atmosphere);
+  
+  LCCarbonSteel->AddElement(C, fractionmass=0.0017);
   LCCarbonSteel->AddElement(Mn, fractionmass=0.0045);
   LCCarbonSteel->AddElement(P, fractionmass=0.0004);
   LCCarbonSteel->AddElement(S, fractionmass=0.0005);
@@ -163,19 +172,19 @@ BDSMaterials::BDSMaterials()
 
 
   density = (STP_Temperature/temperature)*(pressure/(1.*atmosphere))
-  // for H_2: 
+    // for H_2: 
     * 2*g/(22.4*1.e-3*m3) ;
   
-
-// for air: 
-//        * 30*g/(22.4*1.e-3*m3) ;
-
+  
+  // for air: 
+  //        * 30*g/(22.4*1.e-3*m3) ;
+  
   G4cout<< " ***************** defining LCVacuum"<<G4endl;
   G4cout<< "pressure="<<pressure/bar<<" bar"<<G4endl;
   G4cout<< "temp="<<temperature/kelvin<<" K"<<G4endl;
   G4cout<< "density="<<density/(g/m3)<<"g/m^3"<<G4endl;
-
-//temperature = STP_Temperature;         //from PhysicalConstants.h
+  
+  //temperature = STP_Temperature;         //from PhysicalConstants.h
   LCVacuum = new G4Material(name="LCVacuum", density, ncomponents=1,
 			    kStateGas,temperature,pressure);
   LCVacuum->AddMaterial(LCAir, fractionmass=1.);
@@ -185,16 +194,7 @@ BDSMaterials::BDSMaterials()
   LaserVac->AddMaterial(LCAir, fractionmass=1.);
 
 
-  //concrete
-  G4Element* Ca = new G4Element
-    (name="Calcium",symbol="Ca" , z= 20., a=40.078*g/mole);
-  // aluminium
-  G4Element* Al = new G4Element
-    (name="Aluminium"  ,symbol="Al" , z= 13., a=26.98*g/mole);  
-
-  G4Element* Si = new G4Element
-    (name="Silicon",symbol="Si" , z= 14., a=28.09*g/mole);
-
+ 
   LCNbTi = new G4Material
     (name="LCNbTi", density=5.6*g/cm3, ncomponents=2,
      kStateSolid,4*kelvin,1*atmosphere);
@@ -203,6 +203,7 @@ BDSMaterials::BDSMaterials()
   
 
 
+  // concrete
   LCConcrete = new G4Material
     (name="LCConcrete", density=2.3*g/cm3, ncomponents=6,
      kStateSolid,300*kelvin,1*atmosphere);
@@ -216,6 +217,22 @@ BDSMaterials::BDSMaterials()
   LCConcrete->AddElement(Al, 0.014245);
   LCConcrete->AddElement(Fe, 0.00285);
 
+ //  // concrete type 2 - FLUKA
+//   LCConcrete = new G4Material
+//     (name="LCConcrete", density=2.3*g/cm3, ncomponents=6,
+//      kStateSolid,300*kelvin,1*atmosphere);
+//   // (name="Concrete", density=2.3*g/cm3, ncomponents=1);
+
+
+//   LCConcrete->AddElement(Si, 0.227915);
+//   LCConcrete->AddElement(O, 0.60541);
+//   LCConcrete->AddElement(H, 0.09972);
+//   LCConcrete->AddElement(Ca, 0.04986);
+//   LCConcrete->AddElement(Al, 0.014245);
+//   LCConcrete->AddElement(Fe, 0.00285);
+
+
+  // water
 
   density = 1*g/cm3;
   LCWater=new G4Material(name="LCWater",density,ncomponents=2,
@@ -223,11 +240,23 @@ BDSMaterials::BDSMaterials()
   LCWater->AddElement(O, 1);
   LCWater->AddElement(H, 2);
 
-	//Invar.Temperature 2 kelvin. LDeacon 6th Feburary 2006
-	LCInvar = new G4Material
-		(name="LCInvar", density=8.1*kg/m3,ncomponents=2,kStateSolid,2*kelvin,1*atmosphere);
-	LCInvar->AddElement(Ni, fractionmass=0.35);
-	LCInvar->AddElement(Fe, fractionmass=0.65);
+  //Invar.Temperature 2 kelvin. LDeacon 6th Feburary 2006
+  LCInvar = new G4Material
+    (name="LCInvar", density=8.1*kg/m3,ncomponents=2,kStateSolid,2*kelvin,1*atmosphere);
+  LCInvar->AddElement(Ni, fractionmass=0.35);
+  LCInvar->AddElement(Fe, fractionmass=0.65);
+  
+  
+  // "standard" soil (dry)
+	
+  LCSoil = new G4Material
+    (name="LCSoil", density=1.9*g/cm3, ncomponents=4,
+     kStateSolid,300*kelvin,1*atmosphere);
+   
+  LCSoil->AddElement(Si,0.33377483443708611 );
+  LCSoil->AddElement(O, 0.57218543046357617);
+  LCSoil->AddElement(H, 0.022516556291390728);
+  LCSoil->AddElement(Al, 0.071523178807947022);
 
  // making Lead Tungstate
   LCLeadTungstate = new G4Material

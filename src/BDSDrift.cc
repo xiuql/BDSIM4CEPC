@@ -36,6 +36,7 @@ extern BDSMaterials* theMaterials;
 BDSDrift::BDSDrift (G4String aName,G4double aLength, G4double bpRad):
   BDSMultipole(aName,aLength, bpRad, bpRad, SetVisAttributes())
 {
+  itsType = "drift";
   if (!(*LogVolCount)[itsName])
     {
       //BuildMarkerFieldAndStepper();
@@ -51,7 +52,19 @@ BDSDrift::BDSDrift (G4String aName,G4double aLength, G4double bpRad):
       SetSensitiveVolume(itsBeampipeLogicalVolume);// for laserwire
       //SetSensitiveVolume(itsOuterLogicalVolume);// for laserwire
 
- 
+      // vis attr
+      G4VisAttributes* VisAtt = 
+	new G4VisAttributes(G4Colour(0., 0., 0));
+      VisAtt->SetForceSolid(true);
+      itsInnerBPLogicalVolume->SetVisAttributes(VisAtt);
+      
+      G4VisAttributes* VisAtt1 = 
+	new G4VisAttributes(G4Colour(0.3, 0.3, 0.3));
+      VisAtt1->SetForceSolid(true);
+      itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
+      
+      
+
       (*LogVolCount)[itsName]=1;
       (*LogVol)[itsName]=itsMarkerLogicalVolume;
     }
