@@ -1,4 +1,4 @@
-!  Demonstration of 3d transform
+!  Demonstration of SR rescale
 
 ! beamline parameters
 option, beampipeRadius = 15 * cm,
