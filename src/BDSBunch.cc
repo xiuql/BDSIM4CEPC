@@ -430,11 +430,12 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
       zp = 1;
       t=0;
       z0=0;
+      G4double phase_factor = 1 / ( (nptwiss/2.) - 1.0 );
       if(partId<=nptwiss/2) //primary - xx' ellipse
 	{
-	  x0 = sigx * cos(partId* 2 * pi);
-	  xp = -sigxp * ( alphaX * cos(partId * 2 * pi )
-			  + sin(partId * 2 * pi ) );
+	  x0 = sigx * cos(partId* 2 * pi*phase_factor);
+	  xp = -sigxp * ( alphaX * cos(partId * 2 * pi*phase_factor )
+			  + sin(partId * 2 * pi*phase_factor ) );
 	  y0 = 0;
 	  yp = 0;
 	}
@@ -442,9 +443,9 @@ void BDSBunch::GetNextParticle(G4double& x0,G4double& y0,G4double& z0,
 	{
 	  x0 = 0;
 	  xp = 0;
-	  y0 = sigy * cos( (partId-nptwiss/2)*2*pi);
-	  yp = -sigyp * ( alphaY * cos( (partId-nptwiss/2) * 2 * pi)
-			  + sin( (partId-nptwiss/2) * 2 * pi) );
+	  y0 = sigy * cos( (partId-nptwiss/2)*2*pi*phase_factor);
+	  yp = -sigyp * ( alphaY * cos( (partId-nptwiss/2) * 2 * pi*phase_factor)
+			  + sin( (partId-nptwiss/2) * 2 * pi*phase_factor) );
 	}
       //tmp - check units of above equations!!
       x0*=m;
