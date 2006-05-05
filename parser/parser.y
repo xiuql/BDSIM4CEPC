@@ -48,7 +48,7 @@
 %token SOLENOID COLLIMATOR RCOL ECOL LINE SEQUENCE SPOILER ABSORBER LASER TRANSFORM3D
 %token VKICK HKICK KICK
 %token PERIOD APERTURE FILENAME GAS PIPE TUNNEL MATERIAL
-%token BEAM OPTION PRINT RANGE STOP USE VALUE ECHO PRINTF SAMPLE CSAMPLE
+%token BEAM OPTION PRINT RANGE STOP USE VALUE ECHO PRINTF SAMPLE CSAMPLE BETA0 TWISS
 %token IF ELSE BEGN END LE GE NE FOR
 %token CUT
 
@@ -377,6 +377,7 @@ parameters:
 			      { params.aper = $5; params.aperset = 1;}
 		    else
 		  if(!strcmp($3->name,"outR") ) { params.outR = $5; params.outRset = 1;}
+		    else
 		  if(!strcmp($3->name,"xsize") ) { params.xsize = $5; params.xsizeset = 1;}
 		    else
 		  if(!strcmp($3->name,"ysize") ) { params.ysize = $5; params.ysizeset = 1;}
@@ -1072,13 +1073,28 @@ command : STOP             { if(execute) quit(); }
 		params.flush();
 	      }
           }
-        | TUNNEL ',' parameters // beampipe gas
+        | TUNNEL ',' parameters // tunnel
           {
 	    if(execute)
 	      {  
 		if(ECHO_GRAMMAR) printf("command -> TUNNEL\n");
 		write_table(params,"tunnel",_TUNNEL);
 		params.flush();
+	      }
+          }
+        | BETA0 ',' option_parameters // beta 0 (is a synonim of option, for clarity)
+          {
+	    if(execute)
+	      {  
+		if(ECHO_GRAMMAR) printf("command -> BETA0\n");
+	      }
+          }
+        | TWISS ',' option_parameters // twiss (again, is a synonim of option, for clarity)
+          {
+	    if(execute)
+	      {
+		set_value("doTwiss",1);
+		if(ECHO_GRAMMAR) printf("command -> TWISS\n");
 	      }
           }
 

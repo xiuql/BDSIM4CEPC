@@ -1,6 +1,6 @@
 /*
  * GMAD interface 
- * I. Agapov 2005
+ * I. Agapov 2005-2006
 */
 
 #ifndef _GMAD_H
@@ -89,6 +89,9 @@ struct Options {
   double sigmaE;
 
   double x, xp, y, yp; // for the elliptic shell distribution
+
+  double betx, bety, alfx, alfy, emitx, emity; // initial twiss parameters
+  int doTwiss;
 
   // for element specification
   double X0;
@@ -222,6 +225,8 @@ struct Parameters {
   double xdir, ydir, zdir, waveLength; int xdirset, ydirset, zdirset, waveLengthset;
 
   double tilt; int tiltset;   // tilt
+
+  // twiss parameters
   
 
   // for external geometry and field definition files

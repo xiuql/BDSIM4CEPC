@@ -908,6 +908,17 @@ void set_value(string name, double value )
   if(name == "prodCutPositrons" ) options.prodCutPositrons = value;
   if(name == "prodCutPositronsP" ) options.prodCutPositronsP = value;
 
+  // twiss parameters
+
+  if(name == "betx" ) options.betx = value;
+  if(name == "bety" ) options.bety = value;
+  if(name == "alfx" ) options.alfx = value;
+  if(name == "alfy" ) options.alfy = value;
+  if(name == "emitx" ) options.emitx = value;
+  if(name == "emity" ) options.emity = value;
+
+  if(name == "doTwiss" ) options.doTwiss = (int) value;
+
 
 }
 
