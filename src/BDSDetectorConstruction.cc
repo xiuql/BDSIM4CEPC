@@ -155,6 +155,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::Construct()
   if(DEBUG) G4cout<<"-->starting BDS construction \n"<<G4endl;
 
   return ConstructBDS(beamline_list);
+
 }
 
 
@@ -906,7 +907,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
   
   if(DEBUG) G4cout<<"end placement, size="<<theBeamline.size()<<G4endl;
   
-  
+  if(verbose) G4cout<<"Detector Construction done"<<G4endl; 
+
   return physiWorld;
   
   

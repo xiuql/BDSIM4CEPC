@@ -63,7 +63,7 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
 
     if(fabs(R)>0)
       GamEnergy=SynGenC(BDSGlobals->GetSynchLowX())*
-	CritEngFac*pow(eEnergy,3)/abs(R);
+	CritEngFac*pow(eEnergy,3)/fabs(R);
     
     if(GamEnergy>0)
       {
@@ -81,13 +81,12 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
       BDSBeamline::const_iterator iBeam;
       G4double zpos=trackData.GetPosition().z();
       
-      for(iBeam=theBeamline.begin();
-	  iBeam!=theBeamline.end() && zpos>=(*iBeam)->GetZUpper(); 
-	  iBeam++){}
+    //   for(iBeam=theBeamline.begin();
+// 	  iBeam!=theBeamline.end() && zpos>=(*iBeam)->GetZUpper(); 
+// 	  iBeam++){}
 
       if(i==0 && MeanFreePathCounter==1) NewKinEnergy -= GamEnergy;
 	        
-#if G4VERSION > 6
       if (NewKinEnergy > 0.)
 	{
 	  //
@@ -102,22 +101,6 @@ BDSSynchrotronRadiation::PostStepDoIt(const G4Track& trackData,
 	  if (charge<0.) aParticleChange.ProposeTrackStatus(fStopAndKill);
 	  else       aParticleChange.ProposeTrackStatus(fStopButAlive);
 	}
-#else
-      if (NewKinEnergy > 0.)
-	{
-	  //
-	  // Update the incident particle 
-	  aParticleChange.SetEnergyChange(NewKinEnergy);
-	} 
-      else
-	{ 
-	  aParticleChange.SetEnergyChange( 0. );
-	  aParticleChange.SetLocalEnergyDeposit (0.);
-	  G4double charge= trackData.GetDynamicParticle()->GetCharge();
-	  if (charge<0.) aParticleChange.SetStatusChange(fStopAndKill);
-	  else       aParticleChange.SetStatusChange(fStopButAlive);
-	}
-#endif
       }
   }
   return G4VDiscreteProcess::PostStepDoIt(trackData,stepData);

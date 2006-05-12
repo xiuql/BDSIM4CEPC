@@ -117,36 +117,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
     theMuonTrackVector=new MuonTrackVector();
   
   
-  if(BDSGlobals->GetBDSeBremOn())
-    {
-      // first reset all the step lengths
-      for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
-	(*iBeam)->GetInnerBPUserLimits()->
-	  SetMaxAllowedStep((*iBeam)->GetLength());
-      
-      
-      BDSeBremFireDist=BDSGlobals->GetTotalS() * ( 0.5-G4UniformRand() );
-      BDSeBremsFiredThisEvent=false;
-      
-      // determine which Log volume the event occurs
-      
-      for(iBeam=theBeamline.begin();iBeam!=theBeamline.end();iBeam++)
-	{
-	  if( ((*iBeam)->GetZLower()<BDSeBremFireDist)&&
-	      ((*iBeam)->GetZUpper()>BDSeBremFireDist)  )
-	    {
-	      BDSeBremZMin=(*iBeam)->GetZLower();
-	      BDSeBremZMax=(*iBeam)->GetZUpper();	 
-	      
-	      G4double MaxStep=BDSeBremFireDist-(*iBeam)->GetZLower()-1*cm;
-	      if(MaxStep<1*mm)MaxStep=1*mm;
-	      (*iBeam)->GetInnerBPUserLimits()->
-		SetMaxAllowedStep(MaxStep);
-	    }
-	}
-    }
-  
-  if(BDSGlobals->DoTwiss())
+   if(BDSGlobals->DoTwiss())
     {
       if(event_number==0) {
 	if(!BDSGlobals->GetSynchRescale())G4cout << "\n---> Calculating Twiss Parameters"<<G4endl;
@@ -159,12 +130,12 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 	{
 	  G4cout << "\n---> Begin of event: " << event_number ;
 	  
-	  if(BDSGlobals->GetUseTimer())
-	    { 
-	      BDSGlobals->GetTimer()->Stop();
-	      G4cout<<" Time: "<<*BDSGlobals->GetTimer();
-	      BDSGlobals->GetTimer()->Start();
-	    }
+// 	  if(BDSGlobals->GetUseTimer())
+// 	    { 
+// 	      BDSGlobals->GetTimer()->Stop();
+// 	      G4cout<<" Time: "<<*BDSGlobals->GetTimer();
+// 	      BDSGlobals->GetTimer()->Start();
+// 	    }
 	  G4cout << G4endl;
 	}
     }

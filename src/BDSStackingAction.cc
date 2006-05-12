@@ -69,6 +69,12 @@ BDSStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 	  
 	  classification = fKill;
 	  //classification = fUrgent;
+
+	  // if we are in the twiss module - aperture hit is suspicious
+	  if( BDSGlobals->DoTwiss() ) 
+	    G4cout<<"WARNING : particle outside of aperture, twiss results will be incorrect"<<
+	      G4endl;;
+
 	}
       
       // kill secondary photons
@@ -85,6 +91,25 @@ BDSStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 	  (aTrack->GetDefinition() == G4Positron::PositronDefinition() ) )
 	{
 	  classification = fKill;
+
+	  // if we are in the twiss module - aperture hit is suspicious
+	  if( BDSGlobals->DoTwiss() ) 
+	    G4cout<<"WARNING : particle outside of aperture, twiss results will be incorrect"<<
+	      G4endl;
+	}
+
+      // kill secondary protons/antiprotons
+      
+      if( (aTrack->GetParentID() != 0) && 
+	  ( (aTrack->GetDefinition() == G4Proton::ProtonDefinition() ) ||
+	    (aTrack->GetDefinition() == G4AntiProton::AntiProtonDefinition()) ) )
+	{
+	  classification = fKill;
+	  
+	  // if we are in the twiss module - aperture hit is suspicious
+	  if( BDSGlobals->DoTwiss() ) 
+	    G4cout<<"WARNING : particle outside of aperture, twiss results will be incorrect"<<
+	      G4endl;
 	}
       
     }

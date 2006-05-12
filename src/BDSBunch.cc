@@ -78,7 +78,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       SetSigmaT(opt.sigmaT);
       energySpread = opt.sigmaE;
       return;
-    }
+    } else
   if(opt.distribType == "ring")
     {
       distribType = _RING; 
@@ -88,7 +88,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       rMax = opt.Rmax;
       energySpread = opt.sigmaE;
       return;
-    }
+    } else
   if(opt.distribType == "eshell")
     {
       distribType = _ESHELL;
@@ -98,7 +98,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       shellyp = opt.yp;
       energySpread = opt.sigmaE;
       return;
-    }
+    } else
   if(opt.distribType == "guineapig_bunch")
     {
       distribType = _GUINEAPIG_BUNCH;
@@ -108,7 +108,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       if(DEBUG) G4cout<<"GUINEAPIG_BUNCH: skipping "<<opt.nlinesIgnore<<"  lines"<<G4endl;
       _skip(opt.nlinesIgnore * 6);
       return;
-    }
+    } else
   if(opt.distribType == "guineapig_slac")
     {
       distribType = _GUINEAPIG_SLAC;
@@ -117,7 +117,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore * 6);
       return;
-    }
+    } else
   if(opt.distribType == "guineapig_pairs")
     {
       distribType = _GUINEAPIG_PAIRS;
@@ -126,7 +126,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore * 7);
       return;
-    }
+    } else
   if(opt.distribType == "cain")
     {
       distribType = _CAIN;
@@ -135,7 +135,7 @@ void BDSBunch::SetOptions(struct Options& opt)
       if(!InputBunchFile.good()) { G4cerr<<"Cannot open bunch file "<<inputfile<<G4endl; exit(1); }
       _skip(opt.nlinesIgnore * 14);
       return;
-    }
+    } 
   else //assuming the format is "field[unit]:field[unit]:..." - User Defined
     {
       G4cout<<"distrType -> "<<opt.distribType<<G4endl;
@@ -197,6 +197,8 @@ void BDSBunch::SetOptions(struct Options& opt)
 		if(fmt=="m") sd.unit=1;
 		if(fmt=="cm") sd.unit=1.e-2;
 		if(fmt=="mm") sd.unit=1.e-3;
+		if(fmt=="mum") sd.unit=1.e-6;
+		if(fmt=="nm") sd.unit=1.e-9;
 
 		fields.push_back(sd);
 
@@ -218,7 +220,8 @@ void BDSBunch::SetOptions(struct Options& opt)
 		if(fmt=="m") sd.unit=1;
 		if(fmt=="cm") sd.unit=1.e-2;
 		if(fmt=="mm") sd.unit=1.e-3;
-		
+		if(fmt=="mum") sd.unit=1.e-6;
+		if(fmt=="nm") sd.unit=1.e-9;
 
 		fields.push_back(sd);
 	      }
@@ -239,8 +242,9 @@ void BDSBunch::SetOptions(struct Options& opt)
 		if(fmt=="m") sd.unit=1;
 		if(fmt=="cm") sd.unit=1.e-2;
 		if(fmt=="mm") sd.unit=1.e-3;
-
-
+		if(fmt=="mum") sd.unit=1.e-6;
+		if(fmt=="nm") sd.unit=1.e-9;
+	
 		fields.push_back(sd);
 	      }
 	    }

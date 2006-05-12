@@ -245,9 +245,9 @@ G4String BDSGlobalConstants::StringFromDigit(G4int N)
   return Cnum;
 }
 
-BDSGlobalConstants::~BDSGlobalConstants()
-{  
-  if( (itsTimer!=NULL) && itsUseTimer) delete itsTimer;
-}
+  BDSGlobalConstants::~BDSGlobalConstants()
+  {  
+    
+  }
 
 }
