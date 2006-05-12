@@ -154,6 +154,7 @@ public:
 
 
   G4bool GetStopTracks();
+  void SetStopTracks(G4bool);
   G4bool stopTracks; // kill tracks after interactions
 
   // gab Dec04
@@ -606,6 +607,9 @@ inline G4bool BDSGlobalConstants::GetStoreTrajectory()
 
 inline G4bool BDSGlobalConstants::GetStopTracks()
 { return stopTracks; }
+
+inline void BDSGlobalConstants::SetStopTracks(G4bool val)
+{ stopTracks = val; }
 
 inline G4bool BDSGlobalConstants::GetUseMuonShowers()
 {return itsUseMuonShowers;}

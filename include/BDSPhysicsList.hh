@@ -14,7 +14,7 @@ Last modified 01.02.2006 by Ilya Agapov
 
 #define kNuCut  5*m
 
-class BDSPhysicsList: public G4VModularPhysicsList
+class BDSPhysicsList: public G4VUserPhysicsList
 {
 public:
   BDSPhysicsList();
