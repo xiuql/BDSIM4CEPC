@@ -84,7 +84,10 @@ const int DEBUG = 0;
 #include "BDSLaserCompton.hh"
 //#include "BDSPlanckScatterPhysics.hh"
 #include "BDSSynchrotronRadiation.hh"
-#include "G4SynchrotronRadiation.hh"
+
+#include "BDSContinuousSR.hh"
+
+
 //#include "BDSeBremPhysics.hh"
 #include "BDSGammaConversionPhysics.hh"
 #include "BDSLowEMPhysics.hh"
@@ -139,7 +142,7 @@ const int DEBUG = 0;
 
 extern G4bool verbose;
 
-BDSPhysicsList::BDSPhysicsList():  G4VModularPhysicsList()
+BDSPhysicsList::BDSPhysicsList():  G4VUserPhysicsList()
 {
   // construct particles
 
@@ -646,6 +649,7 @@ void BDSPhysicsList::ConstructSR()
   // BDSIM's version of Synchrotron Radiation
   BDSSynchrotronRadiation* srProcess = new BDSSynchrotronRadiation;
   
+  //BDSContinuousSR *contSR = new BDSContinuousSR(); // contin. energy loss process
 
   // G4's version of Synchrotron Radiation - not used because does not have
   // Multiplicity or MeanFreeFactor capability
@@ -661,11 +665,19 @@ void BDSPhysicsList::ConstructSR()
     if (particleName == "e-") {
       pmanager->AddProcess(srProcess);
       pmanager->SetProcessOrderingToLast(srProcess,idxPostStep);
+
+      //G4int idx = pmanager->AddProcess(contSR);
+      //pmanager->SetProcessOrderingToLast(contSR,idxPostStep);
+      //pmanager->SetProcessActivation(idx, false);
     }
     
     if (particleName == "e+") {
       pmanager->AddProcess(srProcess);
       pmanager->SetProcessOrderingToLast(srProcess,idxPostStep);
+
+      //G4int idx = pmanager->AddProcess(contSR);
+      //pmanager->SetProcessOrderingToLast(contSR,idxPostStep);
+      //pmanager->SetProcessActivation(idx, false);
     }
     
   }
