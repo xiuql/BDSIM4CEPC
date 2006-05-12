@@ -373,19 +373,71 @@ int main(int argc,char** argv) {
   // Track nptwiss particles for beta functions (and SR Rescaling)
   if(BDSGlobals->DoTwiss())
     {
-      // turn off SR Tracking of Photons if present
-      BDSGlobals->SetSynchTrackPhotons(0);
 
+      G4cout<<"do twiss"<<G4endl;
+      
+      // disable SR process if present - analytical formulae used in rescaling
+      G4ProcessManager *pManager = G4Electron::Electron()->GetProcessManager(); 	 
+      G4ProcessVector *procVec=pManager->GetProcessList(); 	 
+      G4int nProc=pManager->GetProcessListLength(); 	 
+      
+      
+      for(G4int iProc=0;iProc<nProc;iProc++) 	 
+	{ 	 
+	  G4String pName=(*procVec)[iProc]->GetProcessName(); 	 
+	  if(pName=="BDSSynchRad")  	 
+	    { 	 
+	      G4cout<<"Disabling SR"<<G4endl;
+	      pManager->SetProcessActivation(iProc, false);
+
+	    } 	 
+
+	  if(pName=="contSR")  	 
+	    { 	 
+	      G4cout<<"Enabling constSR"<<G4endl;
+	      pManager->SetProcessActivation(iProc, true);
+	      
+	    } 	 
+	}
+
+      // do not need secondaries whatsoever
+      BDSGlobals->SetStopTracks(true);
+      
       runManager->BeamOn(nptwiss);
 
       // Clear Stack
       G4EventManager::GetEventManager()->GetStackManager()->ClearPostponeStack();
-      // reset SR Tracking Flag
+      
+      // turn  SR back on
       BDSGlobals->SetSynchTrackPhotons(options.synchTrackPhotons);
 
-    }
+      //restore the stoptracks flag
+      BDSGlobals->SetStopTracks(options.stopTracks);
 
-  // now turn off SR Rescaling
+      for(G4int iProc=0;iProc<nProc;iProc++) 	 
+	{ 	 
+	  G4String pName=(*procVec)[iProc]->GetProcessName(); 	 
+	  if(pName=="BDSSynchRad")  	 
+	    { 	 
+	      G4cout<<"Enabling SR"<<G4endl;
+	      pManager->SetProcessActivation(iProc, true);
+	      
+	    } 	 
+
+	  if(pName=="contSR")  	 
+	    { 	 
+	      G4cout<<"Disabling constSR"<<G4endl;
+	      pManager->SetProcessActivation(iProc, false);
+	      
+	    } 	 
+
+	}
+
+      G4cout<<"done"<<G4endl;
+    
+    }
+  
+  // now turn off SR Rescaling 
   BDSGlobals->SetDoTwiss(false);
   BDSGlobals->SetSynchRescale(false);
 
