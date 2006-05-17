@@ -67,8 +67,7 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(
 
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
   particleGun->
-    SetParticlePosition(G4ThreeVector(0.*cm,0.*cm,
-				      -BDSGlobals->GetWorldSizeZ()));
+    SetParticlePosition(G4ThreeVector(0.*cm,0.*cm,0.));
   if(DEBUG) G4cout<<"Primary generator: particle energy"<<BDSGlobals->GetBeamKineticEnergy()<<G4endl;
   particleGun->SetParticleEnergy(BDSGlobals->GetBeamKineticEnergy());
 

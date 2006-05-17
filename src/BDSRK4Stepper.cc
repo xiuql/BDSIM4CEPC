@@ -1,33 +1,3 @@
-// BDSRK4Stepper modified from geant4.8.01 version
-// Includes RadiusOfCurvature needed to produce Synchrotron Radiation
-//
-// ********************************************************************
-// * DISCLAIMER                                                       *
-// *                                                                  *
-// * The following disclaimer summarizes all the specific disclaimers *
-// * of contributors to this software. The specific disclaimers,which *
-// * govern, are listed with their locations in:                      *
-// *   http://cern.ch/geant4/license                                  *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.                                                             *
-// *                                                                  *
-// * This  code  implementation is the  intellectual property  of the *
-// * GEANT4 collaboration.                                            *
-// * By copying,  distributing  or modifying the Program (or any work *
-// * based  on  the Program)  you indicate  your  acceptance of  this *
-// * statement, and all its terms.                                    *
-// ********************************************************************
-//
-//
-// $Id: G4ClassicalRK4.cc,v 1.11 2003/11/05 16:31:48 japost Exp $
-// GEANT4 tag $Name: geant4-08-00-patch-01 $
-//
-// -------------------------------------------------------------------
-
 #include "BDSRK4Stepper.hh"
 #include "G4ThreeVector.hh"
 
@@ -37,16 +7,21 @@
 
 extern G4double BDSLocalRadiusOfCurvature;
 
-BDSRK4Stepper::BDSRK4Stepper(G4EquationOfMotion* EqRhs, G4int numberOfVariables)
-  : G4MagErrorStepper(EqRhs, numberOfVariables)
-    // fNumberOfVariables(numberOfVariables)
+
+BDSRK4Stepper::BDSRK4Stepper(G4EquationOfMotion* EqRhs, G4int nvar) :
+  G4MagIntegratorStepper(EqRhs,nvar)
 {
   itsEqRhs = EqRhs;
-   unsigned int noVariables= std::max(numberOfVariables,8); // For Time .. 7+1
+  
+ //  unsigned int noVariables= std::max(numberOfVariables,8); // For Time .. 7+1
  
-   dydxm = new G4double[noVariables];
-   dydxt = new G4double[noVariables]; 
-   yt    = new G4double[noVariables]; 
+  dydxr = new G4double[nvar];
+  dydxm = new G4double[nvar];
+  dydxt = new G4double[nvar]; 
+  yt    = new G4double[nvar]; 
+
+  yTemp = new G4double[nvar];
+  yIn = new G4double[nvar];
 }
 
 ////////////////////////////////////////////////////////////////
@@ -55,9 +30,13 @@ BDSRK4Stepper::BDSRK4Stepper(G4EquationOfMotion* EqRhs, G4int numberOfVariables)
 
 BDSRK4Stepper::~BDSRK4Stepper()
 {
+  delete[] dydxr;
   delete[] dydxm;
   delete[] dydxt;
   delete[] yt;
+
+  delete[] yTemp;
+  delete[] yIn;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -71,12 +50,17 @@ BDSRK4Stepper::~BDSRK4Stepper()
 // NRC p. 712-713 .
 
 void
-BDSRK4Stepper::DumbStepper( const G4double  yIn[],
-                             const G4double  dydx[],
-                                   G4double  h,
-                                   G4double  yOut[])
+BDSRK4Stepper::AdvanceHelix( const G4double  yIn[],
+			     const G4double dydx[],
+			     const  G4double  h,
+			     G4double  yOut[])
 {
+
+  //G4cout<<"stepping by "<<h<<G4endl;
+
+
   const G4int nvar = this->GetNumberOfVariables();   //  fNumberOfVariables(); 
+  //G4cout<<"nvar="<<nvar<<G4endl;
   G4int i;
   G4double  hh = h*0.5 , h6 = h/6.0  ;
 
@@ -99,6 +83,8 @@ BDSRK4Stepper::DumbStepper( const G4double  yIn[],
   Pos[3] = 0.;
   itsEqRhs->GetFieldObj()->GetFieldValue(Pos,BField);
 
+  //G4cout<<" BField = "<<BField[0]<<" "<<BField[1]<<" "<<BField[2]<<G4endl;
+  //G4cout<<" Pos = "<<Pos[0]<<" "<<Pos[1]<<" " <<Pos[2]<<G4endl;
   
   G4ThreeVector BVec = G4ThreeVector(BField[0],
 				     BField[1],
@@ -112,11 +98,48 @@ BDSRK4Stepper::DumbStepper( const G4double  yIn[],
   
   BDSLocalRadiusOfCurvature = (itsEnergy/GeV) / (0.3*Bmag/tesla)*m;
 
+ //  G4cout<<"===>RK Step 1,  before, dydx : ";
+  
+//   for(i=0;i<nvar;i++) { 
+//     G4cout<<dydx[i]<<" ";
+//   }  
+//   G4cout<<G4endl;
+
+//   G4cout<<"yIn: ";
+  
+//    for(i=0;i<nvar;i++) { 
+//     G4cout<<yIn[i]<<" ";
+//   }  
+//    G4cout<<G4endl;
+
+
+  for(i=0;i<nvar;i++)  
+    dydxr[i] = dydx[i];
+
+  RightHandSide(yIn,dydxr) ;                   // make sure the dydx does not have 
+                                             //rubbish from previous step
+
   for(i=0;i<nvar;i++)
   {
-    yt[i] = yIn[i] + hh*dydx[i] ;             // 1st Step K1=h*dydx
+    yt[i] = yIn[i] + hh*dydxr[i] ;             // 1st Step K1=h*dydx
   }
   RightHandSide(yt,dydxt) ;                   // 2nd Step K2=h*dydxt
+
+  // G4cout<<"after, dydx: ";
+
+//   for(i=0;i<nvar;i++) { 
+//     G4cout<<dydxt[i]<<" ";
+//   }  
+//   G4cout<<G4endl;
+
+//   G4cout<<"after, yt: ";
+
+//   for(i=0;i<nvar;i++) { 
+//     G4cout<<yt[i]<<" ";
+//   }  
+//   G4cout<<G4endl;
+
+
 
   for(i=0;i<nvar;i++)
   { 
@@ -133,10 +156,85 @@ BDSRK4Stepper::DumbStepper( const G4double  yIn[],
  
   for(i=0;i<nvar;i++)    // Final RK4 output
   {
-    yOut[i] = yIn[i]+h6*(dydx[i]+dydxt[i]+2.0*dydxm[i]); //+K1/6+K4/6+(K2+K3)/3
+    yOut[i] = yIn[i]+h6*(dydxr[i]+dydxt[i]+2.0*dydxm[i]); //+K1/6+K4/6+(K2+K3)/3
   }
   // NormaliseTangentVector( yOut );
+
+ //  G4cout<<"out : ";
+
+//   for(i=0;i<nvar;i++) { 
+//      G4cout<<yOut[i]<<" ";
+//   }  
+
+//   G4cout<<G4endl;
+
+
+  itsDist = 0;
   
+  return;
+
 }  // end of DumbStepper ....................................................
 
 
+void BDSRK4Stepper::Stepper( const G4double yInput[],
+			     const G4double dydx[],
+			     const G4double hstep,
+			     G4double yOut[],
+			     G4double yErr[]      )
+{  
+  const G4int nvar = 6 ;
+  G4int i;
+  const G4double *pIn = yInput+3;
+  G4ThreeVector v0= G4ThreeVector( pIn[0], pIn[1], pIn[2]);  
+  G4double InitMag=v0.mag();
+  
+  //  Saving yInput because yInput and yOut can reference the same array
+  
+  for(i=0;i<nvar;i++) yIn[i]=yInput[i];
+  
+
+  // G4cout<<"Input: ";
+  
+//   for(i=0;i<nvar;i++) { 
+//     G4cout<<yIn[i]<<" ";
+//   }  
+//   G4cout<<G4endl;
+
+//   G4cout<<"dydx: ";
+  
+//   for(i=0;i<nvar;i++) { 
+//     G4cout<<dydx[i]<<" ";
+//   }  
+//   G4cout<<G4endl;
+  
+
+  G4double h = hstep; 
+  if(h>itsVolLength) h = itsVolLength;
+  // Do two half steps
+  
+  AdvanceHelix(yIn,   dydx,  h, yOut);
+ 
+  //G4cout<<"Full step: ";
+  
+//   for(i=0;i<nvar;i++) { 
+//     G4cout<<yOut[i]<<" ";
+//   }  
+//   G4cout<<G4endl;
+  
+
+  //G4cout<<"Err: ";
+
+  for(i=0;i<nvar;i++) { 
+    yErr[i] = h*h*h*(yOut[i] - yIn[i]) ;
+    //G4cout<<yErr[i]<<" ";
+  }
+  
+  //G4cout<<G4endl;
+
+  return;
+}
+
+G4double BDSRK4Stepper::DistChord()   const 
+{
+  return itsDist;
+}

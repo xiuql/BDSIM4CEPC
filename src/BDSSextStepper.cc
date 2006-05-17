@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSSextStepper.cc,v 1.1 2005/01/22 16:42:31 agapov Exp $
+// $Id: BDSSextStepper.cc,v 1.2 2006/04/19 00:12:41 carter Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSSextStepper.hh"
@@ -22,6 +22,9 @@
 extern G4double BDSLocalRadiusOfCurvature;
 
 extern G4int event_number;
+
+
+const G4int DEBUG = 0;
 
 BDSSextStepper::BDSSextStepper(G4Mag_EqRhs *EqRhs)
   : G4MagIntegratorStepper(EqRhs,6)  // integrate over 6 variables only !!
@@ -46,10 +49,15 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
   G4double InitMag=v0.mag();
 
 
-   G4double kappa=  -fPtrMagEqOfMot->FCof()*itsBDblPrime/InitMag;
+  G4double kappa=  (-fPtrMagEqOfMot->FCof()*itsBDblPrime) /InitMag;
    
-   //   if(event_number>71)G4cout<<"h="<<h<<
-   //		" InitMag="<<InitMag<<"kappa="<<kappa<<G4endl;
+
+   if(DEBUG) G4cout<<"sextupole stepper:"<<G4endl; 
+  //  G4cout << "kappa: " << kappa << G4endl;
+//    G4cout << "InitMag: " << InitMag << G4endl;
+//    G4cout << "g'': " <<itsBDblPrime<< G4endl;
+//    G4cout << "fPtrMagEqOfMot->FCof(): " << fPtrMagEqOfMot->FCof() << G4endl << G4endl;
+//    G4cout << "h=: " <<h<< G4endl;
 
    if(fabs(kappa)<1.e-12)
      {
@@ -70,17 +78,16 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
        G4Navigator* SextNavigator=
 	 G4TransportationManager::GetTransportationManager()->
 	 GetNavigatorForTracking();
-
+       
        G4AffineTransform LocalAffine=SextNavigator->
 	 GetLocalToGlobalTransform();
-
-      G4AffineTransform GlobalAffine=SextNavigator->
-	GetGlobalToLocalTransform();
-      G4ThreeVector LocalR=GlobalAffine.TransformPoint(GlobalPosition); 
-      G4ThreeVector LocalRp=GlobalAffine.TransformAxis(InitMomDir);
-      // gab_dec03<<
-
-
+       
+       G4AffineTransform GlobalAffine=SextNavigator->
+	 GetGlobalToLocalTransform();
+       G4ThreeVector LocalR=GlobalAffine.TransformPoint(GlobalPosition); 
+       G4ThreeVector LocalRp=GlobalAffine.TransformAxis(InitMomDir);
+       
+       
        G4double x0=LocalR.x(); 
        G4double y0=LocalR.y();
 
@@ -100,9 +107,12 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
        LocalRpp.setY(2*zp*x0*y0);
        LocalRpp.setZ(xp*x02My02-2*yp*x0*y0);
 
+       //G4cout << "LocalRpp: " <<LocalRpp<< G4endl;
+
        LocalRpp*=kappa/2; // 2 is actually a 2! factor.
        // determine effective curvature
        G4double R_1 = LocalRpp.mag();
+
 
        if(R_1>0.)
 	 {    
@@ -113,8 +123,8 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
 	   // Save for Synchrotron Radiation calculations:
 	   BDSLocalRadiusOfCurvature=1./R_1;
 	   
-           G4double dx=LocalRp.x()*h + LocalRpp.x()*h2/2; 
-	   G4double dy=LocalRp.y()*h + LocalRpp.y()*h2/2;
+           G4double dx=LocalRp.x()*h + LocalRpp.x()*h2 /2.; 
+	   G4double dy=LocalRp.y()*h + LocalRpp.y()*h2 /2.;
 
            G4double dz=sqrt(h2*(1.-h2*R_1*R_1/12)-dx*dx-dy*dy);
 	   // check for precision problems
@@ -137,10 +147,10 @@ void BDSSextStepper::AdvanceHelix( const G4double  yIn[],
 	 }
        else
 	 {LocalR += h*LocalRp;}
-
+       
        GlobalPosition=LocalAffine.TransformPoint(LocalR); 
        G4ThreeVector GlobalTangent=LocalAffine.TransformAxis(LocalRp)*InitMag;
-
+       
        ySext[0]   = GlobalPosition.x(); 
        ySext[1]   = GlobalPosition.y(); 
        ySext[2]   = GlobalPosition.z(); 

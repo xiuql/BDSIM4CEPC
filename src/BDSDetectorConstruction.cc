@@ -10,7 +10,7 @@ Last modified 15.11.2005 by Ilya Agapov
 //
 
 
-const int DEBUG = 0;
+const int DEBUG = 1;
 
 //=================================================================
 
@@ -60,6 +60,7 @@ const int DEBUG = 0;
 #include "BDSSextupole.hh"
 #include "BDSOctupole.hh"
 #include "BDSDecapole.hh"
+#include "BDSTMultipole.hh"
 #include "BDSSampler.hh"
 
 #include "BDSLaserWire.hh"
@@ -209,29 +210,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       if(DEBUG) G4cout<<(*it).name<<"    "<<typestr((*it).type)<<"  "<<(*it).l<<G4endl;
 
 
-      if( (*it).outR>0 && (*it).l>0)
-	{
-	  if( (*it).outR < (*it).aper)
-	    {
-	      G4cout << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
-	      G4cout << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
-	      G4Exception("Quitting BDSIM in DetectorConstruction!");
-	    }
-	  if( (*it).outR < (*it).xsize)
-	    {
-	      G4cout << (*it).name << " has outer radius smaller than x-aperture!"<<G4endl;
-	      G4cout << "xsize= "<<(*it).xsize<<"m outR= "<<(*it).outR<<"m"<<G4endl;
-	      G4Exception("Quitting BDSIM in DetectorConstruction!");
-	    }
-	  if( (*it).outR < (*it).ysize)
-	    {
-	      G4cout << (*it).name << " has outer radius smaller than y-aperture!"<<G4endl;
-	      G4cout << "ysize= "<<(*it).ysize<<"m outR= "<<(*it).outR<<"m"<<G4endl;
-	      G4Exception("Quitting BDSIM in DetectorConstruction!");
-	    }
-
-	}
-     
+         
       if((*it).type==_SAMPLER ) {
 	if(DEBUG) G4cout<<"---->adding Sampler "<<G4String( (*it).name )<<G4endl;
 	
@@ -281,9 +260,17 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	FeRad = aper;
 	(*it).angle*=-1;
-	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
-	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
+	bField = brho * (*it).angle / (*it).l * tesla;
+	bPrime = brho * (*it).k1 * tesla / m;
 	
+	if( (*it).outR < (*it).aper)
+	  {
+	      G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	      G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	      G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
+
+
 	if(DEBUG) G4cout<<"---->adding Sbend "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
 	  " angle="<<(*it).angle<<" tilt="<<(*it).tilt<< " bpRad="<<aper << " FeRad="<<FeRad<<G4endl;
 	
@@ -300,8 +287,15 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 
 
       if((*it).type==_HKICK ) {
-	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
-	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
+	bField = brho * (*it).angle / (*it).l * tesla;
+	bPrime = brho * (*it).k1 * tesla / m ;
+	
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
 	
 	if(DEBUG) G4cout<<"---->adding hkick "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
 		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
@@ -321,6 +315,14 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	bField = brho * (*it).angle / (*it).l * tesla * synch_factor;
 	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
 	
+
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
+
 	if(DEBUG) G4cout<<"---->adding vkick "<<G4String( (*it).name )<<"  l= "<<(*it).l<<
 		    " angle="<<(*it).angle<<" tilt="<<(*it).tilt<<G4endl;
 	
@@ -339,9 +341,17 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       if((*it).type==_QUAD ) {
 	
 	//bPrime = brho * (*it).k1 / (*it).l * tesla  * synch_factor;
-	bPrime = brho * (*it).k1 * tesla / m * synch_factor;
+	bPrime = brho * (*it).k1 * tesla / m;
 	G4double aper = bpRad;
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	    (*it).outR = (*it).aper + 0.01;
+	  }
 
 	if(DEBUG) { G4cout<<"---->adding Quad, "<<G4String( (*it).name )<<
 	    " k1 ="<<(*it).k1<<" b' ="<<bPrime<<" brho = "<<brho<< " aper="<<aper/m<<G4endl; }
@@ -356,6 +366,15 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	//bDoublePrime = brho * (*it).k2 / (*it).l * tesla / (m*m) * synch_factor;
 	bDoublePrime = brho * (*it).k2 * tesla / (m*m) * synch_factor;
 	G4double aper = bpRad;
+
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
+	
+
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding Sextupole, "<<G4String( (*it).name )<<
 	    " k1 ="<<(*it).k2<<" b'' ="<<bDoublePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
@@ -369,6 +388,14 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	//bTriplePrime = brho * (*it).k3 / (*it).l * tesla / (m*m*m) * synch_factor;
 	bDoublePrime = brho * (*it).k2 * tesla / (m*m) * synch_factor;
 	bTriplePrime = brho * (*it).k3 * tesla / (m*m*m) * synch_factor;
+
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
+
 	G4double aper = bpRad;
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding octupole, "<<G4String( (*it).name )<<
@@ -377,13 +404,46 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       
       added_comp=true;
       }
-
+      if((*it).type==_MULT ) {
+	
+	G4double aper = bpRad;
+	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+	if(DEBUG) { G4cout<<"---->adding multipole, "<<G4String( (*it).name )<<" aper="<<aper/m<<G4endl;}
+	
+	
+	G4cout<<"knl=";
+	list<double>::iterator kit;
+	for(kit=(it->knl).begin();kit!=(it->knl).end();kit++)
+	  {
+	    G4cout<<(*kit)<<" ";
+	    (*kit) /= (*it).l; 
+	  }
+	G4cout<<G4endl;
+	
+	G4cout<<"ksl=";
+	
+	for(kit=(it->ksl).begin();kit!=(it->ksl).end();kit++)
+	  {
+	    G4cout<<(*kit)<<" ";
+	    (*kit) /= (*it).l; 
+	  }
+	G4cout<<G4endl;
+	
+	theBeamline.push_back(new BDSTMultipole(G4String((*it).name),(*it).l * m,aper,FeRad, it->knl,it->ksl));
+      }
+      
       
       if((*it).type==_ELEMENT ) {
 	
 	if(DEBUG) { G4cout<<"---->adding Element, "<<G4String( (*it).name )<<
-		      " l ="<<(*it).l<<G4endl;}
+	    " l ="<<(*it).l<<G4endl;}
 	
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
 	
 	theBeamline.push_back(new BDSElement( G4String((*it).name) , G4String((*it).geometryFile), 
 					      G4String((*it).bmapFile), (*it).l * m, bpRad ,(*it).outR * m) );
@@ -406,6 +466,13 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       if((*it).type==_ECOL ) {
 	
 	GetMaterial(aMaterial, (*it).material );
+
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
 	
 	if(DEBUG) { G4cout<<"---->adding Ecol, "<<G4String( (*it).name )<<G4endl<<
 		      "xaper="<<(*it).xsize<<"m, yaper="<<(*it).ysize<<
@@ -422,6 +489,14 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
       if((*it).type==_RCOL ) {
 	
 	GetMaterial(aMaterial, (*it).material );
+
+	if( (*it).outR < (*it).aper)
+	  {
+	    G4cerr << (*it).name << " has outer radius smaller than aperture!"<<G4endl;
+	    G4cerr << "aper= "<<(*it).aper<<"m outR= "<<(*it).outR<<"m"<<G4endl;
+	    G4cerr << "Setting to default - 1*cm"<<G4endl;
+	  }
+
 
 	if(DEBUG) { G4cout<<"---->adding Rcol, "<<G4String( (*it).name )<<G4endl<<
 		      "xaper="<<(*it).xsize<<"m, yaper="<<(*it).ysize<<
@@ -832,6 +907,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 				 localX,
 				 localY,
 				 localZ);
+
 
 	G4PVPlacement* PhysiComponentPlace = 
 	  new G4PVPlacement(

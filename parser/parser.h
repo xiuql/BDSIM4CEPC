@@ -507,6 +507,7 @@ int expand_line(char *name, char *start, char* end)
       
       e.type = _LINE;
       e.name = name;
+      e.l = 0;
       e.lst = NULL;
       
       beamline_list.push_back(e);

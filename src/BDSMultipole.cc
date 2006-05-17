@@ -320,59 +320,8 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
     }
 
   
-      /*
-      // weighting volume--------------------------------------------
-      G4double WeightThick=1.e-3*mm;
-
-      G4double WeightRad=itsBpRadius+0.5*BDSMaterials->LCIron->GetRadlen();
-      G4LogicalVolume* itsWeightVol_1=
-	new G4LogicalVolume(new G4Tubs(itsName+"_weight_1",
-				       WeightRad,
-				       WeightRad+WeightThick,
-				       aLength/2,
-				       0,twopi*radian),
-			    BDSMaterials->LCWeightIron,
-			    itsName+"_Weight_1");
-
-      G4VPhysicalVolume* PhysiWeight_1 = 
-	new G4PVPlacement(
-			  0,		      // rotation
-			  0,	                     // at (0,0,0)
-			  itsWeightVol_1,  // its logical volume
-			  itsName+"_Wgt_1",	     // its name
-			  itsOuterLogicalVolume,     // its mother  volume
-			  false,		     // no boolean operation
-			  0);		             // copy number
-
-      WeightRad=itsBpRadius+2*BDSMaterials->LCIron->GetRadlen();
-      G4LogicalVolume* itsWeightVol_2=
-	new G4LogicalVolume(new G4Tubs(itsName+"_weight_1",
-				       WeightRad,
-				       WeightRad+WeightThick,
-				       aLength/2,
-				       0,twopi*radian),
-			    BDSMaterials->LCWeightIron,
-			    itsName+"_Weight_1");
-
-      G4VPhysicalVolume* PhysiWeight_2 = 
-	new G4PVPlacement(
-			  0,		      // rotation
-			  0,	                     // at (0,0,0)
-			  itsWeightVol_2,  // its logical volume
-			  itsName+"_Wgt_2",	     // its name
-			  itsOuterLogicalVolume,     // its mother  volume
-			  false,		     // no boolean operation
-			  0);		             // copy number
-
-
-      //end of weighting volume-----------------------------
-
-      */
-
-
-  
   G4RotationMatrix* Rot=NULL;
-  if(itsAngle!=0)Rot=RotY90;
+  if(itsAngle!=0) Rot=RotY90;
   
   G4VPhysicalVolume* itsPhysiComp = 
     new G4PVPlacement(
@@ -390,10 +339,7 @@ void BDSMultipole::BuildDefaultOuterLogicalVolume(G4double aLength,
   //  itsOuterUserLimits->SetMaxAllowedStep(aLength);
   itsOuterLogicalVolume->SetUserLimits(itsOuterUserLimits);
 
- //  G4VisAttributes* VisAtt = 
-//     new G4VisAttributes(G4Colour(1.0, 0., 0.));
-//   VisAtt->SetForceSolid(true);
-//   itsOuterLogicalVolume->SetVisAttributes(VisAtt); 
+ 
 
 }
 

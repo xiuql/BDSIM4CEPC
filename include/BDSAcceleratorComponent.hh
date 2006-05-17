@@ -72,6 +72,7 @@ public:
 
   G4RotationMatrix* GetRotation();
   G4ThreeVector GetPosition();
+  void SetPosition(G4ThreeVector);
   
   const G4double GetTilt() const;  // component tilt 
   
@@ -283,8 +284,12 @@ inline void BDSAcceleratorComponent::SetK3(G4double K3)
 
 inline G4RotationMatrix* BDSAcceleratorComponent::GetRotation()
 { return itsRotation;}
+
 inline G4ThreeVector BDSAcceleratorComponent::GetPosition()
 { return itsPosition;}
+
+inline void BDSAcceleratorComponent::SetPosition(G4ThreeVector pos)
+{ itsPosition = pos;}
 
 inline const G4String BDSAcceleratorComponent::GetName () const
 {return itsName;}

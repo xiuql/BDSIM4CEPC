@@ -53,11 +53,26 @@ BDSRBend::BDSRBend(G4String aName,G4double aLength,
 
       BuildBPFieldMgr(itsStepper,itsMagField);
 
+      //BuildDefaultOuterLogicalVolume(itsLength);
+      
       //SetSensitiveVolume(itsBeampipeLogicalVolume);// for synchrotron
       SetSensitiveVolume(itsOuterLogicalVolume);// otherwise
 
       (*LogVolCount)[itsName]=1;
       (*LogVol)[itsName]=itsMarkerLogicalVolume;
+
+
+      G4VisAttributes* VisAtt1 = 
+	new G4VisAttributes(G4Colour(0.1, 0.1, 0.1));
+      VisAtt1->SetForceSolid(true);
+      itsBeampipeLogicalVolume->SetVisAttributes(VisAtt1);
+      
+  //     G4VisAttributes* VisAtt2 = 
+// 	new G4VisAttributes(G4Colour(0., 0., 1.));
+//       VisAtt2->SetForceSolid(true);
+//       itsOuterLogicalVolume->SetVisAttributes(VisAtt2);
+      
+
     }
   else
     {

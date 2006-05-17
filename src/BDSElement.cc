@@ -4,7 +4,7 @@
    Copyright (c) 2004 by J.C.Carter.  ALL RIGHTS RESERVED. 
 */
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 #include "BDSGlobalConstants.hh" // must be first in include list
 #include "BDSElement.hh"
@@ -63,12 +63,12 @@ BDSElement::BDSElement(G4String aName, G4String geometry, G4String bmap,
   if(!(*LogVolCount)[itsName])
     {
       if(DEBUG) G4cout<<"BDSElement : starting build logical volume "<<
-		  itsMarkerLogicalVolume<<G4endl;
+		  itsName<<G4endl;
 
       BuildGeometry(); // build element box
       
       if(DEBUG) G4cout<<"BDSElement : end build logical volume "<<
-		  itsMarkerLogicalVolume<<G4endl;
+		  itsName<<G4endl;
 
       PlaceComponents(geometry,bmap); // place components (from file) and build filed maps
     }

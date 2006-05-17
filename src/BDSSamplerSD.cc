@@ -96,7 +96,7 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
       // Changed z output by Samplers to be the position of the sampler
       // not time of flight of the particle JCC 15/10/05
       //G4double z=-(time*c_light-(pos.z()+BDSGlobals->GetWorldSizeZ()));
-      G4double z=(pos.z()+BDSGlobals->GetWorldSizeZ());
+      G4double z=pos.z();
       if(zPrime<0) energy*=-1;
       // apply a correction that takes ac... gab to do later!
 
@@ -123,7 +123,7 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
       if(pName!="e+" && pName!="e-") 
 	{
 	  // store production point
-	  start_z =  vtx.z()+BDSGlobals->GetWorldSizeZ();
+	  start_z =  vtx.z();
 	  start_E   =  theTrack->GetVertexKineticEnergy();
 	  start_x   =  vtx.x();
 	  start_xp  =  dir.x();
@@ -132,7 +132,7 @@ G4bool BDSSamplerSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
 	}
       else
 	{// for electrons (and positrons) store the point of last scatter
-	  start_z  = initial_z + BDSGlobals->GetWorldSizeZ();
+	  start_z  = initial_z;
 	  start_E  = initial_E;
 	  start_x  = initial_x;
 	  start_xp = initial_xp;

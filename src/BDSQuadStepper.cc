@@ -11,7 +11,7 @@
 // based on the Program) you indicate your acceptance of this statement,
 // and all its terms.
 //
-// $Id: BDSQuadStepper.cc,v 1.4 2006/02/20 14:05:16 carter Exp $
+// $Id: BDSQuadStepper.cc,v 1.5 2006/04/19 21:51:58 carter Exp $
 // GEANT4 tag $Name:  $
 //
 #include "BDSQuadStepper.hh"
@@ -54,12 +54,11 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
   G4double h2=h*h;
 
   G4ThreeVector LocalR,LocalRp ;
-  /*
-  G4cout << "kappa: " << kappa << G4endl;
-  G4cout << "InitMag: " << InitMag << G4endl;
-  G4cout << "itsBGrad: " << itsBGrad << G4endl;
-  G4cout << "fPtrMagEqOfMot->FCof(): " << fPtrMagEqOfMot->FCof() << G4endl << G4endl;
-  */
+  
+ //  G4cout << "kappa: " << kappa << G4endl;
+//   G4cout << "InitMag: " << InitMag << G4endl;
+//   G4cout << "itsBGrad: " << itsBGrad << G4endl;
+//   G4cout << "fPtrMagEqOfMot->FCof(): " << fPtrMagEqOfMot->FCof() << G4endl << G4endl;
   // relevant momentum scale is p_z, not P_tot:
   // check that the approximations are valid, else do a linear step:
   if(fabs(kappa)<1.e-12)
@@ -91,21 +90,12 @@ void BDSQuadStepper::AdvanceHelix( const G4double  yIn[],
 	}
       G4AffineTransform LocalAffine=QuadNavigator-> 
       	GetLocalToGlobalTransform();
-      // gab_dec03>>
-      // position 
-      // gab_dec03
-      //LocalR = QuadNavigator->GetCurrentLocalCoordinate();
-      //LocalRp= QuadNavigator->ComputeLocalAxis(v0).unit();
 
       G4AffineTransform GlobalAffine=QuadNavigator->
 	GetGlobalToLocalTransform();
       G4ThreeVector LocalR=GlobalAffine.TransformPoint(GlobalPosition); 
       G4ThreeVector LocalRp=GlobalAffine.TransformAxis(InitMomDir);
 
-      // gab_dec03<<
-
-
-      //     itsInitialPoint=LocalPosition;
 
       G4double x0,xp,y0,yp,z0,zp;
       G4double x1,x1p,y1,y1p,z1,z1p;

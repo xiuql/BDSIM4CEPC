@@ -68,9 +68,9 @@ public:
   G4double GetBackgroundScaleFactor();
 
   G4String GetOutputNtupleFileName();
-
-  void SetWorldSizeZ(G4double WorldSizeZ);
-  G4double GetWorldSizeZ();
+ 
+  //  void SetWorldSizeZ(G4double WorldSizeZ);
+  //G4double GetWorldSizeZ();
 
   void SetTotalS(G4double TotalS);
   G4double GetTotalS();  
@@ -250,7 +250,7 @@ private:
 
   G4double itsBeampipeRadius; 
   G4double itsBeampipeThickness; 
-  G4double itsWorldSizeZ; 
+  //G4double itsWorldSizeZ; 
   G4double itsTotalS;
 
   G4double itsDeltaIntersection;
@@ -485,10 +485,10 @@ inline G4double BDSGlobalConstants::GetProdCutPositronsP()
 {return itsProdCutPositronsP;}
 
 
-inline G4double BDSGlobalConstants::GetWorldSizeZ() 
-{return itsWorldSizeZ;}
-inline void BDSGlobalConstants::SetWorldSizeZ(G4double WorldSizeZ) 
-{itsWorldSizeZ=WorldSizeZ;}
+//inline G4double BDSGlobalConstants::GetWorldSizeZ() 
+//{return itsWorldSizeZ;}
+//inline void BDSGlobalConstants::SetWorldSizeZ(G4double WorldSizeZ) 
+//{itsWorldSizeZ=WorldSizeZ;}
 
 inline G4double BDSGlobalConstants::GetTotalS() 
 {return itsTotalS;}

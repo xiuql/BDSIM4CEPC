@@ -348,10 +348,10 @@ void BDSPhysicsList::ConstructEM()
       
     } else if (particleName == "e-") {
       //electron
-      pmanager->AddProcess(new G4MultipleScattering,-1, 2,1);
-      pmanager->AddProcess(new G4eIonisation,       -1, 3,2);
-      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 4,3);     
-      //pmanager->AddProcess(new G4StepLimiter,   -1, 1,4);  
+      pmanager->AddProcess(new G4MultipleScattering,-1, 1,1);
+      pmanager->AddProcess(new G4eIonisation,       -1, 2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,   -1, 3,3);     
+      pmanager->AddProcess(new G4StepLimiter,   -1, -1,4);  
       
     } else if (particleName == "e+") {
       //positron
