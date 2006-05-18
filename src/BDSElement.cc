@@ -275,8 +275,8 @@ void BDSElement::BuildMagField(G4int nvar, G4bool forceToAllDaughters)
   // Create an equation of motion for this field
   G4EqMagElectricField* fEquation = new G4EqMagElectricField(itsField);
 
-  //  G4MagIntegratorStepper* fStepper = new G4ClassicalRK4( fEquation, nvar );
-  G4MagIntegratorStepper* fStepper = new BDSRK4Stepper( fEquation, nvar );
+  G4MagIntegratorStepper* fStepper = new G4ClassicalRK4( fEquation, nvar );
+  //G4MagIntegratorStepper* fStepper = new BDSRK4Stepper( fEquation, nvar );
 
   // create a field manager
   G4FieldManager* fieldManager = new G4FieldManager();
