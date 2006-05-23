@@ -344,6 +344,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	bPrime = brho * (*it).k1 * tesla / m;
 	G4double aper = bpRad;
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+	FeRad = aper;
 
 	if( (*it).outR < (*it).aper)
 	  {
@@ -376,6 +377,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	
 
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
+	FeRad = aper;
 	if(DEBUG) { G4cout<<"---->adding Sextupole, "<<G4String( (*it).name )<<
 	    " k1 ="<<(*it).k2<<" b'' ="<<bDoublePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
 	theBeamline.push_back(new BDSSextupole(G4String((*it).name),(*it).l * m,aper,FeRad,bDoublePrime,(*it).tilt,(*it).outR * m));
@@ -400,6 +402,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	if( (*it).aper > 1.e-10*m ) aper = (*it).aper * m;
 	if(DEBUG) { G4cout<<"---->adding octupole, "<<G4String( (*it).name )<<
 		      " k3 ="<<(*it).k3<<" b''' ="<<bTriplePrime<<" brho = "<<brho<<" aper="<<aper/m<<G4endl;}
+	FeRad = aper;
 	theBeamline.push_back(new BDSOctupole(G4String((*it).name),(*it).l * m,aper,FeRad,bTriplePrime,(*it).tilt,(*it).outR * m));
       
       added_comp=true;
@@ -429,6 +432,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::ConstructBDS(list<struct Element>& b
 	  }
 	G4cout<<G4endl;
 	
+	FeRad = aper;
 	theBeamline.push_back(new BDSTMultipole(G4String((*it).name),(*it).l * m,aper,FeRad, it->knl,it->ksl));
       }
       
