@@ -76,15 +76,13 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
       
     }
 
-  if(itsMarkerLength>0) RLocalR.setZ(RLocalR.z()+itsMarkerLength/2);
-  else RLocalR.setZ( -(RLocalR.z()+fabs(itsMarkerLength)/2) + fabs(itsMarkerLength));
   G4AffineTransform GlobalAffine, LocalAffine;
   G4String VolName = aTouchable->GetVolume()->GetName();
   G4bool inQuad=false;
   G4bool inSext=false;
   G4bool inOct = false;
   G4bool inField=false;
-  
+
   for(G4int i=0; i<(G4int)itsQuadVol.size(); i++)
     {
       if(VolName==itsQuadVol[i])
@@ -123,7 +121,7 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
 	}
     }
   
-  if(!inSext && !inSext)
+  if(!inSext && !inQuad)
     {
       for(G4int i=0; i<(G4int)itsOctVol.size(); i++)
 	{
@@ -163,6 +161,8 @@ void BDSMagFieldSQL::GetFieldValue( const G4double Point[4],
 	}
     }
 
+  if(itsMarkerLength>0) RLocalR.setZ(RLocalR.z()+itsMarkerLength/2);
+  else RLocalR.setZ( -(RLocalR.z()+fabs(itsMarkerLength)/2) + fabs(itsMarkerLength));
   G4double tempz = RLocalR.z()/cm;
   if(tempz<0)  //Mokka region resets Z to be positive at starting from one
                //Edge of the region
