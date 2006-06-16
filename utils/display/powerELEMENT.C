@@ -28,7 +28,7 @@ powerELEMENT(char *gmadFile, char *rootFile)
 //for(Int_t i=1;i<b->GetNumberElement();i++) 
 //	cout << b->GetNameElement()[i] << " " << i << " " << b->GetEndPositionElement()[i] <<"  " << 
 //	myhisto->GetBinContent(i)<< endl;	
-	//myhisto->GetXaxis()->SetLimits(BDSPad::xmin_axis,BDSPad::xmax_axis);
+	myhisto->GetXaxis()->SetLimits(BDSPad::xmin_axis,BDSPad::xmax_axis);
 	myhisto->Draw();
 	b->SetHisto(myhisto);
 	b->cd();
