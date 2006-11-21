@@ -113,7 +113,7 @@ printf "\n\n Do you want to use Root output (root has to be installed) ?\n"
 read -p "[y/n]" value
 
 if test "$value" == "y"; then
-    USE_ROOT="USE_ROOT"
+    USE_ROOT="-DUSE_ROOT"
     echo "           using Root output driver...."
 
 ROOT_sys="$ROOTSYS"
