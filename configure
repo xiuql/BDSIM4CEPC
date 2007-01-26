@@ -205,23 +205,21 @@ echo >> $Makefile
 
 if [ ! -z "$xmltest" ]; then
 cat Makefile.in  | sed "
-s%@G4INSTALL%$G4INSTALL%g;
-s%@ROOTSYS%$ROOT_sys%g;
-s%@BINDIR%$BIN_dir%g;
-s%@G4VERSION%$G4_version%g;
-s%@CLHEP_VERSION%$CLHEP_version%g;
-s%@USE_ROOT%$USE_ROOT%g;
+s%@G4INSTALL@%$G4INSTALL%g;
+s%@ROOTSYS@%$ROOT_sys%g;
+s%@BINDIR@%$BIN_dir%g;
+s%@G4VERSION@%$G4_version%g;
+s%@CLHEP_VERSION@%$CLHEP_version%g;
+s%@USE_ROOT@%$USE_ROOT%g;
 " >> $Makefile
 else
 cat Makefile.in  | sed "
-s%@G4INSTALL%$G4INSTALL%g;
-s%@ROOTSYS%$ROOT_sys%g;
-s%@BINDIR%$BIN_dir%g;
-s%@G4VERSION%$G4_version%g;
-s%@CLHEP_VERSION%$CLHEP_version%g;
-s%@USE_ROOT%$USE_ROOT%g;
-s/GDML_CPPFLAG//g;
-s/GDML_LIBFLAG//g;
+s%@G4INSTALL@%$G4INSTALL%g;
+s%@ROOTSYS@%$ROOT_sys%g;
+s%@BINDIR@%$BIN_dir%g;
+s%@G4VERSION@%$G4_version%g;
+s%@CLHEP_VERSION@%$CLHEP_version%g;
+s%@USE_ROOT@%$USE_ROOT%g;
 " >> $Makefile
 fi
 
