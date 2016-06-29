@@ -143,7 +143,15 @@ Options::Options()
   deltaOneStep             = 0.5e-5;  // default value in Geant4, old value 0.00001;
   stopTracks               = false;
   stopSecondaries          = false;
-  
+  trackingStart            = "None";
+  trackingEnd              = "None";
+
+  //synchrotron radiation analysis
+  synchOutputPath      = "None";
+  synchHitPosUpstream      = -12; //m
+  synchHitPosDownstream    = 12;  //m
+  beamOutputPath      = "None";
+
   // output / analysis options
   numberOfEventsPerNtuple  = 0;
   elossHistoBinWidth       = 1.0; // m
@@ -353,6 +361,14 @@ void Options::PublishMembers()
   publish("minimumEpsilonStep",&Options::minimumEpsilonStep);
   publish("maximumEpsilonStep",&Options::maximumEpsilonStep);
   publish("deltaOneStep",&Options::deltaOneStep);
+  publish("trackingStart",&Options::trackingStart);
+  publish("trackingEnd",&Options::trackingEnd);
+
+  // synchrotron radiation analysis
+  publish("synchOutputPath",&Options::synchOutputPath);
+  publish("synchHitPosUpstream",&Options::synchHitPosUpstream);
+  publish("synchHitPosDownstream",&Options::synchHitPosDownstream);
+  publish("beamOutputPath",&Options::beamOutputPath);
 
   // physics processes
   publish("turnOnCerenkov",&Options::turnOnCerenkov);

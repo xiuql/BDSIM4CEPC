@@ -167,7 +167,15 @@ namespace GMAD {
     double   prodCutProtonsP;
     double   prodCutProtonsA;
 
-    /// Tracking related parameters 
+    //synchrotron radiation analysis
+    std::string synchOutputPath;
+    double   synchHitPosUpstream; //Minus position relative to IP
+    double   synchHitPosDownstream; // Positive position relative to IP
+    std::string beamOutputPath;
+
+    /// Tracking related parameters
+    std::string trackingStart;
+    std::string trackingEnd;
     double   maximumTrackingTime; ///< maximum tracking time per volume [s]
     double   deltaChord;
     double   chordStepMinimum;

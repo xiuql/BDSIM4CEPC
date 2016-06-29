@@ -105,8 +105,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element* elementIn
   if (element->type == ElementType::_DRIFT)
     {
       // Match poleface from previous and next element
-      angleIn = (prevElement) ? ( prevElement->e2 * CLHEP::rad ) : 0.0;
-      angleOut = (nextElement) ? ( nextElement->e1 * CLHEP::rad ) : 0.0;
+      angleIn = (prevElement) ? ( prevElement->e2 * CLHEP::rad ) : 0.;
+      angleOut = (nextElement) ? ( nextElement->e1 * CLHEP::rad ) : 0.;
 
       // Normal vector of rbend is from the magnet, angle of the rbend has to be
       // taken into account regardless of poleface rotation

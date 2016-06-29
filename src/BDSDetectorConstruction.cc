@@ -258,6 +258,41 @@ void BDSDetectorConstruction::BuildBeamline()
 #endif
   // register the beamline in the holder class for the full model
   BDSAcceleratorModel::Instance()->RegisterFlatBeamline(beamline);
+  
+  if(BDSExecOptions::Instance()->GetVerbose()){
+
+    BDSBeamline* beamline = BDSAcceleratorModel::Instance()->GetFlatBeamline();
+    beamline->PrintMemoryConsumption();
+    BDSBeamline::iterator it = beamline->begin();
+    G4cout.setf(std::ios::showpos);
+    G4cout.setf(std::ios::scientific);
+    for(; it != beamline->end(); ++it)
+    {
+      G4String name = (*it)->GetName();
+      G4String samplerName = (*it)->GetSamplerName();
+
+      G4cout<<"******************************************************************************************"<<G4endl;
+      G4cout << __METHOD_NAME__ << "ComponentNamed: " << name<<", PlacementName: " <<(*it)->GetPlacementName()<<", SamplerName: "<<samplerName<< G4endl;
+      G4ThreeVector rp = (*it)->GetReferencePositionMiddle();
+      //G4ThreeVector rp = (*it)->GetReferencePositionEnd();
+      G4Point3D pp(rp.x(),rp.y(),rp.z());
+      G4Transform3D trsfmG2L = (*it)->GetPlacementTransform()->inverse();
+      G4cout<<"RefPosGlobal: "<<rp << ", SPositionStart: "<<(*it)->GetSPositionStart()<<", SPositionEnd: "<<(*it)->GetSPositionEnd()<< G4endl;
+#ifdef BDSDEBUG
+      G4cout<<"RefPosGlobal: "<<std::setprecision(15)<<rp<<G4endl;
+      G4cout<<"RefPosLocal(Transformed): "<<std::setprecision(15)<<trsfmG2L*pp<<G4endl;
+      G4cout<<""<<G4endl;  
+      G4cout<<"Transform3D: "<<G4endl;
+      G4cout<<std::setprecision(15)<<trsfmG2L.xx()<<std::setw(24)<<trsfmG2L.xy()<<std::setw(24)<<trsfmG2L.xz()<<std::setw(24)<<trsfmG2L.dx()<<G4endl;
+      G4cout<<std::setprecision(15)<<trsfmG2L.yx()<<std::setw(24)<<trsfmG2L.yy()<<std::setw(24)<<trsfmG2L.yz()<<std::setw(24)<<trsfmG2L.dy()<<G4endl;
+      G4cout<<std::setprecision(15)<<trsfmG2L.zx()<<std::setw(24)<<trsfmG2L.zy()<<std::setw(24)<<trsfmG2L.zz()<<std::setw(24)<<trsfmG2L.dz()<<G4endl;
+      G4cout<<""<<G4endl; 
+#endif
+    }
+    G4cout.unsetf(std::ios::scientific);
+    G4cout.unsetf(std::ios::showpos);
+     
+  }
 }
 
 void BDSDetectorConstruction::BuildTunnel()
@@ -419,8 +454,8 @@ void BDSDetectorConstruction::ComponentPlacement()
       // comes from BDSAcceleratorComponent
       // this is done after the checks as it really just passes down to acc component
       G4String name = element->GetName(); 
-      if (verbose || debug)
-	{G4cout << __METHOD_NAME__ << "placement of component named: " << name << G4endl;}
+      //if (verbose || debug)
+	//{G4cout << __METHOD_NAME__ << "placement of component named: " << name << G4endl;}
       
       // read out geometry logical volume - note may not exist for each item - must be tested
       G4LogicalVolume* readOutLV   = accComp->GetReadOutLogicalVolume();
