@@ -1,3 +1,0 @@
-include 8_samplers.gmad;
-
-option, tunnelType="square";

@@ -1,3 +1,0 @@
-include 4_several_bends.gmad;
-
-option, tunnelType="rectangular";
