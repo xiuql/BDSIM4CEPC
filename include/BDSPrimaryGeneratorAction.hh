@@ -28,6 +28,12 @@ private:
   G4double         weight;
   /// pointer to the particle distribution generator
   BDSBunch*        bdsBunch;
+
+  bool startPointFlag;
+  bool firstTimeFlag;
+  G4String startElementName;
+  G4RotationMatrix* startRotation;
+  G4ThreeVector startPosition;
 };
 
 #endif

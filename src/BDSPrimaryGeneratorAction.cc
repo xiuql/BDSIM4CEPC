@@ -3,6 +3,11 @@
 #include "BDSBunch.hh"
 #include "BDSParticle.hh"
 #include "BDSDebug.hh"
+#include "BDSExecOptions.hh"
+
+#include "BDSAcceleratorModel.hh"
+#include "BDSBeamline.hh"
+#include "BDSParser.hh"
 
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
@@ -24,6 +29,14 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch* bdsBunchIn):
   particleGun->SetParticlePosition(G4ThreeVector(0.*CLHEP::cm,0.*CLHEP::cm,0.*CLHEP::cm));
   particleGun->SetParticleEnergy(BDSGlobalConstants::Instance()->GetBeamKineticEnergy());
   particleGun->SetParticleTime(0);
+  
+  startElementName = BDSParser::Instance()->GetOptions().trackingStart;
+  if(startElementName=="None"){
+    startPointFlag=false;
+  }else{
+    startPointFlag=true;
+  }
+  firstTimeFlag=true;
 }
 
 BDSPrimaryGeneratorAction::~BDSPrimaryGeneratorAction()
@@ -33,13 +46,45 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   //this function is called at the begining of event
 
+  //Start Point
+  if(firstTimeFlag){
+    BDSBeamline* beamline = BDSAcceleratorModel::Instance()->GetFlatBeamline();
+    BDSBeamline::iterator it = beamline->begin();
+    BDSBeamlineElement* startElement = (*it);
+
+    if(startPointFlag){
+      for(; it != beamline->end(); ++it)
+      {
+        if((*it)->GetPlacementName()==startElementName){
+          startElement = *it;
+          break;
+        }
+      }
+
+      if(it==beamline->end()){
+        G4cerr << __METHOD_NAME__ << "ERROR - Can't find start element "<< startElementName << G4endl;
+        exit(1);
+      }
+      startPointFlag=false;
+
+    }
+    
+
+    startPosition = startElement->GetPositionStart();
+    startRotation = startElement->GetRotationStart();
+    firstTimeFlag=false;
+    
+    G4cout << __METHOD_NAME__ << "Primary particle is " << BDSGlobalConstants::Instance()->GetParticleDefinition()->GetParticleName() <<", Start Element: "<<startElement->GetName()<<", PlacementName: "<<startElement->GetPlacementName()<<", CopyNumber: "<<startElement->GetCopyNo()<<", StartPosition: "<<startPosition<<G4endl;
+  }
+
   G4double x0=0.0, y0=0.0, z0=0.0, xp=0.0, yp=0.0, zp=0.0, t=0.0, E=0.0;
 
   particleGun->SetParticleDefinition(BDSGlobalConstants::Instance()->GetParticleDefinition());
   bdsBunch->GetNextParticle(x0,y0,z0,xp,yp,zp,t,E,weight); // get next starting point
   if(E==0) G4cout << __METHOD_NAME__ << "Particle energy is 0! This will not be tracked." << G4endl;
+
 #ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ 
+  G4cout <<"Local: " << __METHOD_NAME__ 
 	 << x0 << " " << y0 << " " << z0 << " " 
 	 << xp << " " << yp << " " << zp << " " 
 	 << t  << " " << E  << " " << weight << G4endl;
@@ -47,9 +92,13 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   G4ThreeVector LocalPos;
   G4ThreeVector LocalMomDir;
-  
+
   G4ThreeVector PartMomDir(xp,yp,zp);
   G4ThreeVector PartPosition(x0,y0,z0);
+
+
+  PartMomDir = (*startRotation)*PartMomDir;
+  PartPosition = startPosition+PartPosition;
   
   particleGun->SetParticlePosition(PartPosition);
   particleGun->SetParticleEnergy(E);
@@ -65,15 +114,18 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   anEvent->GetPrimaryVertex()->SetWeight(weight);
   
   G4double totalE = E+particleGun->GetParticleDefinition()->GetPDGMass();
-#ifdef BDSDEBUG
-  G4cout
-    << "BDSPrimaryGeneratorAction: " << G4endl
-    << "  position= " << particleGun->GetParticlePosition()/CLHEP::m<<" m"<<G4endl
-    << "  kinetic energy= " << E/CLHEP::GeV << " GeV" << G4endl
-    << "  total energy= " << totalE/CLHEP::GeV << " GeV" << G4endl
-    << "  momentum direction= " << PartMomDir << G4endl
-    << "  weight= " << anEvent->GetPrimaryVertex()->GetWeight() << G4endl;
-#endif
+
+  if(BDSExecOptions::Instance()->GetVerboseStep()){
+//#ifdef BDSDEBUG
+    G4cout
+      << "BDSPrimaryGeneratorAction: " << G4endl
+      << "  position= " << particleGun->GetParticlePosition()/CLHEP::m<<" m"<<G4endl
+      << "  kinetic energy= " << E/CLHEP::GeV << " GeV" << G4endl
+      << "  total energy= " << totalE/CLHEP::GeV << " GeV" << G4endl
+      << "  momentum direction= " << PartMomDir << G4endl
+      << "  weight= " << anEvent->GetPrimaryVertex()->GetWeight() << G4endl;
+//#endif
+  }
 
   // save initial values outside scope for entry into the samplers:
   BDSParticle initialPoint(x0,y0,z0,xp,yp,zp,totalE,t,weight);

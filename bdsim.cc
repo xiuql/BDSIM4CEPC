@@ -203,7 +203,7 @@ int main(int argc,char** argv)
 #endif
   // Only add steppingaction if it is actually used, so do check here (for cpu reasons)
   if (globalConstants->GetThresholdCutPhotons() > 0 || globalConstants->GetThresholdCutCharged() > 0
-      || execOptions->GetVerboseStep()) {
+      || execOptions->GetVerboseStep() || BDSParser::Instance()->GetOptions().synchOutputPath != "None") {
     runManager->SetUserAction(new BDSSteppingAction);
   }
   
