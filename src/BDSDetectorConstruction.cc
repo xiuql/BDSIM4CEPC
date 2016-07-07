@@ -273,11 +273,16 @@ void BDSDetectorConstruction::BuildBeamline()
 
       G4cout<<"******************************************************************************************"<<G4endl;
       G4cout << __METHOD_NAME__ << "ComponentNamed: " << name<<", PlacementName: " <<(*it)->GetPlacementName()<<", SamplerName: "<<samplerName<< G4endl;
+      G4ThreeVector rpS = (*it)->GetReferencePositionStart();
       G4ThreeVector rp = (*it)->GetReferencePositionMiddle();
-      //G4ThreeVector rp = (*it)->GetReferencePositionEnd();
+      G4ThreeVector rpE = (*it)->GetReferencePositionEnd();
+      G4Point3D ppS(rpS.x(),rpS.y(),rpS.z());
       G4Point3D pp(rp.x(),rp.y(),rp.z());
-      G4Transform3D trsfmG2L = (*it)->GetPlacementTransform()->inverse();
-      G4cout<<"RefPosGlobal: "<<rp << ", SPositionStart: "<<(*it)->GetSPositionStart()<<", SPositionEnd: "<<(*it)->GetSPositionEnd()<< G4endl;
+      G4Point3D ppE(rpE.x(),rpE.y(),rpE.z());
+      G4Transform3D trsfmG2L = (*it)->GetReadoutPlacementTransform()->inverse();
+      G4Transform3D trsfmL2G = (*it)->GetReadoutPlacementTransform();
+      G4cout<<"RefPosGlobalStart: "<<rpS<<", RefPosGlobalMiddle: "<<rp<<", RefPosGlobalEnd: "<<rpE<<G4endl;
+      G4cout<<"SPositionStart: "<<(*it)->GetSPositionStart()<<", SPositionEnd: "<<(*it)->GetSPositionEnd()<< G4endl;
 #ifdef BDSDEBUG
       G4cout<<"RefPosGlobal: "<<std::setprecision(15)<<rp<<G4endl;
       G4cout<<"RefPosLocal(Transformed): "<<std::setprecision(15)<<trsfmG2L*pp<<G4endl;
