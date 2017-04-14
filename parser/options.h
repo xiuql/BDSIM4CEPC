@@ -172,6 +172,9 @@ namespace GMAD {
     double   synchHitPosUpstream; //Minus position relative to IP
     double   synchHitPosDownstream; // Positive position relative to IP
     std::string beamOutputPath;
+    std::string biasType;
+    std::string bias;
+    int maxNofScat;
 
     /// Tracking related parameters
     std::string trackingStart;

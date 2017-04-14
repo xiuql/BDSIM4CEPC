@@ -52,6 +52,14 @@ BDSSteppingAction::BDSSteppingAction():_step(nullptr){
   }
   m_endElement=NULL;
 
+  G4String biasType = BDSParser::Instance()->GetOptions().biasType;
+  if(biasType.find("Bias")==std::string::npos){
+    m_bias=false;
+  }else{
+    m_bias=true;
+  }
+  m_nofScat=0;
+  m_maxNofScat = BDSParser::Instance()->GetOptions().maxNofScat;
 }
 
 BDSSteppingAction::~BDSSteppingAction()
@@ -170,7 +178,7 @@ void BDSSteppingAction::SynchrotronSteppingAction(){
   if(!prePoint->GetPhysicalVolume()) return;
   if(!postPoint->GetPhysicalVolume()) return;
  
-  CLHEP::Hep3Vector vtxPos = _track->GetVertexPosition() / CLHEP::m;
+  CLHEP::Hep3Vector vtxPos = _track->GetVertexPosition() / CLHEP::nm; //GuineaPig Interface
   CLHEP::Hep3Vector vtxMomDir = _track->GetVertexMomentumDirection();
   G4double vtxKE = _track->GetVertexKineticEnergy() / CLHEP::GeV;
   //G4double mass = _track->GetDefinition()->GetPDGMass() / CLHEP::GeV;
@@ -184,7 +192,8 @@ void BDSSteppingAction::SynchrotronSteppingAction(){
     m_foutSyn->setf(std::ios::showpos);
     m_foutSyn->setf(std::ios::scientific);
 
-    (*m_foutSyn)<<std::setprecision(9)<<vtxPos.x()<<std::setw(18)<<vtxPos.y()<<std::setw(18)<<vtxPos.z()<<std::setw(18)<<vtxMomDir.x()<<std::setw(18)<<vtxMomDir.y()<<std::setw(18)<<vtxMomDir.z()<<std::setw(18)<<preE<<std::setw(18)<<prePos.x()<<std::setw(18)<<prePos.y()<<std::setw(18)<<prePos.z()<<std::endl;
+    //(*m_foutSyn)<<std::setprecision(9)<<vtxPos.x()<<std::setw(18)<<vtxPos.y()<<std::setw(18)<<vtxPos.z()<<std::setw(18)<<vtxMomDir.x()<<std::setw(18)<<vtxMomDir.y()<<std::setw(18)<<vtxMomDir.z()<<std::setw(18)<<preE<<std::setw(18)<<prePos.x()<<std::setw(18)<<prePos.y()<<std::setw(18)<<prePos.z()<<std::endl;
+    (*m_foutSyn)<<"22"<<std::setw(21)<<std::setprecision(12)<<vtxKE<<std::setw(21)<<vtxMomDir.x()<<std::setw(21)<<vtxMomDir.y()<<std::setw(21)<<vtxMomDir.z()<<std::setw(21)<<vtxPos.x()<<std::setw(21)<<vtxPos.y()<<std::setw(21)<<vtxPos.z()<<std::setw(6)<<_track->GetTrackID()<<std::endl;
 
     m_foutSyn->unsetf(std::ios::scientific);
     m_foutSyn->unsetf(std::ios::showpos);
@@ -215,6 +224,7 @@ void BDSSteppingAction::SynchrotronSteppingAction(){
 }
 
 void BDSSteppingAction::SynchrotronStatistic(){
+
   G4Track* _track = _step->GetTrack();
   if(_track->GetDefinition()->GetPDGEncoding() != 22) return;  
   G4int parentId = _track->GetParentID();
@@ -247,7 +257,9 @@ void BDSSteppingAction::SynchrotronStatistic(){
     preProcName=preProc->GetProcessName();
   }
 
-    
+  if(stepNumber==1) m_nofScat=0;
+
+
   CLHEP::Hep3Vector prePos = prePoint->GetPosition() / CLHEP::m;
   CLHEP::Hep3Vector postPos = postPoint->GetPosition() / CLHEP::m;
   CLHEP::Hep3Vector preMom = prePoint->GetMomentum() / CLHEP::GeV;
@@ -270,6 +282,14 @@ void BDSSteppingAction::SynchrotronStatistic(){
     itaE = preE;
     itaSolidName = preSolidName;
   }
+
+  if(m_bias){
+    m_nofScat++;
+    if(m_nofScat>m_maxNofScat){
+      postProcName="killed";
+      _track->SetTrackStatus(fStopAndKill);
+    }
+  }
   
   //m_foutSynStatistic->setf(std::ios::showpos);
   m_foutSynStatistic->setf(std::ios::scientific);
@@ -278,7 +298,6 @@ void BDSSteppingAction::SynchrotronStatistic(){
   
   m_foutSynStatistic->unsetf(std::ios::scientific);
   //m_foutSynStatistic->unsetf(std::ios::showpos);
-
 
   if(BDSExecOptions::Instance()->GetVerboseStep()){
     //const G4VTouchable *preTouchable = prePoint->GetTouchable();

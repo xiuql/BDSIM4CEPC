@@ -241,14 +241,49 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element* elementIn
   // note this test will only be reached (and therefore the component registered)
   // if it both didn't exist and has been constructed
   if (component)
-    {
+  { //
+    G4String biasType = BDSParser::Instance()->GetOptions().biasType;
+    if(biasType == "" || biasType=="None"){
       component->SetBiasVacuumList(element->biasVacuumList);
       component->SetBiasMaterialList(element->biasMaterialList);
-      component->SetPrecisionRegion(element->precisionRegion);
-      component->Initialise();
-      // register component and memory
-      BDSAcceleratorComponentRegistry::Instance()->RegisterComponent(component,willModify);
+    }else{
+      /// physics biasing list for the material
+      std::list<std::string> biasMaterialList;
+      biasMaterialList.clear();
+      /// physics biasing list for the vacuum
+      std::list<std::string> biasVacuumList;
+      biasVacuumList.clear();
+
+      std::string bias = BDSParser::Instance()->GetOptions().bias;
+      std::stringstream ss(bias);
+      std::string tok;
+      if (biasType == "Bias")
+      {
+        while(ss >> tok)
+        {
+          biasMaterialList.push_back(tok);
+          biasVacuumList.push_back(tok);
+        }
+      }
+      else if (biasType == "BiasMaterial")
+      {
+        while(ss >> tok) {biasMaterialList.push_back(tok);}
+      }
+      else if (biasType == "BiasVacuum")
+      {
+        while(ss >> tok) {biasVacuumList.push_back(tok);}
+      }else{
+        G4cout << __METHOD_NAME__ << "WARNING - Bias type is not defined!" << G4endl;
+      }
+      component->SetBiasVacuumList(biasVacuumList);
+      component->SetBiasMaterialList(biasMaterialList);
     }
+
+    component->SetPrecisionRegion(element->precisionRegion);
+    component->Initialise();
+    // register component and memory
+    BDSAcceleratorComponentRegistry::Instance()->RegisterComponent(component,willModify);
+  }
   
   return component;
 }
@@ -453,67 +488,102 @@ BDSLine* BDSComponentFactory::CreateSBendLine(Element const* element,
   G4double deltaend   = -element->e2/(0.5*(nSBends-1));
 
   for (int i = 0; i < nSBends; ++i)
+  {
+    thename = element->name + "_"+std::to_string(i+1)+"_of_" + std::to_string(nSBends);
+
+    // Default angles for all segments
+    angleIn = -semiangle*0.5;
+    angleOut = -semiangle*0.5;
+
+    // Input and output angles added to or subtracted from the default as appropriate
+    // Note: case of i == 0.5*(nSBends-1) is just the default central wedge.
+    // More detailed methodology/reasons in developer manual
+    if ((BDS::IsFinite(element->e1))||(BDS::IsFinite(element->e2)))
     {
-      thename = element->name + "_"+std::to_string(i+1)+"_of_" + std::to_string(nSBends);
+      if (i < 0.5*(nSBends-1))
+      {
+        angleIn -= (element->e1 + (i*deltastart));
+        angleOut -= ((0.5*(nSBends-3)-i)*deltastart);
+      }
+      else if (i > 0.5*(nSBends-1))
+      {
+        angleIn  +=  (0.5*(nSBends+1)-i)*deltaend;
+        angleOut += -(0.5*(nSBends-1)-i)*deltaend;
+      }
+    }
+    // Check for intersection of angled faces.
+    G4double intersectionX = BDS::CalculateFacesOverlapRadius(angleIn,angleOut,semilength);
+    BDSMagnetOuterInfo* magnetOuterInfo = PrepareMagnetOuterInfo(element,angleIn,angleOut);
 
-      // Default angles for all segments
-      angleIn = -semiangle*0.5;
-      angleOut = -semiangle*0.5;
+    // Every geometry type has a completely arbitrary factor of 1.25 except cylindrical
+    G4double magnetRadius= 0.625*magnetOuterInfo->outerDiameter*CLHEP::mm;
 
-      // Input and output angles added to or subtracted from the default as appropriate
-      // Note: case of i == 0.5*(nSBends-1) is just the default central wedge.
-      // More detailed methodology/reasons in developer manual
-      if ((BDS::IsFinite(element->e1))||(BDS::IsFinite(element->e2)))
-        {
-          if (i < 0.5*(nSBends-1))
-            {
-              angleIn -= (element->e1 + (i*deltastart));
-              angleOut -= ((0.5*(nSBends-3)-i)*deltastart);
-            }
-          else if (i > 0.5*(nSBends-1))
-            {
-              angleIn  +=  (0.5*(nSBends+1)-i)*deltaend;
-              angleOut += -(0.5*(nSBends-1)-i)*deltaend;
-            }
-        }
-      // Check for intersection of angled faces.
-      G4double intersectionX = BDS::CalculateFacesOverlapRadius(angleIn,angleOut,semilength);
-      BDSMagnetOuterInfo* magnetOuterInfo = PrepareMagnetOuterInfo(element,angleIn,angleOut);
+    if (magnetOuterInfo->geometryType == BDSMagnetGeometryType::cylindrical){
+      magnetRadius= 0.5*magnetOuterInfo->outerDiameter*CLHEP::mm;}
 
-      // Every geometry type has a completely arbitrary factor of 1.25 except cylindrical
-      G4double magnetRadius= 0.625*magnetOuterInfo->outerDiameter*CLHEP::mm;
+    //Check if intersection is within radius
+    if ((BDS::IsFinite(intersectionX)) && (std::abs(intersectionX) < magnetRadius))
+    {
+      G4cerr << __METHOD_NAME__ << "Angled faces of element "<< thename << " intersect within the magnet radius." << G4endl;
+      exit(1);
+    }
 
-      if (magnetOuterInfo->geometryType == BDSMagnetGeometryType::cylindrical){
-        magnetRadius= 0.5*magnetOuterInfo->outerDiameter*CLHEP::mm;}
+    BDSSectorBend* oneBend = new BDSSectorBend(thename,
+        semilength,
+        semiangle,
+        bField,
+        bPrime,
+        PrepareBeamPipeInfo(element, angleIn, angleOut),
+        magnetOuterInfo);
 
-      //Check if intersection is within radius
-      if ((BDS::IsFinite(intersectionX)) && (std::abs(intersectionX) < magnetRadius))
-        {
-          G4cerr << __METHOD_NAME__ << "Angled faces of element "<< thename << " intersect within the magnet radius." << G4endl;
-          exit(1);
-        }
-
-      BDSSectorBend* oneBend = new BDSSectorBend(thename,
-                             semilength,
-                             semiangle,
-                             bField,
-                             bPrime,
-                             PrepareBeamPipeInfo(element, angleIn, angleOut),
-                             magnetOuterInfo);
-
+    G4String biasType = BDSParser::Instance()->GetOptions().biasType;
+    if(biasType == "" || biasType=="None"){
       oneBend->SetBiasVacuumList(element->biasVacuumList);
       oneBend->SetBiasMaterialList(element->biasMaterialList);
-      sbendline->AddComponent(oneBend);
+    }else{
+      /// physics biasing list for the material
+      std::list<std::string> biasMaterialList;
+      biasMaterialList.clear();
+      /// physics biasing list for the vacuum
+      std::list<std::string> biasVacuumList;
+      biasVacuumList.clear();
+
+      std::string bias = BDSParser::Instance()->GetOptions().bias;
+      std::stringstream ss(bias);
+      std::string tok;
+      if (biasType == "Bias")
+      {
+        while(ss >> tok)
+        {
+          biasMaterialList.push_back(tok);
+          biasVacuumList.push_back(tok);
+        }
+      }
+      else if (biasType == "BiasMaterial")
+      {
+        while(ss >> tok) {biasMaterialList.push_back(tok);}
+      }
+      else if (biasType == "BiasVacuum")
+      {
+        while(ss >> tok) {biasVacuumList.push_back(tok);}
+      }else{
+        G4cout << __METHOD_NAME__ << "WARNING - Bias type is not defined!" << G4endl;
+      }
+      oneBend->SetBiasVacuumList(biasVacuumList);
+      oneBend->SetBiasMaterialList(biasMaterialList);
+    }
+
+    sbendline->AddComponent(oneBend);
 
 #ifdef BDSDEBUG
-  G4cout << "---->creating sbend line,"
-     << " element= " << thename
-	 << " angleIn= " << angleIn
-	 << " angleOut= " << angleOut << "m"
-	 << G4endl;
+    G4cout << "---->creating sbend line,"
+      << " element= " << thename
+      << " angleIn= " << angleIn
+      << " angleOut= " << angleOut << "m"
+      << G4endl;
 #endif
   }
-  
+
   return sbendline;
 }
 

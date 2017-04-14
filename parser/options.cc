@@ -151,6 +151,9 @@ Options::Options()
   synchHitPosUpstream      = -12; //m
   synchHitPosDownstream    = 12;  //m
   beamOutputPath      = "None";
+  biasType            = "";
+  bias                = "";
+  maxNofScat          = 25;
 
   // output / analysis options
   numberOfEventsPerNtuple  = 0;
@@ -369,6 +372,9 @@ void Options::PublishMembers()
   publish("synchHitPosUpstream",&Options::synchHitPosUpstream);
   publish("synchHitPosDownstream",&Options::synchHitPosDownstream);
   publish("beamOutputPath",&Options::beamOutputPath);
+  publish("biasType",&Options::biasType);
+  publish("bias",&Options::bias);
+  publish("maxNofScat",&Options::maxNofScat);
 
   // physics processes
   publish("turnOnCerenkov",&Options::turnOnCerenkov);

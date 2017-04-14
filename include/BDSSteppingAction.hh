@@ -31,6 +31,10 @@ private:
   G4double m_synchHitPosUpstream;
   G4double m_synchHitPosDownstream;
   BDSBeamlineElement* m_endElement;
+
+  bool m_bias;
+  int m_nofScat;
+  int m_maxNofScat;
 };
 
 #endif

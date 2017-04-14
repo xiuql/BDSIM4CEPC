@@ -70,8 +70,8 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
     
 
-    startPosition = startElement->GetPositionStart();
-    startRotation = startElement->GetRotationStart();
+    startPosition = startElement->GetReferencePositionStart();
+    startRotation = startElement->GetReferenceRotationStart();
     firstTimeFlag=false;
     
     G4cout << __METHOD_NAME__ << "Primary particle is " << BDSGlobalConstants::Instance()->GetParticleDefinition()->GetParticleName() <<", Start Element: "<<startElement->GetName()<<", PlacementName: "<<startElement->GetPlacementName()<<", CopyNumber: "<<startElement->GetCopyNo()<<", StartPosition: "<<startPosition<<G4endl;
@@ -96,9 +96,10 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4ThreeVector PartMomDir(xp,yp,zp);
   G4ThreeVector PartPosition(x0,y0,z0);
 
-
-  PartMomDir = (*startRotation)*PartMomDir;
-  PartPosition = startPosition+PartPosition;
+  if(BDSParser::Instance()->GetOptions().distribType != "userfile"){
+    PartMomDir = (*startRotation)*PartMomDir;
+    PartPosition = startPosition+PartPosition;
+  }
   
   particleGun->SetParticlePosition(PartPosition);
   particleGun->SetParticleEnergy(E);
