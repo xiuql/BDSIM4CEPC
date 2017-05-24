@@ -243,7 +243,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element* elementIn
   if (component)
   { //
     G4String biasType = BDSParser::Instance()->GetOptions().biasType;
-    if(biasType == "" || biasType=="None"){
+    if(biasType == ""){
       component->SetBiasVacuumList(element->biasVacuumList);
       component->SetBiasMaterialList(element->biasMaterialList);
     }else{
@@ -537,7 +537,7 @@ BDSLine* BDSComponentFactory::CreateSBendLine(Element const* element,
         magnetOuterInfo);
 
     G4String biasType = BDSParser::Instance()->GetOptions().biasType;
-    if(biasType == "" || biasType=="None"){
+    if(biasType == ""){
       oneBend->SetBiasVacuumList(element->biasVacuumList);
       oneBend->SetBiasMaterialList(element->biasMaterialList);
     }else{

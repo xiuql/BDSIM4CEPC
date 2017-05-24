@@ -23,7 +23,7 @@ BDSSteppingAction::BDSSteppingAction():_step(nullptr){
   G4String physicsListName = BDSParser::Instance()->GetOptions().physicsList;
   G4String synFileName = BDSParser::Instance()->GetOptions().synchOutputPath;
   G4String beamFileName = BDSParser::Instance()->GetOptions().beamOutputPath;
-  if(synFileName=="None"){
+  if(synFileName==""){
     m_foutSyn=NULL;
     m_foutSynStatistic=NULL;
   }else{
@@ -35,7 +35,7 @@ BDSSteppingAction::BDSSteppingAction():_step(nullptr){
       m_foutSynStatistic = new std::ofstream(synFileName.c_str());
     }
   }
-  if(beamFileName=="None"){
+  if(beamFileName==""){
     m_foutBeam=NULL;
   }else{
     m_foutBeam = new std::ofstream(beamFileName.c_str());
@@ -45,7 +45,7 @@ BDSSteppingAction::BDSSteppingAction():_step(nullptr){
   G4cout<<"SynchHitPosUpstream: "<<m_synchHitPosUpstream<<" m, SynchHitPosDownstream: "<<m_synchHitPosDownstream<<" m"<<G4endl;
 
   m_endElementName = BDSParser::Instance()->GetOptions().trackingEnd;
-  if(m_endElementName=="None"){
+  if(m_endElementName==""){
     m_endPointFlag=false;
   }else{
     m_endPointFlag=true;
@@ -86,8 +86,9 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* ThisStep)
     }
 
     G4cout<<"End Element: "<<m_endElement->GetName()<<", PlacementName: "<<m_endElement->GetPlacementName()<<", CopyNumber: "<<m_endElement->GetCopyNo()<<G4endl;
-    G4ThreeVector  endPosition = m_endElement->GetPositionStart();
-    G4cout<<"Position of the end element: "<<endPosition<<G4endl;
+    m_endPosition = m_endElement->GetReferencePositionStart();
+    m_endRotation = m_endElement->GetReferenceRotationStart();
+    G4cout<<"Position of the end element: "<<m_endPosition<<G4endl;
     G4cout<<""<<G4endl;
 
     m_endPointFlag=false;
@@ -363,11 +364,15 @@ void BDSSteppingAction::TerminateSteppingAction(){
       G4cout<<""<<G4endl;
     }
 
-    if(m_foutBeam){
+    if(m_foutBeam){  
+      //Transform to local coordinate from global coordinate
+      G4ThreeVector localPos = postPos-m_endPosition/CLHEP::m;
+      G4ThreeVector localMom = (m_endRotation->inverse())*postMom;
+
       m_foutBeam->setf(std::ios::showpos);
       m_foutBeam->setf(std::ios::scientific);
 
-      (*m_foutBeam)<<std::setprecision(9)<<postPos.x()<<std::setw(18)<<postPos.y()<<std::setw(18)<<postPos.z()<<std::setw(18)<<postMom.x()<<std::setw(18)<<postMom.y()<<std::setw(18)<<postMom.z()<<std::setw(18)<<postE<<std::endl;
+      (*m_foutBeam)<<std::setprecision(9)<<localPos.x()<<std::setw(18)<<localPos.y()<<std::setw(18)<<localPos.z()<<std::setw(18)<<localMom.x()<<std::setw(18)<<localMom.y()<<std::setw(18)<<localMom.z()<<std::setw(18)<<postE<<std::endl;
 
       m_foutBeam->unsetf(std::ios::scientific);
       m_foutBeam->unsetf(std::ios::showpos);

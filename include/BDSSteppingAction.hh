@@ -31,6 +31,9 @@ private:
   G4double m_synchHitPosUpstream;
   G4double m_synchHitPosDownstream;
   BDSBeamlineElement* m_endElement;
+    
+  G4ThreeVector m_endPosition;
+  G4RotationMatrix* m_endRotation;
 
   bool m_bias;
   int m_nofScat;

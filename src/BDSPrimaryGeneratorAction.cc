@@ -31,7 +31,7 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch* bdsBunchIn):
   particleGun->SetParticleTime(0);
   
   startElementName = BDSParser::Instance()->GetOptions().trackingStart;
-  if(startElementName=="None"){
+  if(startElementName==""){
     startPointFlag=false;
   }else{
     startPointFlag=true;
@@ -74,7 +74,7 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     startRotation = startElement->GetReferenceRotationStart();
     firstTimeFlag=false;
     
-    G4cout << __METHOD_NAME__ << "Primary particle is " << BDSGlobalConstants::Instance()->GetParticleDefinition()->GetParticleName() <<", Start Element: "<<startElement->GetName()<<", PlacementName: "<<startElement->GetPlacementName()<<", CopyNumber: "<<startElement->GetCopyNo()<<", StartPosition: "<<startPosition<<G4endl;
+    G4cout << __METHOD_NAME__ << "Primary particle is " << BDSGlobalConstants::Instance()->GetParticleDefinition()->GetParticleName() <<", Start Element: "<<startElement->GetName()<<", PlacementName: "<<startElement->GetPlacementName()<<", CopyNumber: "<<startElement->GetCopyNo()<<", StartPosition: "<<startPosition<<", StartRotation: "<<(*startRotation)<<G4endl;
   }
 
   G4double x0=0.0, y0=0.0, z0=0.0, xp=0.0, yp=0.0, zp=0.0, t=0.0, E=0.0;
@@ -97,6 +97,13 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4ThreeVector PartPosition(x0,y0,z0);
 
   if(BDSParser::Instance()->GetOptions().distribType != "userfile"){
+    G4cout << __METHOD_NAME__ <<", StartPosition: "<<startPosition<<", StartRotation: "<<(*startRotation)<<G4endl;
+    PartMomDir = (*startRotation)*PartMomDir;
+    PartPosition = startPosition+PartPosition;
+  }
+
+  if(BDSParser::Instance()->GetOptions().distribType == "userfile" && BDSParser::Instance()->GetOptions().beamOutputPath != ""){
+    G4cout << __METHOD_NAME__ <<", StartPosition: "<<startPosition<<", StartRotation: "<<(*startRotation)<<G4endl;
     PartMomDir = (*startRotation)*PartMomDir;
     PartPosition = startPosition+PartPosition;
   }

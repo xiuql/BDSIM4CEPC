@@ -143,14 +143,14 @@ Options::Options()
   deltaOneStep             = 0.5e-5;  // default value in Geant4, old value 0.00001;
   stopTracks               = false;
   stopSecondaries          = false;
-  trackingStart            = "None";
-  trackingEnd              = "None";
+  trackingStart            = "";
+  trackingEnd              = "";
 
   //synchrotron radiation analysis
-  synchOutputPath      = "None";
+  synchOutputPath      = "";
   synchHitPosUpstream      = -12; //m
   synchHitPosDownstream    = 12;  //m
-  beamOutputPath      = "None";
+  beamOutputPath      = "";
   biasType            = "";
   bias                = "";
   maxNofScat          = 25;
